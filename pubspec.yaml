@@ -42,6 +42,7 @@ flutter:
    - images/music_icon_song_download.png
    - images/ic_publish_inner_empty_camera.png
    - images/ic_live_player_send_danmaku.png
+   - images/ic_category_t60.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

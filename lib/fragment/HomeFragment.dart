@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
-
-void main() => runApp(HomeFragment());
+import 'dart:io';
+import 'package:flutter/services.dart';
+void main() {
+  runApp(new HomeFragment());
+  if (Platform.isAndroid) {
+// 以下两行 设置android状态栏为透明的沉浸。写在组件渲染之后，是为了在渲染后进行set赋值，覆盖状态栏，写在渲染之前MaterialApp组件会覆盖掉这个值。
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
+}
 
 class HomeFragment extends StatefulWidget {
   @override
@@ -10,7 +18,13 @@ class HomeFragment extends StatefulWidget {
 }
 
 class HomeFragmentState extends State<HomeFragment> {
+
   final isActive = false;
+  @override
+  void initState() {
+    super.initState();
+
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -104,7 +118,117 @@ class HomeFragmentState extends State<HomeFragment> {
                   ),
                 ],
               ),
-            )
+            ),
+        Container(
+          margin: EdgeInsets.all(10),
+          child: ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            child: Image.network("http://i0.hdslb.com/bfs/archive/c99223692da0c50e9003157b14a1f5157060fc15.jpg@480w_300h.webp",fit: BoxFit.cover,),
+          ),
+        ),
+        Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(left: 10,right: 10),
+          height: 150,
+          child: ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index){
+            return Container(
+              padding: EdgeInsets.only(top: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Image.asset("images/ic_category_t60.png",height: 35,width: 35,),
+                      Padding(padding: EdgeInsets.only(top: 5),child:Text("英雄联盟")),
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Image.asset("images/ic_category_t60.png",height: 35,width: 35,),
+                      Padding(padding: EdgeInsets.only(top: 5),child:Text("英雄联盟")),
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Image.asset("images/ic_category_t60.png",height: 35,width: 35,),
+                      Padding(padding: EdgeInsets.only(top: 5),child:Text("英雄联盟")),
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Image.asset("images/ic_category_t60.png",height: 35,width: 35),
+                      Padding(padding: EdgeInsets.only(top: 5),child:Text("英雄联盟")),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Image.asset("images/ic_category_t60.png",height: 35,width: 35,fit: BoxFit.scaleDown,),
+                      Padding(padding: EdgeInsets.only(top: 5),child:Text("英雄联盟")),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },itemCount: 2,),
+        ),
+        Container(
+          decoration:new BoxDecoration(border:new Border(bottom:BorderSide(color: Colors.black12))),
+        ),
+        Container(
+          margin: EdgeInsets.all(10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text("推荐直播"),
+          Row(children: <Widget>[
+            Text("换一换",style: TextStyle(color: Colors.black26),),
+            Icon(Icons.refresh,color: Colors.black26,)
+          ],
+          )
+        ],),
+        ),
+            SizedBox(
+            height: 500,
+            child: GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,childAspectRatio: 1.2),
+                itemBuilder: (context,index){
+                  return Container(
+                      padding: EdgeInsets.only(left: 15.0, right: 10.0),
+                    child: Column(children: <Widget>[
+                      Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(6.0)),
+                            child: Image.network("http://i1.hdslb.com/bfs/archive/162b1dea017c03d37f06b7312c43cf8b956e5765.jpg@320w_200h.webp",fit: BoxFit.cover,width: 190.0,
+                              height: 100.0,),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text("黑哲君",style: TextStyle(color: Colors.white),),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(Icons.perm_identity,color: Colors.white),
+                                    Text("14.5万",style: TextStyle(color: Colors.white)),
+                                  ],
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+
+                      ),
+                    ],)
+                  );
+                },itemCount: 6,),
+          )
           ],),
       ),
     );
