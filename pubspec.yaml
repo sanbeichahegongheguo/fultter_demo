@@ -43,6 +43,9 @@ flutter:
    - images/ic_publish_inner_empty_camera.png
    - images/ic_live_player_send_danmaku.png
    - images/ic_category_t60.png
+   - images/login/studenthomepage_logp.png
+   - images/login/studenthomepage_btn.png
+   - images/login/joinclass_bg_bgimg.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

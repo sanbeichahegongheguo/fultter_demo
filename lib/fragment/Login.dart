@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class LoginWidget extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -8,7 +7,7 @@ class LoginWidget extends StatefulWidget{
   }
 }
 
-class LoginState extends State<LoginWidget> {
+class LoginState extends State<LoginWidget> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -16,16 +15,12 @@ class LoginState extends State<LoginWidget> {
     final widthSrcreen = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
-        child: Center(
-          child: Text('Hello Wolrd', style: TextStyle(fontSize: 22.0, color: Colors.white),),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image:AssetImage("images/login/joinclass_bg_bgimg.png"),
+            fit: BoxFit.cover
+          )
         ),
-      decoration: BoxDecoration(
-        gradient: new LinearGradient(
-          begin: const FractionalOffset(0.5, 0.0),
-          end: const FractionalOffset(0.5, 1.0),
-          colors: <Color>[Colors.blue, Colors.blue],
-        ),
-      ),
       ),
     );
   }
