@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/fragment/Login.dart';
+import 'package:flutter_start/fragment/WebViewExample.dart';
 
 class HomeWidget extends StatefulWidget{
   @override
@@ -8,7 +9,7 @@ class HomeWidget extends StatefulWidget{
   }
 }
 
-class HomeState extends State<HomeWidget> {
+class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -26,6 +27,11 @@ class HomeState extends State<HomeWidget> {
                     InkWell(
                       onTap: (){
                         print("点击操作指南");
+                        Navigator.of(context).push(new PageRouteBuilder(
+                          pageBuilder: (BuildContext context, _, __) {
+                            return new WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin",color:Colors.black);
+                          },
+                        ));
                       },
                       child: Text("操作指南",style: TextStyle(color: Colors.white, fontSize: 20.0,fontWeight: FontWeight.w400), textAlign: TextAlign.center,),
                     ),
@@ -45,11 +51,7 @@ class HomeState extends State<HomeWidget> {
                  InkWell(
                    onTap: (){
                      print("点击登录");
-                     Navigator.of(context).push(new PageRouteBuilder(
-                       pageBuilder: (BuildContext context, _, __) {
-                         return new LoginWidget();
-                       },
-                     ));
+                     Navigator.of(context).pushNamed('login');
                    },
                    child: Image.asset("images/login/studenthomepage_btn.png",width: widthSrcreen*0.6,fit: BoxFit.cover,),
                  )
