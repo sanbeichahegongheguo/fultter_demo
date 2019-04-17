@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/fragment/Login.dart';
 import 'package:flutter_start/fragment/WebViewExample.dart';
+import 'package:flutter_start/fragment/PageRouteHelper.dart';
 
 class HomeWidget extends StatefulWidget{
   @override
@@ -10,6 +11,10 @@ class HomeWidget extends StatefulWidget{
 }
 
 class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -27,9 +32,9 @@ class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
                     InkWell(
                       onTap: (){
                         print("点击操作指南");
-                        Navigator.of(context).push(new PageRouteBuilder(
+                        Navigator.of(context).push(new PageRouteBuilderHelper(
                           pageBuilder: (BuildContext context, _, __) {
-                            return new WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin",color:Colors.black);
+                            return WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin",color:Colors.black);
                           },
                         ));
                       },
@@ -51,7 +56,12 @@ class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
                  InkWell(
                    onTap: (){
                      print("点击登录");
-                     Navigator.of(context).pushNamed('login');
+                     Navigator.of(context).push(
+                         new PageRouteBuilderHelper(
+                         pageBuilder: (BuildContext context, _, __) {
+                           // 跳转的路由对象
+                           return new LoginWidget();
+                         }));
                    },
                    child: Image.asset("images/login/studenthomepage_btn.png",width: widthSrcreen*0.6,fit: BoxFit.cover,),
                  )

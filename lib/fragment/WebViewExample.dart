@@ -57,26 +57,27 @@ class NewsWebPageState extends State<WebViewExample>{
     return new WebviewScaffold(
       key: scaffoldKey,
       url:widget.url, // 登录的URL
-      appBar: PreferredSize (
-        child:new AppBar(
-          backgroundColor:widget.color??Theme.of(context).primaryColor,
-//            title: new Row(
-//              mainAxisAlignment: MainAxisAlignment.center,
-//              children: titleContent,
-//            ),
-//            iconTheme: new IconThemeData(color: Colors.black),
-          ),
-          preferredSize:Size.fromHeight(0)
-      ),
+//      appBar: PreferredSize (
+//        child:new AppBar(
+//          backgroundColor:widget.color??Theme.of(context).primaryColor,
+////            title: new Row(
+////              mainAxisAlignment: MainAxisAlignment.center,
+////              children: titleContent,
+////            ),
+////            iconTheme: new IconThemeData(color: Colors.black),
+//          ),
+//          preferredSize:Size.fromHeight(0)
+//      ),
       withZoom: true,  // 允许网页缩放
       withLocalStorage: true, // 允许LocalStorage
       withJavascript: true, // 允许执行js代码
-      initialChild: Container(
-        color: Colors.black,
-        child: const Center(
-          child: Text('Waiting.....'),
-        ),
-      ),
+      hidden: true,
+//      initialChild: Container(
+//        color: Colors.black,
+//        child: const Center(
+//          child: Text('Waiting.....'),
+//        ),
+//      ),
     );
   }
 

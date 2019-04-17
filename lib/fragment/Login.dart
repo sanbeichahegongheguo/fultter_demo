@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/fragment/WebViewExample.dart';
+import 'package:flutter_start/fragment/PageRouteHelper.dart';
+
 class LoginWidget extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -8,6 +10,9 @@ class LoginWidget extends StatefulWidget{
 }
 
 class LoginState extends State<LoginWidget> with SingleTickerProviderStateMixin {
+
+
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -25,7 +30,7 @@ class LoginState extends State<LoginWidget> with SingleTickerProviderStateMixin 
                   InkWell(
                     onTap: (){
                       print("点击操作指南");
-                      Navigator.of(context).push(new PageRouteBuilder(
+                      Navigator.of(context).push(new PageRouteBuilderHelper(
                         pageBuilder: (BuildContext context, _, __) {
                           return new WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin",color:Colors.black);
                         },
