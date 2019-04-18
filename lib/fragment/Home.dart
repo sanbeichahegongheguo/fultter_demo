@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/fragment/Login.dart';
-import 'package:flutter_start/fragment/WebViewExample.dart';
+import 'package:flutter_start/fragment/WebViewPage.dart';
 import 'package:flutter_start/fragment/PageRouteHelper.dart';
-
+import 'package:flutter_start/utils/NavigatorUtil.dart';
 class HomeWidget extends StatefulWidget{
+  static final String sName = "home";
   @override
   State<StatefulWidget> createState() {
     return HomeState();
@@ -11,9 +12,6 @@ class HomeWidget extends StatefulWidget{
 }
 
 class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +30,7 @@ class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
                     InkWell(
                       onTap: (){
                         print("点击操作指南");
-                        Navigator.of(context).push(new PageRouteBuilderHelper(
-                          pageBuilder: (BuildContext context, _, __) {
-                            return WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin",color:Colors.black);
-                          },
-                        ));
+                        NavigatorUtil.goWebView(context, "https://api.k12china.com/share/u/operation.html?from=stulogin");
                       },
                       child: Text("操作指南",style: TextStyle(color: Colors.white, fontSize: 20.0,fontWeight: FontWeight.w400), textAlign: TextAlign.center,),
                     ),
@@ -56,12 +50,7 @@ class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
                  InkWell(
                    onTap: (){
                      print("点击登录");
-                     Navigator.of(context).push(
-                         new PageRouteBuilderHelper(
-                         pageBuilder: (BuildContext context, _, __) {
-                           // 跳转的路由对象
-                           return new LoginWidget();
-                         }));
+                     NavigatorUtil.goLogin(context);
                    },
                    child: Image.asset("images/login/studenthomepage_btn.png",width: widthSrcreen*0.6,fit: BoxFit.cover,),
                  )

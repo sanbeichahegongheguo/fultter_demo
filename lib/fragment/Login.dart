@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_start/fragment/WebViewExample.dart';
 import 'package:flutter_start/fragment/PageRouteHelper.dart';
+import 'package:flutter_start/fragment/WebViewPage.dart';
+import 'package:flutter_start/utils/NavigatorUtil.dart';
 
 class LoginWidget extends StatefulWidget{
+  static final String sName = "login";
   @override
   State<StatefulWidget> createState() {
     return LoginState();
@@ -10,8 +12,6 @@ class LoginWidget extends StatefulWidget{
 }
 
 class LoginState extends State<LoginWidget> with SingleTickerProviderStateMixin {
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +30,7 @@ class LoginState extends State<LoginWidget> with SingleTickerProviderStateMixin 
                   InkWell(
                     onTap: (){
                       print("点击操作指南");
-                      Navigator.of(context).push(new PageRouteBuilderHelper(
-                        pageBuilder: (BuildContext context, _, __) {
-                          return new WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin",color:Colors.black);
-                        },
-                      ));
+                      NavigatorUtil.goWebView(context, "https://api.k12china.com/share/u/operation.html?from=stulogin");
                     },
                     child: Text("操作指南",style: TextStyle(color: Colors.blue, fontSize: 20.0,fontWeight: FontWeight.w400), textAlign: TextAlign.center,),
                   ),
