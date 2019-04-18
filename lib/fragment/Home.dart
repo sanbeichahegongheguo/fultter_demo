@@ -11,7 +11,7 @@ class HomeWidget extends StatefulWidget{
   }
 }
 
-class HomeState extends State<HomeWidget>  with SingleTickerProviderStateMixin{
+class HomeState extends State<HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
