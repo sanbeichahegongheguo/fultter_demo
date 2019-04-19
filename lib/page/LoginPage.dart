@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_start/fragment/PageRouteHelper.dart';
-import 'package:flutter_start/fragment/WebViewPage.dart';
 import 'package:flutter_start/utils/NavigatorUtil.dart';
 
-class LoginWidget extends StatefulWidget{
+class LoginPage extends StatefulWidget{
   static final String sName = "login";
   @override
   State<StatefulWidget> createState() {
@@ -11,7 +9,7 @@ class LoginWidget extends StatefulWidget{
   }
 }
 
-class LoginState extends State<LoginWidget> with SingleTickerProviderStateMixin {
+class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {

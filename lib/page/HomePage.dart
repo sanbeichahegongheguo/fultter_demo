@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_start/fragment/Login.dart';
-import 'package:flutter_start/fragment/WebViewPage.dart';
-import 'package:flutter_start/fragment/PageRouteHelper.dart';
 import 'package:flutter_start/utils/NavigatorUtil.dart';
-class HomeWidget extends StatefulWidget{
+class HomePage extends StatefulWidget{
   static final String sName = "home";
   @override
   State<StatefulWidget> createState() {
@@ -11,7 +8,7 @@ class HomeWidget extends StatefulWidget{
   }
 }
 
-class HomeState extends State<HomeWidget> {
+class HomeState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {

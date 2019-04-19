@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_start/fragment/Home.dart';
-import 'package:flutter_start/fragment/Login.dart';
+import 'package:flutter_start/page/HomePage.dart';
+import 'package:flutter_start/page/LoginPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Bilibili',
       theme: ThemeData(
       primarySwatch: Colors.blue),
-      home:HomeWidget(),
+      home:HomePage(),
     );
   }
 }

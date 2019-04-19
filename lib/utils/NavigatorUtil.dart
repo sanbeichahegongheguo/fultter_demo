@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/fragment/WebViewPage.dart';
-import 'package:flutter_start/fragment/PageRouteHelper.dart';
-import 'package:flutter_start/fragment/Home.dart';
-import 'package:flutter_start/fragment/Login.dart';
+import 'package:flutter_start/page/WebViewPage.dart';
+import 'package:flutter_start/utils/PageRouteHelper.dart';
+import 'package:flutter_start/page/HomePage.dart';
+import 'package:flutter_start/page/LoginPage.dart';
 class NavigatorUtil {
   ///替换
   static pushReplacementNamed(BuildContext context, String routeName) {
@@ -19,12 +19,12 @@ class NavigatorUtil {
   ///主页
   static goHome(BuildContext context) {
     Navigator.pushReplacement(context, PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
-        return new HomeWidget();
+        return new HomePage();
       }));
   }
   ///登录
   static goLogin(BuildContext context) {
-    NavigatorRouter(context,LoginWidget());
+    NavigatorRouter(context,LoginPage());
   }
 
   ///去往webview
