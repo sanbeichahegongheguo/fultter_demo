@@ -50,6 +50,9 @@ class PageRouteBuilderHelper<T> extends PageRoute<T>{
   @override
   final bool maintainState;
 
+
+
+
   @override
   Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     return pageBuilder(context, animation, secondaryAnimation);
@@ -59,13 +62,14 @@ class PageRouteBuilderHelper<T> extends PageRoute<T>{
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
     return transitionsBuilder(context, animation, secondaryAnimation, child);
   }
+
 }
 
 Widget myTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
   return new SlideTransition(
     position: new Tween<Offset>(
-      begin: const Offset(1.0, 0.0),
-      end: const Offset(0.0, 0.0),
+      begin: Offset(1.0, 0.0),
+      end: Offset(0.0, 0.0),
     ).animate(animation),
     child: child,
   );

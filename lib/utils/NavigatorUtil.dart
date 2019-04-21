@@ -19,9 +19,21 @@ class NavigatorUtil {
 
   ///主页
   static goLogo(BuildContext context) {
-    Navigator.pushReplacement(context, PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
-        return new LogoPage();
-      }));
+//    NavigatorRouter(context,LogoPage());
+    Navigator.push(context, PageRouteBuilderHelper(
+        pageBuilder: (BuildContext context, _, __) {
+          return LogoPage();
+        },
+        transitionsBuilder:(context, animation, secondaryAnimation, child){
+         return SlideTransition(
+            position: new Tween<Offset>(
+              begin: Offset(-1.0, 0.0),
+              end: Offset(0.0, 0.0),
+            ).animate(animation),
+            child: child,
+          );
+        },
+       ));
   }
   ///登录
   static goLogin(BuildContext context) {
@@ -35,6 +47,12 @@ class NavigatorUtil {
 
   static NavigatorRouter(BuildContext context, Widget widget) {
     return Navigator.push(context, PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
+      return widget;
+    }));
+  }
+
+  static NavigatorRouterReplacement(BuildContext context, Widget widget) {
+    return Navigator.pushReplacement(context, PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
       return widget;
     }));
   }

@@ -21,6 +21,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   webview_flutter: ^0.3.5+3
   oktoast:
+  http:
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +49,8 @@ flutter:
    - images/login/studenthomepage_logp.png
    - images/login/studenthomepage_btn.png
    - images/login/joinclass_bg_bgimg.png
+   - images/login/studenthomepage_btn_hover.png
+
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

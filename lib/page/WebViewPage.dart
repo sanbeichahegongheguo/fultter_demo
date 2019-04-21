@@ -47,7 +47,7 @@ class WebViewPageState extends State<WebViewPage>{
           javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context)].toSet(),
           navigationDelegate: (NavigationRequest request) {
             if (request.url.startsWith('haxecallback:back')) {
-              showToast('JS调用了Flutter By navigationDelegate');
+//              showToast('JS调用了Flutter By navigationDelegate');
               print('@ 回调参数 $request}');
               Navigator.of(context).pop();
               //阻止路由替换；
