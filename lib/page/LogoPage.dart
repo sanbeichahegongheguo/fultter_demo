@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/utils/NavigatorUtil.dart';
-class HomePage extends StatefulWidget{
+class LogoPage extends StatefulWidget{
   static final String sName = "home";
   @override
   State<StatefulWidget> createState() {
-    return HomeState();
+    return LogoState();
   }
 }
 
-class HomeState extends State<HomePage> {
+class LogoState extends State<LogoPage> {
 
   @override
   Widget build(BuildContext context) {
