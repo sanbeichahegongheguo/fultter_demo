@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/page/WebViewPage.dart';
-import 'package:flutter_start/utils/PageRouteHelper.dart';
-import 'package:flutter_start/page/LogoPage.dart';
+import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/page/LoginPage.dart';
+import 'package:flutter_start/page/LogoPage.dart';
+import 'package:flutter_start/page/WebViewPage.dart';
 class NavigatorUtil {
 
   ///替换

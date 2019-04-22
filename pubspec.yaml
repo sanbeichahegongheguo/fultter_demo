@@ -21,7 +21,10 @@ dependencies:
   cupertino_icons: ^0.1.2
   webview_flutter: ^0.3.5+3
   oktoast:
-  http:
+  dio:
+  shared_preferences:
+  connectivity:
+  event_bus:
 
 dev_dependencies:
   flutter_test:

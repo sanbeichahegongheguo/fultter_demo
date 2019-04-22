@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_start/utils/NavigatorUtil.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 class LogoPage extends StatefulWidget{
   static final String sName = "home";
   @override

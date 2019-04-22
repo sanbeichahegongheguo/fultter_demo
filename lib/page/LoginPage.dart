@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_start/utils/HttpUtils.dart';
-import 'package:flutter_start/utils/NavigatorUtil.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_start/common/dao/daoResult.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 
 class LoginPage extends StatefulWidget{
@@ -157,9 +158,12 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
-  void Login(){
+  void Login() async{
     if (loginBtn){
-
+      DataResult data = await UserDao.login(userNameController.text,passwordController.text);
+      if (data.result){
+        showToast("登录成功 ${data.data["tRealName"]}");
+      }
     }else{
       if(userNameController.text.length==0){
         showToast("账号不能为空");

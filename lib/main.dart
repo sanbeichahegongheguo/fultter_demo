@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_start/page/LogoPage.dart';
-import 'package:flutter_start/utils/PageRouteHelper.dart';
 import 'package:oktoast/oktoast.dart';
  main()  {
   runApp(MyApp());
