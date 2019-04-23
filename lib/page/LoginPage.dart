@@ -62,7 +62,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                         icon:Icon(Icons.arrow_back_ios,color: Colors.blue,),
                         onPressed:(){
                           print("返回logo!");
-                          NavigatorUtil.goLogo(context);
+                          NavigatorUtil.goWelcome(context);
                         }
                     ),
                     InkWell(
@@ -163,6 +163,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       DataResult data = await UserDao.login(userNameController.text,passwordController.text);
       if (data.result){
         showToast("登录成功 ${data.data["tRealName"]}");
+        NavigatorUtil.goHome(context);
       }
     }else{
       if(userNameController.text.length==0){

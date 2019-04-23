@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-class LogoPage extends StatefulWidget{
+class WelcomePage extends StatefulWidget{
   static final String sName = "home";
   @override
   State<StatefulWidget> createState() {
-    return LogoState();
+    return _WelcomeState();
   }
 }
 
-class LogoState extends State<LogoPage> {
+class _WelcomeState extends State<WelcomePage> {
   bool isOnLogin = false;
   @override
   Widget build(BuildContext context) {

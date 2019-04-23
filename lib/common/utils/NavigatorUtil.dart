@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
+import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
-import 'package:flutter_start/page/LogoPage.dart';
+import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 class NavigatorUtil {
 
@@ -16,12 +17,12 @@ class NavigatorUtil {
     Navigator.pushNamed(context, routeName);
   }
 
-  ///主页
-  static goLogo(BuildContext context) {
+  ///欢迎页
+  static goWelcome(BuildContext context) {
 //    NavigatorRouter(context,LogoPage());
     Navigator.push(context, PageRouteBuilderHelper(
         pageBuilder: (BuildContext context, _, __) {
-          return LogoPage();
+          return WelcomePage();
         },
         transitionsBuilder:(context, animation, secondaryAnimation, child){
          return SlideTransition(
@@ -37,6 +38,10 @@ class NavigatorUtil {
   ///登录
   static goLogin(BuildContext context) {
     NavigatorRouter(context,LoginPage());
+  }
+  ///主页
+  static goHome(BuildContext context) {
+    NavigatorRouter(context,HomePage());
   }
 
   ///去往webview

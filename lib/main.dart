@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_start/page/LogoPage.dart';
+import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
  main()  {
   runApp(MyApp());
@@ -25,9 +25,9 @@ class MyApp extends StatelessWidget {
       child:MaterialApp(
         title: 'Bilibili',
         theme: ThemeData(primaryColor: Colors.lightBlueAccent),
-        home:LogoPage(),
+        home:WelcomePage(),
         routes: {
-          "logo": (context) =>  LogoPage(),
+          "logo": (context) =>  WelcomePage(),
         },
       ));
   }
