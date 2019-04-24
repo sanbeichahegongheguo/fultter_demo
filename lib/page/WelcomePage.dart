@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/PageRouteHelper.dart';
+import 'package:flutter_start/page/WebViewPage.dart';
+import 'package:path/path.dart';
 class WelcomePage extends StatefulWidget{
   static final String sName = "home";
   @override
@@ -62,6 +65,18 @@ class _WelcomeState extends State<WelcomePage> {
                       child: Image.asset(this.isOnLogin?"images/login/studenthomepage_btn_hover.png":"images/login/studenthomepage_btn.png",width: widthSrcreen*0.6,fit: BoxFit.cover),
                     )
                   ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: InkWell(
+                  onTap: (){
+                    print("点击登录");
+                    Navigator.push(context,PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
+                      return WebViewPage("https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
+                    }));
+                  },
+                  child: Text("我没有账号",style: TextStyle(color: Colors.white,fontSize: 16),textAlign: TextAlign.center,),
                 ),
               )
             ],

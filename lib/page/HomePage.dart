@@ -39,9 +39,6 @@ class HomePage extends StatelessWidget{
         return _dialogExitApp(context);
       },
       child: new GSYTabBarWidget(
-        drawer: new Center(
-          child:Text("0000"),
-        ),
         type: GSYTabBarWidget.BOTTOM_TAB,
         tabItems: tabs,
         tabViews: [

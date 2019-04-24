@@ -103,34 +103,6 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    if (this._type == GSYTabBarWidget.TOP_TAB) {
-      ///顶部tab bar
-      return new Scaffold(
-        floatingActionButton: _floatingActionButton,
-        persistentFooterButtons: _tarWidgetControl == null ? [] : _tarWidgetControl.footerButton,
-        appBar: new AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: _title,
-          bottom: new TabBar(
-              controller: _tabController,
-              tabs: widget.tabItems,
-              indicatorColor: _indicatorColor,
-              onTap: (index) {
-                _onPageChanged?.call(index);
-                _pageController.jumpTo(MediaQuery.of(context).size.width * index);
-              }),
-        ),
-        body: new PageView(
-          controller: _pageController,
-          children: _tabViews,
-          onPageChanged: (index) {
-            _tabController.animateTo(index);
-            _onPageChanged?.call(index);
-          },
-        ),
-      );
-    }
-
     ///底部tab bar
     return new Scaffold(
         drawer: _drawer,
@@ -148,19 +120,27 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         ),
         bottomNavigationBar: new Material(
           //为了适配主题风格，包一层Material实现风格套用
-//          color: Theme.of(context).primaryColor, //底部导航栏主题颜色
           color: Colors.white, //底部导航栏主题颜色
-          child: new TabBar(
-            indicatorWeight:1,
-            //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
-            controller: _tabController, //配置控制器
-            tabs: widget.tabItems,
-            indicatorColor: Colors.lightBlueAccent,
-            onTap: (index) {
-              _onPageChanged?.call(index);
-              _pageController.jumpTo(MediaQuery.of(context).size.width * index);
-            }, //tab标签的下划线颜色
-          ),
+          child:  Container(
+            height: 50,
+            child: new TabBar(
+              indicator: BoxDecoration(
+              ),
+              indicatorWeight:1,
+              //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
+              controller: _tabController, //配置控制器
+              tabs: widget.tabItems,
+              unselectedLabelColor:Colors.black,
+              labelColor: Colors.lightBlueAccent,
+              onTap: (index) {
+                _onPageChanged?.call(index);
+                _pageController.jumpTo(MediaQuery.of(context).size.width * index);
+              }, //tab标签的下划线颜色
+            ),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: Colors.grey,width: 0.5)),
+            ),
+          )
         ));
   }
 }
