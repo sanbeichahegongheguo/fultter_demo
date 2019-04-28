@@ -54,6 +54,10 @@ flutter:
    - images/login/studenthomepage_btn.png
    - images/login/joinclass_bg_bgimg.png
    - images/login/studenthomepage_btn_hover.png
+   - images/home/icon_challenge.png
+   - images/home/icon_parent.png
+   - images/home/icon_study.png
+   - images/home/icon_user.png
 
   #  - images/a_dot_ham.jpeg
 

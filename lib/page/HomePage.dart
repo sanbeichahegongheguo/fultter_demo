@@ -21,18 +21,18 @@ class HomePage extends StatelessWidget{
   _renderTab(icon, text) {
     return new Tab(
       child: new Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[new Icon(icon, size: 16.0), new Text(text)],
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[Image.asset(icon,fit: BoxFit.scaleDown,height: 20,), SizedBox(height: 2,),new Text(text,style: TextStyle(fontSize: 12,color: Color(0xFF606a81)),)],
       ),
     );
   }
   @override
   Widget build(BuildContext context) {
     List<Widget> tabs = [
-      _renderTab(Icons.book, "学习"),
-      _renderTab(Icons.android, "挑战"),
-      _renderTab(Icons.person, "个人中心"),
-      _renderTab(Icons.people, "家长专区"),
+      _renderTab("images/home/icon_study.png", "学习"),
+      _renderTab("images/home/icon_challenge.png", "挑战"),
+      _renderTab("images/home/icon_user.png", "个人中心"),
+      _renderTab("images/home/icon_parent.png", "家长专区"),
     ];
     return WillPopScope(
       onWillPop: () {

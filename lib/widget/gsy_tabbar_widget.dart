@@ -122,7 +122,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           //为了适配主题风格，包一层Material实现风格套用
           color: Colors.white, //底部导航栏主题颜色
           child:  Container(
-            height: 50,
+            height: MediaQuery.of(context).size.height*0.08,
             child: new TabBar(
               indicator: BoxDecoration(
               ),
@@ -130,8 +130,6 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
               //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
               controller: _tabController, //配置控制器
               tabs: widget.tabItems,
-              unselectedLabelColor:Colors.black,
-              labelColor: Colors.lightBlueAccent,
               onTap: (index) {
                 _onPageChanged?.call(index);
                 _pageController.jumpTo(MediaQuery.of(context).size.width * index);
