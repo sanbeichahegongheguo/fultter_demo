@@ -19,8 +19,8 @@ class ScreenUtil {
   static double _textScaleFactor;
 
   ScreenUtil({
-    this.width = 1080,
-    this.height = 1920,
+    this.width = 1125,
+    this.height = 2001,
     this.allowFontScaling = false,
   });
 

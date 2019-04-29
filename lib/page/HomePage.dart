@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:android_intent/android_intent.dart';
+import 'package:flutter_start/common/utils/ScreenUtil.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 
 class HomePage extends StatelessWidget{
@@ -18,33 +19,42 @@ class HomePage extends StatelessWidget{
     return Future.value(false);
   }
 
-  _renderTab(icon, text) {
-    return new Tab(
-      child: new Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[Image.asset(icon,fit: BoxFit.scaleDown,height: 20,), SizedBox(height: 2,),new Text(text,style: TextStyle(fontSize: 12,color: Color(0xFF606a81)),)],
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
-    List<Widget> tabs = [
-      _renderTab("images/home/icon_study.png", "学习"),
-      _renderTab("images/home/icon_challenge.png", "挑战"),
-      _renderTab("images/home/icon_user.png", "个人中心"),
-      _renderTab("images/home/icon_parent.png", "家长专区"),
-    ];
+    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     return WillPopScope(
       onWillPop: () {
         return _dialogExitApp(context);
       },
       child: new GSYTabBarWidget(
-        type: GSYTabBarWidget.BOTTOM_TAB,
-        tabItems: tabs,
         tabViews: [
-          new Center(
-          child:Text("1111"),
-            ),
+          new Stack(
+            alignment: const FractionalOffset(0.5, 0.5),//方法一
+            children: <Widget>[
+              Container(),
+              new Stack(
+                alignment: const FractionalOffset(0.5, 0.5),//方法一
+                children: <Widget>[
+                  new Opacity(
+                    opacity: 1,
+                    child: new Image(
+                      image: new AssetImage("images/home/select.png"),
+                      width: ScreenUtil.getInstance().setWidth(193),
+                      height: ScreenUtil.getInstance().setHeight(175),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  new Tab(
+                    child: new Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Image.asset("images/home/icon_study_select.png",fit: BoxFit.scaleDown,height: 20,), SizedBox(height: 2,),new Text("个人中心",style: TextStyle(fontSize: 12,color: Color(0xFF606a81)),)],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
           new Center(
             child:Text("2222"),
           ),
