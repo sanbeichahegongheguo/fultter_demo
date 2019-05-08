@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_start/common/utils/ScreenUtil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住

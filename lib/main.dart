@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_start/common/utils/ScreenUtil.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
  main()  {

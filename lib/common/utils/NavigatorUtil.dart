@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
+import 'package:flutter_start/fragment/WebViewExample.dart';
 import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
@@ -46,7 +47,7 @@ class NavigatorUtil {
 
   ///去往webview
   static goWebView(BuildContext context,String url) {
-    NavigatorRouter(context,WebViewPage(url));
+    NavigatorRouter(context,WebViewExample(url));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {

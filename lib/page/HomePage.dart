@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:android_intent/android_intent.dart';
-import 'package:flutter_start/common/utils/ScreenUtil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 
 class HomePage extends StatelessWidget{
@@ -21,7 +21,7 @@ class HomePage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 1125, height: 2001)..init(context);
     return WillPopScope(
       onWillPop: () {
         return _dialogExitApp(context);
