@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:flutter/material.dart';
 
@@ -61,18 +62,18 @@ class NewsWebPageState extends State<WebViewExample>{
       withLocalStorage: true, // 允许LocalStorage
       withJavascript: true, // 允许执行js代码
       hidden: true,
-      initialChild: Container(
-        child: Center(
-          child: Image.asset("images/login/studenthomepage_logp.png",width: MediaQuery.of(context).size.width*0.75,),
-        ),
-          decoration: BoxDecoration(
-            gradient: new LinearGradient(
-              begin: const FractionalOffset(0.5, 0.0),
-              end: const FractionalOffset(0.5, 1.0),
-              colors: <Color>[Colors.lightBlueAccent, Colors.lightBlueAccent],
-            ),
-          )
-      ),
+//      initialChild: Container(
+//        child: Center(
+//          child: Image.asset("images/login/studenthomepage_logp.png",width: MediaQuery.of(context).size.width*0.75,),
+//        ),
+//          decoration: BoxDecoration(
+//            gradient: new LinearGradient(
+//              begin: const FractionalOffset(0.5, 0.0),
+//              end: const FractionalOffset(0.5, 1.0),
+//              colors: <Color>[Colors.lightBlueAccent, Colors.lightBlueAccent],
+//            ),
+//          )
+//      ),
     );
   }
 
@@ -82,46 +83,67 @@ class NewsWebPageState extends State<WebViewExample>{
     // Every listener should be canceled, the same should be done with this stream.
     onUrlChanged.cancel();
     onStateChanged.cancel();
+    _onDestroy.cancel();
+    _onHttpError.cancel();
     flutterWebViewPlugin.dispose();
     super.dispose();
   }
 
   StreamSubscription<WebViewStateChanged> _setOnStateChanged(){
     return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state){
-      print("加载类型 "  + state.type.toString());
-      // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
-      switch (state.type) {
-        case WebViewState.abortLoad:
-          break;
-        case WebViewState.shouldStart:
-        // 准备加载
-//          setState(() {
-//            loading = true;
-//          });
-          if ("haxecallback:back" == state.url){
-            flutterWebViewPlugin.close();
-            Navigator.of(context).pop();
-          }else if ("haxecallback:go:h5RegistLogin"==state.url ){
-            Navigator.of(context).pop();
-          }
-          break;
-        case WebViewState.startLoad:
-        // 开始加载
-//          setState(() {
-//            loading = true;
-//          });
-          break;
-        case WebViewState.finishLoad:
-        // 加载完成
-//          setState(() {
-//            loading = false;
-//          });
-//          if (isLoadingCallbackPage) {
-//            // 当前是回调页面，则调用js方法获取数据
-//            parseResult();
-//          }
-          break;
+      print("加载类型 ${state.type}");
+      print(state.url =="haxecallback:go:h5RegistLogin");
+
+      if (state.type == WebViewState.shouldStart){
+        String url = state.url;
+        if(state.url.startsWith("haxecallback")){
+            if(url =="haxecallback:back"){
+              flutterWebViewPlugin.close();
+              Navigator.of(context).pop();
+            }else if (url =="haxecallback:go:h5RegistLogin"){
+              flutterWebViewPlugin.close();
+              Navigator.of(context).pop();
+            }else if (url.startsWith("haxecallback:go:h5RegistBack:")){
+              print("登录用户 $url");
+              List<String> user = url.replaceAll("haxecallback:go:h5RegistBack:", "").split(":");
+              flutterWebViewPlugin.close();
+              NavigatorUtil.goLogin(context,account:user[0],password:user[1]);
+            }
+        }
       }
+      // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
+//      switch (state.type) {
+//        case WebViewState.abortLoad:
+//          break;
+//        case WebViewState.shouldStart:
+//        // 准备加载
+////          setState(() {
+////            loading = true;
+////          });
+//          if ("haxecallback:back" == state.url){
+//            flutterWebViewPlugin.close();
+//            Navigator.of(context).pop();
+//          }else if ("haxecallback:go:h5RegistLogin"==state.url ){
+//            Navigator.of(context).pop();
+//          }
+//          break;
+//        case WebViewState.startLoad:
+//        // 开始加载
+////          setState(() {
+////            loading = true;
+////          });
+//          break;
+//        case WebViewState.finishLoad:
+//        // 加载完成
+////          setState(() {
+////            loading = false;
+////          });
+////          if (isLoadingCallbackPage) {
+////            // 当前是回调页面，则调用js方法获取数据
+////            parseResult();
+////          }
+//          break;
+//      }
     });
   }
 

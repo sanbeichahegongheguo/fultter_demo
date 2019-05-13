@@ -6,8 +6,11 @@ import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 
 class LoginPage extends StatefulWidget{
-
   static final String sName = "login";
+
+  final String  account;
+  final String password;
+  LoginPage({this.account,this.password});
   @override
   State<StatefulWidget> createState() {
     return LoginState();
@@ -36,6 +39,11 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
          });
        }
     });
+    userNameController.text = widget.account;
+    passwordController.text = widget.password;
+    if ((null!=widget.account&& widget.account!="")&& (null!=widget.account&&widget.account!="")){
+      Login();
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -162,7 +170,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     if (loginBtn){
       DataResult data = await UserDao.login(userNameController.text,passwordController.text);
       if (data.result){
-        showToast("登录成功 ${data.data["tRealName"]}");
+        showToast("登录成功 ${data.data["realName"]}");
         NavigatorUtil.goHome(context);
       }
     }else{
