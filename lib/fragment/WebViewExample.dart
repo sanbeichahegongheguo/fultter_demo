@@ -1,333 +1,155 @@
-
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:async';
-import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(home: WebViewExample()));
+class WebViewExample extends StatefulWidget{
+  String  url;
+  Color color;
+  WebViewExample(this.url,{this.color});
 
-const String kNavigationExamplePage = '''
-<!DOCTYPE html><html>
-<head><title>Navigation Delegate Example</title></head>
-<body>
-<p>
-The navigation delegate is set to block navigation to the youtube website.
-</p>
-<ul>
-<ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
-<ul><a href="https://www.google.com/">https://www.google.com/</a></ul>
-</ul>
-</body>
-</html>
-''';
-
-class WebViewExample extends StatefulWidget {
   @override
-  _WebViewExampleState createState() => _WebViewExampleState();
-}
+  State<StatefulWidget> createState()=>new NewsWebPageState();
 
-class _WebViewExampleState extends State<WebViewExample> {
-  final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+}
+class NewsWebPageState extends State<WebViewExample>{
+  // 标记是否是加载中
+  bool loading = true;
+  //颜色
+  Color color;
+  // 标记当前页面是否是我们自定义的回调页面
+  bool isLoadingCallbackPage = false;
+  GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey();
+  // URL变化监听器
+  StreamSubscription<String> onUrlChanged;
+  // WebView加载状态变化监听器
+  StreamSubscription<WebViewStateChanged> onStateChanged;
+  StreamSubscription<WebViewHttpError> _onHttpError;
+  StreamSubscription<double> _onProgressChanged;
+  StreamSubscription _onDestroy;
+  // 插件提供的对象，该对象用于WebView的各种操作
+  FlutterWebviewPlugin flutterWebViewPlugin = new FlutterWebviewPlugin();
+
+  @override
+  void initState() {
+    onStateChanged = _setOnStateChanged();
+    onUrlChanged = _setOnUrlChanged();
+    _onDestroy = flutterWebViewPlugin.onDestroy.listen((_) {
+      print('@onDestroy:');
+    });
+    _onHttpError = flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
+      print('@onHttpError:${error.code} ${error.url}');
+      }
+    );
+  }
+  // 解析WebView中的数据
+  void parseResult() {
+//    flutterWebViewPlugin.evalJavascript("get();").then((result) {
+//      // result json字符串，包含token信息
+//
+//    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter WebView example'),
-        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
-        actions: <Widget>[
-          NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
-        ],
-      ),
-      // We're using a Builder here so we have a context that is below the Scaffold
-      // to allow calling Scaffold.of(context) so we can show a snackbar.
-      body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl: 'https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp',
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },
-          // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-          // ignore: prefer_collection_literals
-          javascriptChannels: <JavascriptChannel>[
-            _toasterJavascriptChannel(context),
-          ].toSet(),
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
+
+    return new WebviewScaffold(
+      key: scaffoldKey,
+      url:widget.url, // 登录的URL
+      withZoom: true,  // 允许网页缩放
+      withLocalStorage: true, // 允许LocalStorage
+      withJavascript: true, // 允许执行js代码
+      hidden: true,
+//      initialChild: Container(
+//        child: Center(
+//          child: Image.asset("images/login/studenthomepage_logp.png",width: MediaQuery.of(context).size.width*0.75,),
+//        ),
+//          decoration: BoxDecoration(
+//            gradient: new LinearGradient(
+//              begin: const FractionalOffset(0.5, 0.0),
+//              end: const FractionalOffset(0.5, 1.0),
+//              colors: <Color>[Colors.lightBlueAccent, Colors.lightBlueAccent],
+//            ),
+//          )
+//      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    // 回收相关资源
+    // Every listener should be canceled, the same should be done with this stream.
+    onUrlChanged.cancel();
+    onStateChanged.cancel();
+    _onDestroy.cancel();
+    _onHttpError.cancel();
+    flutterWebViewPlugin.dispose();
+    super.dispose();
+  }
+
+  StreamSubscription<WebViewStateChanged> _setOnStateChanged(){
+    return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state){
+      print("加载类型 ${state.type}");
+      print(state.url =="haxecallback:go:h5RegistLogin");
+
+      if (state.type == WebViewState.shouldStart){
+        String url = state.url;
+        if(state.url.startsWith("haxecallback")){
+            if(url =="haxecallback:back"){
+              flutterWebViewPlugin.close();
+              Navigator.of(context).pop();
+            }else if (url =="haxecallback:go:h5RegistLogin"){
+              flutterWebViewPlugin.close();
+              Navigator.of(context).pop();
+            }else if (url.startsWith("haxecallback:go:h5RegistBack:")){
+              print("登录用户 $url");
+              List<String> user = url.replaceAll("haxecallback:go:h5RegistBack:", "").split(":");
+              flutterWebViewPlugin.close();
+              NavigatorUtil.goLogin(context,account:user[0],password:user[1]);
             }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageFinished: (String url) {
-            print('Page finished loading: $url');
-          },
-        );
-      }),
-      floatingActionButton: favoriteButton(),
-    );
+        }
+      }
+      // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
+//      switch (state.type) {
+//        case WebViewState.abortLoad:
+//          break;
+//        case WebViewState.shouldStart:
+//        // 准备加载
+////          setState(() {
+////            loading = true;
+////          });
+//          if ("haxecallback:back" == state.url){
+//            flutterWebViewPlugin.close();
+//            Navigator.of(context).pop();
+//          }else if ("haxecallback:go:h5RegistLogin"==state.url ){
+//            Navigator.of(context).pop();
+//          }
+//          break;
+//        case WebViewState.startLoad:
+//        // 开始加载
+////          setState(() {
+////            loading = true;
+////          });
+//          break;
+//        case WebViewState.finishLoad:
+//        // 加载完成
+////          setState(() {
+////            loading = false;
+////          });
+////          if (isLoadingCallbackPage) {
+////            // 当前是回调页面，则调用js方法获取数据
+////            parseResult();
+////          }
+//          break;
+//      }
+    });
   }
 
-  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
-    return JavascriptChannel(
-        name: 'Toaster',
-        onMessageReceived: (JavascriptMessage message) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
-        });
-  }
-
-  Widget favoriteButton() {
-    return FutureBuilder<WebViewController>(
-        future: _controller.future,
-        builder: (BuildContext context,
-            AsyncSnapshot<WebViewController> controller) {
-          if (controller.hasData) {
-            return FloatingActionButton(
-              onPressed: () async {
-                final String url = await controller.data.currentUrl();
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text('Favorited $url')),
-                );
-              },
-              child: const Icon(Icons.favorite),
-            );
-          }
-          return Container();
-        });
-  }
-}
-
-enum MenuOptions {
-  showUserAgent,
-  listCookies,
-  clearCookies,
-  addToCache,
-  listCache,
-  clearCache,
-  navigationDelegate,
-}
-
-class SampleMenu extends StatelessWidget {
-  SampleMenu(this.controller);
-
-  final Future<WebViewController> controller;
-  final CookieManager cookieManager = CookieManager();
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: controller,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
-        return PopupMenuButton<MenuOptions>(
-          onSelected: (MenuOptions value) {
-            switch (value) {
-              case MenuOptions.showUserAgent:
-                _onShowUserAgent(controller.data, context);
-                break;
-              case MenuOptions.listCookies:
-                _onListCookies(controller.data, context);
-                break;
-              case MenuOptions.clearCookies:
-                _onClearCookies(context);
-                break;
-              case MenuOptions.addToCache:
-                _onAddToCache(controller.data, context);
-                break;
-              case MenuOptions.listCache:
-                _onListCache(controller.data, context);
-                break;
-              case MenuOptions.clearCache:
-                _onClearCache(controller.data, context);
-                break;
-              case MenuOptions.navigationDelegate:
-                _onNavigationDelegateExample(controller.data, context);
-                break;
-            }
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
-            PopupMenuItem<MenuOptions>(
-              value: MenuOptions.showUserAgent,
-              child: const Text('Show user agent'),
-              enabled: controller.hasData,
-            ),
-            const PopupMenuItem<MenuOptions>(
-              value: MenuOptions.listCookies,
-              child: Text('List cookies'),
-            ),
-            const PopupMenuItem<MenuOptions>(
-              value: MenuOptions.clearCookies,
-              child: Text('Clear cookies'),
-            ),
-            const PopupMenuItem<MenuOptions>(
-              value: MenuOptions.addToCache,
-              child: Text('Add to cache'),
-            ),
-            const PopupMenuItem<MenuOptions>(
-              value: MenuOptions.listCache,
-              child: Text('List cache'),
-            ),
-            const PopupMenuItem<MenuOptions>(
-              value: MenuOptions.clearCache,
-              child: Text('Clear cache'),
-            ),
-            const PopupMenuItem<MenuOptions>(
-              value: MenuOptions.navigationDelegate,
-              child: Text('Navigation Delegate example'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _onShowUserAgent(
-      WebViewController controller, BuildContext context) async {
-    // Send a message with the user agent string to the Toaster JavaScript channel we registered
-    // with the WebView.
-    controller.evaluateJavascript(
-        'Toaster.postMessage("User Agent: " + navigator.userAgent);');
-  }
-
-  void _onListCookies(
-      WebViewController controller, BuildContext context) async {
-    final String cookies =
-    await controller.evaluateJavascript('document.cookie');
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          const Text('Cookies:'),
-          _getCookieList(cookies),
-        ],
-      ),
-    ));
-  }
-
-  void _onAddToCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript(
-        'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
-    Scaffold.of(context).showSnackBar(const SnackBar(
-      content: Text('Added a test entry to cache.'),
-    ));
-  }
-
-  void _onListCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript('caches.keys()'
-        '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
-        '.then((caches) => Toaster.postMessage(caches))');
-  }
-
-  void _onClearCache(WebViewController controller, BuildContext context) async {
-    await controller.clearCache();
-    Scaffold.of(context).showSnackBar(const SnackBar(
-      content: Text("Cache cleared."),
-    ));
-  }
-
-  void _onClearCookies(BuildContext context) async {
-    final bool hadCookies = await cookieManager.clearCookies();
-    String message = 'There were cookies. Now, they are gone!';
-    if (!hadCookies) {
-      message = 'There are no cookies.';
-    }
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-    ));
-  }
-
-  void _onNavigationDelegateExample(
-      WebViewController controller, BuildContext context) async {
-    final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
-    controller.loadUrl('data:text/html;base64,$contentBase64');
-  }
-
-  Widget _getCookieList(String cookies) {
-    if (cookies == null || cookies == '""') {
-      return Container();
-    }
-    final List<String> cookieList = cookies.split(';');
-    final Iterable<Text> cookieWidgets =
-    cookieList.map((String cookie) => Text(cookie));
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: cookieWidgets.toList(),
-    );
-  }
-}
-
-class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture)
-      : assert(_webViewControllerFuture != null);
-
-  final Future<WebViewController> _webViewControllerFuture;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: _webViewControllerFuture,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
-        final bool webViewReady =
-            snapshot.connectionState == ConnectionState.done;
-        final WebViewController controller = snapshot.data;
-        return Row(
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: !webViewReady
-                  ? null
-                  : () async {
-                if (await controller.canGoBack()) {
-                  controller.goBack();
-                } else {
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: Text("No back history item")),
-                  );
-                  return;
-                }
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.arrow_forward_ios),
-              onPressed: !webViewReady
-                  ? null
-                  : () async {
-                if (await controller.canGoForward()) {
-                  controller.goForward();
-                } else {
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("No forward history item")),
-                  );
-                  return;
-                }
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.replay),
-              onPressed: !webViewReady
-                  ? null
-                  : () {
-                controller.reload();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  StreamSubscription<String> _setOnUrlChanged() {
+    return flutterWebViewPlugin.onUrlChanged.listen((String url) {
+      print("跳转连接 : "+url);
+    });
   }
 }

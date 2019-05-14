@@ -71,10 +71,11 @@ class _WelcomeState extends State<WelcomePage> {
                 padding: EdgeInsets.only(top: 20),
                 child: InkWell(
                   onTap: (){
-                    print("点击登录");
-                    Navigator.push(context,PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
-                      return WebViewPage("https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
-                    }));
+                    print("点击注册");
+                    NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
+//                    Navigator.push(context,PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
+//                      return WebViewPage("https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
+//                    }));
                   },
                   child: Text("我没有账号",style: TextStyle(color: Colors.white,fontSize: 16),textAlign: TextAlign.center,),
                 ),
