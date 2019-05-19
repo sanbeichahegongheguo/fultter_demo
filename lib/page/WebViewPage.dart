@@ -23,7 +23,7 @@ class WebViewPageState extends State<WebViewPage> {
   // 标记是否是加载中
   bool _isLoading = true;
   FocusNode _focusNode = FocusNode();
-  TextEditingController _textController = new TextEditingController();
+  TextEditingController _textController;
   WebViewController _webViewController;
   Size _deviceSize;
 
