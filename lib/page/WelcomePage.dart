@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
+import 'package:flutter_start/fragment/WebViewExample.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 import 'package:path/path.dart';
 class WelcomePage extends StatefulWidget{
@@ -72,7 +73,8 @@ class _WelcomeState extends State<WelcomePage> {
                 child: InkWell(
                   onTap: (){
                     print("点击注册");
-                    NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
+                    NavigatorUtil.NavigatorRouter(context, WebViewExample("https://api.k12china.com/share/u/operation.html?from=stulogin"));
+//                    NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
 //                    Navigator.push(context,PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
 //                      return WebViewPage("https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
 //                    }));
