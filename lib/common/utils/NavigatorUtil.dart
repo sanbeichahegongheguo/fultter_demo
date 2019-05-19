@@ -47,7 +47,8 @@ class NavigatorUtil {
 
   ///去往webview
   static goWebView(BuildContext context,String url) {
-    NavigatorRouter(context,WebViewExample(url));
+    NavigatorRouter(context,WebViewPage(url));
+//    NavigatorRouter(context,WebViewExample(url));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {
