@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -107,12 +108,12 @@ class WebViewPageState extends State<WebViewPage> {
                         print("打开Webview!");
                         _webViewController = webViewController;
                       },
-//                      gestureRecognizers: Set()
-//                        ..add(
-//                          Factory<VerticalDragGestureRecognizer>(
-//                                () => VerticalDragGestureRecognizer(),
-//                          ),
-//                        ),
+                      gestureRecognizers: Set()
+                        ..add(
+                          Factory<VerticalDragGestureRecognizer>(
+                                () => VerticalDragGestureRecognizer(),
+                          ),
+                        ),
                       javascriptChannels: <JavascriptChannel>[
                         _alertJavascriptChannel(context),
                         _focus(context),
