@@ -66,8 +66,7 @@ class WebViewPageState extends State<WebViewPage> {
   @override
   Widget build(BuildContext context) {
     _deviceSize = MediaQuery.of(context).size;
-    return WillPopScope(
-        child: Scaffold(
+    return  Scaffold(
       body: SafeArea(
           child: SingleChildScrollView(
         child: Container(
@@ -175,7 +174,7 @@ class WebViewPageState extends State<WebViewPage> {
         ),
 
       )),
-    ));
+    );
   }
 
   ///使用flutter 调用js案例
