@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_start/common/net/code.dart';
@@ -47,12 +48,13 @@ class HttpManager {
       option = new Options(method: "get");
       option.headers = headers;
     }
-    option.headers["Content-Type"] = contentType;
+    option.contentType = ContentType.parse(contentType);
 
     Response response;
     try {
       response = await _dio.request(url, data: params, options: option);
     } on DioError catch (e) {
+      print(e);
       Response errorResponse;
       if (e.response != null) {
         errorResponse = e.response;

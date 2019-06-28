@@ -12,7 +12,6 @@ class HeaderInterceptors extends InterceptorsWrapper {
   onRequest(RequestOptions options) {
     ///超时
     options.connectTimeout = 15000;
-
     return options;
   }
 }

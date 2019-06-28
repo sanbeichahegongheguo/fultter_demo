@@ -11,8 +11,16 @@ class UserDao{
   ///登录
   static login(userName, password) async {
     httpManager.clearAuthorization();
-    String params ='[1,"student:login",1,0,{"1":{"str":"$userName"},"2":{"str":"$password"},"3":{"str":""},"4":{"str":""},"5":{"str":"studentApp"}}]';
-    var res = await httpManager.netFetch(Address.login(), params, null, new Options(method: "post"),contentType: HttpManager.CONTENT_TYPE_JSON);
+    var params = {"mobile":userName,"password":password,"datafrom":"studentApp"};
+//    Map<String,dynamic> param =  new Map();
+//    param["mobile"] = "17607580731";
+//    param["password"] = "123456";
+//    param["code"] = "";
+//    param["deviceId"] = "8a1444629994563f";
+//    param["datafrom"] = "studentApp";
+//    var params = "mobile=17607580731&password=123456&code=&deviceId=8a1444629994563f&datafrom=studentApp";
+    var res = await httpManager.netFetch(Address.login(), params, null, new Options(method: "post"),contentType: HttpManager.CONTENT_TYPE_FORM);
+
     var result;
     if (res != null && res.result) {
       if (Config.DEBUG){
@@ -20,8 +28,13 @@ class UserDao{
         print("user data  " +res.data);
       }
       var json  = jsonDecode(res.data);
-      result = jsonDecode(json[4]["0"]["rec"]["3"]["str"]);
-      await LocalStorage.save(Config.TOKEN_KEY,result["key"]);
+      if (json["success"]["ok"]==0){
+        result = jsonDecode(json["success"]["data"]);
+        print("user result  $result");
+        await LocalStorage.save(Config.TOKEN_KEY,result["key"]);
+      }else{
+        res.result = false;
+      }
     }
     return new DataResult(result, res.result);
   }
