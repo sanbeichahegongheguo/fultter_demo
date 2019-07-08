@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_start/common/event/http_error_event.dart';
+import 'package:flutter_start/common/net/code.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:fluttertoast/fluttertoast.dart';
  main()  {
   runApp(MyApp());
   //隐藏状态栏
@@ -21,14 +25,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return OKToast(
-      child:MaterialApp(
+    return MaterialApp(
         title: 'Bilibili',
         theme: ThemeData(primaryColor: Colors.lightBlueAccent),
-        home:WelcomePage(),
+        home: new WelcomePage(),
         routes: {
           "logo": (context) =>  WelcomePage(),
         },
-      ));
+      );
   }
+
 }

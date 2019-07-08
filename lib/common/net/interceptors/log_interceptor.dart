@@ -32,8 +32,8 @@ class LogsInterceptors extends InterceptorsWrapper {
   @override
   onError(DioError err) {
     if (Config.DEBUG) {
-      print('请求异常: ' + err.toString());
-      print('请求异常信息: ' + err.response?.toString() ?? "");
+//      print('请求异常: ' + err.toString());
+//      print('请求异常信息: ' + err.response?.toString() ?? "");
     }
     return err;
   }
