@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:flutter_start/models/index.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget{
   static final String sName = "login";
@@ -170,14 +171,16 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     if (loginBtn){
       DataResult data = await UserDao.login(userNameController.text,passwordController.text);
       if (data.result){
-        showToast("登录成功 ${data.data["realName"]}");
+        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:"登录成功 ${data.data.realName}");
         NavigatorUtil.goHome(context);
+      }else{
+        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:data.data);
       }
     }else{
       if(userNameController.text.length==0){
-        showToast("账号不能为空");
+        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "账号不能为空");
       }else if(passwordController.text.length<6){
-        showToast("密码必须大于6位");
+        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "密码必须大于6位");
         print("密码必须大于6位");
       }
     }

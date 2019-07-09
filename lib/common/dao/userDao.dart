@@ -6,6 +6,7 @@ import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/models/index.dart';
 
 class UserDao{
   ///登录
@@ -29,10 +30,12 @@ class UserDao{
       }
       var json  = jsonDecode(res.data);
       if (json["success"]["ok"]==0){
-        result = jsonDecode(json["success"]["data"]);
-        print("user result  $result");
-        await LocalStorage.save(Config.TOKEN_KEY,result["key"]);
+        result =  User.fromJson(jsonDecode(json["success"]["data"]));
+//        result = jsonDecode(json["success"]["data"]);
+        print("user result  ${result.realName}");
+//        await LocalStorage.save(Config.TOKEN_KEY,result["key"]);
       }else{
+        result = json["success"]["message"];
         res.result = false;
       }
     }

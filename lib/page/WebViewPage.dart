@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:oktoast/oktoast.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/services.dart';
 
@@ -34,7 +34,7 @@ class WebViewPageState extends State<WebViewPage> {
     return JavascriptChannel(
         name: 'Toast',
         onMessageReceived: (JavascriptMessage message) {
-          showToast(message.message);
+          Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: message.message);
         });
   }
 

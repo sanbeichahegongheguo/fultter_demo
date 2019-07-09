@@ -27,13 +27,15 @@ dependencies:
   android_intent:
   flutter_screenutil: ^0.5.2
   flutter_webview_plugin:
+  json_annotation:
   fluttertoast:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
+  json_serializable:
+  build_runner:
+  json_model: #flutter packages pub run json_model
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
