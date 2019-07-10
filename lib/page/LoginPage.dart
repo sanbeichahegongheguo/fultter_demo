@@ -1,12 +1,13 @@
+import 'package:device_id/device_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_getuuid/flutter_getuuid.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/packageInfo.dart';
-import 'package:package_info/package_info.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget{
@@ -32,7 +33,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    print("DeviceId ${DeviceInfo.instance.getDeviceId()}");
+
     userNameController.addListener((){
        if (userNameController.text.length>=6&&passwordController.text.length>=6){
          if (this.loginBtn==false) {
@@ -300,6 +301,11 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     return Container();
   }
   void _gainUsers() async {
+    print(await DeviceInfo.instance.getDeviceId());
+    print("platformUid:"+await FlutterGetuuid.platformUid);
+    print("DeviceId:"+await DeviceId.getID);
+    print("getIMEI:"+await DeviceId.getIMEI);
+    print("getMEID:"+await DeviceId.getMEID);
     print("_gainUsers");
     _users.clear();
     _users.addAll(await LocalStorage.getUsers());
@@ -312,17 +318,19 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   void Login() async{
     if (loginBtn){
       DataResult data = await UserDao.login(userNameController.text,passwordController.text);
-      if (data.result){
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:"登录成功 ${data.data.realName}");
-        LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
-        LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
-        NavigatorUtil.goHome(context);
-      }else{
-        setState(() {
-          _expand = false;
-        });
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:data.data);
-      }
+        if (data.result){
+          Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:"登录成功 ${data.data.realName}");
+          LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
+          LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
+          NavigatorUtil.goHome(context);
+        }else{
+          setState(() {
+            _expand = false;
+          });
+          if (null!=data.data){
+            Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:data?.data??"");
+          }
+        }
     }else{
       if(userNameController.text.length==0){
         Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "账号不能为空");
