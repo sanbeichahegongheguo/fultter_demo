@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:flutter_start/models/index.dart';
+import 'package:flutter_start/common/utils/packageInfo.dart';
+import 'package:package_info/package_info.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget{
@@ -30,6 +32,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    print("DeviceId ${DeviceInfo.instance.getDeviceId()}");
     userNameController.addListener((){
        if (userNameController.text.length>=6&&passwordController.text.length>=6){
          if (this.loginBtn==false) {
@@ -171,7 +174,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                       child: Container(
                         padding: EdgeInsets.only(bottom: 20),
                         alignment: AlignmentDirectional.bottomCenter,
-                        child: Text("版本号:$_version"),
+                        // ignore: static_access_to_instance_member
+                        child: Text("版本号:${Package.instance.version}"),
                       ),
                       flex: 2,
                     ),
@@ -312,7 +316,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:"登录成功 ${data.data.realName}");
         LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
         LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
-//        NavigatorUtil.goHome(context);
+        NavigatorUtil.goHome(context);
       }else{
         setState(() {
           _expand = false;
