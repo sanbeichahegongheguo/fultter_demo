@@ -11,7 +11,7 @@ import 'package:flutter_start/models/index.dart';
 class UserDao{
   ///登录
   static login(userName, password) async {
-    httpManager.clearAuthorization();
+    await httpManager.clearAuthorization();
     var params = {"mobile":userName,"password":password,"datafrom":"studentApp"};
     var res = await httpManager.netFetch(Address.login(), params, null, new Options(method: "post"),contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
@@ -23,8 +23,8 @@ class UserDao{
       var json  = jsonDecode(res.data);
       if (json["success"]["ok"]==0){
         result =  User.fromJson(jsonDecode(json["success"]["data"]));
-        print("user result  ${result.realName}");
-//        await LocalStorage.save(Config.TOKEN_KEY,result["key"]);
+        print("user result  ${result.key}");
+        await LocalStorage.save(Config.TOKEN_KEY,result.key);
       }else{
         result = json["success"]["message"];
         res.result = false;

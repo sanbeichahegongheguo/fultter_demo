@@ -70,8 +70,8 @@ class HttpManager {
   }
 
   ///清除授权
-  clearAuthorization() {
-    _tokenInterceptors.clearAuthorization();
+  clearAuthorization() async {
+    await _tokenInterceptors.clearAuthorization();
   }
 
   ///获取授权token

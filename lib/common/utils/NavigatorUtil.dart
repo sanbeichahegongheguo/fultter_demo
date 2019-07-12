@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/fragment/WebViewExample.dart';
 import 'package:flutter_start/page/HomePage.dart';
@@ -46,7 +51,18 @@ class NavigatorUtil {
   }
 
   ///去往webview
-  static goWebView(BuildContext context,String url) {
+  static goWebView(BuildContext context,String url) async {
+    String token = await LocalStorage.get(Config.TOKEN_KEY);
+    String key = await httpManager.getAuthorization();
+    print("@跳转链接:$token  $key ");
+    if (null!=key&&""!=key){
+      if(url.contains("?")){
+        url = "$url&t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=study_parent";
+      }else{
+        url = "$url?t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=study_parent";
+      }
+    }
+    print("@跳转链接:$url");
     NavigatorRouter(context,WebViewPage(url));
 //    NavigatorRouter(context,WebViewExample(url));
   }

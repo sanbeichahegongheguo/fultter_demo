@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
  main()  {
   runApp(MyApp());
+
   //隐藏状态栏
    SystemChrome.setEnabledSystemUIOverlays([]);
   //  SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values); //还原状态栏
@@ -22,8 +23,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
-        title: 'Bilibili',
+        title: '远大小状元',
         debugShowCheckedModeBanner:false,
         theme: ThemeData(primaryColor: Colors.lightBlueAccent),
         home: new WelcomePage(),

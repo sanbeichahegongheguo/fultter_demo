@@ -1,11 +1,11 @@
 import 'package:device_id/device_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_getuuid/flutter_getuuid.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
-import 'package:flutter_start/common/utils/DeviceInfo.dart';
+import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/packageInfo.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,7 +26,6 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   TextEditingController userNameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool loginBtn = false ;
-  String _version = "1.4.100";
   GlobalKey _globalKey = new GlobalKey();
   bool _expand = false;
   List<LoginUser> _users = new List();
@@ -131,11 +130,11 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                     ),
                     Container(
                       padding: EdgeInsets.only(left: widthSrcreen*0.1,right:widthSrcreen*0.1,top:widthSrcreen*0.05 ),
-                      child: getTextField("您的账号/手机号", userNameController,key: _globalKey),
+                      child: _getTextField("您的账号/手机号", userNameController,key: _globalKey),
                     ),
                     Container(
                       padding: EdgeInsets.only(left: widthSrcreen*0.1,right:widthSrcreen*0.1,top:widthSrcreen*0.05 ),
-                      child: getTextField("您的密码",passwordController,obscureText: true),
+                      child: _getTextField("您的密码",passwordController,obscureText: true),
                     ),
                     Container(
                       padding: EdgeInsets.only(left: widthSrcreen*0.1,right:widthSrcreen*0.1,top:widthSrcreen*0.05 ),
@@ -202,10 +201,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
 
   ///getTextField 构建输入框
-  TextField getTextField(String hintText,TextEditingController controller,{bool obscureText,GlobalKey key}){
+  TextField _getTextField(String hintText,TextEditingController controller,{bool obscureText,GlobalKey key}){
     return TextField(
       key: key,
-      keyboardType:TextInputType.number,
+      keyboardType:TextInputType.text,
       obscureText:obscureText??false,
       controller: controller,
       textAlign: TextAlign.center,
@@ -301,11 +300,6 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     return Container();
   }
   void _gainUsers() async {
-    print(await DeviceInfo.instance.getDeviceId());
-    print("platformUid:"+await FlutterGetuuid.platformUid);
-    print("DeviceId:"+await DeviceId.getID);
-    print("getIMEI:"+await DeviceId.getIMEI);
-    print("getMEID:"+await DeviceId.getMEID);
     print("_gainUsers");
     _users.clear();
     _users.addAll(await LocalStorage.getUsers());
@@ -322,6 +316,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
           Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg:"登录成功 ${data.data.realName}");
           LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
           LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
+          String key = await httpManager.getAuthorization();
+          await LocalStorage.save(Config.TOKEN_KEY,data.data.key);
           NavigatorUtil.goHome(context);
         }else{
           setState(() {

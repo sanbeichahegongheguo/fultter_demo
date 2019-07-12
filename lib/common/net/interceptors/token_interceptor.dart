@@ -40,14 +40,15 @@ class TokenInterceptors extends InterceptorsWrapper {
   }
 
   ///清除授权
-  clearAuthorization() {
+  clearAuthorization() async {
     this._token = null;
-    LocalStorage.remove(Config.TOKEN_KEY);
+    await LocalStorage.remove(Config.TOKEN_KEY);
   }
 
   ///获取授权token
   getAuthorization() async {
     String token = await LocalStorage.get(Config.TOKEN_KEY);
+    print("token $token");
     if (token == null) {
       //token 不存在未登录状态
     } else {
