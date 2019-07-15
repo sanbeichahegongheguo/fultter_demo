@@ -36,7 +36,7 @@ class HttpManager {
   ///[ params] 请求参数
   ///[ header] 外加头
   ///[ option] 配置
-  netFetch(url, params, Map<String, dynamic> header, Options option, {noTip = false,contentType = CONTENT_TYPE_FORM}) async {
+  netFetch(url, params, Map<String, dynamic> header, Options option, {noTip = false, contentType = CONTENT_TYPE_FORM}) async {
     Map<String, dynamic> headers = new HashMap();
     if (header != null) {
       headers.addAll(header);
@@ -70,12 +70,17 @@ class HttpManager {
   }
 
   ///清除授权
-  clearAuthorization() async {
-    await _tokenInterceptors.clearAuthorization();
+  clearAuthorization() {
+    _tokenInterceptors.clearAuthorization();
+  }
+
+  ///授权
+  setAuthorization(String token) {
+    _tokenInterceptors.setAuthorization(token);
   }
 
   ///获取授权token
-  getAuthorization() async {
+  getAuthorization() {
     return _tokenInterceptors.getAuthorization();
   }
 }

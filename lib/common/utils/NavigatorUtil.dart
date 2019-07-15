@@ -1,18 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/common/config/config.dart';
-import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/net/api.dart';
-import 'package:flutter_start/common/utils/PageRouteHelper.dart';
-import 'package:flutter_start/fragment/WebViewExample.dart';
 import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
-import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
-class NavigatorUtil {
+import 'package:flutter_start/page/WelcomePage.dart';
 
+class NavigatorUtil {
   ///替换
   static pushReplacementNamed(BuildContext context, String routeName) {
     Navigator.pushReplacementNamed(context, routeName);
@@ -25,45 +19,47 @@ class NavigatorUtil {
 
   ///欢迎页
   static goWelcome(BuildContext context) {
+    NavigatorRouterReplacement(context, WelcomePage());
 //    NavigatorRouter(context,LogoPage());
-    Navigator.push(context, PageRouteBuilderHelper(
-        pageBuilder: (BuildContext context, _, __) {
-          return WelcomePage();
-        },
-        transitionsBuilder:(context, animation, secondaryAnimation, child){
-         return SlideTransition(
-            position: new Tween<Offset>(
-              begin: Offset(-1.0, 0.0),
-              end: Offset(0.0, 0.0),
-            ).animate(animation),
-            child: child,
-          );
-        },
-       ));
+//    Navigator.push(context, PageRouteBuilderHelper(
+//        pageBuilder: (BuildContext context, _, __) {
+//          return WelcomePage();
+//        },
+//        transitionsBuilder:(context, animation, secondaryAnimation, child){
+//         return SlideTransition(
+//            position: new Tween<Offset>(
+//              begin: Offset(-1.0, 0.0),
+//              end: Offset(0.0, 0.0),
+//            ).animate(animation),
+//            child: child,
+//          );
+//        },
+//       ));
   }
+
   ///登录
-  static goLogin(BuildContext context,{String account,String password}) {
-    NavigatorRouter(context,LoginPage(account:account,password:password));
+  static goLogin(BuildContext context, {String account, String password}) {
+    NavigatorRouter(context, LoginPage(account: account, password: password));
   }
+
   ///主页
   static goHome(BuildContext context) {
-    NavigatorRouter(context,HomePage());
+    NavigatorRouter(context, HomePage());
   }
 
   ///去往webview
-  static goWebView(BuildContext context,String url) async {
-    String token = await LocalStorage.get(Config.TOKEN_KEY);
+  static goWebView(BuildContext context, String url) async {
     String key = await httpManager.getAuthorization();
-    print("@跳转链接:$token  $key ");
-    if (null!=key&&""!=key){
-      if(url.contains("?")){
+    print("@key:  $key ");
+    if (null != key && "" != key) {
+      if (url.contains("?")) {
         url = "$url&t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=study_parent";
-      }else{
+      } else {
         url = "$url?t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=study_parent";
       }
     }
     print("@跳转链接:$url");
-    NavigatorRouter(context,WebViewPage(url));
+    NavigatorRouter(context, WebViewPage(url));
 //    NavigatorRouter(context,WebViewExample(url));
   }
 
@@ -80,5 +76,4 @@ class NavigatorUtil {
 //      return widget;
 //    }));
   }
-
 }
