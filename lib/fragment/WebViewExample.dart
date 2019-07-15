@@ -1,20 +1,20 @@
 import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:flutter/material.dart';
 
-class WebViewExample extends StatefulWidget{
-  String  url;
+class WebViewExample extends StatefulWidget {
+  String url;
   Color color;
-  WebViewExample(this.url,{this.color});
+  WebViewExample(this.url, {this.color});
 
   @override
-  State<StatefulWidget> createState()=>new NewsWebPageState();
-
+  State<StatefulWidget> createState() => new NewsWebPageState();
 }
-class NewsWebPageState extends State<WebViewExample>{
+
+class NewsWebPageState extends State<WebViewExample> {
   // 标记是否是加载中
   bool loading = true;
   //颜色
@@ -41,9 +41,9 @@ class NewsWebPageState extends State<WebViewExample>{
     });
     _onHttpError = flutterWebViewPlugin.onHttpError.listen((WebViewHttpError error) {
       print('@onHttpError:${error.code} ${error.url}');
-      }
-    );
+    });
   }
+
   // 解析WebView中的数据
   void parseResult() {
 //    flutterWebViewPlugin.evalJavascript("get();").then((result) {
@@ -54,11 +54,10 @@ class NewsWebPageState extends State<WebViewExample>{
 
   @override
   Widget build(BuildContext context) {
-
     return new WebviewScaffold(
       key: scaffoldKey,
-      url:widget.url, // 登录的URL
-      withZoom: true,  // 允许网页缩放
+      url: widget.url, // 登录的URL
+      withZoom: true, // 允许网页缩放
       withLocalStorage: true, // 允许LocalStorage
       withJavascript: true, // 允许执行js代码
       hidden: true,
@@ -81,34 +80,33 @@ class NewsWebPageState extends State<WebViewExample>{
   void dispose() {
     // 回收相关资源
     // Every listener should be canceled, the same should be done with this stream.
-    onUrlChanged.cancel();
-    onStateChanged.cancel();
-    _onDestroy.cancel();
-    _onHttpError.cancel();
-    flutterWebViewPlugin.dispose();
+    onUrlChanged?.cancel();
+    onStateChanged?.cancel();
+    _onDestroy?.cancel();
+    _onHttpError?.cancel();
+    flutterWebViewPlugin?.dispose();
     super.dispose();
   }
 
-  StreamSubscription<WebViewStateChanged> _setOnStateChanged(){
-    return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state){
+  StreamSubscription<WebViewStateChanged> _setOnStateChanged() {
+    return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       print("加载类型 ${state.type}");
-      print(state.url =="haxecallback:go:h5RegistLogin");
-
-      if (state.type == WebViewState.shouldStart){
+      print(state.url == "haxecallback:go:h5RegistLogin");
+      if (state.type == WebViewState.shouldStart) {
         String url = state.url;
-        if(state.url.startsWith("haxecallback")){
-            if(url =="haxecallback:back"){
-              flutterWebViewPlugin.close();
-              Navigator.of(context).pop();
-            }else if (url =="haxecallback:go:h5RegistLogin"){
-              flutterWebViewPlugin.close();
-              Navigator.of(context).pop();
-            }else if (url.startsWith("haxecallback:go:h5RegistBack:")){
-              print("登录用户 $url");
-              List<String> user = url.replaceAll("haxecallback:go:h5RegistBack:", "").split(":");
-              flutterWebViewPlugin.close();
-              NavigatorUtil.goLogin(context,account:user[0],password:user[1]);
-            }
+        if (state.url.startsWith("haxecallback")) {
+          if (url == "haxecallback:back") {
+            flutterWebViewPlugin?.close();
+            Navigator.of(context)?.pop();
+          } else if (url == "haxecallback:go:h5RegistLogin") {
+            flutterWebViewPlugin?.close();
+            Navigator.of(context)?.pop();
+          } else if (url.startsWith("haxecallback:go:h5RegistBack:")) {
+            print("登录用户 $url");
+            List<String> user = url.replaceAll("haxecallback:go:h5RegistBack:", "").split(":");
+            flutterWebViewPlugin?.close();
+            NavigatorUtil.goLogin(context, account: user[0], password: user[1]);
+          }
         }
       }
       // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
@@ -149,7 +147,7 @@ class NewsWebPageState extends State<WebViewExample>{
 
   StreamSubscription<String> _setOnUrlChanged() {
     return flutterWebViewPlugin.onUrlChanged.listen((String url) {
-      print("跳转连接 : "+url);
+      print("跳转连接 : " + url);
     });
   }
 }
