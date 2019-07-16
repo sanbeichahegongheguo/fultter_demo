@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住
 class GSYTabBarWidget extends StatefulWidget {
-
   final List<Widget> tabViews;
 
   final Color backgroundColor;
@@ -46,7 +44,6 @@ class GSYTabBarWidget extends StatefulWidget {
 }
 
 class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderStateMixin {
-
   final List<Widget> _tabViews;
 
   final Color _indicatorColor;
@@ -76,7 +73,6 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
   TabController _tabController;
 
-
   @override
   void initState() {
     super.initState();
@@ -93,24 +89,27 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     List<Widget> tabs = [
-      _renderTab(_currentIndex==0?"images/home/icon_study_select.png":"images/home/icon_study.png", "学习",_currentIndex==0?true:false),
-      _renderTab(_currentIndex==1?"images/home/icon_challenge_select.png":"images/home/icon_challenge.png", "挑战",_currentIndex==1?true:false),
-      _renderTab(_currentIndex==2?"images/home/icon_user_select.png":"images/home/icon_user.png", "个人中心",_currentIndex==2?true:false),
-      _renderTab(_currentIndex==3?"images/home/icon_parent_select.png":"images/home/icon_parent.png", "家长专区",_currentIndex==3?true:false),
+      _renderTab(_currentIndex == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "学习", _currentIndex == 0 ? true : false),
+      _renderTab(_currentIndex == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "挑战", _currentIndex == 1 ? true : false),
+      _renderTab(_currentIndex == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "个人中心", _currentIndex == 2 ? true : false),
+      _renderTab(_currentIndex == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "家长专区", _currentIndex == 3 ? true : false),
     ];
+
     ///底部tab bar
     return new Scaffold(
         drawer: _drawer,
-        appBar: _title!=null?new AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          title: _title,
-        ):null,
+        appBar: _title != null
+            ? new AppBar(
+                backgroundColor: Theme.of(context).primaryColor,
+                title: _title,
+              )
+            : null,
         body: new PageView(
           controller: _pageController,
           children: _tabViews,
           onPageChanged: (index) {
             print("onPageChanged : $index");
-            if(_currentIndex!=index){
+            if (_currentIndex != index) {
               setState(() {
                 _currentIndex = index;
               });
@@ -120,50 +119,47 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           },
         ),
         bottomNavigationBar: new Material(
-          //为了适配主题风格，包一层Material实现风格套用
-          color: Colors.white, //底部导航栏主题颜色
-          child:  Container(
-            height: MediaQuery.of(context).size.height*0.08,
-            child: new TabBar(
-              indicator: BoxDecoration(
+            //为了适配主题风格，包一层Material实现风格套用
+            color: Colors.white, //底部导航栏主题颜色
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.08,
+              child: new TabBar(
+                indicator: BoxDecoration(),
+                indicatorWeight: 1,
+                //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
+                controller: _tabController, //配置控制器
+                tabs: tabs,
+                onTap: (index) {
+                  _onPageChanged?.call(index);
+                  _pageController.jumpTo(MediaQuery.of(context).size.width * index);
+                }, //tab标签的下划线颜色
               ),
-              indicatorWeight:1,
-              //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
-              controller: _tabController, //配置控制器
-              tabs: tabs,
-              onTap: (index) {
-                _onPageChanged?.call(index);
-                _pageController.jumpTo(MediaQuery.of(context).size.width * index);
-              }, //tab标签的下划线颜色
-            ),
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey,width: 0.5)),
-            ),
-          )
-        ));
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+              ),
+            )));
   }
 
-  static _renderTab(icon, text,isSelect) {
-    return
-        new Tab(
-          child:new Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[Image.asset(icon,fit: BoxFit.scaleDown,height: isSelect?25:20,), SizedBox(height: 2,),new Text(text,style: TextStyle(fontSize: isSelect?13:12,color: isSelect?Color(0xFF17b4ff):Color(0xFF606a81)),)],
-              ),
-        );
-//    new Stack(
-//        alignment: const FractionalOffset(0.5, -11.5),//方法一
-//        children: <Widget>[
-//    Container(
-//    width: ScreenUtil.getInstance().setWidth(193),
-//    height: ScreenUtil.getInstance().setHeight(200),
-//    decoration: BoxDecoration(
-//    image: DecorationImage(
-//    image: new AssetImage("images/home/select.png"),
-//    fit: BoxFit.fill,
-//    )
-//    ),
-//    )
+  static _renderTab(icon, text, isSelect) {
+    return new Tab(
+      child: new Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Image.asset(
+            icon,
+            fit: BoxFit.scaleDown,
+            height: isSelect ? 25 : 20,
+          ),
+          SizedBox(
+            height: 2,
+          ),
+          new Text(
+            text,
+            style: TextStyle(fontSize: isSelect ? 13 : 12, color: isSelect ? Color(0xFF17b4ff) : Color(0xFF606a81)),
+          )
+        ],
+      ),
+    );
   }
 }
 
