@@ -46,23 +46,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
           _hasdeleteIcon = true;
         });
       }
-      if (userNameController.text.length >= 6 && passwordController.text.length >= 6) {
-        if (this.loginBtn == false) {
-          setState(() {
-            this.loginBtn = true;
-          });
-        }
-      } else {
-        if (this.loginBtn == true) {
-          print("else");
-          setState(() {
-            this.loginBtn = false;
-          });
-        }
-      }
-    });
-    passwordController.addListener(() {
-      if (userNameController.text.length >= 6 && passwordController.text.length >= 6) {
+      if (userNameController.text.length > 6) {
         if (this.loginBtn == false) {
           setState(() {
             this.loginBtn = true;
@@ -77,7 +61,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       }
     });
     userNameController.text = widget.account;
-    passwordController.text = widget.password;
+    passwordController.text = "123456";
     if ((null != widget.account && widget.account != "") && (null != widget.password && widget.password != "")) {
       _login();
     }
