@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address.dart';
@@ -23,6 +24,7 @@ class UserDao {
       if (json["success"]["ok"] == 0) {
         result = User.fromJson(jsonDecode(json["success"]["data"]));
         print("user key  ${result.key}");
+        SpUtil.putObject(Config.LOGIN_USER, result);
         await httpManager.setAuthorization(result.key);
       } else {
         result = json["success"]["message"];
@@ -30,5 +32,25 @@ class UserDao {
       }
     }
     return new DataResult(result, res.result);
+  }
+
+  ///获取登录用户
+  static Future<User> getUser(key, {isNew = false}) async {
+    if (isNew) {
+      var params = {"key": key};
+      var res = await httpManager.netFetch(Address.getUserLoginInfo(), params, null, new Options(method: "post"));
+      var json = jsonDecode(res.data);
+      var result;
+      if (json["success"]["ok"] == 0) {
+        result = User.fromJson(jsonDecode(json["success"]["data"]));
+        print("user key  ${result.key}");
+        await SpUtil.putObject(Config.LOGIN_USER, result);
+      } else {
+        result = json["success"]["message"];
+        res.result = false;
+      }
+    }
+    User user = User.fromJson(SpUtil.getObject(Config.LOGIN_USER));
+    return user;
   }
 }

@@ -3,7 +3,6 @@ class Config {
   static const DEBUG = true;
   static const USE_NATIVE_WEBVIEW = true;
 
-
   /// //////////////////////////////////////常量////////////////////////////////////// ///
   static const TOKEN_KEY = "token";
   static const USER_NAME_KEY = "user-name";
@@ -15,4 +14,5 @@ class Config {
   static const REFRESH_LANGUAGE = "refreshLanguageApp";
   static const THEME_COLOR = "theme-color";
   static const LOCALE = "locale";
+  static const LOGIN_USER = "login-user";
 }
