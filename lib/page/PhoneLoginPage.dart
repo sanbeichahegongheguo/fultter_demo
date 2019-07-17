@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -30,11 +31,21 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   bool _expand = false;
   List<LoginUser> _users = new List();
   String _version = "2.0.000";
+  bool _hasdeleteIcon = false;
   @override
   void initState() {
     super.initState();
 
     userNameController.addListener(() {
+      if (userNameController.text == "") {
+        setState(() {
+          _hasdeleteIcon = false;
+        });
+      } else {
+        setState(() {
+          _hasdeleteIcon = true;
+        });
+      }
       if (userNameController.text.length >= 6 && passwordController.text.length >= 6) {
         if (this.loginBtn == false) {
           setState(() {
@@ -98,12 +109,11 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
               Center(
                 child: Container(
                   alignment: Alignment.center,
-                  width: 500,
                   child: Flex(direction: Axis.vertical, children: <Widget>[
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(136),
                     ),
-                    Flexible(
+                    Container(
                       child: Image.asset(
                         "images/phone_login/logo.png",
                         width: ScreenUtil.getInstance().getWidthPx(555),
@@ -113,17 +123,28 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(70),
                     ),
-                    Flexible(
+                    Container(
                       child: Image.asset(
                         "images/phone_login/center.png",
                         width: ScreenUtil.getInstance().getWidthPx(542),
                         height: ScreenUtil.getInstance().getHeightPx(447),
                       ),
-                      flex: 2,
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(100),
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
-                      child: _getTextField("您的账号/手机号", userNameController, key: _globalKey),
+                        child: ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                      child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
+                    )),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
+                      child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(60),
                     ),
                     Container(
                       padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
@@ -138,22 +159,31 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                             _login();
                           },
                           //来个飞溅美滋滋。
-                          splashColor: loginBtn ? Colors.blueAccent : Colors.grey,
+                          splashColor: loginBtn ? Colors.amber : Colors.grey,
                           child: Ink(
-                            height: 50.0,
+                            height: ScreenUtil.getInstance().getHeightPx(133),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(50)),
-                              color: loginBtn ? Colors.lightBlueAccent : Colors.grey,
+                              color: loginBtn ? Color(0xFFfbd951) : Colors.grey,
                             ),
                             child: Center(
                               child: Text(
-                                '登录',
+                                '下一步',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 20.0),
                               ),
                             ),
                           ),
                         ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(70),
+                    ),
+                    InkWell(
+                      child: Text(
+                        "使用帐号密码登录",
+                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
                       ),
                     ),
                     Expanded(
@@ -182,6 +212,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                               children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
                             )
                           ])),
+                      flex: 2,
                     ),
                   ]),
                 ),
@@ -208,11 +239,10 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   TextField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
     return TextField(
       key: key,
-      keyboardType: TextInputType.text,
+      keyboardType: TextInputType.phone,
       obscureText: obscureText ?? false,
       controller: controller,
-      textAlign: TextAlign.center,
-      style: new TextStyle(fontSize: 17.0, color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
       onTap: () {
         setState(() {
           if (key != null) {
@@ -232,14 +262,26 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
             }
           : (input) {},
       decoration: new InputDecoration(
+        suffixIcon: _hasdeleteIcon
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    userNameController.text = "";
+                    _hasdeleteIcon = (userNameController.text.isNotEmpty);
+                  });
+                },
+                icon: Icon(
+                  Icons.cancel,
+                  color: Color(0xFFcccccc),
+                ),
+              )
+            : Text(""),
         contentPadding: EdgeInsets.all(13),
         hintText: hintText,
-        hintStyle: TextStyle(fontSize: 15.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.lightBlueAccent),
-          borderRadius: BorderRadius.circular(50),
-        ),
+        hintStyle: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
+        filled: true,
+        fillColor: Color(0xffffffff),
       ),
     );
   }
@@ -274,7 +316,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   Widget _buildListView() {
     if (_expand) {
       List<Widget> children = _buildItems();
-      if (children.length > 0) {
+      if (children.length > 0 && _globalKey != null && _globalKey.currentContext != null) {
         RenderBox renderObject = _globalKey.currentContext.findRenderObject();
         final position = renderObject.localToGlobal(Offset.zero);
         double screenW = MediaQuery.of(context).size.width;
@@ -321,7 +363,9 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
 
   void _login() async {
     if (loginBtn) {
+      CommonUtils.showLoadingDialog(context, text: "登陆中");
       DataResult data = await UserDao.login(userNameController.text, passwordController.text);
+      Navigator.pop(context);
       if (data.result) {
         Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "登录成功 ${data.data.realName}");
         LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
