@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
+import 'package:oktoast/oktoast.dart';
 
 main() {
   runApp(MyApp());
@@ -22,14 +23,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _initAsync();
-    return MaterialApp(
-      title: '远大小状元',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.lightBlueAccent),
-      home: PhoneLoginPage(),
-      routes: {
-        "logo": (context) => WelcomePage(),
-      },
+    return OKToast(
+        textPadding:EdgeInsets.all(11),
+        textStyle:TextStyle(fontSize: 16),
+      dismissOtherOnShow: true,
+      child: MaterialApp(
+        title: '远大小状元',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(primaryColor: Colors.lightBlueAccent),
+        home: PhoneLoginPage(),
+        routes: {
+          "logo": (context) => WelcomePage(),
+        },
+      )
     );
   }
 

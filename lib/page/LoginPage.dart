@@ -5,7 +5,7 @@ import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 
 class LoginPage extends StatefulWidget {
@@ -319,7 +319,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     if (loginBtn) {
       DataResult data = await UserDao.login(userNameController.text, passwordController.text);
       if (data.result) {
-        Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "登录成功 ${data.data.realName}");
+        showToast("登录成功 ${data.data.realName}");
         LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
         LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
         NavigatorUtil.goHome(context);
@@ -328,14 +328,14 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
           _expand = false;
         });
         if (null != data.data) {
-          Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: data?.data ?? "");
+          showToast(data?.data ?? "");
         }
       }
     } else {
       if (userNameController.text.length == 0) {
-        Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "账号不能为空");
+        showToast( "账号不能为空");
       } else if (passwordController.text.length < 6) {
-        Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "密码必须大于6位");
+        showToast("密码必须大于6位");
         print("密码必须大于6位");
       }
     }

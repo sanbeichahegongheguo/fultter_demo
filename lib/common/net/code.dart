@@ -1,6 +1,5 @@
 import 'package:event_bus/event_bus.dart';
-import 'package:flutter_start/common/net/http_error_event.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:oktoast/oktoast.dart';
 ///错误编码
 class Code {
   ///网络错误
@@ -22,23 +21,29 @@ class Code {
     }
     switch (code) {
       case Code.NETWORK_ERROR:
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "网络错误");
+//        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "网络错误");
+      showToast("网络错误");
         break;
       case 401:
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "[401错误可能: 未授权 \\ 授权登录失败 \\ 登录过期]");
+        showToast("[401错误可能: 未授权 \\ 授权登录失败 \\ 登录过期]");
+//        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "[401错误可能: 未授权 \\ 授权登录失败 \\ 登录过期]");
         break;
       case 403:
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "403权限错误");
+        showToast("403权限错误");
+//        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "403权限错误");
         break;
       case 404:
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "404错误");
+        showToast("404错误");
+//        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "404错误");
         break;
       case Code.NETWORK_TIMEOUT:
       //超时
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "请求超时");
+//        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "请求超时");
+        showToast("请求超时");
         break;
       default:
-        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "其他异常" + " " + message);
+        showToast("其他异常" + " " + message);
+//        Fluttertoast.showToast(gravity:ToastGravity.CENTER,msg: "其他异常" + " " + message);
         break;
     }
     return message;

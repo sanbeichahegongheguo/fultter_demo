@@ -8,7 +8,7 @@ import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 
 class PhoneLoginPage extends StatefulWidget {
@@ -82,7 +82,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       _login();
     }
     if ((null == widget.account || widget.account == "") && (null == widget.password || widget.password == "")) {
-      _gainUsers();
+//      _gainUsers();
     }
   }
 
@@ -236,31 +236,14 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   }
 
   ///getTextField 构建输入框
-  TextField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
-    return TextField(
+  TextFormField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
+    return TextFormField(
       key: key,
       keyboardType: TextInputType.phone,
       obscureText: obscureText ?? false,
       controller: controller,
       style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
-      onTap: () {
-        setState(() {
-          if (key != null) {
-            _expand = !_expand;
-          } else {
-            _expand = false;
-          }
-        });
-      },
-      onChanged: key != null
-          ? (input) async {
-              _users.clear();
-              _users.addAll(await LocalStorage.getUsers());
-              setState(() {
-                _users.retainWhere((item) => item.username.startsWith(input));
-              });
-            }
-          : (input) {},
+      inputFormatters:[WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(11)],
       decoration: new InputDecoration(
         suffixIcon: _hasdeleteIcon
             ? IconButton(
@@ -362,29 +345,26 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   }
 
   void _login() async {
+    if(!RegexUtil.isMobileSimple(userNameController.text)){
+      showToast("请输入正确的手机号",position: ToastPosition.bottom);
+      return;
+    }
     if (loginBtn) {
       CommonUtils.showLoadingDialog(context, text: "登陆中");
       DataResult data = await UserDao.login(userNameController.text, passwordController.text);
       Navigator.pop(context);
       if (data.result) {
-        Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "登录成功 ${data.data.realName}");
-        LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
-        LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
+        showToast("登录成功 ${data.data.realName}");
+//        LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
+//        LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
         NavigatorUtil.goHome(context);
       } else {
-        setState(() {
-          _expand = false;
-        });
+//        setState(() {
+//          _expand = false;
+//        });
         if (null != data.data) {
-          Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: data?.data ?? "");
+           showToast(data?.data ?? "",position: ToastPosition.bottom);
         }
-      }
-    } else {
-      if (userNameController.text.length == 0) {
-        Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "账号不能为空");
-      } else if (passwordController.text.length < 6) {
-        Fluttertoast.showToast(gravity: ToastGravity.CENTER, msg: "密码必须大于6位");
-        print("密码必须大于6位");
       }
     }
   }
