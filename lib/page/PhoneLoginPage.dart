@@ -1,3 +1,5 @@
+import 'package:flustars/flustars.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
@@ -8,19 +10,19 @@ import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info/package_info.dart';
 
-class LoginPage extends StatefulWidget {
+class PhoneLoginPage extends StatefulWidget {
   static final String sName = "login";
 
   final String account;
   final String password;
-  LoginPage({this.account, this.password});
+  PhoneLoginPage({this.account, this.password});
   @override
   State<StatefulWidget> createState() {
-    return LoginState();
+    return PhoneLoginState();
   }
 }
 
-class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderStateMixin {
   TextEditingController userNameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool loginBtn = false;
@@ -98,52 +100,30 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                   alignment: Alignment.center,
                   width: 500,
                   child: Flex(direction: Axis.vertical, children: <Widget>[
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_ios,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () {
-                                print("返回logo!");
-                                NavigatorUtil.goWelcome(context);
-                              }),
-                          InkWell(
-                            onTap: () {
-                              print("点击操作指南");
-                              NavigatorUtil.goWebView(context, "https://api.k12china.com/share/u/operation.html?from=stulogin");
-                            },
-                            child: Text(
-                              "操作指南",
-                              style: TextStyle(color: Colors.blue, fontSize: 20.0, fontWeight: FontWeight.w400),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                      padding: EdgeInsets.only(right: 15, top: 10),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(136),
                     ),
-                    Container(
-                        margin: EdgeInsets.all(25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "登录",
-                              style: TextStyle(color: Colors.grey, fontSize: 24),
-                            )
-                          ],
-                        )),
+                    Flexible(
+                      child: Image.asset(
+                        "images/phone_login/logo.png",
+                        width: ScreenUtil.getInstance().getWidthPx(555),
+                        height: ScreenUtil.getInstance().getHeightPx(136),
+                      ),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(70),
+                    ),
+                    Flexible(
+                      child: Image.asset(
+                        "images/phone_login/center.png",
+                        width: ScreenUtil.getInstance().getWidthPx(542),
+                        height: ScreenUtil.getInstance().getHeightPx(447),
+                      ),
+                      flex: 2,
+                    ),
                     Container(
                       padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
                       child: _getTextField("您的账号/手机号", userNameController, key: _globalKey),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
-                      child: _getTextField("您的密码", passwordController, obscureText: true),
                     ),
                     Container(
                       padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
@@ -178,12 +158,30 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                     ),
                     Expanded(
                       child: Container(
-                        padding: EdgeInsets.only(bottom: 20),
-                        alignment: AlignmentDirectional.bottomCenter,
-                        // ignore: static_access_to_instance_member
-                        child: Text("版本号:$_version"),
-                      ),
-                      flex: 2,
+                          padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                          alignment: AlignmentDirectional.bottomCenter,
+                          // ignore: static_access_to_instance_member
+                          child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image.asset(
+                                  "images/phone_login/bottom.png",
+                                  fit: BoxFit.scaleDown,
+                                  height: ScreenUtil.getInstance().getHeightPx(77),
+                                  width: ScreenUtil.getInstance().getWidthPx(77),
+                                ),
+                                Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: ScreenUtil.getInstance().getHeightPx(20),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                            )
+                          ])),
                     ),
                   ]),
                 ),
@@ -194,7 +192,13 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               ),
             ],
           ),
-          decoration: BoxDecoration(image: DecorationImage(image: AssetImage("images/login/joinclass_bg_bgimg.png"), fit: BoxFit.cover)),
+          decoration: BoxDecoration(
+            gradient: new LinearGradient(
+              begin: const FractionalOffset(0.5, 0.0),
+              end: const FractionalOffset(0.5, 1.0),
+              colors: <Color>[Color(0xFFcdfdd3), Color(0xFFe2fff0)],
+            ),
+          ),
         ),
       ),
     );
