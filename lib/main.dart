@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
 
 main() {
@@ -20,13 +21,12 @@ main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    setDesignWHD(1125, 2001);
     _initAsync();
     return MaterialApp(
       title: '远大小状元',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.lightBlueAccent),
-      home: new WelcomePage(),
+      home: PhoneLoginPage(),
       routes: {
         "logo": (context) => WelcomePage(),
       },
