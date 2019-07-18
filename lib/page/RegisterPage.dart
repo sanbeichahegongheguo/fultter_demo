@@ -59,6 +59,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   Widget build(BuildContext context){
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
+    Timer _countdownTimer;
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor:  Color(0xFFf1f2f6),
@@ -136,6 +137,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
               ),
             );
           }else{
+
             return new Container(
               child:  Stack(
                 overflow: Overflow.visible,
