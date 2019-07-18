@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:flutter_start/page/AdminPage.dart';
 class HomePage extends StatelessWidget {
   /// 不退出
   Future<bool> _dialogExitApp(BuildContext context) async {
@@ -87,9 +87,7 @@ class HomePage extends StatelessWidget {
           new Center(
             child: Text("3333"),
           ),
-          new Center(
-            child: Text("44444"),
-          ),
+          new Admin(),
         ],
         backgroundColor: Colors.lightBlueAccent,
         indicatorColor: Colors.lightBlueAccent,

@@ -9,6 +9,7 @@ import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/models/index.dart';
 
 class UserDao {
+
   ///登录
   static login(userName, password) async {
     await httpManager.clearAuthorization();
@@ -35,8 +36,9 @@ class UserDao {
   }
 
   ///获取登录用户
-  static Future<User> getUser(key, {isNew = false}) async {
+  static Future<User> getUser({isNew = false}) async {
     if (isNew) {
+      String key = await httpManager.getAuthorization();
       var params = {"key": key};
       var res = await httpManager.netFetch(Address.getUserLoginInfo(), params, null, new Options(method: "post"));
       var json = jsonDecode(res.data);
@@ -52,5 +54,21 @@ class UserDao {
     }
     User user = User.fromJson(SpUtil.getObject(Config.LOGIN_USER));
     return user;
+  }
+  //更换头像
+  static uploadHeadUrl(baseImg,imgtype) async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"content":baseImg,"imgtype":imgtype};
+    var res = await httpManager.netFetch(Address.uploadHeadUrl(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    print("res==>$res");
+    var result;
+    if (res != null && res.result) {
+      var json = jsonDecode(res.data);
+      if (json["success"]["ok"] != 0) {
+        result = json["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
   }
 }

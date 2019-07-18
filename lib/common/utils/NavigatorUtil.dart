@@ -5,7 +5,7 @@ import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
-
+import 'package:flutter_start/page/UserInfoPage.dart';
 class NavigatorUtil {
   ///替换
   static pushReplacementNamed(BuildContext context, String routeName) {
@@ -41,7 +41,10 @@ class NavigatorUtil {
   static goLogin(BuildContext context, {String account, String password}) {
     NavigatorRouter(context, LoginPage(account: account, password: password));
   }
-
+  ///去个人信息资料
+  static goUserInfo(BuildContext context, {String account, String password}) {
+    NavigatorRouter(context, UserInfo());
+  }
   ///主页
   static goHome(BuildContext context) {
     NavigatorRouter(context, HomePage());
@@ -95,3 +98,5 @@ class NavigatorUtil {
         });
   }
 }
+
+

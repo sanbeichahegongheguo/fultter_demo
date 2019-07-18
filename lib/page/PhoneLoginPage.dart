@@ -2,13 +2,9 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_start/common/dao/daoResult.dart';
-import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
-import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 
 class PhoneLoginPage extends StatefulWidget {
@@ -128,38 +124,12 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                       child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
                     ),
                     SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(60),
+                      height: ScreenUtil.getInstance().getHeightPx(107),
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
-                      child: Material(
-                        //带给我们Material的美丽风格美滋滋。你也多看看这个布局
-                        elevation: 10.0,
-                        color: Colors.transparent,
-                        shape: const StadiumBorder(),
-                        child: InkWell(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                          onTap: () {
-                            _login();
-                          },
-                          //来个飞溅美滋滋。
-                          splashColor: loginBtn ? Colors.amber : Colors.grey,
-                          child: Ink(
-                            height: ScreenUtil.getInstance().getHeightPx(133),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(50)),
-                              color: loginBtn ? Color(0xFFfbd951) : Colors.grey,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '下一步',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 20.0),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
+                        _login();
+                      }, splashColor: loginBtn ? Colors.amber : Colors.grey, decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey, textColor: Colors.white, textSize: 20.0, elevation: 5),
                     ),
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(70),
@@ -227,7 +197,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       obscureText: obscureText ?? false,
       controller: controller,
       style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
-      inputFormatters:[WhitelistingTextInputFormatter.digitsOnly,LengthLimitingTextInputFormatter(11)],
+      inputFormatters: [WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)],
       decoration: new InputDecoration(
         suffixIcon: _hasdeleteIcon
             ? IconButton(
@@ -328,28 +298,49 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     }
   }
 
+  Widget _buildCodeWidget() {
+    return Container(
+      alignment: Alignment.center,
+      child: Flex(direction: Axis.vertical, children: <Widget>[
+        new Padding(
+            padding: new EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(50), bottom: 15.0),
+            child: new Center(
+              child: new Text(
+                "请先按图形输入正确字符",
+                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666)),
+              ),
+            )),
+      ]),
+    );
+  }
+
   void _login() async {
-    if(!RegexUtil.isMobileSimple(userNameController.text)){
-      showToast("请输入正确的手机号",position: ToastPosition.bottom);
-      return;
-    }
-    if (loginBtn) {
-      CommonUtils.showLoadingDialog(context, text: "登陆中");
-      DataResult data = await UserDao.login(userNameController.text, passwordController.text);
-      Navigator.pop(context);
-      if (data.result) {
-        showToast("登录成功 ${data.data.realName}");
-//        LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
-//        LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
-        NavigatorUtil.goHome(context);
-      } else {
-//        setState(() {
-//          _expand = false;
-//        });
-        if (null != data.data) {
-           showToast(data?.data ?? "",position: ToastPosition.bottom);
-        }
-      }
-    }
+    CommonUtils.showEditDialog(
+      context,
+      _buildCodeWidget(),
+    );
+
+//    if(!RegexUtil.isMobileSimple(userNameController.text)){
+//      showToast("请输入正确的手机号",position: ToastPosition.bottom);
+//      return;
+//    }
+//    if (loginBtn) {
+//      CommonUtils.showLoadingDialog(context, text: "登陆中");
+//      DataResult data = await UserDao.login(userNameController.text, passwordController.text);
+//      Navigator.pop(context);
+//      if (data.result) {
+//        showToast("登录成功 ${data.data.realName}");
+////        LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
+////        LocalStorage.addNoRepeat(_users, LoginUser(userNameController.text, passwordController.text));
+//        NavigatorUtil.goHome(context);
+//      } else {
+////        setState(() {
+////          _expand = false;
+////        });
+//        if (null != data.data) {
+//           showToast(data?.data ?? "",position: ToastPosition.bottom);
+//        }
+//      }
+//    }
   }
 }
