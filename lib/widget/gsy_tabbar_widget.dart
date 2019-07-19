@@ -92,20 +92,23 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       _renderTab(_currentIndex == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "学习", _currentIndex == 0 ? true : false),
       _renderTab(_currentIndex == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "挑战", _currentIndex == 1 ? true : false),
       _renderTab(_currentIndex == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "个人中心", _currentIndex == 2 ? true : false),
-      _renderTab(_currentIndex == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "家长专区", _currentIndex == 3 ? true : false),
+      _renderTab(_currentIndex == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理", _currentIndex == 3 ? true : false),
     ];
 
     ///底部tab bar
     return new Scaffold(
         drawer: _drawer,
-        appBar: _title != null
+        appBar:
+            _title == null
             ? new AppBar(
-                backgroundColor: Theme.of(context).primaryColor,
+                //backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Color(0xFFffffff),
                 title: _title,
               )
             : null,
         body: new PageView(
           controller: _pageController,
+
           children: _tabViews,
           onPageChanged: (index) {
             print("onPageChanged : $index");

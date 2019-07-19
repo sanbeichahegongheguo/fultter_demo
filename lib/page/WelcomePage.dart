@@ -88,6 +88,7 @@ class _WelcomeState extends State<WelcomePage> {
                       onTap: () {
                         print("点击注册");
                         NavigatorUtil.NavigatorRouter(context, WebViewExample("https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp"));
+                        //NavigatorUtil.goRegisterPage(context);
 //                    NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
 //                    Navigator.push(context,PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
 //                      return WebViewPage("https://www.k12china.com/h5/app-reg-new/true_index.html?from=studentApp");
@@ -97,6 +98,7 @@ class _WelcomeState extends State<WelcomePage> {
                         "我没有账号",
                         style: TextStyle(color: Colors.white, fontSize: 16),
                         textAlign: TextAlign.center,
+
                       ),
                     ),
                   )
