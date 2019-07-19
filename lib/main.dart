@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: '远大小状元',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primaryColor: Colors.lightBlueAccent),
-        home: PhoneLoginPage(),
+        home: WelcomePage(),
         routes: {
           "logo": (context) => WelcomePage(),
         },
