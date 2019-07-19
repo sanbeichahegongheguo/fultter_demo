@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/widget/CodeWidget.dart';
 import 'package:package_info/package_info.dart';
 
 class PhoneLoginPage extends StatefulWidget {
@@ -135,6 +137,9 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                       height: ScreenUtil.getInstance().getHeightPx(70),
                     ),
                     InkWell(
+                      onTap: () {
+                        NavigatorUtil.goLogin(context);
+                      },
                       child: Text(
                         "使用帐号密码登录",
                         style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
@@ -298,26 +303,10 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     }
   }
 
-  Widget _buildCodeWidget() {
-    return Container(
-      alignment: Alignment.center,
-      child: Flex(direction: Axis.vertical, children: <Widget>[
-        new Padding(
-            padding: new EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(50), bottom: 15.0),
-            child: new Center(
-              child: new Text(
-                "请先按图形输入正确字符",
-                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666)),
-              ),
-            )),
-      ]),
-    );
-  }
-
   void _login() async {
     CommonUtils.showEditDialog(
       context,
-      _buildCodeWidget(),
+      CodeWidget(phone: userNameController.text),
     );
 
 //    if(!RegexUtil.isMobileSimple(userNameController.text)){

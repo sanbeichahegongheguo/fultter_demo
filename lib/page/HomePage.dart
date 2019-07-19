@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
-import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_start/page/AdminPage.dart';
+
 class HomePage extends StatelessWidget {
   /// 不退出
   Future<bool> _dialogExitApp(BuildContext context) async {
@@ -48,15 +48,6 @@ class HomePage extends StatelessWidget {
                 new Stack(
                   alignment: const FractionalOffset(0.5, 0.5), //方法一
                   children: <Widget>[
-                    new Opacity(
-                      opacity: 1,
-                      child: new Image(
-                        image: new AssetImage("images/home/select.png"),
-                        width: ScreenUtil.getInstance().getWidthPx(260),
-                        height: ScreenUtil.getInstance().getHeightPx(175),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
                     new Tab(
                       child: new Column(
                         mainAxisAlignment: MainAxisAlignment.end,

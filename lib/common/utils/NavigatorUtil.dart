@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
+import 'package:flutter_start/page/PhoneLoginPage.dart';
+import 'package:flutter_start/page/RegisterPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
-import 'package:flutter_start/page/WelcomePage.dart';
-import 'package:flutter_start/page/RegisterPage.dart';
 
 class NavigatorUtil {
   ///替换
@@ -21,7 +21,7 @@ class NavigatorUtil {
 
   ///欢迎页
   static goWelcome(BuildContext context) {
-    NavigatorRouterReplacement(context, WelcomePage());
+    NavigatorRouterReplacement(context, PhoneLoginPage());
 //    NavigatorRouter(context,LogoPage());
 //    Navigator.push(context, PageRouteBuilderHelper(
 //        pageBuilder: (BuildContext context, _, __) {
@@ -45,13 +45,15 @@ class NavigatorUtil {
   }
 
   ///注册
-  static goRegester(BuildContext context){
-    NavigatorRouter(context,RegisterPage());
+  static goRegester(BuildContext context) {
+    NavigatorRouter(context, RegisterPage());
   }
+
   ///去个人资料
-  static goUserInfo(BuildContext context){
-    NavigatorRouter(context,UserInfo());
+  static goUserInfo(BuildContext context) {
+    NavigatorRouter(context, UserInfo());
   }
+
   ///主页
   static goHome(BuildContext context) {
     NavigatorRouter(context, HomePage());
@@ -98,6 +100,7 @@ class NavigatorUtil {
         barrierDismissible: barrierDismissible,
         builder: (context) {
           return MediaQuery(
+
               ///不受系统字体缩放影响
               data: MediaQueryData.fromWindow(WidgetsBinding.instance.window).copyWith(textScaleFactor: 1),
               child: new SafeArea(child: builder(context)));

@@ -1,9 +1,10 @@
+import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
-import 'package:flutter_start/common/utils/DeviceInfo.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
@@ -28,6 +29,13 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   bool _expand = false;
   List<LoginUser> _users = new List();
   String _version = "2.0.000";
+  @override
+  void dispose() {
+    userNameController?.dispose();
+    passwordController?.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +82,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildV1(BuildContext context) {
     final theme = Theme.of(context);
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
@@ -83,7 +91,9 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       body: GestureDetector(
         onTap: () {
           setState(() {
-            if (_expand == true) {
+            if (_globalKey != null) {
+              _expand = !_expand;
+            } else {
               _expand = false;
             }
           });
@@ -200,6 +210,132 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     );
   }
 
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final heightScreen = MediaQuery.of(context).size.height;
+    final widthSrcreen = MediaQuery.of(context).size.width;
+    return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      backgroundColor: Color(0xFFf1f2f6),
+      appBar: AppBar(
+          brightness: Brightness.light,
+          backgroundColor: Colors.white,
+          //居中显示
+          centerTitle: true,
+          leading: new IconButton(
+              icon: new Icon(
+                Icons.arrow_back_ios,
+                color: Color(0xFF333333),
+              ),
+              onPressed: () {
+                NavigatorUtil.goWelcome(context);
+              }),
+          title: Text(
+            '账号登录',
+            style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(19)),
+          )),
+      body: InkWell(
+        onTap: () {
+          print("onTap11111");
+          FocusScope.of(context).requestFocus(new FocusNode());
+          setState(() {
+            _expand = false;
+          });
+        },
+        child: Container(
+          child: Stack(
+            overflow: Overflow.visible,
+            children: <Widget>[
+              Center(
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 500,
+                  child: Flex(direction: Axis.vertical, children: <Widget>[
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(150),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
+                      child: _getTextField("您的手机号", userNameController, key: _globalKey),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50), top: ScreenUtil.getInstance().getHeightPx(60)),
+                      child: _getTextField("您的密码", passwordController, obscureText: true),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(170),
+                    ),
+                    Container(
+                      child: CommonUtils.buildBtn("登录", width: ScreenUtil.getInstance().getWidthPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
+                        _login();
+                      },
+                          splashColor: loginBtn ? Colors.amber : Color(0xFFdfdfeb),
+                          decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey,
+                          textColor: Colors.white,
+                          textSize: ScreenUtil.getInstance().getSp(54 / 3),
+                          elevation: 2),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(70),
+                    ),
+                    Text(
+                      "找回密码",
+                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFFff6464)),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(70),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        NavigatorUtil.goRegester(context);
+                      },
+                      child: Text(
+                        "我没有账号",
+                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFF999999)),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                          padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                          alignment: AlignmentDirectional.bottomCenter,
+                          // ignore: static_access_to_instance_member
+                          child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image.asset(
+                                  "images/phone_login/bottom.png",
+                                  fit: BoxFit.scaleDown,
+                                  height: ScreenUtil.getInstance().getHeightPx(77),
+                                  width: ScreenUtil.getInstance().getWidthPx(77),
+                                ),
+                                Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: ScreenUtil.getInstance().getHeightPx(20),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                            )
+                          ])),
+                      flex: 2,
+                    ),
+                  ]),
+                ),
+              ),
+              Offstage(
+                child: _buildListView(),
+                offstage: !_expand,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   ///getTextField 构建输入框
   TextField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
     return TextField(
@@ -207,8 +343,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       keyboardType: TextInputType.text,
       obscureText: obscureText ?? false,
       controller: controller,
-      textAlign: TextAlign.center,
       style: new TextStyle(fontSize: 17.0, color: Colors.black),
+      cursorColor: Color(0xFF333333),
       onTap: () {
         setState(() {
           if (key != null) {
@@ -230,12 +366,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       decoration: new InputDecoration(
         contentPadding: EdgeInsets.all(13),
         hintText: hintText,
-        hintStyle: TextStyle(fontSize: 15.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.lightBlueAccent),
-          borderRadius: BorderRadius.circular(50),
-        ),
+        hintStyle: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        filled: true,
+        fillColor: Color(0xFFFFFFFF),
       ),
     );
   }
@@ -276,8 +410,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         double screenW = MediaQuery.of(context).size.width;
         double currentW = renderObject.paintBounds.size.width;
         double currentH = renderObject.paintBounds.size.height;
-        double margin = (screenW - currentW * 0.65) / 2;
-        double offsetY = position.dy;
+        double margin = (screenW - currentW) / 2;
+        double offsetY = position.dy - ScreenUtil.getInstance().appBarHeight;
         double itemHeight = currentH * 0.7;
         double dividerHeight = 1;
         return Container(
@@ -291,7 +425,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
             padding: EdgeInsets.all(0),
             children: children,
           ),
-          width: currentW * 0.65,
+          width: currentW,
           height: (children.length * itemHeight + (children.length - 1) * dividerHeight),
           margin: EdgeInsets.fromLTRB(margin, offsetY + currentH, margin, 0),
         );
@@ -302,8 +436,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   void _gainUsers() async {
     print("_gainUsers");
-    var deviceId = await DeviceInfo.instance.getDeviceId();
-    print("deviceId $deviceId");
+//    var deviceId = await DeviceInfo.instance.getDeviceId();
+//    print("deviceId $deviceId");
     PackageInfo info = await PackageInfo.fromPlatform();
     _version = info.version;
     _users.clear();
@@ -317,7 +451,9 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   void _login() async {
     if (loginBtn) {
+      CommonUtils.showLoadingDialog(context, text: "登陆中···");
       DataResult data = await UserDao.login(userNameController.text, passwordController.text);
+      Navigator.pop(context);
       if (data.result) {
         showToast("登录成功 ${data.data.realName}");
         LocalStorage.saveUser(LoginUser(userNameController.text, passwordController.text));
@@ -333,7 +469,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       }
     } else {
       if (userNameController.text.length == 0) {
-        showToast( "账号不能为空");
+        showToast("账号不能为空");
       } else if (passwordController.text.length < 6) {
         showToast("密码必须大于6位");
         print("密码必须大于6位");

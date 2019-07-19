@@ -1,3 +1,4 @@
+import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 
 ///支持顶部和顶部的TabBar控件
@@ -19,6 +20,8 @@ class GSYTabBarWidget extends StatefulWidget {
 
   final ValueChanged<int> onPageChanged;
 
+  final int currentIndex;
+
   GSYTabBarWidget({
     Key key,
     this.tabViews,
@@ -29,6 +32,7 @@ class GSYTabBarWidget extends StatefulWidget {
     this.floatingActionButton,
     this.tarWidgetControl,
     this.onPageChanged,
+    this.currentIndex = 0,
   }) : super(key: key);
 
   @override
@@ -40,6 +44,7 @@ class GSYTabBarWidget extends StatefulWidget {
         floatingActionButton,
         tarWidgetControl,
         onPageChanged,
+        currentIndex,
       );
 }
 
@@ -59,7 +64,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   final PageController _pageController = PageController();
 
   final ValueChanged<int> _onPageChanged;
-  int _currentIndex = 0;
+
+  int _currentIndex;
 
   _GSYTabBarState(
     this._tabViews,
@@ -69,6 +75,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     this._floatingActionButton,
     this._tarWidgetControl,
     this._onPageChanged,
+    this._currentIndex,
   ) : super();
 
   TabController _tabController;
@@ -89,26 +96,30 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     List<Widget> tabs = [
-      _renderTab(_currentIndex == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "学习", _currentIndex == 0 ? true : false),
-      _renderTab(_currentIndex == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "挑战", _currentIndex == 1 ? true : false),
-      _renderTab(_currentIndex == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "个人中心", _currentIndex == 2 ? true : false),
+      _renderTab(_currentIndex == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导", _currentIndex == 0 ? true : false),
+      _renderTab(_currentIndex == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情", _currentIndex == 1 ? true : false),
+      _renderTab(_currentIndex == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励", _currentIndex == 2 ? true : false),
       _renderTab(_currentIndex == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理", _currentIndex == 3 ? true : false),
     ];
 
     ///底部tab bar
     return new Scaffold(
         drawer: _drawer,
-        appBar:
-            _title == null
-            ? new AppBar(
-                //backgroundColor: Theme.of(context).primaryColor,
-                backgroundColor: Color(0xFFffffff),
-                title: _title,
-              )
-            : null,
+        appBar: new AppBar(
+          leading: IconButton(
+              icon: new Icon(
+                Icons.arrow_back_ios,
+                color: Color(0xFF333333),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          //backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Color(0xFFf1f2f6),
+          title: _title,
+        ),
         body: new PageView(
           controller: _pageController,
-
           children: _tabViews,
           onPageChanged: (index) {
             print("onPageChanged : $index");
@@ -125,7 +136,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
             //为了适配主题风格，包一层Material实现风格套用
             color: Colors.white, //底部导航栏主题颜色
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.08,
+//              height: MediaQuery.of(context).size.height * 0.08,
+              height: ScreenUtil.getInstance().getHeightPx(150),
               child: new TabBar(
                 indicator: BoxDecoration(),
                 indicatorWeight: 1,
@@ -148,17 +160,15 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Image.asset(
-            icon,
-            fit: BoxFit.scaleDown,
-            height: isSelect ? 25 : 20,
-          ),
+          Image.asset(icon, fit: BoxFit.scaleDown, height: isSelect ? ScreenUtil.getInstance().getHeightPx(65) : ScreenUtil.getInstance().getHeightPx(60)
+//            height: isSelect ? 25 : 20,
+              ),
           SizedBox(
             height: 2,
           ),
           new Text(
             text,
-            style: TextStyle(fontSize: isSelect ? 13 : 12, color: isSelect ? Color(0xFF17b4ff) : Color(0xFF606a81)),
+            style: TextStyle(fontSize: isSelect ? ScreenUtil.getInstance().getSp(38 / 3) : ScreenUtil.getInstance().getSp(32 / 3), color: isSelect ? Color(0xFF5fc589) : Color(0xFF606a81)),
           )
         ],
       ),

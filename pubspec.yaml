@@ -35,6 +35,9 @@ dependencies:
   image_picker: ^0.6.0+15
   flustars: ^0.2.6+1
   flutter_spinkit: ^3.1.0
+  cached_network_image: ^1.1.0
+  flutter_des: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,7 +75,6 @@ flutter:
    - images/home/icon_parent_select.png
    - images/home/icon_study_select.png
    - images/home/icon_user_select.png
-   - images/home/select.png
    - images/phone_login/
    - images/admin/
 
