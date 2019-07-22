@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -135,8 +136,8 @@ class _Admin extends State<Admin> {
   //判断用户是否有头像
   isNetwork(imgUrl) {
     if (imgUrl != null) {
-      return Image(
-        image: NetworkImage(imgUrl),
+      return CachedNetworkImage(
+        imageUrl: imgUrl,
         fit: BoxFit.cover,
         width: ScreenUtil.getInstance().getWidthPx(200),
         height: ScreenUtil.getInstance().getWidthPx(200),
@@ -181,11 +182,15 @@ class _Admin extends State<Admin> {
     var widgetMsg = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        CommonUtils.buildBtn("拍照", width: ScreenUtil.getInstance().getWidthPx(638), height: ScreenUtil.getInstance().getHeightPx(114), onTap: (){_photograph(store);}),
+        CommonUtils.buildBtn("拍照", width: ScreenUtil.getInstance().getWidthPx(638), height: ScreenUtil.getInstance().getHeightPx(114), onTap: () {
+          _photograph(store);
+        }),
         SizedBox(
           height: ScreenUtil.getInstance().getHeightPx(54),
         ),
-        CommonUtils.buildBtn("从相机获取", width: ScreenUtil.getInstance().getWidthPx(638), height: ScreenUtil.getInstance().getHeightPx(114), onTap: (){_album(store);}),
+        CommonUtils.buildBtn("从相机获取", width: ScreenUtil.getInstance().getWidthPx(638), height: ScreenUtil.getInstance().getHeightPx(114), onTap: () {
+          _album(store);
+        }),
       ],
     );
     CommonUtils.showEditDialog(context, widgetMsg, height: ScreenUtil.getInstance().getHeightPx(502), width: ScreenUtil.getInstance().getWidthPx(906));
