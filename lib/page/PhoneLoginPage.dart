@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
@@ -60,7 +61,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
         }
       }
     });
-    userNameController.text = widget.account;
+    userNameController.text = SpUtil.getString(Config.USER_PHONE);
     passwordController.text = "123456";
     if ((null != widget.account && widget.account != "") && (null != widget.password && widget.password != "")) {
       _login();
@@ -308,11 +309,14 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   }
 
   void _login() async {
-    CommonUtils.showEditDialog(
+    var isSend = await CommonUtils.showEditDialog(
       context,
       CodeWidget(phone: userNameController.text),
     );
-
+    if (null != isSend && isSend) {
+      NavigatorUtil.goRegester(context);
+      SpUtil.putString(Config.USER_PHONE, userNameController.text);
+    }
 //    if(!RegexUtil.isMobileSimple(userNameController.text)){
 //      showToast("请输入正确的手机号",position: ToastPosition.bottom);
 //      return;

@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +28,15 @@ class _CodeWidgetState extends State<CodeWidget> {
   String _imagesUrl = "http://www.k12china.com/k12-api/base/getValidateCode?t=${DateTime.now().millisecondsSinceEpoch}";
   bool _is = true;
   TextEditingController _controller = new TextEditingController();
+  Widget _image;
+  String _cookieCode;
+  String _userSign;
+  @override
+  void initState() {
+    super.initState();
+    _getImgCode();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,17 +58,17 @@ class _CodeWidgetState extends State<CodeWidget> {
             }
             _is = false;
             setState(() {
-              _imagesUrl = "http://www.k12china.com/k12-api/base/getValidateCode?t=${DateTime.now().millisecondsSinceEpoch}";
+              _image = null;
+              _cookieCode = "";
+              _userSign = "";
+              _getImgCode();
               _is = true;
             });
           },
           child: SizedBox(
               height: ScreenUtil.getInstance().getHeightPx(100),
               child: Container(
-                child: CachedNetworkImage(
-                  imageUrl: _imagesUrl,
-                  placeholder: (context, url) => SpinKitWave(color: Colors.greenAccent, size: 25),
-                ),
+                child: _image ?? SpinKitWave(color: Colors.greenAccent, size: 25),
               )),
         ),
         SizedBox(
@@ -99,16 +108,19 @@ class _CodeWidgetState extends State<CodeWidget> {
 
   Future _getImgCode() async {
     var data = await UserDao.getImgCode();
-  }
-
-  Future _checkCode() async {
-    var data = await UserDao.getImgCode();
     if (ObjectUtil.isEmpty(data) || !data.result) {
       showToast("获取失败,请稍后重试");
       return;
     }
-    print(data.data);
-    var codeDataJson = {"code": _controller.text, "cookieCode": data.data["cookieCode"], "userSign": data.data["userSign"]};
+    setState(() {
+      _cookieCode = data.data["cookieCode"];
+      _userSign = data.data["userSign"];
+      _image = Image.memory(Base64Decoder().convert(data.data["data"]));
+    });
+  }
+
+  Future _checkCode() async {
+    var codeDataJson = {"code": _controller.text, "cookieCode": _cookieCode, "userSign": _userSign};
     var validateCodeData = await UserDao.getValidateCode(widget.phone);
     if (ObjectUtil.isNotEmpty(validateCodeData) && !validateCodeData.result) {
       showToast(validateCodeData.data);
@@ -116,13 +128,11 @@ class _CodeWidgetState extends State<CodeWidget> {
     }
     String key = validateCodeData.data["ext1"];
     String value = "$key${widget.phone}";
-    print("key=$key");
-    print("value=$value");
     String encrypt = await FlutterDes.encryptToHex(value, key, iv: Config.DES_IV);
-    data = await UserDao.sendMobileCodeWithValiCode(encrypt, key, codeDataJson);
+    var data = await UserDao.sendMobileCodeWithValiCode(encrypt, key, jsonEncode(codeDataJson));
     if (data.result) {
       print("发送手机验证码");
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } else {
       if (ObjectUtil.isNotEmpty(data.data)) {
         showToast(data.data);

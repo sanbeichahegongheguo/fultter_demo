@@ -1,10 +1,10 @@
 ///地址数据
 class Address {
-//  static const String studentWebHost = "http://192.168.6.31:30915/student:";
+  static const String studentWebHost = "http://192.168.6.31:30915/student:";
 
-  static const String studentWebHost = "https://www.k12china.com/student/student:";
-  static const String k12apiHost = "https://www.k12china.com/k12-api/";
-//  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
+//  static const String studentWebHost = "https://www.k12china.com/student/student:";
+//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
 
   ///登录  post
   static login() {
@@ -28,7 +28,7 @@ class Address {
 
   ///获取图形验证码
   static getImgCode() {
-    return "${k12apiHost}base/getValidateCode";
+    return "${k12apiHost}base/getValidateCode?toBase64=T";
   }
 
   ///获取认证码
@@ -44,5 +44,10 @@ class Address {
   ///发送短信
   static sendMobileCodeWithValiCode() {
     return "${k12apiHost}base/sendMobileCodeWithValiCodeV3";
+  }
+
+  ///检测是否拥有账号
+  static checkParentsUser() {
+    return "${k12apiHost}base/checkParentsUser";
   }
 }

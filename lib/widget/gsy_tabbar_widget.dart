@@ -66,6 +66,10 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   final ValueChanged<int> _onPageChanged;
 
   int _currentIndex;
+  GlobalKey _globalKey = new GlobalKey();
+  int _msgCount = 0;
+
+  Widget _MsgWidget = new Container();
 
   _GSYTabBarState(
     this._tabViews,
@@ -82,6 +86,11 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _MsgWidget = _buildMsgWidget();
+      });
+    });
     super.initState();
     _tabController = new TabController(vsync: this, length: 4);
   }
@@ -106,17 +115,68 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     return new Scaffold(
         drawer: _drawer,
         appBar: new AppBar(
-          leading: IconButton(
-              icon: new Icon(
-                Icons.arrow_back_ios,
-                color: Color(0xFF333333),
+          elevation: 0,
+          leading: Row(
+            children: <Widget>[
+              SizedBox(
+                width: ScreenUtil.getInstance().getWidthPx(50),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
+              Image.asset(
+                "images/home/icon_jl.png",
+                width: ScreenUtil.getInstance().getWidthPx(100),
+              ),
+            ],
+          ),
+          titleSpacing: 1,
           //backgroundColor: Theme.of(context).primaryColor,
           backgroundColor: Color(0xFFf1f2f6),
-          title: _title,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                "签到奖励",
+                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+              ),
+              Text("已经签到5天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+            ],
+          ),
+          actions: <Widget>[
+            Stack(
+              alignment: AlignmentDirectional(0.0, 0.8),
+              children: <Widget>[
+                Center(
+                  child: IconButton(icon: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66))),
+                ),
+                Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc))),
+              ],
+            ),
+            Stack(
+              alignment: AlignmentDirectional(0.0, 0.8),
+              children: <Widget>[
+                Stack(
+                  fit: StackFit.passthrough,
+                  alignment: AlignmentDirectional.topCenter,
+                  children: <Widget>[
+                    Center(
+                      child: IconButton(key: _globalKey, icon: Image.asset("images/home/icon_yj.png", width: ScreenUtil.getInstance().getWidthPx(61))),
+                    ),
+//                    Container(
+////      margin: EdgeInsets.only(top: position.dy),
+//                      child: ClipOval(
+//                        child: Container(
+//                          child: Text("10", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+//                          decoration: BoxDecoration(color: const Color(0xFFff542b)),
+//                        ),
+//                      ),
+//                    ),
+                    _MsgWidget,
+                  ],
+                ),
+                Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc))),
+              ],
+            ),
+          ],
         ),
         body: new PageView(
           controller: _pageController,
@@ -171,6 +231,23 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
             style: TextStyle(fontSize: isSelect ? ScreenUtil.getInstance().getSp(38 / 3) : ScreenUtil.getInstance().getSp(32 / 3), color: isSelect ? Color(0xFF5fc589) : Color(0xFF606a81)),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildMsgWidget() {
+    RenderBox renderObject = _globalKey.currentContext.findRenderObject();
+    final position = renderObject.localToGlobal(Offset.zero);
+    double screenW = MediaQuery.of(context).size.width;
+    double currentW = renderObject.paintBounds.size.width;
+    double currentH = renderObject.paintBounds.size.height;
+    return Container(
+      margin: EdgeInsets.only(top: currentH / 2 - ScreenUtil.getInstance().getHeightPx(22), left: ScreenUtil.getInstance().getWidthPx(58)),
+      child: ClipOval(
+        child: Container(
+          child: Text("10", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+          decoration: BoxDecoration(color: const Color(0xFFff542b)),
+        ),
       ),
     );
   }

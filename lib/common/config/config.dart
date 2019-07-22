@@ -16,5 +16,6 @@ class Config {
   static const LOCALE = "locale";
   static const LOGIN_USER = "login-user";
   static const DATA_FROM = "studentApp";
-  static const DES_IV = "myyondor";
+  static const USER_PHONE = "user-phone";
+  static const DES_IV = "myyondor"; //加密偏移值
 }
