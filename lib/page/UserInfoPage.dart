@@ -8,6 +8,7 @@ import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/user.dart';
+import 'package:flutter_start/widget/TextBookWiget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -297,33 +298,11 @@ class _UserInfo extends State<UserInfo>{
     );
     CommonUtils.showEditDialog(context, msg,height: ScreenUtil.getInstance().getHeightPx(700),width: ScreenUtil.getInstance().getWidthPx(906));
   }
-  int _textBookTpye = 1;
+  final List<String> _list= ["RJ版","BS版"];
   //设置教程
   void _setTextBook(){
-    var decorationColor;
-    if(textBook == "RJ版"){
-      _textBookTpye = 1;
-    }else if(textBook == "北师大版"){
-      _textBookTpye = 2;
-    }
-    print(_textBookTpye == 2);
-    var widgetMsg =  Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CommonUtils.buildBtn("RJ版",onTap: _setTextBookType,width:ScreenUtil.getInstance().getWidthPx(638),height:ScreenUtil.getInstance().getHeightPx(114),decorationColor:Color(_textBookTpye == 1?0xFF9fa5aa:0xFFfbd951),textColor:Color(_textBookTpye == 1?0xFFffffff:0xFFa83530)),
-        SizedBox(
-          height: ScreenUtil.getInstance().getHeightPx(54),
-        ),
-        CommonUtils.buildBtn("北师大版",onTap: _setTextBookType,width:ScreenUtil.getInstance().getWidthPx(638),height:ScreenUtil.getInstance().getHeightPx(114),decorationColor:Color(_textBookTpye == 2?0xFF9fa5aa:0xFFfbd951),textColor:Color(_textBookTpye == 2?0xFFffffff:0xFFa83530)),
-      ],
-    );
+    var widgetMsg = new TextBookWiget(textBook:textBook);
     CommonUtils.showEditDialog(context, widgetMsg,height: ScreenUtil.getInstance().getHeightPx(502),width: ScreenUtil.getInstance().getWidthPx(906));
-  }
-  _setTextBookType(){
-    setState((){
-    _textBookTpye = _textBookTpye==1?2:1;
-    });
-     //_textBookTpye = num;
   }
   //type>图片是否显示
   _getBt(btName,btImg,btPressed,btMsg,type){

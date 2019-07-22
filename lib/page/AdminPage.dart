@@ -63,7 +63,7 @@ class _Admin extends State<Admin>{
                                   child: Stack(
                                       children:<Widget>[
                                         isNetwork(_user.headUrl),
-                                        Image.network(_user.headUrl??"images/admin/tx.png",fit: BoxFit.cover,width:ScreenUtil.getInstance().getWidthPx(200),height: ScreenUtil.getInstance().getWidthPx(200),),
+
                                         Positioned(
                                           bottom:0,
                                           left: 0,
@@ -77,11 +77,12 @@ class _Admin extends State<Admin>{
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Text(_user.realName??"",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(48/3)),),
+                                  Text(_user.realName??"",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(56/3)),),
                                   Text(_user.schoolName??"",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36/3),color: Color(0xFF999999)),),
                                   Text(_user.className??"",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36/3),color: Color(0xFF999999)),),
                                 ],
-                              )
+                              ),
+
                             ],
                           ),
                           decoration:new BoxDecoration(

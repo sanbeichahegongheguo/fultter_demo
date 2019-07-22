@@ -33,4 +33,8 @@ class Address {
   static getValidateCode() {
     return "${k12apiHost}base/getValidateCodeV2";
   }
+  ///更换教程
+  static resetTextbookId(){
+    return "${studentWebHost}resetTextbookId";
+  }
 }
