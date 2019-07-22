@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
@@ -8,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_des/flutter_des.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:oktoast/oktoast.dart';
@@ -98,45 +97,36 @@ class _CodeWidgetState extends State<CodeWidget> {
     );
   }
 
+  Future _getImgCode() async {
+    var data = await UserDao.getImgCode();
+  }
+
   Future _checkCode() async {
-//    var data = await UserDao.getImgCode();
-    var data = await UserDao.getValidateCode();
-    if (ObjectUtil.isNotEmpty(data) && !data.result) {
-      showToast(data.data);
+    var data = await UserDao.getImgCode();
+    if (ObjectUtil.isEmpty(data) || !data.result) {
+      showToast("获取失败,请稍后重试");
       return;
     }
-    String key = data["ext1"];
+    print(data.data);
+    var codeDataJson = {"code": _controller.text, "cookieCode": data.data["cookieCode"], "userSign": data.data["userSign"]};
+    var validateCodeData = await UserDao.getValidateCode(widget.phone);
+    if (ObjectUtil.isNotEmpty(validateCodeData) && !validateCodeData.result) {
+      showToast(validateCodeData.data);
+      return;
+    }
+    String key = validateCodeData.data["ext1"];
     String value = "$key${widget.phone}";
-    var encrypt = await FlutterDes.encrypt(key, value);
-//    var data = await UserDao.sendMobileCode(widget.phone);
+    print("key=$key");
+    print("value=$value");
+    String encrypt = await FlutterDes.encryptToHex(value, key, iv: Config.DES_IV);
+    data = await UserDao.sendMobileCodeWithValiCode(encrypt, key, codeDataJson);
     if (data.result) {
       print("发送手机验证码");
       Navigator.pop(context);
     } else {
-      showToast(data.data);
-    }
-  }
-
-  Future<Uint8List> consolidateHttpClientResponseBytes(HttpClientResponse response) {
-    // response.contentLength is not trustworthy when GZIP is involved
-    // or other cases where an intermediate transformer has been applied
-    // to the stream.
-    final Completer<Uint8List> completer = Completer<Uint8List>.sync();
-    final List<List<int>> chunks = <List<int>>[];
-    int contentLength = 0;
-    response.listen((List<int> chunk) {
-      chunks.add(chunk);
-      contentLength += chunk.length;
-    }, onDone: () {
-      final Uint8List bytes = Uint8List(contentLength);
-      int offset = 0;
-      for (List<int> chunk in chunks) {
-        bytes.setRange(offset, offset + chunk.length, chunk);
-        offset += chunk.length;
+      if (ObjectUtil.isNotEmpty(data.data)) {
+        showToast(data.data);
       }
-      completer.complete(bytes);
-    }, onError: completer.completeError, cancelOnError: true);
-
-    return completer.future;
+    }
   }
 }

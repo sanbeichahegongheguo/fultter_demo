@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
@@ -6,13 +7,16 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/net/result_data.dart';
+import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/models/index.dart';
+import 'package:redux/redux.dart';
 
 class UserDao {
   ///登录
-  static login(userName, password) async {
+  static login(userName, password, Store store) async {
     await httpManager.clearAuthorization();
-    var params = {"mobile": userName, "password": password, "datafrom": "studentApp"};
+    var params = {"mobile": userName, "password": password, "datafrom": Config.DATA_FROM};
     var res = await httpManager.netFetch(Address.login(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
@@ -25,6 +29,7 @@ class UserDao {
         result = User.fromJson(jsonDecode(json["success"]["data"]));
         print("user key  ${result.key}");
         SpUtil.putObject(Config.LOGIN_USER, result);
+        store.dispatch(UpdateUserAction(result));
         await httpManager.setAuthorization(result.key);
       } else {
         result = json["success"]["message"];
@@ -51,7 +56,7 @@ class UserDao {
   }
 
   ///获取登录用户
-  static Future<User> getUser({isNew = false}) async {
+  static Future<User> getUser({isNew = false, Store store}) async {
     if (isNew) {
       String key = await httpManager.getAuthorization();
       var params = {"key": key};
@@ -61,6 +66,7 @@ class UserDao {
       if (json["success"]["ok"] == 0) {
         result = User.fromJson(jsonDecode(json["success"]["data"]));
         print("user key  ${result.key}");
+        store.dispatch(UpdateUserAction(result));
         await SpUtil.putObject(Config.LOGIN_USER, result);
       } else {
         result = json["success"]["message"];
@@ -90,22 +96,63 @@ class UserDao {
 
   ///获取图形验证码
   static getImgCode() async {
-    var res = await httpManager.netFetch(Address.getImgCode(), {}, null, new Options(method: "get"));
-    print("res==>$res");
-    return new DataResult(res, res.result);
+    ResultData res = await httpManager.netFetch(Address.getImgCode(), {}, null, new Options(method: "get"));
+    HttpHeaders headers = res.headers;
+    String userSign = "";
+    String cookieCode = "";
+    Map<String, dynamic> result = new Map();
+    if (res != null && res.result) {
+      //在cookie拿到检验码
+      headers.forEach((String name, List<String> values) {
+        if (name == "set-cookie") {
+          values.forEach((v) {
+            if (v.startsWith("USER_SIGN")) {
+              var split = v.split(";");
+              if (split.length > 0) {
+                userSign = split[0].replaceFirst("USER_SIGN=", "");
+              }
+            } else if (v.startsWith("validateCode")) {
+              var split = v.split(";");
+              if (split.length > 0) {
+                cookieCode = split[0].replaceFirst("validateCode=", "");
+              }
+            }
+          });
+        }
+      });
+      result["data"] = res.data;
+      result["userSign"] = userSign;
+      result["cookieCode"] = cookieCode;
+    }
+    return new DataResult(result, res.result);
   }
 
   ///获取认证码
-  static getValidateCode() async {
-    var res = await httpManager.netFetch(Address.getValidateCode(), {}, null, new Options(method: "get"));
+  static getValidateCode(String mobile) async {
+    var res = await httpManager.netFetch(Address.getValidateCode(), {"mobile": mobile}, null, new Options(method: "post"));
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"] == false) {
+        result = res.data["message"];
+        res.result = false;
+      } else {
+        result = res.data;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///发送短信
+  static sendMobileCodeWithValiCode(String mobile, String vcode, var codeDataJson) async {
+    var params = {"mobile": mobile, "datafrom": "student_reg", "vcode": vcode, "codeDataJson": codeDataJson};
+    var res = await httpManager.netFetch(Address.sendMobileCodeWithValiCode(), params, null, new Options(method: "post"));
     print("res==>$res");
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
-      if (json["success"]) {
-        result = json;
+      if (res.data["success"]) {
+        result = res.data;
       } else {
-        result = json["message"];
+        result = res.data["message"];
         res.result = false;
       }
     }

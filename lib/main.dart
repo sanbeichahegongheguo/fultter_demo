@@ -3,9 +3,14 @@ import 'dart:io';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:redux/redux.dart';
+
+import 'models/user.dart';
 
 main() {
   runApp(MyApp());
@@ -20,22 +25,36 @@ main() {
 }
 
 class MyApp extends StatelessWidget {
+  final store = new Store<GSYState>(appReducer,
+      middleware: middleware,
+
+      ///初始化数据
+      initialState: new GSYState(
+        userInfo: User(),
+      ));
+
   @override
   Widget build(BuildContext context) {
     _initAsync();
-    return OKToast(
-        textPadding:EdgeInsets.all(11),
-        textStyle:TextStyle(fontSize: 16),
-      dismissOtherOnShow: true,
-      child: MaterialApp(
-        title: '远大小状元',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(primaryColor: Colors.lightBlueAccent),
-        home: WelcomePage(),
-        routes: {
-          "logo": (context) => WelcomePage(),
+    return StoreProvider(
+      store: store,
+      child: new StoreBuilder<GSYState>(
+        builder: (context, store) {
+          return OKToast(
+              textPadding: EdgeInsets.all(11),
+              textStyle: TextStyle(fontSize: 16),
+              dismissOtherOnShow: true,
+              child: MaterialApp(
+                title: '远大小状元',
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(primaryColor: Colors.lightBlueAccent),
+                home: PhoneLoginPage(),
+                routes: {
+                  "logo": (context) => WelcomePage(),
+                },
+              ));
         },
-      )
+      ),
     );
   }
 

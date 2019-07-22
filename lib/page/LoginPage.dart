@@ -1,13 +1,16 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
+import 'package:redux/redux.dart';
 
 class LoginPage extends StatefulWidget {
   static final String sName = "login";
@@ -74,266 +77,140 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     userNameController.text = widget.account;
     passwordController.text = widget.password;
     if ((null != widget.account && widget.account != "") && (null != widget.password && widget.password != "")) {
-      _login();
+      Store<GSYState> store = StoreProvider.of(context);
+      _login(store);
     }
     if ((null == widget.account || widget.account == "") && (null == widget.password || widget.password == "")) {
       _gainUsers();
     }
   }
 
-  @override
-  Widget buildV1(BuildContext context) {
-    final theme = Theme.of(context);
-    final heightScreen = MediaQuery.of(context).size.height;
-    final widthSrcreen = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: GestureDetector(
-        onTap: () {
-          setState(() {
-            if (_globalKey != null) {
-              _expand = !_expand;
-            } else {
-              _expand = false;
-            }
-          });
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          child: Stack(
-            overflow: Overflow.visible,
-            children: <Widget>[
-              Center(
-                child: Container(
-                  alignment: Alignment.center,
-                  width: 500,
-                  child: Flex(direction: Axis.vertical, children: <Widget>[
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          IconButton(
-                              icon: Icon(
-                                Icons.arrow_back_ios,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () {
-                                print("返回logo!");
-                                NavigatorUtil.goWelcome(context);
-                              }),
-                          InkWell(
-                            onTap: () {
-                              print("点击操作指南");
-                              NavigatorUtil.goWebView(context, "https://api.k12china.com/share/u/operation.html?from=stulogin");
-                            },
-                            child: Text(
-                              "操作指南",
-                              style: TextStyle(color: Colors.blue, fontSize: 20.0, fontWeight: FontWeight.w400),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                      padding: EdgeInsets.only(right: 15, top: 10),
-                    ),
-                    Container(
-                        margin: EdgeInsets.all(25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "登录",
-                              style: TextStyle(color: Colors.grey, fontSize: 24),
-                            )
-                          ],
-                        )),
-                    Container(
-                      padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
-                      child: _getTextField("您的账号/手机号", userNameController, key: _globalKey),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
-                      child: _getTextField("您的密码", passwordController, obscureText: true),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: widthSrcreen * 0.1, right: widthSrcreen * 0.1, top: widthSrcreen * 0.05),
-                      child: Material(
-                        //带给我们Material的美丽风格美滋滋。你也多看看这个布局
-                        elevation: 10.0,
-                        color: Colors.transparent,
-                        shape: const StadiumBorder(),
-                        child: InkWell(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                          onTap: () {
-                            _login();
-                          },
-                          //来个飞溅美滋滋。
-                          splashColor: loginBtn ? Colors.blueAccent : Colors.grey,
-                          child: Ink(
-                            height: 50.0,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(50)),
-                              color: loginBtn ? Colors.lightBlueAccent : Colors.grey,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '登录',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal, fontSize: 20.0),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(bottom: 20),
-                        alignment: AlignmentDirectional.bottomCenter,
-                        // ignore: static_access_to_instance_member
-                        child: Text("版本号:$_version"),
-                      ),
-                      flex: 2,
-                    ),
-                  ]),
-                ),
-              ),
-              Offstage(
-                child: _buildListView(),
-                offstage: !_expand,
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(image: DecorationImage(image: AssetImage("images/login/joinclass_bg_bgimg.png"), fit: BoxFit.cover)),
-        ),
-      ),
-    );
-  }
-
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      backgroundColor: Color(0xFFf1f2f6),
-      appBar: AppBar(
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          //居中显示
-          centerTitle: true,
-          leading: new IconButton(
-              icon: new Icon(
-                Icons.arrow_back_ios,
-                color: Color(0xFF333333),
-              ),
-              onPressed: () {
-                NavigatorUtil.goWelcome(context);
-              }),
-          title: Text(
-            '账号登录',
-            style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(19)),
-          )),
-      body: InkWell(
-        onTap: () {
-          print("onTap11111");
-          FocusScope.of(context).requestFocus(new FocusNode());
-          setState(() {
-            _expand = false;
-          });
-        },
-        child: Container(
-          child: Stack(
-            overflow: Overflow.visible,
-            children: <Widget>[
-              Center(
-                child: Container(
-                  alignment: Alignment.center,
-                  width: 500,
-                  child: Flex(direction: Axis.vertical, children: <Widget>[
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(150),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
-                      child: _getTextField("您的手机号", userNameController, key: _globalKey),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50), top: ScreenUtil.getInstance().getHeightPx(60)),
-                      child: _getTextField("您的密码", passwordController, obscureText: true),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(170),
-                    ),
-                    Container(
-                      child: CommonUtils.buildBtn("登录", width: ScreenUtil.getInstance().getWidthPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
-                        _login();
-                      },
-                          splashColor: loginBtn ? Colors.amber : Color(0xFFdfdfeb),
-                          decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey,
-                          textColor: Colors.white,
-                          textSize: ScreenUtil.getInstance().getSp(54 / 3),
-                          elevation: 2),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(70),
-                    ),
-                    Text(
-                      "找回密码",
-                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFFff6464)),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(70),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        NavigatorUtil.goRegester(context);
-                      },
-                      child: Text(
-                        "我没有账号",
-                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFF999999)),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
-                          alignment: AlignmentDirectional.bottomCenter,
-                          // ignore: static_access_to_instance_member
-                          child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Image.asset(
-                                  "images/phone_login/bottom.png",
-                                  fit: BoxFit.scaleDown,
-                                  height: ScreenUtil.getInstance().getHeightPx(77),
-                                  width: ScreenUtil.getInstance().getWidthPx(77),
-                                ),
-                                Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: ScreenUtil.getInstance().getHeightPx(20),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
-                            )
-                          ])),
-                      flex: 2,
-                    ),
-                  ]),
+    return StoreBuilder<GSYState>(builder: (context, store) {
+      return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        backgroundColor: Color(0xFFf1f2f6),
+        appBar: AppBar(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            //居中显示
+            centerTitle: true,
+            leading: new IconButton(
+                icon: new Icon(
+                  Icons.arrow_back_ios,
+                  color: Color(0xFF333333),
                 ),
-              ),
-              Offstage(
-                child: _buildListView(),
-                offstage: !_expand,
-              ),
-            ],
+                onPressed: () {
+                  NavigatorUtil.goWelcome(context);
+                }),
+            title: Text(
+              '账号登录',
+              style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(19)),
+            )),
+        body: InkWell(
+          onTap: () {
+            print("onTap11111");
+            FocusScope.of(context).requestFocus(new FocusNode());
+            setState(() {
+              _expand = false;
+            });
+          },
+          child: Container(
+            child: Stack(
+              overflow: Overflow.visible,
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 500,
+                    child: Flex(direction: Axis.vertical, children: <Widget>[
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(150),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
+                        child: _getTextField("您的手机号", userNameController, key: _globalKey),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50), top: ScreenUtil.getInstance().getHeightPx(60)),
+                        child: _getTextField("您的密码", passwordController, obscureText: true),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(170),
+                      ),
+                      Container(
+                        child: CommonUtils.buildBtn("登录", width: ScreenUtil.getInstance().getWidthPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
+                          _login(store);
+                        },
+                            splashColor: loginBtn ? Colors.amber : Color(0xFFdfdfeb),
+                            decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey,
+                            textColor: Colors.white,
+                            textSize: ScreenUtil.getInstance().getSp(54 / 3),
+                            elevation: 2),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(70),
+                      ),
+                      Text(
+                        "找回密码",
+                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFFff6464)),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(70),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          NavigatorUtil.goRegester(context);
+                        },
+                        child: Text(
+                          "我没有账号",
+                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFF999999)),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                            padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                            alignment: AlignmentDirectional.bottomCenter,
+                            // ignore: static_access_to_instance_member
+                            child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.asset(
+                                    "images/phone_login/bottom.png",
+                                    fit: BoxFit.scaleDown,
+                                    height: ScreenUtil.getInstance().getHeightPx(77),
+                                    width: ScreenUtil.getInstance().getWidthPx(77),
+                                  ),
+                                  Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                                ],
+                              ),
+                              SizedBox(
+                                height: ScreenUtil.getInstance().getHeightPx(20),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                              )
+                            ])),
+                        flex: 2,
+                      ),
+                    ]),
+                  ),
+                ),
+                Offstage(
+                  child: _buildListView(),
+                  offstage: !_expand,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   ///getTextField 构建输入框
@@ -449,10 +326,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     }
   }
 
-  void _login() async {
+  void _login(store) async {
     if (loginBtn) {
       CommonUtils.showLoadingDialog(context, text: "登陆中···");
-      DataResult data = await UserDao.login(userNameController.text, passwordController.text);
+      DataResult data = await UserDao.login(userNameController.text, passwordController.text, store);
       Navigator.pop(context);
       if (data.result) {
         showToast("登录成功 ${data.data.realName}");

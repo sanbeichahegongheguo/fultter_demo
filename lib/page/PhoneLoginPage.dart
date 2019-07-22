@@ -2,7 +2,9 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -73,125 +75,127 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     final theme = Theme.of(context);
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: GestureDetector(
-        onTap: () {
-          setState(() {
-            if (_expand == true) {
-              _expand = false;
-            }
-          });
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Container(
-          child: Stack(
-            overflow: Overflow.visible,
-            children: <Widget>[
-              Center(
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Flex(direction: Axis.vertical, children: <Widget>[
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(136),
-                    ),
-                    Container(
-                      child: Image.asset(
-                        "images/phone_login/logo.png",
-                        width: ScreenUtil.getInstance().getWidthPx(555),
+    return StoreBuilder<GSYState>(builder: (context, store) {
+      return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: GestureDetector(
+          onTap: () {
+            setState(() {
+              if (_expand == true) {
+                _expand = false;
+              }
+            });
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Container(
+            child: Stack(
+              overflow: Overflow.visible,
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Flex(direction: Axis.vertical, children: <Widget>[
+                      SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(136),
                       ),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(70),
-                    ),
-                    Container(
-                      child: Image.asset(
-                        "images/phone_login/center.png",
-                        width: ScreenUtil.getInstance().getWidthPx(542),
-                        height: ScreenUtil.getInstance().getHeightPx(447),
+                      Container(
+                        child: Image.asset(
+                          "images/phone_login/logo.png",
+                          width: ScreenUtil.getInstance().getWidthPx(555),
+                          height: ScreenUtil.getInstance().getHeightPx(136),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(100),
-                    ),
-                    Container(
-                        child: ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
-                      child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
-                    )),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
-                      child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(107),
-                    ),
-                    Container(
-                      child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
-                        _login();
-                      }, splashColor: loginBtn ? Colors.amber : Colors.grey, decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey, textColor: Colors.white, textSize: 20.0, elevation: 5),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(70),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        NavigatorUtil.goLogin(context);
-                      },
-                      child: Text(
-                        "使用帐号密码登录",
-                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(70),
                       ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
-                          alignment: AlignmentDirectional.bottomCenter,
-                          // ignore: static_access_to_instance_member
-                          child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Image.asset(
-                                  "images/phone_login/bottom.png",
-                                  fit: BoxFit.scaleDown,
-                                  height: ScreenUtil.getInstance().getHeightPx(77),
-                                  width: ScreenUtil.getInstance().getWidthPx(77),
-                                ),
-                                Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: ScreenUtil.getInstance().getHeightPx(20),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
-                            )
-                          ])),
-                      flex: 2,
-                    ),
-                  ]),
+                      Container(
+                        child: Image.asset(
+                          "images/phone_login/center.png",
+                          width: ScreenUtil.getInstance().getWidthPx(542),
+                          height: ScreenUtil.getInstance().getHeightPx(447),
+                        ),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(100),
+                      ),
+                      Container(
+                          child: ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                        child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
+                      )),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
+                        child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(107),
+                      ),
+                      Container(
+                        child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
+                          _login();
+                        }, splashColor: loginBtn ? Colors.amber : Colors.grey, decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey, textColor: Colors.white, textSize: 20.0, elevation: 5),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(70),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          NavigatorUtil.goLogin(context);
+                        },
+                        child: Text(
+                          "使用帐号密码登录",
+                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                            padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                            alignment: AlignmentDirectional.bottomCenter,
+                            // ignore: static_access_to_instance_member
+                            child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.asset(
+                                    "images/phone_login/bottom.png",
+                                    fit: BoxFit.scaleDown,
+                                    height: ScreenUtil.getInstance().getHeightPx(77),
+                                    width: ScreenUtil.getInstance().getWidthPx(77),
+                                  ),
+                                  Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                                ],
+                              ),
+                              SizedBox(
+                                height: ScreenUtil.getInstance().getHeightPx(20),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                              )
+                            ])),
+                        flex: 2,
+                      ),
+                    ]),
+                  ),
                 ),
+                Offstage(
+                  child: _buildListView(),
+                  offstage: !_expand,
+                ),
+              ],
+            ),
+            decoration: BoxDecoration(
+              gradient: new LinearGradient(
+                begin: const FractionalOffset(0.5, 0.0),
+                end: const FractionalOffset(0.5, 1.0),
+                colors: <Color>[Color(0xFFcdfdd3), Color(0xFFe2fff0)],
               ),
-              Offstage(
-                child: _buildListView(),
-                offstage: !_expand,
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            gradient: new LinearGradient(
-              begin: const FractionalOffset(0.5, 0.0),
-              end: const FractionalOffset(0.5, 1.0),
-              colors: <Color>[Color(0xFFcdfdd3), Color(0xFFe2fff0)],
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   ///getTextField 构建输入框

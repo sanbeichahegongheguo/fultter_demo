@@ -15,4 +15,6 @@ class Config {
   static const THEME_COLOR = "theme-color";
   static const LOCALE = "locale";
   static const LOGIN_USER = "login-user";
+  static const DATA_FROM = "studentApp";
+  static const DES_IV = "myyondor";
 }

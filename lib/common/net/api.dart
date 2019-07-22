@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_start/common/net/code.dart';
@@ -15,20 +17,20 @@ class HttpManager {
   static const CONTENT_TYPE_JSON = "application/json";
   static const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
-  Dio _dio = new Dio(); // 使用默认配置
+  Dio dio = new Dio(); // 使用默认配置
 
   final TokenInterceptors _tokenInterceptors = new TokenInterceptors();
 
   HttpManager() {
-    _dio.interceptors.add(new HeaderInterceptors());
+    dio.interceptors.add(new HeaderInterceptors());
 
-    _dio.interceptors.add(_tokenInterceptors);
+    dio.interceptors.add(_tokenInterceptors);
 
-    _dio.interceptors.add(new LogsInterceptors());
+    dio.interceptors.add(new LogsInterceptors());
 
-    _dio.interceptors.add(new ErrorInterceptors(_dio));
+    dio.interceptors.add(new ErrorInterceptors(dio));
 
-    _dio.interceptors.add(new ResponseInterceptors());
+    dio.interceptors.add(new ResponseInterceptors());
   }
 
   ///发起网络请求
@@ -52,7 +54,7 @@ class HttpManager {
 
     Response response;
     try {
-      response = await _dio.request(url, data: params, options: option);
+      response = await dio.request(url, data: params, options: option);
     } on DioError catch (e) {
       print(e);
       Response errorResponse;
@@ -67,6 +69,66 @@ class HttpManager {
       return new ResultData(Code.errorHandleFunction(errorResponse.statusCode, e.message, noTip), false, errorResponse.statusCode);
     }
     return response.data;
+  }
+
+  ///发起网络请求
+  ///[ url] 请求url
+  ///[ params] 请求参数
+  ///[ header] 外加头
+  ///[ option] 配置
+  netFetchImg(url, params, Map<String, dynamic> header, Options option, {noTip = false, contentType = CONTENT_TYPE_FORM}) async {
+    Map<String, dynamic> headers = new HashMap();
+    if (header != null) {
+      headers.addAll(header);
+    }
+
+    if (option != null) {
+      option.headers = headers;
+    } else {
+      option = new Options(method: "get");
+      option.headers = headers;
+    }
+    option.contentType = ContentType.parse(contentType);
+
+    Response response;
+    try {
+      response = await dio.request(url, data: params, options: option);
+    } on DioError catch (e) {
+      print(e);
+      Response errorResponse;
+      if (e.response != null) {
+        errorResponse = e.response;
+      } else {
+        errorResponse = new Response(statusCode: 666);
+      }
+      if (e.type == DioErrorType.CONNECT_TIMEOUT || e.type == DioErrorType.RECEIVE_TIMEOUT) {
+        errorResponse.statusCode = Code.NETWORK_TIMEOUT;
+      }
+      return new ResultData(Code.errorHandleFunction(errorResponse.statusCode, e.message, noTip), false, errorResponse.statusCode);
+    }
+    return response.data;
+  }
+
+  Future<Uint8List> consolidateHttpClientResponseBytes(HttpClientResponse response) {
+    // response.contentLength is not trustworthy when GZIP is involved
+    // or other cases where an intermediate transformer has been applied
+    // to the stream.
+    final Completer<Uint8List> completer = Completer<Uint8List>.sync();
+    final List<List<int>> chunks = <List<int>>[];
+    int contentLength = 0;
+    response.listen((List<int> chunk) {
+      chunks.add(chunk);
+      contentLength += chunk.length;
+    }, onDone: () {
+      final Uint8List bytes = Uint8List(contentLength);
+      int offset = 0;
+      for (List<int> chunk in chunks) {
+        bytes.setRange(offset, offset + chunk.length, chunk);
+        offset += chunk.length;
+      }
+      completer.complete(bytes);
+    }, onError: completer.completeError, cancelOnError: true);
+    return completer.future;
   }
 
   ///清除授权
