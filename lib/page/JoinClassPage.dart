@@ -148,23 +148,57 @@ class _JoinClassPage extends State<JoinClassPage>{
     print("查找");
     final res =  await UserDao.getTeacherClassList(phoneController.text);
     if(res !=null && res != ""){
-      setState(() {
-        _classInfoList = jsonDecode(res.toString())['success']['classInfoList'];
-        _schoolName = jsonDecode(res.toString())['success']['schoolName'];
-        _realName = jsonDecode(res.toString())['success']['realName'];
-        _onTap(1);
-      });
+        if(jsonDecode(res.toString())['success']['ok'] == 0){
+          setState(() {
+          _classInfoList = jsonDecode(res.toString())['success']['classInfoList'];
+          _schoolName = jsonDecode(res.toString())['success']['schoolName'];
+          _realName = jsonDecode(res.toString())['success']['realName'];
+          if(_classInfoList.length >5){
+            var showMsg = Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  "images/admin/guide.png",
+                  height: ScreenUtil.getInstance().getHeightPx(421),
+                  width: ScreenUtil.getInstance().getWidthPx(315),
+                ),
+                Padding(padding: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(94), 0,0),child:
+                Text("上下滑动查看更多",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(48/3),color: Colors.white),),),
+                Padding(padding: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(105), 0,0),child:ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child:MaterialButton(
+                    minWidth: ScreenUtil.getInstance().getWidthPx(519),
+                    color: Color(0xFF6ed699),
+                    height:ScreenUtil.getInstance().getHeightPx(112) ,
+                    onPressed: (){Navigator.pop(context);},
+                    child: Text("知道了",style: TextStyle(color:Color(0xFFffffff),),
+                    ),
+                  ), ),)
+              ],
+            );
+            CommonUtils.showGuide(context,showMsg);
+          }
+          _onTap(1);
+          });
+        }else{
+          showToast(jsonDecode(res.toString())['success']['message']);
+        }
     }
   }
    _joinClassTap(store) async{
     print("更换班级 $_classId");
-    CommonUtils.showLoadingDialog(context, text: "更换中···");
     var resSameRealName = await UserDao.checkSameRealName(_classId, store.state.userInfo.realName);
     if(resSameRealName.result){
-      Navigator.pop(context);
-      print("无同名");
+      var res =  await UserDao.joinClass(_classId);
+      if(res.result){
+        showToast("更换成功");
+        Navigator.pop(context);
+        UserDao.getUser(isNew: true, store:store);
+      }else{
+        showToast("更换失败");
+      }
     }else{
-      Navigator.pop(context);
+      showToast(resSameRealName.data);
     }
   }
   int _classId = 0;
@@ -180,7 +214,7 @@ class _JoinClassPage extends State<JoinClassPage>{
               disabledColor: _classId==_classInfoList[i]["id"]? Color(0xFF6ed699):Color(0xFFf1f2f6),
               height:ScreenUtil.getInstance().getHeightPx(112) ,
               onPressed: _classId==_classInfoList[i]["id"]?null:(){setState(() {_classId = _classInfoList[i]["id"];});},
-              child: Text(_classInfoList[i]["name"],style: TextStyle(color:_classId==_classInfoList[i]["id"]? Color(0xFFffffff): Color(0xFFafafb0)),),
+              child: Text(_classInfoList[i]["name"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color:_classId==_classInfoList[i]["id"]? Color(0xFFffffff): Color(0xFFafafb0))),
             ),),alignment: Alignment.center,) ,) ;
           _widgetList.add(classMsg);
     }
@@ -188,7 +222,7 @@ class _JoinClassPage extends State<JoinClassPage>{
     if(_classInfoList.length>5){
       listView = Scrollbar(child: new SingleChildScrollView(child: Column(children: _widgetList,),),);
     }else{
-      listView = Column(children: _widgetList,);
+      listView = Padding(padding: EdgeInsets.fromLTRB(0, 0, 0,ScreenUtil.getInstance().getHeightPx(30)),child:Column(children: _widgetList,));
     }
     var viewMsg = Container(
                       decoration: BoxDecoration(
@@ -196,7 +230,7 @@ class _JoinClassPage extends State<JoinClassPage>{
                         borderRadius: new BorderRadius.all(
                             Radius.circular((10.0))),
                       ),
-                      height:_classInfoList.length>5?ScreenUtil.getInstance().getHeightPx(1000):null,
+                      height:_classInfoList.length>5?ScreenUtil.getInstance().getHeightPx(800):null,
                       width:ScreenUtil.getInstance().getWidthPx(900),
                       margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(73), 0,0),
                       child: Padding(padding: EdgeInsets.all(ScreenUtil.getInstance().getHeightPx(10)),child:Align(alignment: Alignment.center,child: listView,),)

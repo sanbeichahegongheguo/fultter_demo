@@ -117,4 +117,13 @@ class CommonUtils {
       ),
     );
   }
+  static Future<dynamic> showGuide(BuildContext context, Widget widget, {double width, double height}) {
+    return NavigatorUtil.showGSYDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new Material(
+              color: Colors.transparent,
+              child: widget);
+        });
+  }
 }

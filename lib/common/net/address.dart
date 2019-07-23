@@ -1,10 +1,10 @@
 ///地址数据
 class Address {
-  static const String studentWebHost = "http://192.168.6.31:30915/student:";
+  //static const String studentWebHost = "http://192.168.6.31:30915/student:";
 
-  //static const String studentWebHost = "https://www.k12china.com/student/student:";
-  //static const String k12apiHost = "https://www.k12china.com/k12-api/";
-  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
+  static const String studentWebHost = "https://www.k12china.com/student/student:";
+  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+  //static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
   static const String registerHost = "http://api.k12china.com/k12-api/search/getSchool";
   static const String regHost = "http://192.168.6.31:31528/studentweb/reg/getclass";
 
@@ -91,5 +91,7 @@ class Address {
   static chooseClass(){
     return regHost;
   }
-
+  static joinClass(){
+    return "${studentWebHost}joinClass";
+  }
 }
