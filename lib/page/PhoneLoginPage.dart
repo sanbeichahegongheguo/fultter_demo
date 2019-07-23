@@ -35,6 +35,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   @override
   void initState() {
     super.initState();
+
     userNameController.addListener(() {
       if (userNameController.text == "") {
         setState(() {
