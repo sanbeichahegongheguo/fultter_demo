@@ -26,6 +26,7 @@ class Address {
     return "${studentWebHost}uploadHeadUrl";
   }
 
+
   ///获取图形验证码
   static getImgCode() {
     return "${k12apiHost}base/getValidateCode?toBase64=T";
