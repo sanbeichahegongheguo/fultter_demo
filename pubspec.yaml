@@ -70,14 +70,7 @@ flutter:
    - images/login/studenthomepage_btn.png
    - images/login/joinclass_bg_bgimg.png
    - images/login/studenthomepage_btn_hover.png
-   - images/home/icon_challenge.png
-   - images/home/icon_parent.png
-   - images/home/icon_study.png
-   - images/home/icon_user.png
-   - images/home/icon_challenge_select.png
-   - images/home/icon_parent_select.png
-   - images/home/icon_study_select.png
-   - images/home/icon_user_select.png
+   - images/home/
    - images/phone_login/
    - images/admin/
 

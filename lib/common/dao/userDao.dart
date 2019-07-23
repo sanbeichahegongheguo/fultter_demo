@@ -143,7 +143,7 @@ class UserDao {
 
   ///发送短信
   static sendMobileCodeWithValiCode(String mobile, String vcode, var codeDataJson) async {
-    var params = {"mobile": mobile, "datafrom": "student_reg", "vcode": vcode, "codeDataJson": codeDataJson};
+    var params = {"mobile": mobile, "datafrom": "parent_reg", "vcode": vcode, "codeDataJson": codeDataJson};
     var res = await httpManager.netFetch(Address.sendMobileCodeWithValiCode(), params, null, new Options(method: "post"));
     print("res==>$res");
     var result;
@@ -157,8 +157,9 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
   ///更换教程
-  static resetTextbookId(textbookId) async{
+  static resetTextbookId(textbookId) async {
     String key = await httpManager.getAuthorization();
     var params = {"key": key, "textbookId": textbookId};
     var res = await httpManager.netFetch(Address.resetTextbookId(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);

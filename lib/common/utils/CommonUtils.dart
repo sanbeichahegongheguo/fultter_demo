@@ -42,7 +42,7 @@ class CommonUtils {
         });
   }
 
-  static Future<Null> showEditDialog(BuildContext context, Widget widget, {double width, double height}) {
+  static Future<dynamic> showEditDialog(BuildContext context, Widget widget, {double width, double height}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
         builder: (BuildContext context) {
@@ -73,7 +73,7 @@ class CommonUtils {
                       ),
                       IconButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context, false);
                           },
                           icon: Icon(
                             Icons.close,
