@@ -143,7 +143,7 @@ class UserDao {
 
   ///发送短信
   static sendMobileCodeWithValiCode(String mobile, String vcode, var codeDataJson) async {
-    var params = {"mobile": mobile, "datafrom": "student_reg", "vcode": vcode, "codeDataJson": codeDataJson};
+    var params = {"mobile": mobile, "datafrom": "parent_reg", "vcode": vcode, "codeDataJson": codeDataJson};
     var res = await httpManager.netFetch(Address.sendMobileCodeWithValiCode(), params, null, new Options(method: "post"));
     print("res==>$res");
     var result;
@@ -172,11 +172,12 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
   ///更改手机号码
-  static resetMobile(oldMobile,newMobile,code) async{
+  static resetMobile(oldMobile, newMobile, code) async {
     String key = await httpManager.getAuthorization();
     print("key====${key}");
-    var params = {"key": key, "oldMobile": oldMobile,"newMobile": newMobile,"code": code};
+    var params = {"key": key, "oldMobile": oldMobile, "newMobile": newMobile, "code": code};
     var res = await httpManager.netFetch(Address.resetMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
