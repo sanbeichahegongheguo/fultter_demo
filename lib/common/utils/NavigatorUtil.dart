@@ -5,6 +5,7 @@ import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/RegisterPage.dart';
+import 'package:flutter_start/page/ResetMobilePage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 
@@ -53,7 +54,10 @@ class NavigatorUtil {
   static goUserInfo(BuildContext context) {
     NavigatorRouter(context, UserInfo());
   }
-
+  ///更改手机号
+  static goResetMobilePage(BuildContext context) {
+    NavigatorRouter(context, ResetMobilePage());
+  }
   ///主页
   static goHome(BuildContext context) {
     NavigatorRouter(context, HomePage());
