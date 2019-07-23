@@ -157,6 +157,7 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
   ///更换教程
   static resetTextbookId(textbookId) async{
     String key = await httpManager.getAuthorization();
@@ -185,6 +186,85 @@ class UserDao {
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///检测是否拥有账号
+  static checkHaveAccount(mobile,identity) async{
+    var params = {"mobile": mobile, "identity": identity};
+    var res = await httpManager.netFetch(Address.checkParentsUser(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]==null) {
+        result = res.data["message"];
+        res.result = false;
+      }else{
+        result = res.data["success"];
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///检测验证码
+  static checkCode(mobile,code) async{
+    var params = {"mobile": mobile, "code": code};
+    var res = await httpManager.netFetch(Address.checkCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = jsonDecode(res.data);
+      if (json["success"]["ok"] != 0) {
+        result = json["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///搜索学校
+  static searchSchool(index,type,key,from) async{
+    var params = {"index": index, "type": type, "key":key, "from":from};
+    var res = await httpManager.netFetch(Address.searchSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]==null) {
+        result = res.data;
+        res.result = false;
+      }else{
+        result = res.data;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///选择学校
+  static chooseSchool(schoolId,grade) async{
+    var params = {"schoolId": schoolId, "grade": grade};
+    var res = await httpManager.netFetch(Address.chooseSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]==null) {
+        result = res.data;
+        res.result = false;
+      }else{
+        result = res.data;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///选择班级
+  static chooseClass(classId) async{
+    var params = {"classId": classId};
+    var res = await httpManager.netFetch(Address.chooseClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]==null) {
+        result = res.data;
+        res.result = false;
+      }else{
+        result = res.data;
       }
     }
     return new DataResult(result, res.result);

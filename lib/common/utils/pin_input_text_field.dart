@@ -3,6 +3,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_start/page/RegisterPage.dart';
 
 enum PinEntryType { underline, boxTight, boxLoose }
 
@@ -214,7 +215,7 @@ class PinInputTextField extends StatefulWidget {
     this.keyboardType: TextInputType.phone,
     PinEditingController pinEditingController,
     this.focusNode,
-    this.autoFocus = false,
+    this.autoFocus = true,
     this.textInputAction = TextInputAction.done,
     this.enabled = true,
   })  :

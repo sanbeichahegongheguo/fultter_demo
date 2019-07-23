@@ -46,8 +46,8 @@ class NavigatorUtil {
   }
 
   ///注册
-  static goRegester(BuildContext context) {
-    NavigatorRouter(context, RegisterPage());
+  static goRegester(BuildContext context,{String from}) {
+    NavigatorRouter(context, RegisterPage(from:from));
   }
 
   ///去个人资料
