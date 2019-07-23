@@ -41,7 +41,6 @@ class UserDao {
 
   ///发送手机验证码
   static sendMobileCode(mobile) async {
-    await httpManager.clearAuthorization();
     var params = {"mobile": mobile};
     var res = await httpManager.netFetch(Address.sendMobileCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
@@ -144,7 +143,7 @@ class UserDao {
 
   ///发送短信
   static sendMobileCodeWithValiCode(String mobile, String vcode, var codeDataJson) async {
-    var params = {"mobile": mobile, "datafrom": "parent_reg", "vcode": vcode, "codeDataJson": codeDataJson};
+    var params = {"mobile": mobile, "datafrom": "student_reg", "vcode": vcode, "codeDataJson": codeDataJson};
     var res = await httpManager.netFetch(Address.sendMobileCodeWithValiCode(), params, null, new Options(method: "post"));
     print("res==>$res");
     var result;
@@ -158,12 +157,27 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
-
   ///更换教程
-  static resetTextbookId(textbookId) async {
+  static resetTextbookId(textbookId) async{
     String key = await httpManager.getAuthorization();
-    var params = {"key": key, "textbookid": textbookId};
+    var params = {"key": key, "textbookId": textbookId};
     var res = await httpManager.netFetch(Address.resetTextbookId(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = jsonDecode(res.data);
+      if (json["success"]["ok"] != 0) {
+        result = json["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+  ///更改手机号码
+  static resetMobile(oldMobile,newMobile,code) async{
+    String key = await httpManager.getAuthorization();
+    print("key====${key}");
+    var params = {"key": key, "oldMobile": oldMobile,"newMobile": newMobile,"code": code};
+    var res = await httpManager.netFetch(Address.resetMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = jsonDecode(res.data);
