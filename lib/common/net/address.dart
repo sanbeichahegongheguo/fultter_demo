@@ -1,6 +1,7 @@
 ///地址数据
 class Address {
   static const String studentWebHost = "http://192.168.6.31:30915/student:";
+
   //static const String studentWebHost = "https://www.k12china.com/student/student:";
   //static const String k12apiHost = "https://www.k12china.com/k12-api/";
   static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
@@ -56,6 +57,20 @@ class Address {
   static checkParentsUser() {
     return "${k12apiHost}base/checkParentsUser";
   }
+
+  ///退出账号
+  static logout() {
+    return "${studentWebHost}logout";
+  }
+  ///通过老师手机查询班级列表
+  static getTeacherClassList() {
+    return "${studentWebHost}getTeacherClassList";
+  }
+  ///检查该班级是否有同名
+  static checkSameRealName() {
+    return "${studentWebHost}checkSameRealName";
+  }
+
 
   ///检测验证码
   static checkCode(){

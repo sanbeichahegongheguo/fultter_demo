@@ -9,6 +9,7 @@ import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/net/result_data.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:redux/redux.dart';
 
@@ -157,7 +158,6 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
-
   ///更换教程
   static resetTextbookId(textbookId) async{
     String key = await httpManager.getAuthorization();
@@ -173,13 +173,52 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
-
   ///更改手机号码
-  static resetMobile(oldMobile, newMobile, code) async {
+  static resetMobile(oldMobile,newMobile,code) async{
     String key = await httpManager.getAuthorization();
     print("key====${key}");
-    var params = {"key": key, "oldMobile": oldMobile, "newMobile": newMobile, "code": code};
+    var params = {"key": key, "oldMobile": oldMobile,"newMobile": newMobile,"code": code};
     var res = await httpManager.netFetch(Address.resetMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = jsonDecode(res.data);
+      if (json["success"]["ok"] != 0) {
+        result = json["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///退出账号
+  static logout(store,context) async{
+    String key = await httpManager.getAuthorization();
+    await httpManager.clearAuthorization();
+    store.dispatch(UpdateUserAction(User()));
+    var params = {"key": key};
+    await httpManager.netFetch(Address.logout(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+  }
+
+  ///通过老师手机查询班级
+  static getTeacherClassList(mobile) async{
+    var params = {"mobile": mobile};
+    var res = await httpManager.netFetch(Address.getTeacherClassList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = jsonDecode(res.data);
+      if (json["success"]["ok"] != 0) {
+        result = json["success"]["message"];
+        res.result = false;
+      }
+      res.data = res.data;
+    }
+    return res.data;
+  }
+
+  ///检查该班级是否有同名
+  static checkSameRealName(classId,realName) async{
+    var params = { "classId": classId,"realName": realName};
+    var res = await httpManager.netFetch(Address.checkSameRealName(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = jsonDecode(res.data);

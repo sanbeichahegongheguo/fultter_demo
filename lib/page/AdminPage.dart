@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,6 +13,7 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:oktoast/oktoast.dart';
 
 class Admin extends StatefulWidget {
   @override
@@ -122,7 +124,7 @@ class _Admin extends State<Admin> {
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
-                    _getBt("退出账号", "images/admin/icon_out.png", _goOut),
+                    _getBt("退出账号", "images/admin/icon_out.png", (){_goOut(store);}),
                   ],
                 ),
               ],
@@ -222,10 +224,43 @@ class _Admin extends State<Admin> {
   }
 
   //退出賬號
-  void _goOut() {
+  Future _goOut(store) async {
     print("退出賬號");
+
+    var outMsg= Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Text("是否退出当前账号",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3)),),
+        Row(
+          mainAxisAlignment:MainAxisAlignment.center,
+          children: <Widget>[
+            CommonUtils.buildBtn("确定",width:ScreenUtil.getInstance().getWidthPx(300),height:ScreenUtil.getInstance().getHeightPx(114), decorationColor:  Colors.blueAccent,textColor: Colors.white,onTap: (){_sureOnTap(store);}),
+            SizedBox(
+              width: ScreenUtil.getInstance().getWidthPx(36),
+            ),
+            CommonUtils.buildBtn("取消",width:ScreenUtil.getInstance().getWidthPx(300),height:ScreenUtil.getInstance().getHeightPx(114),onTap: _cancelOnTap, ),
+          ],
+        )
+      ],
+    );
+    var isOut = await CommonUtils.showEditDialog(context,outMsg,height: ScreenUtil.getInstance().getHeightPx(400),width: ScreenUtil.getInstance().getWidthPx(906));
+    if (isOut!=null&&isOut){
+      NavigatorUtil.goPhoneLoginPage(context);
+      showToast("退出成功");
+      Future.delayed(Duration(milliseconds:500)).then((_){
+        UserDao.logout(store,context);
+      });
+    }
+  }
+  //确定
+   _sureOnTap(store) async{
+     Navigator.pop(context,true);
   }
 
+  //取消选择
+  void _cancelOnTap(){
+    Navigator.pop(context,false);
+  }
   _getBt(btName, btImg, btPressed) {
     return MaterialButton(
       elevation: 0,
