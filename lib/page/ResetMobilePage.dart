@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/widget/CodeWidget.dart';
 import 'package:oktoast/oktoast.dart';
 import 'dart:async';
 
@@ -19,9 +20,9 @@ class _ResetMobilePage extends State<ResetMobilePage>{
   TextEditingController cordController = new TextEditingController();
   GlobalKey _globalKey = new GlobalKey();
   bool _hasdeleteIcon = false;
-  bool _isCord = false;
-  bool _isCordSendOk = false;
-  bool _isBt = false;
+  bool _isCord = false;///判断是否点击发送验证码
+  bool _isCordSendOk = false;///判断验证码是否正确
+  bool _isBt = false;///确定按钮是否点击
   Timer _countdownTimer;
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _ResetMobilePage extends State<ResetMobilePage>{
           print("请输入正确的手机号");
           showToast("请输入正确的手机号");
         });
-      }else if(firstMatch != null && phoneController.text.length == 11){
+      }else if(firstMatch != null && phoneController.text.length == 11 && _countdownNum == 61){
         setState(() {
           print("正确的手机号");
           _isCord = true;
@@ -137,6 +138,7 @@ class _ResetMobilePage extends State<ResetMobilePage>{
             });
           } else {
             _countdownTimer.cancel();
+            _countdownNum = 61;
             timeMsg = "重新发送";
             _isCord = true;
           }
@@ -193,19 +195,29 @@ class _ResetMobilePage extends State<ResetMobilePage>{
           child: Text(timeMsg),
           onPressed: _isCord?() async{
             print("发送验证码");
-            _reGetCountdown();
-            CommonUtils.showLoadingDialog(context, text: "发送中···");
-            var res = await UserDao.sendMobileCode(phoneController.text);
-            Navigator.pop(context);
-            setState(() {
-              if(res.result){
-                _countdownNum = 60;
-                _isCordSendOk = true;
-                showToast("发送成功");
-              }else{
-                showToast("发送失败，请联系客服！");
-              }
-            });
+            var isSend = await CommonUtils.showEditDialog(
+              context,
+              CodeWidget(phone:phoneController.text),
+            );
+            if (null != isSend && isSend) {
+              print("成功");
+
+              CommonUtils.showLoadingDialog(context, text: "发送中···");
+              var res = await UserDao.sendMobileCode(phoneController.text);
+              Navigator.pop(context);
+              setState(() {
+                if(res.result){
+                  _countdownNum = 60;
+                  _reGetCountdown();
+                  _isCordSendOk = true;
+                  showToast("发送成功");
+                }else{
+                  showToast(res.next);
+                }
+              });
+            }else{
+              showToast("验证码验证有误，请重新发送");
+            }
           }:null,
         ),
         contentPadding: EdgeInsets.all(13),

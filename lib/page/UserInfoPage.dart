@@ -334,25 +334,8 @@ class _UserInfo extends State<UserInfo>{
   }
   //设置班级
   void _setUserClass(){
-    List<Widget> tiles = [];
-    for(var i = 0;i<10;i++){
-      tiles.add(
-        Padding(padding: EdgeInsets.fromLTRB(0, 15, 0, 0),child:CommonUtils.buildBtn("${i+1}",width:ScreenUtil.getInstance().getWidthPx(638),height:ScreenUtil.getInstance().getHeightPx(114)),)
-      );
-    }
-    var widgetMsg = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: tiles,
-    );
-    var msg = SizedBox(
-      width: ScreenUtil.getInstance().getWidthPx(906),
-      height: ScreenUtil.getInstance().getHeightPx(600),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: widgetMsg,
-      ),
-    );
-    CommonUtils.showEditDialog(context, msg,height: ScreenUtil.getInstance().getHeightPx(700),width: ScreenUtil.getInstance().getWidthPx(906));
+    print("设置班级");
+    NavigatorUtil.goJoinClassPage(context);
   }
   final List<String> _list= ["RJ版","BS版"];
   //设置教程

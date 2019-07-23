@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/page/HomePage.dart';
+import 'package:flutter_start/page/JoinClassPage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/RegisterPage.dart';
@@ -62,6 +63,15 @@ class NavigatorUtil {
   static goHome(BuildContext context) {
     NavigatorRouter(context, HomePage());
   }
+  ///去手机号登陆
+  static goPhoneLoginPage(BuildContext context) {
+    NavigatorRouter(context, PhoneLoginPage());
+  }
+  ///更换班级
+  static goJoinClassPage(BuildContext context) {
+    NavigatorRouter(context, JoinClassPage());
+  }
+
 
   ///去往webview
   static goWebView(BuildContext context, String url) async {
