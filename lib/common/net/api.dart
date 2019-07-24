@@ -100,6 +100,10 @@ class HttpManager {
     Response response;
     try {
       response = await dio.request(url, data: params, options: option);
+      if(null!=response.data["success"] && (response.data["success"]["ok"]==201)){
+        //这个工程的201状态码为登录过期
+        return new ResultData(Code.errorHandleFunction(401, "登录过期", noTip), false, 401);
+      }
     } on DioError catch (e) {
       print(e);
       Response errorResponse;

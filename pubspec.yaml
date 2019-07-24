@@ -41,6 +41,7 @@ dependencies:
   flutter_redux: ^0.5.3
   rxdart: ^0.22.0
   uuid: 2.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,6 +67,7 @@ flutter:
    - images/ic_publish_inner_empty_camera.png
    - images/ic_live_player_send_danmaku.png
    - images/ic_category_t60.png
+   - images/splash.png
    - images/login/studenthomepage_logp.png
    - images/login/studenthomepage_btn.png
    - images/login/joinclass_bg_bgimg.png
