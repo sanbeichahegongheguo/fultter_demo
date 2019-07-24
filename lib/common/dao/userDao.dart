@@ -222,14 +222,13 @@ class UserDao {
     var result;
     if (res != null && res.result) {
       var json = jsonDecode(res.data);
-      if (json["success"]["ok"] != 0) {
-        result = json["success"]["message"];
+      if (json["success"]["ok"] != 0 || json["success"]["data"] != "0") {
+        result = "班级里已有相同姓名的学生";
         res.result = false;
       }
     }
     return new DataResult(result, res.result);
   }
-
   ///检测是否拥有账号
   static checkHaveAccount(mobile,identity) async{
     var params = {"mobile": mobile, "identity": identity};
@@ -241,6 +240,21 @@ class UserDao {
         res.result = false;
       }else{
         result = res.data["success"];
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+  ///更换班级
+  static joinClass(classId) async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key": key, "classId": classId};
+    var res = await httpManager.netFetch(Address.joinClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = jsonDecode(res.data);
+      if (json["success"]["ok"] != 0) {
+        result = res.data["message"];
+        res.result = false;
       }
     }
     return new DataResult(result, res.result);

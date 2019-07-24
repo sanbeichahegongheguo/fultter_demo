@@ -317,7 +317,7 @@ class _UserInfo extends State<UserInfo>{
         CommonUtils.buildBtn("从相机获取",width:ScreenUtil.getInstance().getWidthPx(638),height:ScreenUtil.getInstance().getHeightPx(114),onTap:(){_album(store);} ),
       ],
     );
-    CommonUtils.showEditDialog(context, widget,height: ScreenUtil.getInstance().getHeightPx(502),width: ScreenUtil.getInstance().getWidthPx(906));
+    CommonUtils.showGuide(context, widget,height: ScreenUtil.getInstance().getHeightPx(502),width: ScreenUtil.getInstance().getWidthPx(906));
   }
   //拍照
   void _photograph(store){
