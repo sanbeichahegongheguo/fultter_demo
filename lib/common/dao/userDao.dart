@@ -74,6 +74,7 @@ class UserDao {
       } else {
         result = json["success"]["message"];
         res.result = false;
+        return null;
       }
     }
     User user = User.fromJson(SpUtil.getObject(Config.LOGIN_USER));
