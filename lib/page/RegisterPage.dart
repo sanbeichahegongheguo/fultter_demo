@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,7 +68,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   List<dynamic> classesList = [];
 
   int _classId = 0;
-
+  int _className = 0;
+  int _gradeName = 0;
 
   @override
   void initState() {
@@ -159,13 +161,15 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   //搜索学校
   void _searchSchool() async{
-    DataResult data = await UserDao.searchSchool('base','school',schoolController.text,'');
+    DataResult data = await UserDao.searchSchool('base','school',schoolController.text,'h5');
     if(data.data['error']==0){
       setState(() {
         this._schoolList = data.data['schoollist'];
       });
       _hasdeleteIcon = true;
       _expand = false;
+    }else{
+      showToast('搜索不到相应学校！');
     }
   }
 
@@ -364,7 +368,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   _checkPasswordStandard(text){
     bool letterStandard = text.contains(new RegExp("[a-zA-Z]"));
     bool numberStandard = text.contains(new RegExp("[0-9]"));
-    if(text.length>=6&&text.length<20){
+    if(text.length>=6&&text.length<=20){
       setState(() {
         _lengthStandard = true;
       });
@@ -385,27 +389,25 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   }
 
   //已有账号弹框
-  _setPwdBtnCheck(){
-//    RegExp exp = RegExp(
-//        r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
-//    bool matched = exp.hasMatch(userPhoneController.text);
-//    bool isName = false;
-//    if (userNameController.text.contains("·") || userNameController.text.contains("•")){
-//      if (userNameController.text.matches("^[\\u4e00-\\u9fa5]+[·•][\\u4e00-\\u9fa5]+$")){
-//        isName =  true;
-//      }else {
-//        isName =  false;
-//      }
-//    }else {
-//      if (userNameController.text.matches("^[\\u4e00-\\u9fa5]+$")){
-//        isName =  true;
-//      }else {
-//        isName =  false;
-//      }
-//    }
-    print(userNameController.text);
-    if(_lengthStandard&&_includeStandard&&_hasdeleteIcon){
-      var widgetMsg =  Column(
+  void _setPwdBtnCheck() async{
+    ///验证中文名
+    RegExp exp = RegExp(r'^[\u4E00-\u9FA5]{2,4}$');
+    bool isName = exp.hasMatch(userNameController.text);
+    bool isSurname = false;
+    ///验证姓氏是否合法
+    DataResult data = await UserDao.checkname(userNameController.text);
+    if(data.data['err']==0){
+      isSurname = true;
+    }else{
+      isSurname = false;
+    }
+    if(_lengthStandard&&_includeStandard&&_hasdeleteIcon&&isName&&isSurname){
+      DataResult data = await UserDao.checkSameRealNamePhone(_classId,userNameController.text,userPhoneController.text);
+      if(data.data['err']==1){
+        ///用户已存在
+        dynamic json = jsonDecode(jsonDecode(data.data['ext1']));
+        print(json["mobile"]);
+        var widgetMsg =  Column(
         children: <Widget>[
           SizedBox(
             height: ScreenUtil.getInstance().getHeightPx(30),
@@ -415,7 +417,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
             child:Align(
               alignment: Alignment.topLeft,
               child: Text(
-                '宋楚乔 家长已有',
+                '${json["realname"]} 家长已有',
                 style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666))),
             ),
           ),
@@ -426,7 +428,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           Container(
             padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), right: ScreenUtil.getInstance().getWidthPx(42)),
             child: Text(
-                '137****4518 为手机号的账号，请使用旧手机号登录，谢谢！',
+                '${json["mobile"]} 为手机号的账号，请使用旧手机号登录，谢谢！',
                 style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), color: const Color(0xFF666666))),
           ),
           SizedBox(
@@ -441,11 +443,68 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           }),
         ],
       );
-      if(this._classNextBtn){
-        CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
+        if(this._classNextBtn){
+          CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
+        }
+      }else if(data.data['err']==0){
+        String className = "$gradeName年级$_className班";
+        print(className);
+        print(_gradeName);
+        print(_className);
+        CommonUtils.showLoadingDialog(context, text: "注册中···");
+        DataResult data = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'P',_classId,_schoolId,className,_gradeName,_className);
+        Navigator.pop(context);
+        if(!data.data['success']){
+          showToast(data.data['message']);
+        }
+        print(data.data);
+        ///进行注册
+      }else{
+        showToast(data.data['msg']);
       }
+//      var widgetMsg =  Column(
+//        children: <Widget>[
+//          SizedBox(
+//            height: ScreenUtil.getInstance().getHeightPx(30),
+//          ),
+//          Container(
+//            padding: EdgeInsets.only(left: ScreenUtil.getInstance().getHeightPx(35)),
+//            child:Align(
+//              alignment: Alignment.topLeft,
+//              child: Text(
+//                '宋楚乔 家长已有',
+//                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666))),
+//            ),
+//          ),
+//
+//          SizedBox(
+//            height: ScreenUtil.getInstance().getHeightPx(30),
+//          ),
+//          Container(
+//            padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), right: ScreenUtil.getInstance().getWidthPx(42)),
+//            child: Text(
+//                '137****4518 为手机号的账号，请使用旧手机号登录，谢谢！',
+//                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), color: const Color(0xFF666666))),
+//          ),
+//          SizedBox(
+//            height: ScreenUtil.getInstance().getHeightPx(80),
+//          ),
+//          CommonUtils.buildBtn("更换手机号", height: ScreenUtil.getInstance().getHeightPx(120), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
+//          }),
+//          SizedBox(
+//            height: ScreenUtil.getInstance().getHeightPx(30),
+//          ),
+//          CommonUtils.buildBtn("原号码登录", height: ScreenUtil.getInstance().getHeightPx(120), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
+//          }),
+//        ],
+//      );
+//      if(this._classNextBtn){
+//        CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
+//      }
+    }else if(!isName||!isSurname){
+      showToast("姓名不合法!");
     }else if(!_hasdeleteIcon){
-      showToast("请输入您的孩子姓名");
+      showToast("请输入您的孩子姓名!");
     }
     else if(!_lengthStandard){
       showToast("密码要求6-20位字符!");
@@ -960,6 +1019,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         }else if (classesList[i]['classNum'] == 0) {
           this.classList.insert(0,'0班');
           this.classListColor.add(false);
+        }else{
+          print('我进来这里了');
         }
       }
     }else{
@@ -973,10 +1034,16 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 //    this._getDataList();
   }
 
+
   //选择班级，变色
   _checkClass(item,index){
+    print(this.classesList);
+    print(item);
+    print(index);
     setState((){
       _classId = this.classesList[index]['id'];
+      _className = this.classesList[index]['classNum'];
+      _gradeName = this.classesList[index]['grade'];
     });
     if(this.classListColor.indexOf(true)!=-1){
       setState((){
@@ -1189,7 +1256,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     CommonUtils.showLoadingDialog(context, text: "请等待···");
     DataResult data = await UserDao.chooseSchool(schoolId,1);
     Navigator.pop(context);
-    if(data.data['success']){
+//    if(data.data['success']&&_AgreementCheck){
+    if(_AgreementCheck){
       setState(() {
         FocusScope.of(context).requestFocus(new FocusNode());
         _expand = true;
@@ -1197,9 +1265,13 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         _schoolName = schollName;
         _onTap(3);
       });
-    }else{
-      showToast("选择学校失败！",position: ToastPosition.center);
+//    }else if(data.data['success']&&!_AgreementCheck){
+    }else if(!_AgreementCheck){
+      showToast("请先阅读协议！");
     }
+//    else{
+//      showToast("选择学校失败！");
+//    }
 
   }
   //下拉框

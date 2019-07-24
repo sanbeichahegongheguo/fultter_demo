@@ -229,6 +229,8 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
+
   ///检测是否拥有账号
   static checkHaveAccount(mobile,identity) async{
     var params = {"mobile": mobile, "identity": identity};
@@ -307,10 +309,61 @@ class UserDao {
     return new DataResult(result, res.result);
   }
 
+  ///检测姓名是否合法
+  static checkname(name) async{
+    var params = {"name": name};
+    var res = await httpManager.netFetch(Address.checkname(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]==null) {
+        result = res.data;
+        res.result = false;
+      }else{
+        result = res.data;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
   ///选择班级
   static chooseClass(classId) async{
     var params = {"classId": classId};
     var res = await httpManager.netFetch(Address.chooseClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]==null) {
+        result = res.data;
+        res.result = false;
+      }else{
+        result = res.data;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///检查该班级是否有同名
+  static checkSameRealNamePhone(classId,realName,mobile) async{
+    var params = { "classId": classId,"name": realName, "mobile": mobile};
+    var res = await httpManager.netFetch(Address.checkSameRealNamePhone(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+//      var json = jsonDecode(res.data);
+      if (res.data["err"]!=0) {
+        result = res.data;
+        res.result = true;
+      }else{
+        result = res.data;
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+
+  ///注册
+  static register(dataFrom,mobile,password,realName,identity,classId,schoolId,className,grade,classNum) async{
+    var params = {"dataFrom": dataFrom,"mobile": mobile,"password": password,"realName": realName,"identity": identity,"classId": classId,"schoolId": schoolId,"className": className,"grade": grade,"classNum": classNum};
+    var res = await httpManager.netFetch(Address.register(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"]==null) {

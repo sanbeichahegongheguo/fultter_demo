@@ -1,12 +1,12 @@
 ///地址数据
 class Address {
-  //static const String studentWebHost = "http://192.168.6.31:30915/student:";
+  static const String studentWebHost = "http://192.168.6.31:30915/student:";
 
-  static const String studentWebHost = "https://www.k12china.com/student/student:";
-  static const String k12apiHost = "https://www.k12china.com/k12-api/";
-  //static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
+//  static const String studentWebHost = "https://www.k12china.com/student/student:";
+//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
   static const String registerHost = "http://api.k12china.com/k12-api/search/getSchool";
-  static const String regHost = "http://192.168.6.31:31528/studentweb/reg/getclass";
+  static const String regHost = "http://192.168.6.31:31528/studentweb/";
 
   ///登录  post
   static login() {
@@ -87,11 +87,32 @@ class Address {
     return "${k12apiHost}base/getClassNumDataV2";
   }
 
+  ///检查该班级是否有同名,返回手机号
+  static checkSameRealNamePhone() {
+    return "${regHost}reg/checkClassSameName";
+  }
+
   ///选择班级
   static chooseClass(){
-    return regHost;
+    return "${regHost}reg/getclass";
   }
+
+  ///验证姓氏是否合法
+  static checkname(){
+    return "${k12apiHost}name/checkname";
+  }
+
+  ///是否同名
+  static checkClassSameName(){
+    return "${k12apiHost}reg/checkClassSameName";
+  }
+
   static joinClass(){
     return "${studentWebHost}joinClass";
+  }
+
+  ///注册
+  static register() {
+    return "${k12apiHost}base/register";
   }
 }
