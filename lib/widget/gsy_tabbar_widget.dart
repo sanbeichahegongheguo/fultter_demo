@@ -229,7 +229,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   static _renderTab(icon, text, isSelect) {
     return new Tab(
       child: new Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset(icon, fit: BoxFit.scaleDown, height: isSelect ? ScreenUtil.getInstance().getHeightPx(65) : ScreenUtil.getInstance().getHeightPx(60)
 //            height: isSelect ? 25 : 20,
@@ -239,7 +239,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           ),
           new Text(
             text,
-            style: TextStyle(fontSize: isSelect ? ScreenUtil.getInstance().getSp(38 / 3) : ScreenUtil.getInstance().getSp(32 / 3), color: isSelect ? Color(0xFF5fc589) : Color(0xFF606a81)),
+            style: TextStyle(fontSize: isSelect ? ScreenUtil.getInstance().getSp(33 / 3) : ScreenUtil.getInstance().getSp(32 / 3), color: isSelect ? Color(0xFF5fc589) : Color(0xFF606a81)),
           )
         ],
       ),
