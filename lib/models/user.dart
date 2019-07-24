@@ -25,6 +25,8 @@ class User {
   String tUserName;
   String key;
   String headUrl;
+  String parentUsername;
+  num parentId;
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }

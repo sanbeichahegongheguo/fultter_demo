@@ -58,6 +58,9 @@ class CountDownState extends State<CountDown> with SingleTickerProviderStateMixi
   }
   void _reGetCountdown() {
     Future.delayed(Duration(milliseconds: 200)).then((e) {
+      if(!mounted){
+        return;
+      }
       setState(() {
         if (_countdownTimer != null) {
           return;

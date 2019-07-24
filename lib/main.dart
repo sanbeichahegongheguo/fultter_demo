@@ -8,6 +8,7 @@ import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
 
 import 'models/user.dart';
@@ -60,5 +61,12 @@ class MyApp extends StatelessWidget {
 
   void _initAsync() async {
     await SpUtil.getInstance();
+    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
+    if (permission != PermissionStatus.granted) {
+      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.phone]);
+//      if (permissions[PermissionGroup.phone] != PermissionStatus.granted) {
+//        return null;
+//      }
+    }
   }
 }

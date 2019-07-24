@@ -9,23 +9,23 @@ import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/net/result_data.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
-import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:redux/redux.dart';
 
 class UserDao {
   ///登录
-  static login(userName, password, Store store) async {
+  static login(userName, password, Store store, {String code}) async {
     await httpManager.clearAuthorization();
-    var params = {"mobile": userName, "password": password, "datafrom": Config.DATA_FROM};
+    var deviceId = await DeviceInfo.instance.getDeviceId();
+    var params = {"mobile": userName, "password": password, "datafrom": Config.DATA_FROM, "deviceId": deviceId};
+    if (code != null) {
+      params["code"] = code;
+    }
     var res = await httpManager.netFetch(Address.login(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      if (Config.DEBUG) {
-        print("user result " + res.result.toString());
-        print("user data  " + res.data);
-      }
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] == 0) {
         result = User.fromJson(jsonDecode(json["success"]["data"]));
         print("user key  ${result.key}");
@@ -46,7 +46,7 @@ class UserDao {
     var res = await httpManager.netFetch(Address.sendMobileCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
@@ -61,7 +61,7 @@ class UserDao {
       String key = await httpManager.getAuthorization();
       var params = {"key": key};
       var res = await httpManager.netFetch(Address.getUserLoginInfo(), params, null, new Options(method: "post"));
-      var json = jsonDecode(res.data);
+      var json = res.data;
       var result;
       if (json["success"]["ok"] == 0) {
         result = User.fromJson(jsonDecode(json["success"]["data"]));
@@ -85,7 +85,7 @@ class UserDao {
     print("res==>$res");
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
@@ -158,14 +158,15 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
   ///更换教程
-  static resetTextbookId(textbookId) async{
+  static resetTextbookId(textbookId) async {
     String key = await httpManager.getAuthorization();
     var params = {"key": key, "textbookId": textbookId};
     var res = await httpManager.netFetch(Address.resetTextbookId(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
@@ -173,15 +174,15 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
   ///更改手机号码
-  static resetMobile(oldMobile,newMobile,code) async{
+  static resetMobile(oldMobile, newMobile, code) async {
     String key = await httpManager.getAuthorization();
-    print("key====${key}");
-    var params = {"key": key, "oldMobile": oldMobile,"newMobile": newMobile,"code": code};
+    var params = {"key": key, "oldMobile": oldMobile, "newMobile": newMobile, "code": code};
     var res = await httpManager.netFetch(Address.resetMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
@@ -191,7 +192,7 @@ class UserDao {
   }
 
   ///退出账号
-  static logout(store,context) async{
+  static logout(store, context) async {
     String key = await httpManager.getAuthorization();
     await httpManager.clearAuthorization();
     store.dispatch(UpdateUserAction(User()));
@@ -200,12 +201,12 @@ class UserDao {
   }
 
   ///通过老师手机查询班级
-  static getTeacherClassList(mobile) async{
+  static getTeacherClassList(mobile) async {
     var params = {"mobile": mobile};
     var res = await httpManager.netFetch(Address.getTeacherClassList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
@@ -216,12 +217,12 @@ class UserDao {
   }
 
   ///检查该班级是否有同名
-  static checkSameRealName(classId,realName) async{
-    var params = { "classId": classId,"realName": realName};
+  static checkSameRealName(classId, realName) async {
+    var params = {"classId": classId, "realName": realName};
     var res = await httpManager.netFetch(Address.checkSameRealName(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0 || json["success"]["data"] != "0") {
         result = "班级里已有相同姓名的学生";
         res.result = false;
@@ -232,15 +233,15 @@ class UserDao {
 
 
   ///检测是否拥有账号
-  static checkHaveAccount(mobile,identity) async{
+  static checkHaveAccount(mobile, identity) async {
     var params = {"mobile": mobile, "identity": identity};
     var res = await httpManager.netFetch(Address.checkParentsUser(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      if (res.data["success"]==null) {
+      if (res.data["success"] == null) {
         result = res.data["message"];
         res.result = false;
-      }else{
+      } else {
         result = res.data["success"];
       }
     }
@@ -253,7 +254,7 @@ class UserDao {
     var res = await httpManager.netFetch(Address.joinClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = res.data["message"];
         res.result = false;
@@ -263,12 +264,12 @@ class UserDao {
   }
 
   ///检测验证码
-  static checkCode(mobile,code) async{
+  static checkCode(mobile, code) async {
     var params = {"mobile": mobile, "code": code};
     var res = await httpManager.netFetch(Address.checkCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      var json = jsonDecode(res.data);
+      var json = res.data;
       if (json["success"]["ok"] != 0) {
         result = json["success"]["message"];
         res.result = false;
@@ -278,15 +279,15 @@ class UserDao {
   }
 
   ///搜索学校
-  static searchSchool(index,type,key,from) async{
-    var params = {"index": index, "type": type, "key":key, "from":from};
+  static searchSchool(index, type, key, from) async {
+    var params = {"index": index, "type": type, "key": key, "from": from};
     var res = await httpManager.netFetch(Address.searchSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      if (res.data["success"]==null) {
+      if (res.data["success"] == null) {
         result = res.data;
         res.result = false;
-      }else{
+      } else {
         result = res.data;
       }
     }
@@ -294,15 +295,15 @@ class UserDao {
   }
 
   ///选择学校
-  static chooseSchool(schoolId,grade) async{
+  static chooseSchool(schoolId, grade) async {
     var params = {"schoolId": schoolId, "grade": grade};
     var res = await httpManager.netFetch(Address.chooseSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      if (res.data["success"]==null) {
+      if (res.data["success"] == null) {
         result = res.data;
         res.result = false;
-      }else{
+      } else {
         result = res.data;
       }
     }
@@ -326,15 +327,15 @@ class UserDao {
   }
 
   ///选择班级
-  static chooseClass(classId) async{
+  static chooseClass(classId) async {
     var params = {"classId": classId};
     var res = await httpManager.netFetch(Address.chooseClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      if (res.data["success"]==null) {
+      if (res.data["success"] == null) {
         result = res.data;
         res.result = false;
-      }else{
+      } else {
         result = res.data;
       }
     }

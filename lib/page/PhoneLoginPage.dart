@@ -1,16 +1,21 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:android_intent/android_intent.dart';
 import 'package:flustars/flustars.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/config/config.dart';
-import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/dao/daoResult.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/event/http_error_event.dart';
+import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
-import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/widget/CodeWidget.dart';
-import 'package:package_info/package_info.dart';
+import 'package:oktoast/oktoast.dart';
 
 class PhoneLoginPage extends StatefulWidget {
   static final String sName = "login";
@@ -26,17 +31,15 @@ class PhoneLoginPage extends StatefulWidget {
 
 class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderStateMixin {
   TextEditingController userNameController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
   bool loginBtn = false;
   GlobalKey _globalKey = new GlobalKey();
   bool _expand = false;
-  List<LoginUser> _users = new List();
-  String _version = "2.0.000";
   bool _hasdeleteIcon = false;
+  StreamSubscription _stream;
   @override
-  void initState() {
+  initState() {
     super.initState();
-
+    _initListener();
     userNameController.addListener(() {
       if (userNameController.text == "") {
         setState(() {
@@ -61,17 +64,34 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
         }
       }
     });
+    SpUtil.getInstance().then((_) {
+      userNameController.text = SpUtil.getString(Config.USER_PHONE);
+    });
 
-
-
-    userNameController.text = SpUtil.getString(Config.USER_PHONE);
-    passwordController.text = "123456";
     if ((null != widget.account && widget.account != "") && (null != widget.password && widget.password != "")) {
       _login();
     }
-    if ((null == widget.account || widget.account == "") && (null == widget.password || widget.password == "")) {
-//      _gainUsers();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    print("PhoneLoginPage dispose");
+    userNameController?.dispose();
+    _stream?.cancel();
+    _stream = null;
+  }
+
+  /// 不退出
+  Future<bool> _dialogExitApp(BuildContext context) async {
+    if (Platform.isAndroid) {
+      AndroidIntent intent = AndroidIntent(
+        action: 'android.intent.action.MAIN',
+        category: "android.intent.category.HOME",
+      );
+      await intent.launch();
     }
+    return Future.value(false);
   }
 
   @override
@@ -80,120 +100,130 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
     return StoreBuilder<GSYState>(builder: (context, store) {
-      return Scaffold(
-        resizeToAvoidBottomPadding: false,
-        body: GestureDetector(
-          onTap: () {
-            setState(() {
-              if (_expand == true) {
-                _expand = false;
-              }
-            });
-            FocusScope.of(context).requestFocus(new FocusNode());
-          },
-          child: Container(
-            child: Stack(
-              overflow: Overflow.visible,
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Flex(direction: Axis.vertical, children: <Widget>[
-                      SizedBox(
-                        height: ScreenUtil.getInstance().getHeightPx(136),
-                      ),
-                      Container(
-                        child: Image.asset(
-                          "images/phone_login/logo.png",
-                          width: ScreenUtil.getInstance().getWidthPx(555),
+      return WillPopScope(
+        onWillPop: () {
+          return _dialogExitApp(context);
+        },
+        child: Scaffold(
+          resizeToAvoidBottomPadding: false,
+          body: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_expand == true) {
+                  _expand = false;
+                }
+              });
+              FocusScope.of(context).requestFocus(new FocusNode());
+            },
+            child: Container(
+              child: Center(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Flex(direction: Axis.vertical, children: <Widget>[
+                        SizedBox(
                           height: ScreenUtil.getInstance().getHeightPx(136),
                         ),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().getHeightPx(70),
-                      ),
-                      Container(
-                        child: Image.asset(
-                          "images/phone_login/center.png",
-                          width: ScreenUtil.getInstance().getWidthPx(542),
-                          height: ScreenUtil.getInstance().getHeightPx(447),
-                        ),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().getHeightPx(100),
-                      ),
-                      Container(
-                          child: ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
-                        child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
-                      )),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
-                        child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().getHeightPx(107),
-                      ),
-                      Container(
-                        child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
-                          _login();
-                        }, splashColor: loginBtn ? Colors.amber : Colors.grey, decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey, textColor: Colors.white, textSize: 20.0, elevation: 5),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().getHeightPx(70),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          NavigatorUtil.goLogin(context);
-                        },
-                        child: Text(
-                          "使用帐号密码登录",
-                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                            padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
-                            alignment: AlignmentDirectional.bottomCenter,
-                            // ignore: static_access_to_instance_member
-                            child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Image.asset(
-                                    "images/phone_login/bottom.png",
-                                    fit: BoxFit.scaleDown,
-                                    height: ScreenUtil.getInstance().getHeightPx(77),
-                                    width: ScreenUtil.getInstance().getWidthPx(77),
-                                  ),
-                                  Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
-                                ],
+                        Stack(
+                          overflow :Overflow.visible,
+                          children: <Widget>[
+                            Container(
+                              child: Image.asset(
+                                "images/phone_login/logo.png",
+                                width: ScreenUtil.getInstance().getWidthPx(555),
+                                height: ScreenUtil.getInstance().getHeightPx(136),
                               ),
-                              SizedBox(
-                                height: ScreenUtil.getInstance().getHeightPx(20),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
-                              )
-                            ])),
-                        flex: 2,
-                      ),
-                    ]),
+                            ),
+                        Positioned(
+                          top: -37,
+                          right:-50,
+                          child: Image.asset(
+                            "images/phone_login/parent.png",
+                            width: ScreenUtil.getInstance().getWidthPx(224),
+                          ),
+                        )
+
+                          ],
+                        ),
+                        SizedBox(
+                          height: ScreenUtil.getInstance().getHeightPx(70),
+                        ),
+                        Container(
+                          child: Image.asset(
+                            "images/phone_login/center.png",
+                            width: ScreenUtil.getInstance().getWidthPx(542),
+                            height: ScreenUtil.getInstance().getHeightPx(447),
+                          ),
+                        ),
+                        SizedBox(
+                          height: ScreenUtil.getInstance().getHeightPx(100),
+                        ),
+                        Container(
+                            child: ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                          child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
+                        )),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
+                          child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
+                        ),
+                        SizedBox(
+                          height: ScreenUtil.getInstance().getHeightPx(107),
+                        ),
+                        Container(
+                          child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
+                            _login();
+                          }, splashColor: loginBtn ? Colors.amber : Colors.grey, decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey, textColor: Colors.white, textSize: 20.0, elevation: 5),
+                        ),
+                        SizedBox(
+                          height: ScreenUtil.getInstance().getHeightPx(70),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            NavigatorUtil.goLogin(context);
+                          },
+                          child: Text(
+                            "使用帐号密码登录",
+                            style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                              padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                              alignment: AlignmentDirectional.bottomCenter,
+                              // ignore: static_access_to_instance_member
+                              child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Image.asset(
+                                      "images/phone_login/bottom.png",
+                                      fit: BoxFit.scaleDown,
+                                      height: ScreenUtil.getInstance().getHeightPx(77),
+                                      width: ScreenUtil.getInstance().getWidthPx(77),
+                                    ),
+                                    Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: ScreenUtil.getInstance().getHeightPx(20),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                                )
+                              ])),
+                          flex: 2,
+                        ),
+                      ]),
+                    ),
                   ),
+              decoration: BoxDecoration(
+                gradient: new LinearGradient(
+                  begin: const FractionalOffset(0.5, 0.0),
+                  end: const FractionalOffset(0.5, 1.0),
+                  colors: <Color>[Color(0xFFcdfdd3), Color(0xFFe2fff0)],
                 ),
-                Offstage(
-                  child: _buildListView(),
-                  offstage: !_expand,
-                ),
-              ],
-            ),
-            decoration: BoxDecoration(
-              gradient: new LinearGradient(
-                begin: const FractionalOffset(0.5, 0.0),
-                end: const FractionalOffset(0.5, 1.0),
-                colors: <Color>[Color(0xFFcdfdd3), Color(0xFFe2fff0)],
               ),
             ),
           ),
@@ -236,94 +266,28 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     );
   }
 
-  ///构建历史记录items
-  List<Widget> _buildItems() {
-    List<Widget> list = new List();
-    for (int i = 0; i < _users.length; i++) {
-      //增加账号记录
-      if (_users[i] != LoginUser(userNameController.text, passwordController.text)) {
-        list.add(GestureDetector(
-          child: Container(
-            alignment: AlignmentDirectional.center,
-            child: Text(_users[i].username, style: TextStyle(fontSize: 17.0)),
-            decoration: BoxDecoration(border: i < (_users.length - 1) ? Border(bottom: BorderSide(color: Colors.lightBlueAccent, width: 1)) : Border()),
-          ),
-          onTap: () {
-            setState(() {
-              FocusScope.of(context).requestFocus(new FocusNode());
-              userNameController.text = _users[i].username;
-              passwordController.text = _users[i].password;
-              _expand = false;
-            });
-          },
-        ));
-      }
-    }
-    return list;
-  }
-
-  ///构建历史账号ListView
-  Widget _buildListView() {
-    if (_expand) {
-      List<Widget> children = _buildItems();
-      if (children.length > 0 && _globalKey != null && _globalKey.currentContext != null) {
-        RenderBox renderObject = _globalKey.currentContext.findRenderObject();
-        final position = renderObject.localToGlobal(Offset.zero);
-        double screenW = MediaQuery.of(context).size.width;
-        double currentW = renderObject.paintBounds.size.width;
-        double currentH = renderObject.paintBounds.size.height;
-        double margin = (screenW - currentW * 0.65) / 2;
-        double offsetY = position.dy;
-        double itemHeight = currentH * 0.7;
-        double dividerHeight = 1;
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-                bottom: BorderSide(color: Colors.lightBlueAccent, width: 1), left: BorderSide(color: Colors.lightBlueAccent, width: 1), right: BorderSide(color: Colors.lightBlueAccent, width: 1)),
-          ),
-          child: ListView(
-            itemExtent: itemHeight,
-            padding: EdgeInsets.all(0),
-            children: children,
-          ),
-          width: currentW * 0.65,
-          height: (children.length * itemHeight + (children.length - 1) * dividerHeight),
-          margin: EdgeInsets.fromLTRB(margin, offsetY + currentH, margin, 0),
-        );
-      }
-    }
-    return Container();
-  }
-
-  void _gainUsers() async {
-    print("_gainUsers");
-    var deviceId = await DeviceInfo.instance.getDeviceId();
-    print("deviceId $deviceId");
-    PackageInfo info = await PackageInfo.fromPlatform();
-    _version = info.version;
-    _users.clear();
-    _users.addAll(await LocalStorage.getUsers());
-    //默认加载第一个账号
-    if (_users.length > 0) {
-      userNameController.text = _users[0].username;
-      passwordController.text = _users[0].password;
-    }
-  }
-
   void _login() async {
+    if (!RegexUtil.isMobileSimple(userNameController.text)) {
+      showToast("请输入正确的手机号", position: ToastPosition.bottom);
+      return;
+    }
     var isSend = await CommonUtils.showEditDialog(
       context,
       CodeWidget(phone: userNameController.text),
     );
     if (null != isSend && isSend) {
-      NavigatorUtil.goRegester(context);
       SpUtil.putString(Config.USER_PHONE, userNameController.text);
+      DataResult data = await UserDao.checkHaveAccount(userNameController.text, 'P');
+      bool isLogin = false;
+      if(data.result){
+        if(data.data){
+          isLogin = true;
+        }
+        NavigatorUtil.goRegester(context,isLogin:isLogin,index: 1,userPhone:userNameController.text);
+      }else{
+          showToast("网络异常请稍后重试！",position: ToastPosition.bottom);
+      }
     }
-//    if(!RegexUtil.isMobileSimple(userNameController.text)){
-//      showToast("请输入正确的手机号",position: ToastPosition.bottom);
-//      return;
-//    }
 //    if (loginBtn) {
 //      CommonUtils.showLoadingDialog(context, text: "登陆中");
 //      DataResult data = await UserDao.login(userNameController.text, passwordController.text);
@@ -342,5 +306,12 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
 //        }
 //      }
 //    }
+  }
+
+  void _initListener() {
+    _stream = eventBus.on<HttpErrorEvent>().listen((event) {
+      print("PhoneLogin eventBus " + event.toString());
+      HttpErrorEvent.errorHandleFunction(event.code, event.message, context);
+    });
   }
 }

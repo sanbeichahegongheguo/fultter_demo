@@ -1,31 +1,32 @@
 ///地址数据
 class Address {
-  static const String studentWebHost = "http://192.168.6.31:30915/student:";
-
-//  static const String studentWebHost = "https://www.k12china.com/student/student:";
-//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+  static const String studentHost = "http://192.168.6.31:30915/student:";
   static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
-  static const String registerHost = "http://api.k12china.com/k12-api/search/getSchool";
-  static const String regHost = "http://192.168.6.31:31528/studentweb/";
+  static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
+
+  static const String getSchoolUrl = "http://api.k12china.com/k12-api/search/getSchool";
+ //static const String studentWebHost = "https://api.k12china.com/studentweb/";
+  //  static const String studentWebHost = "https://www.k12china.com/student/student:";
+//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
 
   ///登录  post
   static login() {
-    return "${studentWebHost}login";
+    return "${studentHost}login";
   }
 
   ///获取用户登录信息
   static getUserLoginInfo() {
-    return "${studentWebHost}getUserLoginInfo";
+    return "${studentHost}getUserLoginInfo";
   }
 
   ///发送手机验证码
   static sendMobileCode() {
-    return "${studentWebHost}sendMobileCode";
+    return "${studentHost}sendMobileCode";
   }
 
   ///更换头像
   static uploadHeadUrl() {
-    return "${studentWebHost}uploadHeadUrl";
+    return "${studentHost}uploadHeadUrl";
   }
 
 
@@ -41,7 +42,7 @@ class Address {
 
   ///更换教程
   static resetTextbookId() {
-    return "${studentWebHost}resetTextbookId";
+    return "${studentHost}resetTextbookId";
   }
 
   ///发送短信
@@ -50,7 +51,7 @@ class Address {
   }
   ///发送短信
   static resetMobile () {
-    return "${studentWebHost}resetMobile";
+    return "${studentHost}resetMobile";
   }
 
   ///检测是否拥有账号
@@ -60,26 +61,26 @@ class Address {
 
   ///退出账号
   static logout() {
-    return "${studentWebHost}logout";
+    return "${studentHost}logout";
   }
   ///通过老师手机查询班级列表
   static getTeacherClassList() {
-    return "${studentWebHost}getTeacherClassList";
+    return "${studentHost}getTeacherClassList";
   }
   ///检查该班级是否有同名
   static checkSameRealName() {
-    return "${studentWebHost}checkSameRealName";
+    return "${studentHost}checkSameRealName";
   }
 
 
   ///检测验证码
   static checkCode(){
-    return "${studentWebHost}checkCode";
+    return "${studentHost}checkCode";
   }
 
   ///搜索学校
   static searchSchool(){
-    return registerHost;
+    return getSchoolUrl;
   }
 
   ///选择学校
@@ -89,12 +90,12 @@ class Address {
 
   ///检查该班级是否有同名,返回手机号
   static checkSameRealNamePhone() {
-    return "${regHost}reg/checkClassSameName";
+    return "${studentWebHost}reg/checkClassSameName";
   }
 
   ///选择班级
   static chooseClass(){
-    return "${regHost}reg/getclass";
+    return "${studentWebHost}reg/getclass";
   }
 
   ///验证姓氏是否合法
@@ -108,7 +109,7 @@ class Address {
   }
 
   static joinClass(){
-    return "${studentWebHost}joinClass";
+    return "${studentHost}joinClass";
   }
 
   ///注册

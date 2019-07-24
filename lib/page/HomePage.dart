@@ -31,9 +31,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-//      onWillPop: () {
-//        return _dialogExitApp(context);
-//      },
+      onWillPop: () {
+        return _dialogExitApp(context);
+      },
       child: new GSYTabBarWidget(
         tabViews: [
           GestureDetector(

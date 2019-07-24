@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/pin_input_text_field.dart';
 import 'package:flutter_start/common/utils/CountDown.dart';
@@ -10,17 +12,20 @@ import 'package:flutter_start/widget/CodeWidget.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
-
+import 'package:redux/redux.dart';
 
 class RegisterPage extends StatefulWidget {
   static final String sName = "register";
 
   final String from;
-  RegisterPage({this.from});
+  final bool isLogin;
+  final int index;
+  final String userPhone;
+  RegisterPage({this.from,this.isLogin,this.index=0,this.userPhone});
 
   @override
   State<StatefulWidget> createState() {
-    return RegisterState();
+    return RegisterState(index);
   }
 }
 
@@ -31,12 +36,14 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   TextEditingController userNameController = new TextEditingController();
   TextEditingController userPasswordController = new TextEditingController();
   PinEditingController pinEditingController = new PinEditingController(pinLength:6);
-
+  RegisterState(
+      this._currentPageIndex
+      ) : this._pageController = new PageController(initialPage: _currentPageIndex),super();
   bool _hasdeleteIcon = false;
   bool nextBtn = false;
   bool keyBordTarget = false;
   int _currentPageIndex = 0;
-  var _pageController = new PageController(initialPage: 0);
+  var _pageController;
   ///标题栏
   String _titleName = "输入手机号";
   String _schoolName = "";
@@ -75,6 +82,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   void initState() {
     super.initState();
     print(widget.from);
+    if (null!=widget.userPhone&&widget.userPhone!=""){
+      userPhoneController.text = widget.userPhone ;
+    }
     userPasswordController.addListener((){
       if (userPasswordController.text == "") {
         setState(() {
@@ -105,7 +115,11 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         });
       }
       if(pinEditingController.text.length==6&&!_checkCodeTarget){
-        _checkCode();
+        if (null!=widget.isLogin && widget.isLogin){
+          _login();
+        }else{
+          _checkCode();
+        }
       }
     });
     schoolController.addListener((){
@@ -192,58 +206,78 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     }
   }
 
+  void _login() async {
+    Store<GSYState> store = StoreProvider.of(context);
+    CommonUtils.showLoadingDialog(context, text: "登陆中···");
+    DataResult data = await UserDao.login(userPhoneController.text,"", store,code: pinEditingController.text);
+    Navigator.pop(context);
+    if (data.result) {
+      showToast("登录成功 ${data.data.realName}");
+      Future.delayed(Duration(milliseconds:500)).then((_){
+        NavigatorUtil.goHome(context);
+      });
+    } else {
+      if (null != data.data) {
+        showToast(data?.data ?? "");
+      }
+    }
+  }
+
   //构建ui
   Widget build(BuildContext context){
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      backgroundColor:  Color(0xFFf1f2f6),
-      appBar: AppBar(
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          //居中显示
-          centerTitle: true,
-          leading: new IconButton(
-              icon: new Icon(
-                Icons.arrow_back_ios,
-                color: Color(0xFF333333),
-              ),
-              onPressed: () {
-                print("返回首页");
-                if(widget.from == 'login'){
-                  NavigatorUtil.goLogin(context);
-                }else{
-                  NavigatorUtil.goWelcome(context);
+    return StoreBuilder<GSYState>(builder: (context, store) {
+      return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        backgroundColor:  Color(0xFFf1f2f6),
+        appBar: AppBar(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            //居中显示
+            centerTitle: true,
+            leading: new IconButton(
+                icon: new Icon(
+                  Icons.arrow_back_ios,
+                  color: Color(0xFF333333),
+                ),
+                onPressed: () {
+                  print("返回首页");
+                  if(widget.from == 'login'){
+                    NavigatorUtil.goLogin(context);
+                  }else{
+                    NavigatorUtil.goWelcome(context);
+                  }
                 }
-              }
-          ),
-          title: Text(
-            _titleName,
-            style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(19)),)
-      ),
-      body: new PageView.builder(
-        onPageChanged:_pageChange,
-        controller: _pageController,
-        physics: new NeverScrollableScrollPhysics(),
-        itemBuilder: (BuildContext context,int index){
-          if(index==0){
-            return _editPhoneNumber();
-          }else if(index==1){
-            return _editCode();
-          }else if(index==2){
-            return _editSchool();
-          }else if(index==3){
-            return _editGrade();
-          }else if(index==4){
-            return _editClass();
-          }else if(index==5){
-            return _editNameAndPassword();
-          }
-        },
-        itemCount: 10,
-      ),
-    );
+            ),
+            title: Text(
+              _titleName,
+              style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(19)),)
+        ),
+        body: new PageView.builder(
+          onPageChanged:_pageChange,
+          controller: _pageController,
+          physics: new NeverScrollableScrollPhysics(),
+          itemBuilder: (BuildContext context,int index){
+            if(index==0){
+              return _editPhoneNumber();
+            }else if(index==1){
+              return _editCode();
+            }else if(index==2){
+              return _editSchool();
+            }else if(index==3){
+              return _editGrade();
+            }else if(index==4){
+              return _editClass();
+            }else if(index==5){
+              return _editNameAndPassword();
+            }
+          },
+          itemCount: 10,
+        ),
+      );
+     });
+
   }
 
   //姓名与设置密码步骤
