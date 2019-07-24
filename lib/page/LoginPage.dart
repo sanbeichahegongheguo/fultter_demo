@@ -77,10 +77,9 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     userNameController.text = widget.account;
     passwordController.text = widget.password;
     if ((null != widget.account && widget.account != "") && (null != widget.password && widget.password != "")) {
-      Future.delayed(Duration(milliseconds:500)).then((_){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _login();
       });
-
     }
     if ((null == widget.account || widget.account == "") && (null == widget.password || widget.password == "")) {
       _gainUsers();
