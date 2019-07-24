@@ -59,6 +59,9 @@ class UserDao {
   static Future<User> getUser({isNew = false, Store store}) async {
     if (isNew) {
       String key = await httpManager.getAuthorization();
+      if (ObjectUtil.isEmptyString(key)){
+        return null;
+      }
       var params = {"key": key};
       var res = await httpManager.netFetch(Address.getUserLoginInfo(), params, null, new Options(method: "post"));
       var json = res.data;
