@@ -77,8 +77,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     userNameController.text = widget.account;
     passwordController.text = widget.password;
     if ((null != widget.account && widget.account != "") && (null != widget.password && widget.password != "")) {
-      Store<GSYState> store = StoreProvider.of(context);
-      _login(store);
+      Future.delayed(Duration(milliseconds:500)).then((_){
+        _login();
+      });
+
     }
     if ((null == widget.account || widget.account == "") && (null == widget.password || widget.password == "")) {
       _gainUsers();
@@ -143,7 +145,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                       ),
                       Container(
                         child: CommonUtils.buildBtn("登录", width: ScreenUtil.getInstance().getWidthPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
-                          _login(store);
+                          _login();
                         },
                             splashColor: loginBtn ? Colors.amber : Color(0xFFdfdfeb),
                             decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey,
@@ -326,9 +328,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     }
   }
 
-  void _login(store) async {
+  void _login() async {
     if (loginBtn) {
       CommonUtils.showLoadingDialog(context, text: "登陆中···");
+      Store<GSYState> store = StoreProvider.of(context);
       DataResult data = await UserDao.login(userNameController.text, passwordController.text, store);
       Navigator.pop(context);
       if (data.result) {
