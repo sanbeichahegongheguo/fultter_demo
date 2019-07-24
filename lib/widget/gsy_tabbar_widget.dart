@@ -4,6 +4,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住
@@ -111,6 +112,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     _stream?.cancel();
     _stream = null;
     super.dispose();
+
   }
 
   @override

@@ -3,11 +3,14 @@ class Address {
   static const String studentHost = "http://192.168.6.31:30915/student:";
   static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
   static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
+  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/home/";
+
 
   static const String getSchoolUrl = "http://api.k12china.com/k12-api/search/getSchool";
- //static const String studentWebHost = "https://api.k12china.com/studentweb/";
-  //  static const String studentWebHost = "https://www.k12china.com/student/student:";
-//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+  //static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
+  //static const String studentWebHost = "https://api.k12china.com/studentweb/";
+  // static const String studentWebHost = "https://www.k12china.com/student/student:";
+  //  static const String k12apiHost = "https://www.k12china.com/k12-api/";
 
   ///登录  post
   static login() {
@@ -107,7 +110,7 @@ class Address {
   static checkClassSameName(){
     return "${k12apiHost}reg/checkClassSameName";
   }
-
+  ///更改班级
   static joinClass(){
     return "${studentHost}joinClass";
   }
@@ -115,5 +118,18 @@ class Address {
   ///注册
   static register() {
     return "${k12apiHost}base/register";
+  }
+
+  ///获取学生已设置护眼时间
+  static getEyeshiieldTime(){
+    return "${stu_app}get_eyeshiield_time";
+  }
+  ///保存学生学习时间
+  static saveEyeshiieldTime(){
+    return "${stu_app}save_eyeshiield_time";
+  }
+  ///更改密码
+  static resetPassword() {
+    return "${studentHost}resetPassword";
   }
 }

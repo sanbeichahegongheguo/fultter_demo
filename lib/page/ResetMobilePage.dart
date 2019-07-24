@@ -67,7 +67,8 @@ class _ResetMobilePage extends State<ResetMobilePage>{
           title: Text("更改手机号"),
           backgroundColor: Color(0xFFffffff),
           leading: IconButton(
-            icon: Icon(Icons.keyboard_arrow_left), //自定义图标
+            icon: Icon(Icons.arrow_back_ios),
+            color: Color(0xFF333333),
             onPressed: () {
               _countdownNum != 61? _countdownTimer.cancel():print("==");
               Navigator.pop(context);

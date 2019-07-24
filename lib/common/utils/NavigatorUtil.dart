@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/page/EyeProtectionPage.dart';
 import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/JoinClassPage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/RegisterPage.dart';
 import 'package:flutter_start/page/ResetMobilePage.dart';
+import 'package:flutter_start/page/ResetPasswordPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 
@@ -81,7 +83,14 @@ class NavigatorUtil {
   static goJoinClassPage(BuildContext context) {
     NavigatorRouter(context, JoinClassPage());
   }
-
+  ///护眼设置
+  static goEyeProtectionPage(BuildContext context) {
+    NavigatorRouter(context, EyeProtectionPage());
+  }
+  ///更改密码
+  static goResetPasswordPage(BuildContext context) {
+    NavigatorRouter(context, ResetPasswordPage());
+  }
 
   ///去往webview
   static goWebView(BuildContext context, String url) async {

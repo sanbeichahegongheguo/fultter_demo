@@ -67,7 +67,8 @@ class _JoinClassPage extends State<JoinClassPage>{
           title: Text("更换班级"),
           backgroundColor: Color(0xFFffffff),
           leading: IconButton(
-            icon: Icon(Icons.keyboard_arrow_left), //自定义图标
+            icon: Icon(Icons.arrow_back_ios),
+            color: Color(0xFF333333),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -146,13 +147,13 @@ class _JoinClassPage extends State<JoinClassPage>{
   //查询老师的班级
   void _lookupOnTap() async{
     print("查找");
-    final res =  await UserDao.getTeacherClassList(phoneController.text);
+    var res =  await UserDao.getTeacherClassList(phoneController.text);
     if(res !=null && res != ""){
-        if(jsonDecode(res.toString())['success']['ok'] == 0){
+        if(res['success']['ok'] == 0){
           setState(() {
-          _classInfoList = jsonDecode(res.toString())['success']['classInfoList'];
-          _schoolName = jsonDecode(res.toString())['success']['schoolName'];
-          _realName = jsonDecode(res.toString())['success']['realName'];
+          _classInfoList = res['success']['classInfoList'];
+          _schoolName = res['success']['schoolName'];
+          _realName = res['success']['realName'];
           if(_classInfoList.length >5){
             var showMsg = Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -225,16 +226,16 @@ class _JoinClassPage extends State<JoinClassPage>{
       listView = Padding(padding: EdgeInsets.fromLTRB(0, 0, 0,ScreenUtil.getInstance().getHeightPx(30)),child:Column(children: _widgetList,));
     }
     var viewMsg = Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: new BorderRadius.all(
-                            Radius.circular((10.0))),
-                      ),
-                      height:_classInfoList.length>5?ScreenUtil.getInstance().getHeightPx(800):null,
-                      width:ScreenUtil.getInstance().getWidthPx(900),
-                      margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(73), 0,0),
-                      child: Padding(padding: EdgeInsets.all(ScreenUtil.getInstance().getHeightPx(10)),child:Align(alignment: Alignment.center,child: listView,),)
-                  );
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: new BorderRadius.all(
+                Radius.circular((10.0))),
+          ),
+          height:_classInfoList.length>5?ScreenUtil.getInstance().getHeightPx(800):null,
+          width:ScreenUtil.getInstance().getWidthPx(900),
+          margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(73), 0,0),
+          child: Padding(padding: EdgeInsets.all(ScreenUtil.getInstance().getHeightPx(10)),child:Align(alignment: Alignment.center,child: listView,),)
+      );
     return viewMsg;
   }
   void _onTap(int index) {

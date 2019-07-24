@@ -42,8 +42,8 @@ class _TextBookWiget extends State<TextBookWiget> {
           _list[i],
           width:ScreenUtil.getInstance().getWidthPx(638),
           height:ScreenUtil.getInstance().getHeightPx(114),
-          textColor: _textBook == _list[i]?Color(0xFFffffff):Color(0xFFa83530),
-          decorationColor: _textBook == _list[i]?Color(0xFF9fa5aa):Color(0xFFfbd951),
+          textColor: _textBook != _list[i]?Color(0xFFffffff):Color(0xFFa83530),
+          decorationColor: _textBook != _list[i]?Color(0xFF9fa5aa):Color(0xFFfbd951),
           onTap: _textBook!=_list[i]?()async {
             CommonUtils.showLoadingDialog(context, text: "切换中···");
             var res =  await UserDao.resetTextbookId(_list[i]==_list[0]?1:2);

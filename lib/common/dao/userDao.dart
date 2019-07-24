@@ -208,6 +208,7 @@ class UserDao {
   static getTeacherClassList(mobile) async {
     var params = {"mobile": mobile};
     var res = await httpManager.netFetch(Address.getTeacherClassList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    print("res  ${res.data["success"]["ok"]}");
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -364,7 +365,6 @@ class UserDao {
     return new DataResult(result, res.result);
   }
 
-
   ///注册
   static register(dataFrom,mobile,password,realName,identity,classId,schoolId,className,grade,classNum) async{
     var params = {"dataFrom": dataFrom,"mobile": mobile,"password": password,"realName": realName,"identity": identity,"classId": classId,"schoolId": schoolId,"className": className,"grade": grade,"classNum": classNum};
@@ -376,6 +376,50 @@ class UserDao {
         res.result = false;
       }else{
         result = res.data;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///获取学生已设置护眼时间
+  static getEyeshiieldTime() async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key": key};
+    var res = await httpManager.netFetch(Address.getEyeshiieldTime(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    var data;
+    if (res != null && res.result) {
+      var json = res.data;
+      data = json;
+    }
+    return data;
+  }
+  ///设置学生学习时间
+  static saveEyeshiieldTime(eyeshieldId) async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"eyeshieldId": eyeshieldId};
+    var res = await httpManager.netFetch(Address.saveEyeshiieldTime(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if (!json["success"]) {
+        result = res.data["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///更改密码
+  static resetPassword(oldPassword, newPassword) async {
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"oldPassword": oldPassword, "newPassword": newPassword};
+    var res = await httpManager.netFetch(Address.resetPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]["ok"] != 0) {
+        result = res.data["success"]["message"];
+        res.result = false;
       }
     }
     return new DataResult(result, res.result);

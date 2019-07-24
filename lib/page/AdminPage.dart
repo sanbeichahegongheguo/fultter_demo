@@ -26,8 +26,12 @@ class _Admin extends State<Admin> {
   @override
   initState() {
     super.initState();
-  }
 
+  }
+  _bulletinWindow(){
+    print("公告弹窗");
+    //CommonUtils.showGuide(context,Text("12"));
+  }
   @override
   Widget build(BuildContext context) {
     final heightScreen = MediaQuery.of(context).size.height;
@@ -120,7 +124,7 @@ class _Admin extends State<Admin> {
                 Column(
                   children: <Widget>[
                     _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo),
-                    _getBt("护眼", "images/admin/icon_eye_protection.png", _goSetEye),
+                    _getBt("护眼设置", "images/admin/icon_eye_protection.png", _goSetEye),
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
@@ -221,6 +225,7 @@ class _Admin extends State<Admin> {
   //去护眼
   void _goSetEye() {
     print("去护眼");
+    NavigatorUtil.goEyeProtectionPage(context);
   }
 
   //退出賬號

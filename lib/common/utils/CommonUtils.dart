@@ -123,7 +123,8 @@ class CommonUtils {
         builder: (BuildContext context) {
           return new Material(
               color: Colors.transparent,
-              child: widget);
+              child: widget
+          );
         });
   }
 }
