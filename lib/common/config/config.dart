@@ -15,7 +15,8 @@ class Config {
   static const THEME_COLOR = "theme-color";
   static const LOCALE = "locale";
   static const LOGIN_USER = "login-user";
-  static const DATA_FROM = "studentApp";
+  static const DATA_FROM = "parentApp";
   static const USER_PHONE = "user-phone";
   static const DES_IV = "myyondor"; //加密偏移值
+  static const PHONE_UID = "phone-uid"; //加密偏移值
 }

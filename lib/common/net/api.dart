@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -55,6 +56,12 @@ class HttpManager {
     Response response;
     try {
       response = await dio.request(url, data: params, options: option);
+      if (response.data.data is String) {
+        String str = response.data.data;
+        if (str.startsWith("{")) {
+          response.data.data = jsonDecode(response.data.data);
+        }
+      }
     } on DioError catch (e) {
       print(e);
       Response errorResponse;

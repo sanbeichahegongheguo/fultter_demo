@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/event/http_error_event.dart';
+import 'package:flutter_start/common/event/index.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住
@@ -64,7 +68,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   final PageController _pageController = PageController();
 
   final ValueChanged<int> _onPageChanged;
-
+  StreamSubscription _stream;
   int _currentIndex;
   GlobalKey _globalKey = new GlobalKey();
   int _msgCount = 0;
@@ -92,13 +96,20 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       });
     });
     super.initState();
+    _stream = eventBus.on<HttpErrorEvent>().listen((event) {
+      print("home eventBus " + event.toString());
+      HttpErrorEvent.errorHandleFunction(event.code, event.message, context);
+    });
     _tabController = new TabController(vsync: this, length: 4);
   }
 
   ///整个页面dispose时，记得把控制器也dispose掉，释放内存
   @override
   void dispose() {
-    _tabController.dispose();
+    print("_GSYTabBarState dispose");
+    _tabController?.dispose();
+    _stream?.cancel();
+    _stream = null;
     super.dispose();
   }
 

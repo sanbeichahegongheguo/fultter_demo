@@ -30,8 +30,8 @@ dependencies:
   oktoast: ^2.2.0
   package_info: ^0.4.0+4
   device_info: ^0.4.0+2
-  device_id: ^0.2.0
   permission_handler: ^3.2.0
+  imei_plugin: ^1.1.0
   image_picker: ^0.6.0+15
   flustars: ^0.2.6+1
   flutter_spinkit: ^3.1.0
@@ -40,7 +40,7 @@ dependencies:
   image_cropper: ^1.0.2
   flutter_redux: ^0.5.3
   rxdart: ^0.22.0
-
+  uuid: 2.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -245,7 +245,7 @@ class _Admin extends State<Admin> {
     );
     var isOut = await CommonUtils.showEditDialog(context,outMsg,height: ScreenUtil.getInstance().getHeightPx(400),width: ScreenUtil.getInstance().getWidthPx(906));
     if (isOut!=null&&isOut){
-      NavigatorUtil.goPhoneLoginPage(context);
+      NavigatorUtil.goWelcome(context);
       showToast("退出成功");
       Future.delayed(Duration(milliseconds:500)).then((_){
         UserDao.logout(store,context);

@@ -1,39 +1,62 @@
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
+import 'package:flustars/flustars.dart';
+import 'package:flutter_start/common/config/config.dart';
+import 'package:imei_plugin/imei_plugin.dart';
+import 'package:uuid/uuid.dart';
 
-class DeviceInfo{
+class DeviceInfo {
   static DeviceInfo instance = new DeviceInfo();
   Map<String, dynamic> _deviceInfoMap;
-
-
+  String deviceId = "";
   Future<String> getDeviceId() async {
-    if (null==this._deviceInfoMap){
-       await getDeviceInfo();
-       print("DeviceInfo  ${_deviceInfoMap?.toString()}");
+    //直接返回
+    if (ObjectUtil.isNotEmpty(this.deviceId)) {
+      return this.deviceId;
     }
-    if(Platform.isAndroid) {
-      return this._deviceInfoMap["androidId"];
-    }else if (Platform.isIOS){
-      return this._deviceInfoMap["identifierForVendor"];
+
+    if (null == this._deviceInfoMap) {
+      await getDeviceInfo();
+      print("DeviceInfo  ${_deviceInfoMap?.toString()}");
     }
-    return "";
+    //根据平台获取deviceId
+    if (Platform.isAndroid) {
+      var imei = await ImeiPlugin.getImei;
+      if (null != imei && imei == "Permission Denied") {
+        this.deviceId = this._deviceInfoMap["androidId"];
+      } else {
+        this.deviceId = imei;
+      }
+    } else if (Platform.isIOS) {
+      this.deviceId = this._deviceInfoMap["identifierForVendor"];
+    }
+    //如果deviceId不存在生成一个uid
+    if (ObjectUtil.isEmptyString(this.deviceId)) {
+      var uid = SpUtil.getString(Config.PHONE_UID);
+      if (null == uid || uid == "") {
+        uid = new Uuid().v1().replaceAll("-", "");
+        SpUtil.putString(Config.PHONE_UID, uid);
+      }
+      this.deviceId = uid;
+    }
+    return this.deviceId;
   }
 
-
   Future<Map<String, dynamic>> getDeviceInfo() async {
-    if (null==this._deviceInfoMap){
+    if (null == this._deviceInfoMap) {
       DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
-      if(Platform.isAndroid) {
+      if (Platform.isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
         this._deviceInfoMap = _readAndroidBuildData(androidInfo);
-        return this._deviceInfoMap ;
+        return this._deviceInfoMap;
       } else if (Platform.isIOS) {
         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        this._deviceInfoMap  = _readIosDeviceInfo(iosInfo);
-        return this._deviceInfoMap ;
+        this._deviceInfoMap = _readIosDeviceInfo(iosInfo);
+        return this._deviceInfoMap;
       }
     }
+    print(this._deviceInfoMap);
     return null;
   }
 

@@ -23,7 +23,11 @@ class NavigatorUtil {
 
   ///欢迎页
   static goWelcome(BuildContext context) {
-    NavigatorRouterReplacement(context, PhoneLoginPage());
+    Navigator.pushAndRemoveUntil(
+      context,
+      CupertinoPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
+      (Route<dynamic> route) => false,
+    );
 //    NavigatorRouter(context,LogoPage());
 //    Navigator.push(context, PageRouteBuilderHelper(
 //        pageBuilder: (BuildContext context, _, __) {
@@ -47,21 +51,27 @@ class NavigatorUtil {
   }
 
   ///注册
-  static goRegester(BuildContext context,{String from}) {
-    NavigatorRouter(context, RegisterPage(from:from));
+  static goRegester(BuildContext context,{String from,bool isLogin = false,int index = 0,String userPhone}) {
+    NavigatorRouter(context, RegisterPage(from:from,index: index,userPhone:userPhone,isLogin:isLogin));
   }
 
   ///去个人资料
   static goUserInfo(BuildContext context) {
     NavigatorRouter(context, UserInfo());
   }
+
   ///更改手机号
   static goResetMobilePage(BuildContext context) {
     NavigatorRouter(context, ResetMobilePage());
   }
+
   ///主页
   static goHome(BuildContext context) {
-    NavigatorRouter(context, HomePage());
+    Navigator.pushAndRemoveUntil(
+      context,
+      CupertinoPageRoute(builder: (BuildContext context) => HomePage()),
+      (Route<dynamic> route) => false,
+    );
   }
   ///去手机号登陆
   static goPhoneLoginPage(BuildContext context) {
@@ -97,7 +107,7 @@ class NavigatorUtil {
   }
 
   static NavigatorRouterReplacement(BuildContext context, Widget widget) {
-    return Navigator.push(context, new CupertinoPageRoute(builder: (context) => widget));
+    return Navigator.pushReplacement(context, new CupertinoPageRoute(builder: (context) => widget));
 //    return Navigator.pushReplacement(context, PageRouteBuilderHelper(pageBuilder: (BuildContext context, _, __) {
 //      return widget;
 //    }));
