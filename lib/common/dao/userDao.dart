@@ -66,14 +66,18 @@ class UserDao {
       var res = await httpManager.netFetch(Address.getUserLoginInfo(), params, null, new Options(method: "post"));
       var json = res.data;
       var result;
-      if (json["success"]["ok"] == 0) {
-        result = User.fromJson(jsonDecode(json["success"]["data"]));
-        print("user key  ${result.key}");
-        store.dispatch(UpdateUserAction(result));
-        await SpUtil.putObject(Config.LOGIN_USER, result);
-      } else {
-        result = json["success"]["message"];
-        res.result = false;
+      if (res != null && res.result) {
+        if (json["success"]["ok"] == 0) {
+          result = User.fromJson(jsonDecode(json["success"]["data"]));
+          print("user key  ${result.key}");
+          store.dispatch(UpdateUserAction(result));
+          await SpUtil.putObject(Config.LOGIN_USER, result);
+        } else {
+          result = json["success"]["message"];
+          res.result = false;
+          return null;
+        }
+      }else{
         return null;
       }
     }
