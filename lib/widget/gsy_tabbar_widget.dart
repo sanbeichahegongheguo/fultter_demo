@@ -133,66 +133,80 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           //backgroundColor: Theme.of(context).primaryColor,
           backgroundColor: Color(0xFFf1f2f6),
           title: Row(
+            mainAxisAlignment:MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              SizedBox(
-                width: ScreenUtil.getInstance().getWidthPx(50),
-              ),
-              Image.asset(
-                "images/home/icon_jl.png",
-                width: ScreenUtil.getInstance().getWidthPx(100),
-              ),
-              SizedBox(
-                width: ScreenUtil.getInstance().getWidthPx(25),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: <Widget>[
-                  Text(
-                    "签到奖励",
-                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+                  SizedBox(
+                    width: ScreenUtil.getInstance().getWidthPx(50),
                   ),
-                  Text("已经签到5天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+                  Image.asset(
+                    "images/home/icon_jl.png",
+                    width: ScreenUtil.getInstance().getWidthPx(100),
+                  ),
+                  SizedBox(
+                    width: ScreenUtil.getInstance().getWidthPx(25),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        "签到奖励",
+                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+                      ),
+                      Text("已经签到5天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
-          actions: <Widget>[
-            Stack(
-              alignment: AlignmentDirectional(0.0, 0.8),
-              children: <Widget>[
-                Center(
-                  child: IconButton(icon: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66))),
-                ),
-                Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc))),
-              ],
-            ),
-            Stack(
-              alignment: AlignmentDirectional(0.0, 0.8),
-              children: <Widget>[
-                Stack(
-                  fit: StackFit.passthrough,
-                  alignment: AlignmentDirectional.topCenter,
+              Row(
+                children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Center(
-                      child: IconButton(key: _globalKey, icon: Image.asset("images/home/icon_yj.png", width: ScreenUtil.getInstance().getWidthPx(61))),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(56),
+                      child: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66)),
                     ),
-//                    Container(
-////      margin: EdgeInsets.only(top: position.dy),
-//                      child: ClipOval(
-//                        child: Container(
-//                          child: Text("10", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
-//                          decoration: BoxDecoration(color: const Color(0xFFff542b)),
-//                        ),
-//                      ),
-//                    ),
-                    _MsgWidget,
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(3),
+                    ),
+                    Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
                   ],
                 ),
-                Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc))),
-              ],
-            ),
-          ],
+                Container(
+                padding: EdgeInsets.only(right: 15,left: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Stack(
+                      fit: StackFit.passthrough,
+                      alignment: AlignmentDirectional(1.9, -1.5),
+                      children: <Widget>[
+                        SizedBox(
+                          key: _globalKey,
+                          height: ScreenUtil.getInstance().getHeightPx(56),
+                          child: Image.asset("images/home/icon_yj.png" ,width: ScreenUtil.getInstance().getWidthPx(66)),
+                        ),
+                        ClipOval(
+                          child: Container(
+                            child: Text("10", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+                            decoration: BoxDecoration(color: const Color(0xFFff542b)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(3),
+                    ),
+                    Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
+                  ],
+                ),),
+                ],
+              )
+            ],
+          ),
         ),
         body: new PageView(
           controller: _pageController,

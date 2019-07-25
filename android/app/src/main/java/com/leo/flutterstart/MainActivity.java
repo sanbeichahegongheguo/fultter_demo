@@ -2,6 +2,7 @@ package com.leo.flutterstart;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
@@ -21,6 +22,8 @@ public class MainActivity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
     final MainActivity content = this;
+    //屏幕常亮
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     new MethodChannel(getFlutterView(), "yondor").setMethodCallHandler(
             // 提供各个方法的具体实现
             new MethodCallHandler() {

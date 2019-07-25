@@ -101,7 +101,7 @@ class SplashPageState extends State<SplashPage> {
             Container(
               child: Image.asset(
                 "images/phone_login/center.png",
-                width: ScreenUtil.getInstance().getWidthPx(542),
+//                width: ScreenUtil.getInstance().getWidthPx(542),
                 height: ScreenUtil.getInstance().getHeightPx(447),
               ),
             ),

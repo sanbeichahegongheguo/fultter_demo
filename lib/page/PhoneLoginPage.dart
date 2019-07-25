@@ -150,7 +150,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                         Container(
                           child: Image.asset(
                             "images/phone_login/center.png",
-                            width: ScreenUtil.getInstance().getWidthPx(542),
+//                            width: ScreenUtil.getInstance().getWidthPx(552),
                             height: ScreenUtil.getInstance().getHeightPx(447),
                           ),
                         ),
