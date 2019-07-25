@@ -11,7 +11,7 @@ import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'models/user.dart';
 
 main() {
@@ -46,13 +46,16 @@ class MyApp extends StatelessWidget {
               textStyle: TextStyle(fontSize: 16),
               dismissOtherOnShow: true,
               child: MaterialApp(
+                localizationsDelegates: [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                locale:Locale('zh', 'CH'),
+                supportedLocales:[Locale('zh', 'CH')],
                 title: '远大小状元',
                 debugShowCheckedModeBanner: false,
                 theme: ThemeData(primaryColor: Colors.lightBlueAccent),
                 home: SplashPage(),
-                routes: {
-                  "logo": (context) => WelcomePage(),
-                },
               ));
         },
       ),

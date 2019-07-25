@@ -87,11 +87,65 @@ class SplashPageState extends State<SplashPage> {
 
   ///背景图
   Widget _buildSplashBg() {
-    return new Image.asset(
-      "images/splash.png",
-      width: double.infinity,
-      fit: BoxFit.fill,
-      height: double.infinity,
+    return Container(
+      child: Center(
+        child: Container(
+          alignment: Alignment.center,
+          child: Flex(direction: Axis.vertical, children: <Widget>[
+            SizedBox(
+              height: ScreenUtil.getInstance().getHeightPx(269),
+            ),
+            SizedBox(
+              height: ScreenUtil.getInstance().getHeightPx(70),
+            ),
+            Container(
+              child: Image.asset(
+                "images/phone_login/center.png",
+                width: ScreenUtil.getInstance().getWidthPx(542),
+                height: ScreenUtil.getInstance().getHeightPx(447),
+              ),
+            ),
+            SizedBox(
+              height: ScreenUtil.getInstance().getHeightPx(100),
+            ),
+            Expanded(
+              child: Container(
+                  padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                  alignment: AlignmentDirectional.bottomCenter,
+                  // ignore: static_access_to_instance_member
+                  child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          "images/phone_login/bottom.png",
+                          fit: BoxFit.scaleDown,
+                          height: ScreenUtil.getInstance().getHeightPx(77),
+                          width: ScreenUtil.getInstance().getWidthPx(77),
+                        ),
+                        Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                      ],
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(20),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                    )
+                  ])),
+              flex: 2,
+            ),
+          ]),
+        ),
+      ),
+      decoration: BoxDecoration(
+        gradient: new LinearGradient(
+          begin: const FractionalOffset(0.5, 0.0),
+          end: const FractionalOffset(0.5, 1.0),
+          colors: <Color>[Color(0xFFcdfdd3), Color(0xFFe2fff0)],
+        ),
+      ),
     );
   }
 }

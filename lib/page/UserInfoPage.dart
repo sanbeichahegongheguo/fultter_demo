@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -264,9 +265,11 @@ class _UserInfo extends State<UserInfo>{
   //判断用户是否有头像
   isNetwork(imgUrl){
     if(imgUrl != null){
-      return new Image(
-        image:NetworkImage(imgUrl) ,
-        fit: BoxFit.cover,width:ScreenUtil.getInstance().getWidthPx(200),height: ScreenUtil.getInstance().getWidthPx(200),
+      return CachedNetworkImage(
+        imageUrl: imgUrl.toString().replaceAll("fs.k12china-local.com", "192.168.6.30:30781"),
+        fit: BoxFit.cover,
+        width: ScreenUtil.getInstance().getWidthPx(200),
+        height: ScreenUtil.getInstance().getWidthPx(200),
       );
     }else{
       return new Image(

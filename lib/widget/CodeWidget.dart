@@ -27,6 +27,7 @@ class _CodeWidgetState extends State<CodeWidget> {
   _CodeWidgetState();
   String _imagesUrl = "http://www.k12china.com/k12-api/base/getValidateCode?t=${DateTime.now().millisecondsSinceEpoch}";
   bool _is = true;
+  bool _canBtn = true;
   TextEditingController _controller = new TextEditingController();
   Widget _image;
   String _cookieCode;
@@ -120,23 +121,31 @@ class _CodeWidgetState extends State<CodeWidget> {
   }
 
   Future _checkCode() async {
-    var codeDataJson = {"code": _controller.text, "cookieCode": _cookieCode, "userSign": _userSign};
-    var validateCodeData = await UserDao.getValidateCode(widget.phone);
-    if (ObjectUtil.isNotEmpty(validateCodeData) && !validateCodeData.result) {
-      showToast(validateCodeData.data);
-      return;
-    }
-    String key = validateCodeData.data["ext1"];
-    String value = "$key${widget.phone}";
-    String encrypt = await FlutterDes.encryptToHex(value, key, iv: Config.DES_IV);
-    var data = await UserDao.sendMobileCodeWithValiCode(encrypt, key, jsonEncode(codeDataJson));
-    if (data.result) {
-      print("发送手机验证码");
-      Navigator.pop(context, true);
-    } else {
-      if (ObjectUtil.isNotEmpty(data.data)) {
-        showToast(data.data);
+    try{
+      CommonUtils.showLoadingDialog(context, text: "");
+      var codeDataJson = {"code": _controller.text, "cookieCode": _cookieCode, "userSign": _userSign};
+      var validateCodeData = await UserDao.getValidateCode(widget.phone);
+      if (ObjectUtil.isNotEmpty(validateCodeData) && !validateCodeData.result) {
+        showToast(validateCodeData.data);
+        Navigator.pop(context);
+        return;
       }
+      String key = validateCodeData.data["ext1"];
+      String value = "$key${widget.phone}";
+      String encrypt = await FlutterDes.encryptToHex(value, key, iv: Config.DES_IV);
+      var data = await UserDao.sendMobileCodeWithValiCode(encrypt, key, jsonEncode(codeDataJson));
+      Navigator.pop(context);
+      if (data.result) {
+        print("发送手机验证码");
+        Navigator.pop(context, true);
+      } else {
+        if (ObjectUtil.isNotEmpty(data.data)) {
+          showToast(data.data);
+        }
+      }
+    }catch(e){
+      Navigator.pop(context);
+      print(e);
     }
   }
 }
