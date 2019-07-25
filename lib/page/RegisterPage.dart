@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flustars/flustars.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -35,11 +36,11 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   TextEditingController teacherNameController = new TextEditingController();
   TextEditingController userNameController = new TextEditingController();
   TextEditingController userPasswordController = new TextEditingController();
-  PinEditingController pinEditingController = new PinEditingController(pinLength:6);
-  RegisterState(
-      this._currentPageIndex
-      ) : this._pageController = new PageController(initialPage: _currentPageIndex),super();
+  PinEditingController pinEditingController = new PinEditingController(pinLength:6,autoDispose:false);
+  RegisterState(this._currentPageIndex) : this._pageController = new PageController(initialPage: _currentPageIndex),super();
+  //输入框删除按钮
   bool _hasdeleteIcon = false;
+  //输入手机框下一步按钮
   bool nextBtn = false;
   bool keyBordTarget = false;
   int _currentPageIndex = 0;
@@ -54,6 +55,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   ///学校下拉列表
   bool _expand = true;
 
+  //选择年级颜色和年级信息
   List<bool> color = [false,false,false,false,false,false];
   List<String> list = ['一年级','二年级','三年级','四年级','五年级','六年级'];
 
@@ -63,7 +65,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   bool _lengthStandard = false;
   bool _includeStandard = false;
-  bool _setPwdBtn = false;
 
   //验证码是否已经验证过
   bool _checkCodeTarget = false;
@@ -74,10 +75,14 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   List<dynamic> _schoolList = [];
   List<dynamic> classesList = [];
 
-  int _classId = 0;
+  dynamic _classId = 0;
   int _className = 0;
   int _gradeName = 0;
 
+  //当前步骤
+  int _currentStep = 0;
+
+  String _helperText = "";
   @override
   void initState() {
     super.initState();
@@ -173,17 +178,117 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     });
   }
 
+  //构建ui
+  Widget build(BuildContext context){
+    final heightScreen = MediaQuery.of(context).size.height;
+    final widthSrcreen = MediaQuery.of(context).size.width;
+    return StoreBuilder<GSYState>(builder: (context, store) {
+      return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        backgroundColor:  Color(0xFFf1f2f6),
+        appBar: AppBar(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            //居中显示
+            centerTitle: true,
+            leading: new IconButton(
+                icon: new Icon(
+                  Icons.arrow_back_ios,
+                  color: Color(0xFF333333),
+                ),
+                onPressed: () {
+                  if (null!=widget.isLogin && !widget.isLogin){
+                    //判断当前步骤
+                    print(_currentStep);
+                    if(_currentStep==0){
+                      NavigatorUtil.goLogin(context);
+                    }else if(_currentStep==1){
+                      _onTap(0);
+                      setState(() {
+                        _titleName = '输入手机号';
+                        pinEditingController.text = '';
+                      });
+                    }else if(_currentStep==2){
+                      _onTap(1);
+                      setState(() {
+                        _titleName = '验证手机号';
+                        pinEditingController.text = '';
+                      });
+                    }else if(_currentStep==3){
+                      _onTap(2);
+                    }else if(_currentStep==4){
+                      _onTap(3);
+                      setState(() {
+                        _titleName = '填写学校班级';
+                        pinEditingController.text = '';
+                      });
+                    }else if(_currentStep==5){
+                      _onTap(4);
+                      setState(() {
+                        _titleName = '填写学校班级';
+                        pinEditingController.text = '';
+                      });
+
+                    }
+                  }else{
+                    NavigatorUtil.goWelcome(context);
+                  }
+                }
+            ),
+            title: Text(
+              _titleName,
+              style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(19)),)
+        ),
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            // 触摸收起键盘
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: new PageView.builder(
+            onPageChanged:_pageChange,
+            controller: _pageController,
+            physics: new NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context,int index){
+              if(index==0){
+                return _editPhoneNumber();
+              }else if(index==1){
+                return _editCode();
+              }else if(index==2){
+                return _editSchool();
+              }else if(index==3){
+                return _editGrade();
+              }else if(index==4){
+                return _editClass();
+              }else if(index==5){
+                return _editNameAndPassword();
+              }
+            },
+            itemCount: 10,
+          ),
+        ),
+
+      );
+     });
+
+  }
+
   //搜索学校
   void _searchSchool() async{
-    DataResult data = await UserDao.searchSchool('base','school',schoolController.text,'h5');
+    DataResult data = await UserDao.searchSchool('base','school',schoolController.text,'');
     if(data.data['error']==0){
       setState(() {
         this._schoolList = data.data['schoollist'];
+        _hasdeleteIcon = true;
+        _expand = false;
+        _helperText = '';
       });
-      _hasdeleteIcon = true;
-      _expand = false;
     }else{
-      showToast('搜索不到相应学校！');
+      setState(() {
+        _expand = true;
+        _helperText = '搜索不到相应学校！';
+      });
+//      showToast('搜索不到相应学校！');
     }
   }
 
@@ -223,63 +328,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     }
   }
 
-  //构建ui
-  Widget build(BuildContext context){
-    final heightScreen = MediaQuery.of(context).size.height;
-    final widthSrcreen = MediaQuery.of(context).size.width;
-    return StoreBuilder<GSYState>(builder: (context, store) {
-      return Scaffold(
-        resizeToAvoidBottomPadding: false,
-        backgroundColor:  Color(0xFFf1f2f6),
-        appBar: AppBar(
-            brightness: Brightness.light,
-            backgroundColor: Colors.white,
-            //居中显示
-            centerTitle: true,
-            leading: new IconButton(
-                icon: new Icon(
-                  Icons.arrow_back_ios,
-                  color: Color(0xFF333333),
-                ),
-                onPressed: () {
-                  print("返回首页");
-                  if(widget.from == 'login'){
-                    NavigatorUtil.goLogin(context);
-                  }else{
-                    NavigatorUtil.goWelcome(context);
-                  }
-                }
-            ),
-            title: Text(
-              _titleName,
-              style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(19)),)
-        ),
-        body: new PageView.builder(
-          onPageChanged:_pageChange,
-          controller: _pageController,
-          physics: new NeverScrollableScrollPhysics(),
-          itemBuilder: (BuildContext context,int index){
-            if(index==0){
-              return _editPhoneNumber();
-            }else if(index==1){
-              return _editCode();
-            }else if(index==2){
-              return _editSchool();
-            }else if(index==3){
-              return _editGrade();
-            }else if(index==4){
-              return _editClass();
-            }else if(index==5){
-              return _editNameAndPassword();
-            }
-          },
-          itemCount: 10,
-        ),
-      );
-     });
-
-  }
-
   //姓名与设置密码步骤
   Widget _editNameAndPassword(){
     return new Container(
@@ -294,7 +342,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
               child: TextField(
                 controller: userPasswordController,
                 cursorColor: Color(0xFF333333),
-                obscureText: _viewPasswordText ?? false,
+                obscureText: !_viewPasswordText ?? false,
                 inputFormatters:[LengthLimitingTextInputFormatter(20),
                   WhitelistingTextInputFormatter(
                       RegExp(
@@ -308,7 +356,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                         _viewPasswordText = !_viewPasswordText;
                       });
                     },
-                    icon: _viewPasswordText?IconButton(
+                    icon: !_viewPasswordText?IconButton(
                       icon: Image.asset('images/register/closeEye.png'),
                       iconSize: 45.0,
                       color: Color(0xFF000000),
@@ -468,73 +516,43 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           SizedBox(
             height: ScreenUtil.getInstance().getHeightPx(80),
           ),
-          CommonUtils.buildBtn("更换手机号", height: ScreenUtil.getInstance().getHeightPx(120), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
-          }),
+          CommonUtils.buildBtn("更换手机号",
+              height: ScreenUtil.getInstance().getHeightPx(120),
+              width: ScreenUtil.getInstance().getWidthPx(515),
+              onTap: (){
+                NavigatorUtil.goRegester(context);
+                //跳转到更换手机号
+              }),
           SizedBox(
             height: ScreenUtil.getInstance().getHeightPx(30),
           ),
-          CommonUtils.buildBtn("原号码登录", height: ScreenUtil.getInstance().getHeightPx(120), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
-          }),
+          CommonUtils.buildBtn("原号码登录",
+              height: ScreenUtil.getInstance().getHeightPx(120),
+              width: ScreenUtil.getInstance().getWidthPx(515),
+              onTap: (){
+                NavigatorUtil.goWelcome(context);
+              }),
         ],
       );
         if(this._classNextBtn){
           CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
         }
-      }else if(data.data['err']==0){
+      }else if(data.data['err']==0||data.data['err']==401){
         String className = "$gradeName年级$_className班";
-        print(className);
-        print(_gradeName);
-        print(_className);
         CommonUtils.showLoadingDialog(context, text: "注册中···");
-        DataResult data = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'P',_classId,_schoolId,className,_gradeName,_className);
+        DataResult data = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className);
         Navigator.pop(context);
         if(!data.data['success']){
           showToast(data.data['message']);
+        }else{
+          print(data.data);
+          showToast('注册成功！');
+          NavigatorUtil.goLogin(context,account:(userPhoneController.text).toString(),password:(userPasswordController.text).toString());
         }
-        print(data.data);
         ///进行注册
       }else{
         showToast(data.data['msg']);
       }
-//      var widgetMsg =  Column(
-//        children: <Widget>[
-//          SizedBox(
-//            height: ScreenUtil.getInstance().getHeightPx(30),
-//          ),
-//          Container(
-//            padding: EdgeInsets.only(left: ScreenUtil.getInstance().getHeightPx(35)),
-//            child:Align(
-//              alignment: Alignment.topLeft,
-//              child: Text(
-//                '宋楚乔 家长已有',
-//                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666))),
-//            ),
-//          ),
-//
-//          SizedBox(
-//            height: ScreenUtil.getInstance().getHeightPx(30),
-//          ),
-//          Container(
-//            padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), right: ScreenUtil.getInstance().getWidthPx(42)),
-//            child: Text(
-//                '137****4518 为手机号的账号，请使用旧手机号登录，谢谢！',
-//                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), color: const Color(0xFF666666))),
-//          ),
-//          SizedBox(
-//            height: ScreenUtil.getInstance().getHeightPx(80),
-//          ),
-//          CommonUtils.buildBtn("更换手机号", height: ScreenUtil.getInstance().getHeightPx(120), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
-//          }),
-//          SizedBox(
-//            height: ScreenUtil.getInstance().getHeightPx(30),
-//          ),
-//          CommonUtils.buildBtn("原号码登录", height: ScreenUtil.getInstance().getHeightPx(120), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
-//          }),
-//        ],
-//      );
-//      if(this._classNextBtn){
-//        CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
-//      }
     }else if(!isName||!isSurname){
       showToast("姓名不合法!");
     }else if(!_hasdeleteIcon){
@@ -602,12 +620,12 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                     onTap: () {
                       _checkPhone();
                     },
-                    splashColor: nextBtn ? Color(0xFFfbd951) : Color(0xFFdfdfeb),
+                    splashColor: nextBtn ? Color(0xFF6ed699) : Color(0xFFdfdfeb),
                     child: Ink(
                       height: ScreenUtil.getInstance().getHeightPx(120),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(50)),
-                        color: nextBtn ? Color(0xFFfbd951) : Color(0xFFdfdfeb),
+                        color: nextBtn ? Color(0xFF6ed699) : Color(0xFFdfdfeb),
                       ),
                       child: Center(
                         child: Text(
@@ -634,7 +652,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
     bool matched = exp.hasMatch(userPhoneController.text);
     if(this.nextBtn&&matched&&_AgreementCheck){
+      CommonUtils.showLoadingDialog(context, text: "验证手机号中···");
       DataResult data = await UserDao.checkHaveAccount(userPhoneController.text, 'P');
+      Navigator.pop(context);
        if(data.result){
           if(data.data == false){
             var isSend = await CommonUtils.showEditDialog(
@@ -653,7 +673,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           }
        }
     }else if(!_AgreementCheck){
-      showToast("请先阅读协议！",position: ToastPosition.center);
+      showToast("请先同意协议！",position: ToastPosition.center);
     }else{
       showToast("请输入正确的手机号！",position: ToastPosition.center);
     }
@@ -678,10 +698,13 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           ),
           Container(
             height: ScreenUtil.getInstance().getHeightPx(200),
-            padding: EdgeInsets.only(left: ScreenUtil.getInstance().getHeightPx(45),right: ScreenUtil.getInstance().getHeightPx(45), top:ScreenUtil.getInstance().getHeightPx(100)),
-            child: PinInputTextField(
+            padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(45),right: ScreenUtil.getInstance().getWidthPx(45), top:ScreenUtil.getInstance().getHeightPx(100)),
+            child: new PinInputTextField(
                 pinLength: 6,
                 pinEditingController:pinEditingController,
+                decoration:BoxLooseDecoration(
+                  gapSpace:ScreenUtil.getInstance().getWidthPx(45),
+                ),
             ),
           ),
           Container(
@@ -767,7 +790,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
                     Text(
-                        '您的小孩属于哪个年级？',
+                        '您的孩子属于哪个年级？',
                         style: TextStyle(color: Color(0xFF999999), fontSize:ScreenUtil.getInstance().getSp(14.82))
                     ),
                     SizedBox(
@@ -814,7 +837,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                 padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(93),top: ScreenUtil.getInstance().getHeightPx(114)),
                 child:Align(
                   alignment: Alignment.topLeft,
-                  child: Text('广州市越秀区远大教育', style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(16.93),fontWeight: FontWeight.w700)),
+                  child: Text(_schoolName, style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(16.93),fontWeight: FontWeight.w700)),
                 )
                 ),
               Container(
@@ -831,7 +854,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                       height: ScreenUtil.getInstance().getHeightPx(40),
                     ),
                     Text(
-                        '您的小孩属于${this.gradeName}年级几班？',
+                        '您的孩子属于${this.gradeName}年级几班？',
                         style: TextStyle(color: Color(0xFF999999), fontSize:ScreenUtil.getInstance().getSp(14.82))
                     ),
                     Container(
@@ -852,7 +875,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                 ),
               ),
               SizedBox(
-                height: ScreenUtil.getInstance().getHeightPx(40),
+                height: ScreenUtil.getInstance().getHeightPx(35),
               ),
               CommonUtils.buildBtn(
                   '下一步',
@@ -874,14 +897,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     );
   }
 
-  //构建班级数组
-  _getDataList() {
-    for (int i = 1; i < 100; i++) {
-      this.classList.add(i.toString()+'班');
-      this.classListColor.add(false);
-    }
-  }
-
   //验证数学老师姓
   _checkMathTeacher(teacherSurnname){
       print(teacherSurnname);
@@ -890,86 +905,99 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         Navigator.pop(context);
         setState(() {
           _titleName = '姓名与设置密码';
-          _hasdeleteIcon = false;
+          if(userNameController.text!=''){
+            _hasdeleteIcon = true;
+          }else{
+            _hasdeleteIcon = false;
+          }
         });
         _onTap(5);
       }else{
-        showToast("验证失败",position: ToastPosition.top);
+        showToast("抱歉！您输入的数学老师姓氏错误！",position: ToastPosition.top);
       }
   }
 
   //确认班级下一步
   void _checkClassNextBtn() async{
-    String teacherName = "";
-    DataResult data = await UserDao.chooseClass(_classId);
-    print(data.data['msg']['error']);
-    if(data.data['msg']['error']=="0"){
-      teacherName = data.data['teacherName'];
-      print(teacherName.substring(0,1));
-      if (data.data['teacherName']!='' && data.data['teacherName'] != '云老师') {
-        var widgetMsg =  Column(
-          children: <Widget>[
-            SizedBox(
-              height: ScreenUtil.getInstance().getHeightPx(30),
-            ),
-            Text(
-                '请回答以下问题加入班级',
-                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666))),
-            SizedBox(
-              height: ScreenUtil.getInstance().getHeightPx(140),
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(70), maxWidth: ScreenUtil.getInstance().getWidthPx(640)),
-              child: TextFormField(
-                controller: teacherNameController,
-                cursorColor: Colors.black,
-                textAlign: TextAlign.center,
-                style: TextStyle( fontSize: ScreenUtil.getInstance().getSp(14), color: Colors.black),
-                decoration: new InputDecoration(
-                  hintText: '您的孩子的数学老师姓什么？',
-                ),
-              ),
-            ),
-            SizedBox(
-              height: ScreenUtil.getInstance().getHeightPx(50),
-            ),
-            CommonUtils.buildBtn("验证", height: ScreenUtil.getInstance().getHeightPx(135), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
-              _checkMathTeacher(teacherName.substring(0,1));
-            }),
-            SizedBox(
-              height: ScreenUtil.getInstance().getHeightPx(50),
-            ),
-            Text.rich(TextSpan(
-                children: [
-                  TextSpan(
-                    text: "验证不通过？",
-                    style: TextStyle(
-                      color: Color(0xFF666666),
-                      fontSize: ScreenUtil.getInstance().getSp(12),
-                    ),
-                  ),
-                  TextSpan(
-                    text: "找客服！",
-                    style: TextStyle(
-                      color: Color(0xFF5fc589),
-                      fontSize: ScreenUtil.getInstance().getSp(12),
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ]
-            )),
-          ],
-        );
-        if(this._classNextBtn){
-          CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
-        }
-      } else if (data.data['teacherName'] == '云老师') {
-        //直接跳转到设置密码
+    if(_AgreementCheck){
+      String teacherName = "";
+      print(_classId);
+      if(_classId==''){
         _onTap(5);
+      }else{
+        DataResult data = await UserDao.chooseClass(_classId);
+        print(data.data['msg']['error']);
+        if(data.data['msg']['error']=="0"){
+          teacherName = data.data['teacherName'];
+          print(teacherName.substring(0,1));
+          if (data.data['teacherName']!='' && data.data['teacherName'] != '云老师') {
+            var widgetMsg =  Column(
+              children: <Widget>[
+                SizedBox(
+                  height: ScreenUtil.getInstance().getHeightPx(30),
+                ),
+                Text(
+                    '请回答以下问题加入班级',
+                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(18), color: const Color(0xFF666666))),
+                SizedBox(
+                  height: ScreenUtil.getInstance().getHeightPx(140),
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(70), maxWidth: ScreenUtil.getInstance().getWidthPx(640)),
+                  child: TextFormField(
+                    controller: teacherNameController,
+                    cursorColor: Colors.black,
+                    textAlign: TextAlign.center,
+                    style: TextStyle( fontSize: ScreenUtil.getInstance().getSp(14), color: Colors.black),
+                    decoration: new InputDecoration(
+                      hintText: '您的孩子的数学老师姓什么？',
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: ScreenUtil.getInstance().getHeightPx(50),
+                ),
+                CommonUtils.buildBtn("验证", height: ScreenUtil.getInstance().getHeightPx(135), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
+                  _checkMathTeacher(teacherName.substring(0,1));
+                }),
+                SizedBox(
+                  height: ScreenUtil.getInstance().getHeightPx(50),
+                ),
+                Text.rich(TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "验证不通过？",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(12),
+                        ),
+                      ),
+                      TextSpan(
+                        text: "找客服！",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(12),
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ]
+                )),
+              ],
+            );
+            if(this._classNextBtn){
+              CommonUtils.showEditDialog(context,widgetMsg,height: ScreenUtil.getInstance().getHeightPx(650),width: ScreenUtil.getInstance().getWidthPx(903));
+            }
+          } else if (data.data['teacherName'] == '云老师') {
+            //直接跳转到设置密码
+            _onTap(5);
+          }
+        }else if (data.data['msg']['error'] == "21") {
+          showToast('此班级不存在！');
+          return;
+        }
       }
-    }else if (data.data['msg']['error'] == "21") {
-      showToast('此班级不存在！');
-      return;
+    }else{
+      showToast('请先同意协议！');
     }
   }
 
@@ -1012,77 +1040,125 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   //选择年级，变色，下一页，选择班级
   void _checkGrade(item,index) async{
-    DataResult data = await UserDao.chooseSchool(_schoolId,index+1);
-    setState(() {
-      if(index == 0){
-        this.gradeName = '一';
-      }else if(index == 1){
-        this.gradeName = '二';
-      }else if(index == 2){
-        this.gradeName = '三';
-      }else if(index == 3){
-        this.gradeName = '四';
-      }else if(index == 4){
-        this.gradeName = '五';
-      }else if(index == 5){
-        this.gradeName = '六';
-      }
-    });
-    print(data.data['success']);
-    if(this.color.indexOf(true)==-1){
+    if(_AgreementCheck){
+      CommonUtils.showLoadingDialog(context, text: "正在选择年级···");
+      DataResult data = await UserDao.chooseSchool(_schoolId,index+1);
       setState(() {
-        this.color[index] = true;
+        this._gradeName = index+1;
+        if(index == 0){
+          this.gradeName = '一';
+        }else if(index == 1){
+          this.gradeName = '二';
+        }else if(index == 2){
+          this.gradeName = '三';
+        }else if(index == 3){
+          this.gradeName = '四';
+        }else if(index == 4){
+          this.gradeName = '五';
+        }else if(index == 5){
+          this.gradeName = '六';
+        }
       });
-    }else{
-      setState(() {
-        this.color = [false,false,false,false,false,false];
-        this.color[index] = true;
-      });
-    }
-    if(data.data['success']){
-      classesList = data.data['ext1'];
-      print(classesList.length);
-      for (int i = 0; i < 20; i++) {
-        this.classList.add((i+1).toString()+'班');
-        this.classListColor.add(false);
+      if(this.color.indexOf(true)==-1){
+        setState(() {
+          this.color[index] = true;
+        });
+      }else{
+        setState(() {
+          this.color = [false,false,false,false,false,false];
+          this.color[index] = true;
+        });
       }
-      for (int i = 0; i < classesList.length; i++) {
-        if(classesList[i]['classNum']>20){
-          this.classList.add(classesList[i]['classNum'].toString()+'班');
+      if(data.data['success']){
+        setState(() {
+          this.classList = [];
+          this.classListColor = [];
+          this.classesList = [];
+          this._classId = 0;
+        });
+        print('classList的');
+        print(this.classList);
+        this.classesList = data.data['ext1'];
+        for (int i = 0; i < 20; i++) {
+          this.classList.add((i+1).toString()+'班');
           this.classListColor.add(false);
-        }else if (classesList[i]['classNum'] == 0) {
-          this.classList.insert(0,'0班');
+        }
+        for (int i = 0; i < classesList.length; i++) {
+          if(classesList[i]['classNum']>20){
+            this.classList.add(classesList[i]['classNum'].toString()+'班');
+            this.classListColor.add(false);
+          }else if (classesList[i]['classNum'] == 0) {
+            this.classList.insert(0,'0班');
+            this.classListColor.add(false);
+          }else{
+            print('我进来这里了');
+          }
+        }
+      }else{
+        setState(() {
+          this.classList = [];
+          this.classListColor = [];
+          this.classesList = [];
+          this._classId = 0;
+        });
+        for (int i = 0; i < 20; i++) {
+          this.classList.add((i+1).toString()+'班');
           this.classListColor.add(false);
-        }else{
-          print('我进来这里了');
         }
       }
+      Navigator.pop(context);
+      this._onTap(4);
     }else{
-      for (int i = 0; i < 20; i++) {
-        this.classList.add((i+1).toString()+'班');
-        this.classListColor.add(false);
-      }
+      showToast("请先阅读协议！");
     }
-    this._onTap(4);
-//    this._onTap(4);
-//    this._getDataList();
   }
-
 
   //选择班级，变色
   _checkClass(item,index){
-    print(this.classesList);
-    print(item);
-    print(index);
-    setState((){
-      _classId = this.classesList[index]['id'];
-      _className = this.classesList[index]['classNum'];
-      _gradeName = this.classesList[index]['grade'];
-    });
+    //当前班级
+    int currentClass = index+1;
+    print(currentClass);
+    if(this.classesList.length==0){
+      print('不存在');
+      setState((){
+        _classId = '';
+        _className = currentClass;
+      });
+    }else{
+      if(this.classesList.length>20){
+        print('存在外层');
+        setState((){
+          _classId = this.classesList[index]['id'];
+          _className = this.classesList[index]['classNum'];
+        });
+        print(_classId);
+        print(_className);
+      }else{
+        for (var singleClass in this.classesList) {
+          //当前选择的班级是否存在，存在的话
+          if(currentClass==singleClass['classNum']){
+            print('存在');
+            setState((){
+              _classId = singleClass['id'];
+              _className = singleClass['classNum'];
+            });
+            break;
+          }else{
+            print('不存在，内层');
+            setState((){
+              _classId = '';
+              _className = currentClass;
+            });
+          }
+        }
+      }
+
+    }
     if(this.classListColor.indexOf(true)!=-1){
       setState((){
+        var colorLength = this.classListColor.length;
         this.classListColor = [];
-        for (int i = 1; i < 100; i++) {
+        for (int i = 0; i < colorLength; i++) {
           this.classListColor.add(false);
         }
       });
@@ -1090,6 +1166,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     setState(() {
       this.classListColor[index] = true;
       this._classNextBtn = true;
+      print(userNameController.text);
+      this._hasdeleteIcon = false;
     });
   }
 
@@ -1100,66 +1178,76 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           Container(
             child: new Row(
               children: <Widget>[
-                IconButton(
-                  padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(5)),
-                  icon: _AgreementCheck ? new Icon(
-                    Icons.check_circle,
-                    color: Color(0xFF5fc589),
-                    size:18.0,
-                  ):new Icon(
-                    Icons.radio_button_unchecked,
-                    color: Color(0xFF5fc589),
-                    size:18.0,
+                new Expanded(
+                  flex:1,
+                  child:IconButton(
+                    padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(5)),
+                    icon: _AgreementCheck ? new Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF5fc589),
+                      size:18.0,
+                    ):new Icon(
+                      Icons.radio_button_unchecked,
+                      color: Color(0xFF5fc589),
+                      size:18.0,
+                    ),
+                    onPressed: () {
+                      RegExp exp = RegExp(
+                          r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
+                      bool matched = exp.hasMatch(userPhoneController.text);
+                      setState(() {
+                        _AgreementCheck = !_AgreementCheck;
+                        if(!_AgreementCheck){
+                          this.nextBtn = false;
+                        }
+                        else if(_AgreementCheck&&userPhoneController.text.length > 10&&matched){
+                          this.nextBtn = true;
+                        }
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    RegExp exp = RegExp(
-                        r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
-                    bool matched = exp.hasMatch(userPhoneController.text);
-                    setState(() {
-                      _AgreementCheck = !_AgreementCheck;
-                      if(!_AgreementCheck){
-                        this.nextBtn = false;
-                      }
-                      else if(_AgreementCheck&&userPhoneController.text.length > 10&&matched){
-                        this.nextBtn = true;
-                      }
-                    });
-                  },
                 ),
-                Text.rich(TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "已阅读并同意",
-                        style: TextStyle(
-                          color: Color(0xFF666666),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                new Expanded(
+                  flex:6,
+                  child: Text.rich(TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "已阅读并同意",
+                          style: TextStyle(
+                            color: Color(0xFF666666),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: "《远大教育用户服务协议》",
-                        style: TextStyle(
-                          color: Color(0xFF5fc589),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                        TextSpan(
+                          text: "《远大教育用户服务协议》",
+                          style: TextStyle(
+                            color: Color(0xFF5fc589),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
+                          recognizer: TapGestureRecognizer()..onTap = () {
+                            linkTo('education');
+                          },
                         ),
-//                             recognizer: _tapRecognizer
-                      ),
-                      TextSpan(
-                        text: "与",
-                        style: TextStyle(
-                          color: Color(0xFF666666),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                        TextSpan(
+                          text: "与",
+                          style: TextStyle(
+                            color: Color(0xFF666666),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: "《远大教育隐私协议》",
-                        style: TextStyle(
-                          color: Color(0xFF5fc589),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                        TextSpan(
+                          text: "《远大教育隐私协议》",
+                          style: TextStyle(
+                            color: Color(0xFF5fc589),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
+                          recognizer: TapGestureRecognizer()..onTap = () {
+                            linkTo('privacy');
+                          },
                         ),
-//                                recognizer: _tapRecognizer
-                      ),
-                    ]
-                )),
+                      ]
+                  )),
+                ),
               ],
             ),
           ),
@@ -1168,6 +1256,15 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           ),
         ]
     );
+  }
+
+  //跳转
+  void linkTo(where){
+    if(where == 'education'){
+      NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg/userProtocol.html");
+    }else{
+      NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg/privacyProtocol.html");
+    }
   }
 
   //底部信息
@@ -1198,62 +1295,72 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
             ),
           ),
           SizedBox(
-            height: ScreenUtil.getInstance().getWidthPx(147),
+            height: ScreenUtil.getInstance().getWidthPx(80),
           ),
           Container(
             child: new Row(
               children: <Widget>[
-                IconButton(
-                  padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(5)),
-                  icon: _AgreementCheck ? new Icon(
-                    Icons.check_circle,
-                    color: Color(0xFF5fc589),
-                    size:18.0,
-                  ):new Icon(
-                    Icons.radio_button_unchecked,
-                    color: Color(0xFF5fc589),
-                    size:18.0,
+                new Expanded(
+                  flex: 1,
+                  child:IconButton(
+                    padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(5)),
+                    icon: _AgreementCheck ? new Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF5fc589),
+                      size:18.0,
+                    ):new Icon(
+                      Icons.radio_button_unchecked,
+                      color: Color(0xFF5fc589),
+                      size:18.0,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _AgreementCheck = !_AgreementCheck;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _AgreementCheck = !_AgreementCheck;
-                    });
-                  },
                 ),
-                Text.rich(TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "已阅读并同意",
-                        style: TextStyle(
-                          color: Color(0xFF666666),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                new Expanded(
+                  flex: 7,
+                  child:Text.rich(TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "已阅读并同意",
+                          style: TextStyle(
+                            color: Color(0xFF666666),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: "《远大教育用户服务协议》",
-                        style: TextStyle(
-                          color: Color(0xFF5fc589),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                        TextSpan(
+                          text: "《远大教育用户服务协议》",
+                          style: TextStyle(
+                            color: Color(0xFF5fc589),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
+                          recognizer: TapGestureRecognizer()..onTap = () {
+                            linkTo('education');
+                          },
                         ),
-//                             recognizer: _tapRecognizer
-                      ),
-                      TextSpan(
-                        text: "与",
-                        style: TextStyle(
-                          color: Color(0xFF666666),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                        TextSpan(
+                          text: "与",
+                          style: TextStyle(
+                            color: Color(0xFF666666),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: "《远大教育隐私协议》",
-                        style: TextStyle(
-                          color: Color(0xFF5fc589),
-                          fontSize: ScreenUtil.getInstance().getSp(11.29),
+                        TextSpan(
+                          text: "《远大教育隐私协议》",
+                          style: TextStyle(
+                            color: Color(0xFF5fc589),
+                            fontSize: ScreenUtil.getInstance().getSp(11.29),
+                          ),
+                          recognizer: TapGestureRecognizer()..onTap = () {
+                            linkTo('privacy');
+                          },
                         ),
-//                                recognizer: _tapRecognizer
-                      ),
-                    ]
-                )),
+                      ]
+                  )),
+                ),
               ],
             ),
           ),
@@ -1290,23 +1397,18 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     CommonUtils.showLoadingDialog(context, text: "请等待···");
     DataResult data = await UserDao.chooseSchool(schoolId,1);
     Navigator.pop(context);
-//    if(data.data['success']&&_AgreementCheck){
     if(_AgreementCheck){
       setState(() {
         FocusScope.of(context).requestFocus(new FocusNode());
         _expand = true;
         _schoolId = schoolId;
         _schoolName = schollName;
+        _helperText = '';
         _onTap(3);
       });
-//    }else if(data.data['success']&&!_AgreementCheck){
     }else if(!_AgreementCheck){
-      showToast("请先阅读协议！");
+      showToast("请先同意协议！");
     }
-//    else{
-//      showToast("选择学校失败！");
-//    }
-
   }
   //下拉框
   Widget _buildListView(){
@@ -1330,6 +1432,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     return TextField(
       controller: controller,
       cursorColor: Color(0xFF333333),
+      keyboardType:  what=="phone"?TextInputType.phone:TextInputType.text,
       obscureText: obscureText ?? false,
       inputFormatters: what=="phone"?[LengthLimitingTextInputFormatter(11),WhitelistingTextInputFormatter.digitsOnly]:[],
       decoration: new InputDecoration(
@@ -1338,6 +1441,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           onPressed: () {
             setState(() {
               controller.text = "";
+              _helperText = "";
               _hasdeleteIcon = (controller.text.isNotEmpty);
             });
           },
@@ -1356,11 +1460,16 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         filled:true,
         fillColor:Color(0xFFFFFFFF),
         hintText: hintText,
+        helperText: _helperText,
+        helperStyle: TextStyle(color: Color(0xFFA94442)),
       ),
     );
   }
 
   void _onTap(int index) {
+    setState(() {
+      _currentStep = index;
+    });
     FocusScope.of(context).requestFocus(FocusNode());
     _pageController.animateToPage(index,
         duration: const Duration(milliseconds: 1), curve: Curves.ease);
