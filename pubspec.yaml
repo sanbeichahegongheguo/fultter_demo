@@ -42,6 +42,8 @@ dependencies:
   rxdart: ^0.22.0
   uuid: 2.0.1
   path_provider: ^0.5.0+1
+  flutter_swiper: ^1.0.6
+
   flutter_localizations:
     sdk: flutter
 
@@ -79,7 +81,8 @@ flutter:
    - images/phone_login/
    - images/admin/
    - images/register/
-
+   - images/coach/
+   - images/study/
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

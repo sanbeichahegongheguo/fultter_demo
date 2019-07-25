@@ -9,6 +9,9 @@ import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'CoachPage.dart';
+import 'LearningEmotionPage.dart';
+
 class HomePage extends StatelessWidget {
   /// 不退出
   Future<bool> _dialogExitApp(BuildContext context) async {
@@ -50,45 +53,8 @@ class HomePage extends StatelessWidget {
       },
       child: new GSYTabBarWidget(
         tabViews: [
-          GestureDetector(
-            onTap: () async {
-              NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/cardGame/index.html");
-//              NavigatorUtil.goWebView(context, "http://192.168.20.38:8099");
-            },
-            child: Stack(
-              alignment: const FractionalOffset(0.5, 0.5), //方法一
-              children: <Widget>[
-                Container(),
-                new Stack(
-                  alignment: const FractionalOffset(0.5, 0.5), //方法一
-                  children: <Widget>[
-                    new Tab(
-                      child: new Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Image.asset(
-                            "images/home/icon_study_select.png",
-                            fit: BoxFit.scaleDown,
-                            height: 20,
-                          ),
-                          SizedBox(
-                            height: 2,
-                          ),
-                          new Text(
-                            "个人中心",
-                            style: TextStyle(fontSize: 12, color: Color(0xFF606a81)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          new Center(
-            child: Text("2222"),
-          ),
+          new CoachPage(),
+          new LearningEmotionPage(),
           new Center(
             child: Text("3333"),
           ),
