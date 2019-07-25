@@ -83,6 +83,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   int _currentStep = 0;
 
   String _helperText = "";
+
+  bool _recoverTime = true;
+
   @override
   void initState() {
     super.initState();
@@ -180,6 +183,11 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   //构建ui
   Widget build(BuildContext context){
+    if(_currentPageIndex == 1){
+      setState(() {
+        _titleName = '验证手机号';
+      });
+    }
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
     return StoreBuilder<GSYState>(builder: (context, store) {
@@ -211,6 +219,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                     }else if(_currentStep==2){
                       _onTap(1);
                       setState(() {
+                        _recoverTime = false;
                         _titleName = '验证手机号';
                         pinEditingController.text = '';
                       });
@@ -264,7 +273,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                 return _editNameAndPassword();
               }
             },
-            itemCount: 10,
+            itemCount: 6,
           ),
         ),
 
@@ -288,7 +297,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         _expand = true;
         _helperText = '搜索不到相应学校！';
       });
-//      showToast('搜索不到相应学校！');
     }
   }
 
@@ -325,6 +333,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
       if (null != data.data) {
         showToast(data?.data ?? "");
       }
+      setState(() {
+        _checkCodeTarget = true;
+      });
     }
   }
 
@@ -648,6 +659,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   //判断手机号格式
   void _checkPhone() async{
+    setState(() {
+      _recoverTime = true;
+    });
     RegExp exp = RegExp(
         r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
     bool matched = exp.hasMatch(userPhoneController.text);
@@ -703,14 +717,14 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                 pinLength: 6,
                 pinEditingController:pinEditingController,
                 decoration:BoxLooseDecoration(
-                  gapSpace:ScreenUtil.getInstance().getWidthPx(45),
+                  gapSpace:ScreenUtil.getInstance().getWidthPx(58),
                 ),
             ),
           ),
           Container(
             alignment: Alignment.center,
             padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(69)),
-            child:CountDown(dataTwo: userPhoneController.text),
+            child:CountDown(dataTwo: userPhoneController.text,recoverTime:_recoverTime),
           ),
           Container(
             alignment: Alignment.center,
@@ -1177,77 +1191,71 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         children: <Widget>[
           Container(
             child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                new Expanded(
-                  flex:1,
-                  child:IconButton(
-                    padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(5)),
-                    icon: _AgreementCheck ? new Icon(
-                      Icons.check_circle,
-                      color: Color(0xFF5fc589),
-                      size:18.0,
-                    ):new Icon(
-                      Icons.radio_button_unchecked,
-                      color: Color(0xFF5fc589),
-                      size:18.0,
-                    ),
-                    onPressed: () {
-                      RegExp exp = RegExp(
-                          r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
-                      bool matched = exp.hasMatch(userPhoneController.text);
-                      setState(() {
-                        _AgreementCheck = !_AgreementCheck;
-                        if(!_AgreementCheck){
-                          this.nextBtn = false;
-                        }
-                        else if(_AgreementCheck&&userPhoneController.text.length > 10&&matched){
-                          this.nextBtn = true;
-                        }
-                      });
-                    },
+                GestureDetector(
+                  child: _AgreementCheck ? new Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF5fc589),
+                    size:16.0,
+                  ):new Icon(
+                    Icons.radio_button_unchecked,
+                    color: Color(0xFF5fc589),
+                    size:16.0,
                   ),
+                  onTap: () {
+                    RegExp exp = RegExp(
+                        r'^((13[0-9])|(14[0-9])|(15[0-9])|(16[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))\d{8}$');
+                    bool matched = exp.hasMatch(userPhoneController.text);
+                    setState(() {
+                      _AgreementCheck = !_AgreementCheck;
+                      if(!_AgreementCheck){
+                        this.nextBtn = false;
+                      }
+                      else if(_AgreementCheck&&userPhoneController.text.length > 10&&matched){
+                        this.nextBtn = true;
+                      }
+                    });
+                  },
                 ),
-                new Expanded(
-                  flex:6,
-                  child: Text.rich(TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "已阅读并同意",
-                          style: TextStyle(
-                            color: Color(0xFF666666),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
+                Text.rich(TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "已阅读并同意",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                        TextSpan(
-                          text: "《远大教育用户服务协议》",
-                          style: TextStyle(
-                            color: Color(0xFF5fc589),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
-                          recognizer: TapGestureRecognizer()..onTap = () {
-                            linkTo('education');
-                          },
+                      ),
+                      TextSpan(
+                        text: "《远大教育用户服务协议》",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                        TextSpan(
-                          text: "与",
-                          style: TextStyle(
-                            color: Color(0xFF666666),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('education');
+                        },
+                      ),
+                      TextSpan(
+                        text: "与",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                        TextSpan(
-                          text: "《远大教育隐私协议》",
-                          style: TextStyle(
-                            color: Color(0xFF5fc589),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
-                          recognizer: TapGestureRecognizer()..onTap = () {
-                            linkTo('privacy');
-                          },
+                      ),
+                      TextSpan(
+                        text: "《远大教育隐私协议》",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                      ]
-                  )),
-                ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('privacy');
+                        },
+                      ),
+                    ]
+                )),
               ],
             ),
           ),
@@ -1299,68 +1307,62 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           ),
           Container(
             child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                new Expanded(
-                  flex: 1,
-                  child:IconButton(
-                    padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(5)),
-                    icon: _AgreementCheck ? new Icon(
-                      Icons.check_circle,
-                      color: Color(0xFF5fc589),
-                      size:18.0,
-                    ):new Icon(
-                      Icons.radio_button_unchecked,
-                      color: Color(0xFF5fc589),
-                      size:18.0,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _AgreementCheck = !_AgreementCheck;
-                      });
-                    },
+                GestureDetector(
+                  child:_AgreementCheck ? new Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF5fc589),
+                    size:16.0,
+                  ):new Icon(
+                    Icons.radio_button_unchecked,
+                    color: Color(0xFF5fc589),
+                    size:16.0,
                   ),
+                  onTap: () {
+                    setState(() {
+                      _AgreementCheck = !_AgreementCheck;
+                    });
+                  },
                 ),
-                new Expanded(
-                  flex: 7,
-                  child:Text.rich(TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "已阅读并同意",
-                          style: TextStyle(
-                            color: Color(0xFF666666),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
+                Text.rich(TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "已阅读并同意",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                        TextSpan(
-                          text: "《远大教育用户服务协议》",
-                          style: TextStyle(
-                            color: Color(0xFF5fc589),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
-                          recognizer: TapGestureRecognizer()..onTap = () {
-                            linkTo('education');
-                          },
+                      ),
+                      TextSpan(
+                        text: "《远大教育用户服务协议》",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                        TextSpan(
-                          text: "与",
-                          style: TextStyle(
-                            color: Color(0xFF666666),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('education');
+                        },
+                      ),
+                      TextSpan(
+                        text: "与",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                        TextSpan(
-                          text: "《远大教育隐私协议》",
-                          style: TextStyle(
-                            color: Color(0xFF5fc589),
-                            fontSize: ScreenUtil.getInstance().getSp(11.29),
-                          ),
-                          recognizer: TapGestureRecognizer()..onTap = () {
-                            linkTo('privacy');
-                          },
+                      ),
+                      TextSpan(
+                        text: "《远大教育隐私协议》",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
                         ),
-                      ]
-                  )),
-                ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('privacy');
+                        },
+                      ),
+                    ]
+                )),
               ],
             ),
           ),

@@ -6,7 +6,8 @@ import 'package:flutter_start/widget/CodeWidget.dart';
 class CountDown extends StatefulWidget {
   final callBack;
   final dataTwo;
-  CountDown({Key key, this.dataTwo, this.callBack}) : super(key: key);
+  final recoverTime;
+  CountDown({Key key, this.dataTwo, this.callBack, this.recoverTime}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return CountDownState();
@@ -18,15 +19,19 @@ class CountDownState extends State<CountDown> with SingleTickerProviderStateMixi
   String _codeCountdownStr = '重新获取验证码';
   int _countdownNum = 60;
   String data = '';
+  bool _recoverTime= true;
   @override
   void initState() {
     this.data = widget.dataTwo;
+    this._recoverTime = widget.recoverTime;
     print(this.data);
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    _reGetCountdown();
+    if(this._recoverTime){
+      _reGetCountdown();
+    }
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(69)),
@@ -52,11 +57,15 @@ class CountDownState extends State<CountDown> with SingleTickerProviderStateMixi
       if (null != isSend && isSend) {
         _countdownNum = 60;
         _countdownTimer = null;
+        setState(() {
+          this._recoverTime = true;
+        });
         _reGetCountdown();
       }
     }
   }
   void _reGetCountdown() {
+
     Future.delayed(Duration(milliseconds: 200)).then((e) {
       if(!mounted){
         return;
