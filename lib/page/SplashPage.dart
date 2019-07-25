@@ -8,6 +8,9 @@ import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:redux/redux.dart';
 
+import 'HomePage.dart';
+import 'PhoneLoginPage.dart';
+
 ///过度页面
 class SplashPage extends StatefulWidget {
   @override
@@ -40,9 +43,17 @@ class SplashPageState extends State<SplashPage> {
           //登录
           UserDao.getUser(isNew:true,store: store).then((res){
             if (res != null){
-              NavigatorUtil.goHome(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+                    (Route<dynamic> route) => false,
+              );
             }else{
-              NavigatorUtil.goWelcome(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
+                    (Route<dynamic> route) => false,
+              );
             }
           });
     });

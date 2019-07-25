@@ -60,6 +60,10 @@ class HttpManager {
         String str = response.data.data;
         if (str.startsWith("{")) {
           response.data.data = jsonDecode(response.data.data);
+          if(null!=response.data.data["success"] && (response.data.data["success"]["ok"]==201)){
+            //这个工程的201状态码为登录过期
+            return new ResultData(Code.errorHandleFunction(401, "登录过期", noTip), false, 401);
+          }
         }
       }
     } on DioError catch (e) {

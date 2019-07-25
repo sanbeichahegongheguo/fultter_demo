@@ -129,7 +129,10 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         drawer: _drawer,
         appBar: new AppBar(
           elevation: 0,
-          leading: Row(
+          titleSpacing: 1,
+          //backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Color(0xFFf1f2f6),
+          title: Row(
             children: <Widget>[
               SizedBox(
                 width: ScreenUtil.getInstance().getWidthPx(50),
@@ -138,20 +141,20 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                 "images/home/icon_jl.png",
                 width: ScreenUtil.getInstance().getWidthPx(100),
               ),
-            ],
-          ),
-          titleSpacing: 1,
-          //backgroundColor: Theme.of(context).primaryColor,
-          backgroundColor: Color(0xFFf1f2f6),
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "签到奖励",
-                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+              SizedBox(
+                width: ScreenUtil.getInstance().getWidthPx(25),
               ),
-              Text("已经签到5天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "签到奖励",
+                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+                  ),
+                  Text("已经签到5天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+                ],
+              ),
             ],
           ),
           actions: <Widget>[

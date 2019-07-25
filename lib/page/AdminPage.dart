@@ -143,7 +143,7 @@ class _Admin extends State<Admin> {
   isNetwork(imgUrl) {
     if (imgUrl != null) {
       return CachedNetworkImage(
-        imageUrl: imgUrl,
+        imageUrl: imgUrl.toString().replaceAll("fs.k12china-local.com", "192.168.6.30:30781"),
         fit: BoxFit.cover,
         width: ScreenUtil.getInstance().getWidthPx(200),
         height: ScreenUtil.getInstance().getWidthPx(200),

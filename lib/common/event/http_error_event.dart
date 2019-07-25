@@ -22,6 +22,7 @@ class HttpErrorEvent {
   }
 
   static errorHandleFunction(code, message, BuildContext context) {
+    print("code $code");
     switch (code) {
       case Code.NETWORK_ERROR:
         showToast("网络异常,请稍后重试");

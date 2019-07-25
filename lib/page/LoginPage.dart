@@ -31,6 +31,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   GlobalKey _globalKey = new GlobalKey();
   bool _expand = false;
   List<LoginUser> _users = new List();
+  bool _hasdeleteIcon = false;
   String _version = "2.0.000";
   @override
   void dispose() {
@@ -44,6 +45,16 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
     super.initState();
 
     userNameController.addListener(() {
+      if (userNameController.text == "") {
+        setState(() {
+          _hasdeleteIcon = false;
+        });
+      } else {
+        setState(() {
+          _hasdeleteIcon = true;
+        });
+      }
+
       if (userNameController.text.length >= 6 && passwordController.text.length >= 6) {
         if (this.loginBtn == false) {
           setState(() {
@@ -133,7 +144,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                       ),
                       Container(
                         padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
-                        child: _getTextField("您的手机号", userNameController, key: _globalKey),
+                        child: _getTextField("您的手机号", userNameController, key: _globalKey,obscureText: false),
                       ),
                       Container(
                         padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50), top: ScreenUtil.getInstance().getHeightPx(60)),
@@ -203,7 +214,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                   ),
                 ),
                 Offstage(
-                  child: _buildListView(),
+                  child: Material(
+                      color:Colors.transparent,
+                    child: _buildListView(),
+                  ),
                   offstage: !_expand,
                 ),
               ],
@@ -222,6 +236,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       obscureText: obscureText ?? false,
       controller: controller,
       style: new TextStyle(fontSize: 17.0, color: Colors.black),
+      inputFormatters: !obscureText?[WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]:[],
       cursorColor: Color(0xFF333333),
       onTap: () {
         setState(() {
@@ -237,11 +252,28 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               _users.clear();
               _users.addAll(await LocalStorage.getUsers());
               setState(() {
-                _users.retainWhere((item) => item.username.startsWith(input));
+                if (input==null || input==""){
+                  _users.clear();
+                }else{
+                  _users.retainWhere((item) => item.username.startsWith(input));
+                }
               });
             }
           : (input) {},
       decoration: new InputDecoration(
+        suffixIcon: !obscureText? _hasdeleteIcon
+            ? IconButton(
+          onPressed: () {
+            setState(() {
+              userNameController.text = "";
+            });
+          },
+          icon: Icon(
+            Icons.cancel,
+            color: Color(0xFFcccccc),
+          ),
+        ) : Text(""):null,
+
         contentPadding: EdgeInsets.all(13),
         hintText: hintText,
         hintStyle: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16)),
@@ -266,10 +298,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
           ),
           onTap: () {
             setState(() {
-              FocusScope.of(context).requestFocus(new FocusNode());
               userNameController.text = _users[i].username;
               passwordController.text = _users[i].password;
               _expand = false;
+              FocusScope.of(context).requestFocus(new FocusNode());
             });
           },
         ));
