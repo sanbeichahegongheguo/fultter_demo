@@ -128,12 +128,11 @@ class _CoachPage extends State<CoachPage>{
       var positioned = _mainBtList[i]["type"] ==2 ? Positioned(
         top:0,
         right: 0,
-        width:ScreenUtil.getInstance().getWidthPx(94),
-        height:ScreenUtil.getInstance().getHeightPx(33),
+
         child:Image.asset(
           "images/coach/icon-hot.png",
-          fit: BoxFit.cover,
-          height: ScreenUtil.getInstance().getHeightPx(94),
+          width:ScreenUtil.getInstance().getWidthPx(94),
+          height:ScreenUtil.getInstance().getHeightPx(33),
         ),
       ):Text("");
       btList.add(

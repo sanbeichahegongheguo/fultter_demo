@@ -91,7 +91,6 @@ class NavigatorUtil {
   static goResetPasswordPage(BuildContext context) {
     NavigatorRouter(context, ResetPasswordPage());
   }
-
   ///去往webview
   static goWebView(BuildContext context, String url) async {
     String key = await httpManager.getAuthorization();
