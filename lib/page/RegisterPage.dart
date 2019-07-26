@@ -205,6 +205,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                   color: Color(0xFF333333),
                 ),
                 onPressed: () {
+                  setState(() {
+                    _helperText = '';
+                  });
                   if (null!=widget.isLogin && !widget.isLogin){
                     //判断当前步骤
                     print(_currentStep);
