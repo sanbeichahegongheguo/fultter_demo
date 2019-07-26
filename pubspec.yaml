@@ -79,6 +79,7 @@ flutter:
    - images/register/
    - images/coach/
    - images/study/
+   - images/parent_reward/
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

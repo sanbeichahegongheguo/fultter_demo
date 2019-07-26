@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
+import 'parentReward.dart';
 
 class HomePage extends StatelessWidget {
   /// 不退出
@@ -55,9 +56,7 @@ class HomePage extends StatelessWidget {
         tabViews: [
           new CoachPage(),
           new LearningEmotionPage(),
-          new Center(
-            child: Text("3333"),
-          ),
+          new parentReward(),
           new Admin(),
         ],
         backgroundColor: Colors.lightBlueAccent,
