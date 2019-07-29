@@ -71,7 +71,7 @@ class _StatefulWidget extends State<StatefulWidget>{
   Widget _studymsg(){
     bool isStudy = true;
     bool isWork = false;
-    if(_studyMsg["cttotal"] == 0 && _studyMsg["questotal"] == 0 && _studyMsg["studyTotaltime"] == ""){
+    if(_studyMsg["cttotal"] == "0" && _studyMsg["questotal"] == "0" && _studyMsg["studyTotaltime"] == ""){
       isStudy = false;
     }
     if(_parentHomeWorkList.length == 0){
@@ -458,10 +458,9 @@ class _StatefulWidget extends State<StatefulWidget>{
     }
    return msg;
   }
-
+  ///处理时间
   String getTimeStrBySecond(String secondTime) {
     var second = int.parse(secondTime);
-    print("secondsecondsecondsecondsecondsecond$second");
     var time =  formatDate(DateTime(0, 0, 0, 0, 0, second), [HH, ':', nn]);
     return time;
   }
