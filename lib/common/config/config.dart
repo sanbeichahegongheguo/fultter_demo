@@ -19,6 +19,8 @@ class Config {
   static const USER_PHONE = "user-phone";
   static const DES_IV = "myyondor"; //加密偏移值
   static const PHONE_UID = "phone-uid"; //加密偏移值
+  static const PARENT_HOME = "parentHomeWorkList";//最近作业集合
+  static const STUDY_MSG = "studyMsg";//用户学习情况
   static const starNum = "star-num";
   static const hotGiftList = "hot-gift-list";
 }

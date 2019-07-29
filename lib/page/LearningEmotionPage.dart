@@ -1,7 +1,15 @@
+import 'dart:convert';
+
+import 'package:flustars/flustars.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
+
+import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/formatDate.dart';
+import 'package:flutter_start/models/user.dart';
 class LearningEmotionPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -12,46 +20,68 @@ class LearningEmotionPage extends StatefulWidget{
 }
 
 class _StatefulWidget extends State<StatefulWidget>{
+
   @override
-  initState() {
+  initState(){
+//    print("缓存studyMsg${}");
     super.initState();
     print("进入学情");
+     _getStudyData();
+     _getNewHomeWork();
+
   }
   var _learninText = "  同学学习情况如下：";
+  var _studyMsg = SpUtil.getObject(Config.STUDY_MSG) == null?{}:SpUtil.getObject(Config.STUDY_MSG);//用户信息
+  List _parentHomeWorkList = SpUtil.getObjectList(Config.PARENT_HOME) == null?[]:SpUtil.getObjectList(Config.PARENT_HOME);//用户作业
   int _studyIndex = 1;//判断内容加载
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return  Container(
-      color: Color(0xFFf0f4f7),
-      child: ListView(
-        children: <Widget>[
-          Container(
-            color: Colors.white,
-            width:MediaQuery.of(context).size.width,
-            child: _studymsg(),
-          ),
-          Container(
-            margin: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(54),horizontal: ScreenUtil.getInstance().getWidthPx(63)),
-            child: Wrap(
-              spacing: ScreenUtil.getInstance().getWidthPx(20), // 主轴(水平)方向间距
-              runSpacing: ScreenUtil.getInstance().getHeightPx(27), // 纵轴（垂直）方向间距
-              runAlignment:WrapAlignment.center,
-              alignment:WrapAlignment.spaceBetween,
-              children: _footBt()
+
+      return  Container(
+        color: Color(0xFFf0f4f7),
+        child: ListView(
+          children: <Widget>[
+            Container(
+              color: Colors.white,
+              width:MediaQuery.of(context).size.width,
+              child: _studymsg(),
             ),
-          ),
-        ],
-      ),
-    );
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(54)),
+                  width: ScreenUtil.getInstance().getWidthPx(980),
+                  child: Wrap(
+//              spacing: ScreenUtil.getInstance().getWidthPx(10), // 主轴(水平)方向间距
+                      runSpacing: ScreenUtil.getInstance().getHeightPx(27), // 纵轴（垂直）方向间距
+                      runAlignment:WrapAlignment.center,
+                      alignment:WrapAlignment.spaceBetween,
+                      children: _footBt()
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      );
   }
 
   Widget _studymsg(){
-    if(_studyIndex == 0){
+    bool isStudy = true;
+    bool isWork = false;
+    if(_studyMsg["cttotal"] == 0 && _studyMsg["questotal"] == 0 && _studyMsg["studyTotaltime"] == ""){
+      isStudy = false;
+    }
+    if(_parentHomeWorkList.length == 0){
+      isWork = true;
+    }
+    if(isWork && !isStudy){
       //无最新作业和学习记录
       return _notWordStudy();
     }else{
-      return _wordStudy();
+      return _wordStudy(isStudy ,isWork);
     }
   }
   //无最新作业和学习记录
@@ -91,20 +121,19 @@ class _StatefulWidget extends State<StatefulWidget>{
             ),
           )
         ),
-
       ],
     );
     return noStudyMsg;
   }
 
   //有最新作业和记录
-  Widget _wordStudy(){
+  Widget _wordStudy(isStudy ,isWork){
     var msg = Column(
       children: <Widget>[
         Container(
           padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(36),horizontal:ScreenUtil.getInstance().getWidthPx(58)),
           margin: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(35),bottom: ScreenUtil.getInstance().getHeightPx(59)),
-          width: ScreenUtil.getInstance().getWidthPx(900),
+          width: ScreenUtil.getInstance().getWidthPx(980),
           decoration:BoxDecoration(
             border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
             borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
@@ -116,7 +145,7 @@ class _StatefulWidget extends State<StatefulWidget>{
                 child: Text.rich(TextSpan(
                     children: [
                       TextSpan(
-                        text: "宋楚乔",
+                        text: SpUtil.getObject(Config.LOGIN_USER)["realName"],
                         style: TextStyle(
                             color: Color(0xFF333333),
                             fontSize: ScreenUtil.getInstance().getSp(48/3)
@@ -134,7 +163,7 @@ class _StatefulWidget extends State<StatefulWidget>{
               ),
               Container(
                 padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(77),bottom: ScreenUtil.getInstance().getHeightPx(10)),
-                child: _learnMsg(),
+                child: _learnMsg(isStudy),
               )
 
             ],
@@ -164,7 +193,7 @@ class _StatefulWidget extends State<StatefulWidget>{
             ],
           ),
         ),
-       _wordMsg()
+       _wordMsg(isWork)
       ],
     );
     return msg;
@@ -206,14 +235,11 @@ class _StatefulWidget extends State<StatefulWidget>{
 
 
   //作业内容
-  _wordMsg(){
-    List wordList = [
-      {"title":"笔头作业","time":"3月20日","data":"第一单元 辨认东南、西南、东北、西北四个方向","type":1}
-    ];
+  _wordMsg(isWork){
     List<Widget> msgList = [];
     var msg;
-    if(wordList.length > 0 ){
-      for(var i = 0;i<wordList.length;i++){
+    if(!isWork){
+      for(var i = 0;i<2;i++){
         msgList.add(
           Container(
             width: ScreenUtil.getInstance().getWidthPx(980),
@@ -234,9 +260,9 @@ class _StatefulWidget extends State<StatefulWidget>{
                         color: Color(0xFFff6870),
                         borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
                       ),
-                      child: Text(wordList[i]["title"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(36/3),color: Color(0xFFffffff) ),),
+                      child: Text(_judgeWordType(_parentHomeWorkList[i]["hwType"]),style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(36/3),color: Color(0xFFffffff) ),),
                     ),
-                    Text(wordList[i]["time"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(32/3),color: Color(0xFF999999) ),),
+                    Text(_setTime(_parentHomeWorkList[i]["time"]),style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(32/3),color: Color(0xFF999999) ),),
                   ],
                 ),
                 Container(
@@ -252,13 +278,13 @@ class _StatefulWidget extends State<StatefulWidget>{
                       flex: 4,
                       child: Container(
                         padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(48),right:ScreenUtil.getInstance().getWidthPx(30),bottom:ScreenUtil.getInstance().getHeightPx(48)  ),
-                        child: Text(wordList[i]["data"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF333333) ),),
+                        child: Text(_parentHomeWorkList[i]["content"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF333333) ),),
                       ),
                     ),
                     Expanded(
                       flex: 1,
                       child: Container(
-                        child: Image.asset(wordList[i]["type"] == 1?"images/study/icon-ok.png":"images/study/icon-no.png",width: ScreenUtil.getInstance().getHeightPx(120),height:ScreenUtil.getInstance().getHeightPx(120)),
+                        child: Image.asset(_parentHomeWorkList[i]["state"] == "1"?"images/study/icon-ok.png":"images/study/icon-no.png",width: ScreenUtil.getInstance().getHeightPx(120),height:ScreenUtil.getInstance().getHeightPx(120)),
                         height: ScreenUtil.getInstance().getHeightPx(120),
                         width: ScreenUtil.getInstance().getHeightPx(120),
                       ),
@@ -319,11 +345,38 @@ class _StatefulWidget extends State<StatefulWidget>{
     }
     return msg;
   }
-
+  ///判断作业类型
+  String _judgeWordType(int type){
+    String data = "作业";
+    switch (type){
+      case 2:
+        data = "口算作业";
+        break;
+      case 10:
+        data = "笔头作业";
+        break;
+      case 11:
+        data = "同步作业";
+        break;
+      case 13:
+        data = "错题核对收录";
+        break;
+      case 14:
+        data = "专项作业";
+        break;
+    }
+    return data;
+  }
+  ///处理时间格式
+  String _setTime(String timeData){
+    print("DateTime${DateUtil.getDateStrByMs(36)}");
+    var time =  formatDate(DateTime.parse(timeData), [yyyy, '年', mm, '月', dd,"日"]);
+    return time;
+  }
   //学习记录内容
-  _learnMsg(){
+  _learnMsg(isStudy){
     var msg;
-    if(true){
+    if(isStudy){
       setState(() {
         _learninText = " 同学学习情况如下：";
       });
@@ -334,7 +387,7 @@ class _StatefulWidget extends State<StatefulWidget>{
             flex: 1,
             child: Column(
               children: <Widget>[
-                Text("65",style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(54/3)),),
+                Text(_studyMsg["cttotal"]+"",style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(54/3)),),
                 Container(
                   margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(15)),
                   child: Row(
@@ -351,7 +404,7 @@ class _StatefulWidget extends State<StatefulWidget>{
             flex: 1,
             child: Column(
               children: <Widget>[
-                Text("0",style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(54/3)),),
+                Text(_studyMsg["questotal"]+"",style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(54/3)),),
                 Container(
                   margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(15)),
                   decoration:BoxDecoration(
@@ -371,7 +424,7 @@ class _StatefulWidget extends State<StatefulWidget>{
             flex: 1,
             child: Column(
               children: <Widget>[
-                Text("30:28",style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(54/3)),),
+                Text(getTimeStrBySecond(_studyMsg["studyTotaltime"] != ""?_studyMsg["studyTotaltime"]:"0"),style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(54/3)),),
                 Container(
                   margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(15)),
                   child: Row(
@@ -404,5 +457,39 @@ class _StatefulWidget extends State<StatefulWidget>{
       );
     }
    return msg;
+  }
+
+  String getTimeStrBySecond(String secondTime) {
+    var second = int.parse(secondTime);
+    print("secondsecondsecondsecondsecondsecond$second");
+    var time =  formatDate(DateTime(0, 0, 0, 0, 0, second), [HH, ':', nn]);
+    return time;
+  }
+  ///获取学生本学期做题数和错题数及当天学习时间
+   void _getStudyData() async{
+    var data = await UserDao.getStudyData();
+    if(data != null && data != ""){
+      if(data["success"]){
+        setState(() {
+          _studyMsg =  jsonDecode(data["data"])["data"][0];
+          SpUtil.putObject(Config.STUDY_MSG,_studyMsg);
+          print(_studyMsg);
+        });
+      }
+    }
+  }
+
+  ///获取学生本学期做题数和错题数及当天学习时间
+  void _getNewHomeWork() async{
+    var data = await UserDao.getNewHomeWork();
+    if(data != null && data != ""){
+      if(data["success"]["ok"] == 0){
+        setState(() {
+          _parentHomeWorkList = data["success"]["parentHomeWorkList"];
+          print("_parentHomeWorkList====$_parentHomeWorkList");
+          SpUtil.putObjectList(Config.PARENT_HOME,_parentHomeWorkList);
+        });
+      }
+    }
   }
 }

@@ -146,9 +146,8 @@ class _CoachPage extends State<CoachPage>{
                       width: ScreenUtil.getInstance().getWidthPx(260),
                       child: Image.asset(
                         _mainBtList[i]["imgUrl"],
-                        fit: BoxFit.fitHeight,
+                        fit: BoxFit.contain,
                         height: ScreenUtil.getInstance().getHeightPx(120),
-                        width:ScreenUtil.getInstance().getWidthPx(120),
                       ),
                     ) ,
                   ),

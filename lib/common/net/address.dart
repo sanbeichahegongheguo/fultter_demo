@@ -132,6 +132,14 @@ class Address {
   static resetPassword() {
     return "${studentHost}resetPassword";
   }
+  ///获取学生本学期做题数和错题数及当天学习时间
+  static getStudyData() {
+    return "${stu_app}get_study_data";
+  }
+  ///最新同步作业/口算作业/笔头作业
+  static getNewHomeWork() {
+    return "${studentHost}getNewHomeWork";
+  }
 
   ///获取热门兑换礼物
   static getHotGoodsList(){

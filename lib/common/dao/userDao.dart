@@ -398,6 +398,33 @@ class UserDao {
     }
     return data;
   }
+  ///获取学生本学期做题数和错题数及当天学习时间
+  static getStudyData() async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key": key};
+    var res = await httpManager.netFetch(Address.getStudyData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    var data;
+    if (res != null && res.result) {
+      var json = res.data;
+      data = json;
+    }
+    return data;
+  }
+  ///最新同步作业/口算作业/笔头作业
+  static getNewHomeWork() async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key": key,"curVersion":"1.4.10"};
+    var res = await httpManager.netFetch(Address.getNewHomeWork(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    var data;
+    if (res != null && res.result) {
+      var json = res.data;
+      data = json;
+    }
+    return data;
+  }
+
   ///设置学生学习时间
   static saveEyeshiieldTime(eyeshieldId) async{
     String key = await httpManager.getAuthorization();
