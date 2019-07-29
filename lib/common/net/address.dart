@@ -132,4 +132,14 @@ class Address {
   static resetPassword() {
     return "${studentHost}resetPassword";
   }
+
+  ///获取热门兑换礼物
+  static getHotGoodsList(){
+    return "${studentHost}getHotConvertMallGoodsList";
+  }
+
+  ///获取星星总数
+  static getTotalStar(){
+    return "${studentHost}getTotalStar";
+  }
 }

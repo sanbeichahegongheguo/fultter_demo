@@ -19,4 +19,6 @@ class Config {
   static const USER_PHONE = "user-phone";
   static const DES_IV = "myyondor"; //加密偏移值
   static const PHONE_UID = "phone-uid"; //加密偏移值
+  static const starNum = "star-num";
+  static const hotGiftList = "hot-gift-list";
 }

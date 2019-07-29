@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-
+import 'package:flutter_start/common/dao/daoResult.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/config/config.dart';
 class parentReward extends StatefulWidget{
   @override
   State<parentReward> createState() {
@@ -14,21 +17,19 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
   //头部广告位轮播集合
   List<Widget> _headerAdvertList = List();
   List<String> _headerImgList = ["images/parent_reward/banner.png","images/parent_reward/banner.png"];
-  List _hotGiftList = [
-    {"imgUrl":"images/parent_reward/blocksImg.png","name":"乐高积木"},
-    {"imgUrl":"images/parent_reward/redPatImg.png","name":"5元奖学金"},
-    {"imgUrl":"images/parent_reward/cardImg.png","name":"玛雅首领曼科"},
-  ];
+  List _hotGiftList = SpUtil.getObjectList(Config.hotGiftList)==null?[]:SpUtil.getObjectList(Config.hotGiftList);
   List _btnList = [
     {"imgUrl":"images/parent_reward/scholarshipIcon.png","name":"兑换奖学金"},
     {"imgUrl":"images/parent_reward/starDrawIcon.png","name":"星星抽奖"},
     {"imgUrl":"images/parent_reward/exchangeCardBtn.png","name":"兑换卡牌"},
   ];
   bool _showBanner = false;
-
+  dynamic _totalStarNum = SpUtil.getString(Config.starNum)==null?'':SpUtil.getString(Config.starNum);
   @override
   void initState() {
     _getheaderAdvertList();
+    _getHotGift();
+    _getTotalStar();
     super.initState();
   }
 
@@ -38,6 +39,28 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
         _headerImgList[i],
         fit: BoxFit.fitWidth,
       ));
+    }
+  }
+
+  void _getTotalStar() async{
+    DataResult data = await UserDao.getTotalStar();
+    if(data.result){
+      setState(() {
+        _totalStarNum = data.data;
+      });
+    }else{
+      ///请求失败
+    }
+  }
+
+  void _getHotGift() async{
+    DataResult data = await UserDao.getHotGoodsList();
+    if(data.result){
+      setState(() {
+         _hotGiftList = data.data;
+      });
+    }else{
+      ///请求失败
     }
   }
 
@@ -85,17 +108,9 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
             child: _hotExchange(),
           ),
           Container(
-//            alignment: Alignment.center,
             width: 200,
             child: _btnBody(),
           ),
-
-//          GestureDetector(
-//            child: Container(
-//              height: 500,
-//              color: Color(0XFF0000000),
-//            ),
-//          ),
         ],
       ),
     );
@@ -188,7 +203,7 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
                             color: Color(0xFFf0f4f7),
                             width: ScreenUtil.getInstance().getWidthPx(280),
                             height:ScreenUtil.getInstance().getHeightPx(65),
-                            child: new Text('1234'),
+                            child: new Text(_totalStarNum),
                             alignment: Alignment.center,
                           ),
                         ),
@@ -245,32 +260,37 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
     for(var i = 0;i<_hotGiftList.length;i++){
       giftList.add(
         Container(
-          width: ScreenUtil.getInstance().getWidthPx(300),
-          height: ScreenUtil.getInstance().getHeightPx(200),
-          decoration: BoxDecoration(
-            border: new Border.all(color: Color(0xFFe6e6e7)),
-            borderRadius: new BorderRadius.all(
-                Radius.circular((10.0))),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset(
-                _hotGiftList[i]['imgUrl'],
-                height: ScreenUtil.getInstance().getHeightPx(120),
-//                width: ScreenUtil.getInstance().getHeightPx(151),
-                fit: BoxFit.fitHeight,
+              width: ScreenUtil.getInstance().getWidthPx(300),
+              height: ScreenUtil.getInstance().getHeightPx(200),
+              decoration: BoxDecoration(
+                border: new Border.all(color: Color(0xFFe6e6e7)),
+                borderRadius: new BorderRadius.all(
+                    Radius.circular((10.0))),
               ),
-              Container(
-                margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
-                child: Text(_hotGiftList[i]['name'],
-                style: TextStyle(
-                  color: Color(0xFF999999)
-                ),),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _hotGiftList[i]["name"].contains('奖学金')?
+                  Image.asset(
+                    'images/parent_reward/redPatImg.png',
+                    height: ScreenUtil.getInstance().getHeightPx(120),
+                    fit: BoxFit.fitHeight,
+                  ):
+                  Image.network(
+                    _hotGiftList[i]['minPicUrl'],
+                    height: ScreenUtil.getInstance().getHeightPx(120),
+                    fit: BoxFit.fitHeight,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
+                    child: Text(_hotGiftList[i]['name'],
+                      style: TextStyle(
+                          color: Color(0xFF999999)
+                      ),),
+                  ),
+                ],
               ),
-            ],
-          ),
-        )
+            )
       );
     }
     var giftmsg = Container(
@@ -302,7 +322,6 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
           Container(
             alignment: Alignment.center,
             width: ScreenUtil.getInstance().getWidthPx(300),
-            height: ScreenUtil.getInstance().getHeightPx(200),
             child: Stack(
               children: <Widget>[
                 Column(

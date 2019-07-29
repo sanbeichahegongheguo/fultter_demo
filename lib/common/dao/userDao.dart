@@ -428,4 +428,44 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+
+  ///获取热门兑换礼物列表
+  static getHotGoodsList() async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key};
+    var res = await httpManager.netFetch(Address.getHotGoodsList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if(json["success"]["ok"]==0){
+        result = res.data["success"]["convertMallGoodsList"][0]["convertGoodsList"];
+        await SpUtil.putObjectList(Config.hotGiftList, result);
+        res.result = true;
+      }else{
+        result = res.data["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///获取星星总数
+  static getTotalStar() async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key};
+    var res = await httpManager.netFetch(Address.getTotalStar(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if(json["success"]["ok"]==0){
+        result = res.data["success"]["data"];
+        await SpUtil.putString(Config.starNum, result);
+        res.result = true;
+      }else{
+        result = res.data["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
 }
