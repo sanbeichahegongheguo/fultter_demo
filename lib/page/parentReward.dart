@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/net/address.dart';
 class parentReward extends StatefulWidget{
   @override
   State<parentReward> createState() {
@@ -146,15 +148,26 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Image.asset(
-            'images/parent_reward/millionsBtn.png',
-            height: ScreenUtil.getInstance().getHeightPx(318),
-            width:ScreenUtil.getInstance().getWidthPx(515),
+          GestureDetector(
+            child: Image.asset(
+              'images/parent_reward/millionsBtn.png',
+              height: ScreenUtil.getInstance().getHeightPx(318),
+              width:ScreenUtil.getInstance().getWidthPx(515),
+            ),
+            onTap: (){
+
+              NavigatorUtil.goWebView(context, Address.GameH5Address());
+            },
           ),
-          Image.asset(
-            'images/parent_reward/cardGameBtn.png',
-            height: ScreenUtil.getInstance().getHeightPx(318),
-            width:ScreenUtil.getInstance().getWidthPx(515),
+          GestureDetector(
+            child: Image.asset(
+              'images/parent_reward/cardGameBtn.png',
+              height: ScreenUtil.getInstance().getHeightPx(318),
+              width:ScreenUtil.getInstance().getWidthPx(515),
+            ),
+            onTap: (){
+              NavigatorUtil.goWebView(context, Address.GameH5Address());
+            },
           ),
         ],
       ),
