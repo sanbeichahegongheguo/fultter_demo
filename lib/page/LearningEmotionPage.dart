@@ -78,7 +78,7 @@ class _StatefulWidget extends State<StatefulWidget>{
       isWork = true;
     }
     if(isWork && !isStudy){
-      //无最新作业和学习记录
+      //无最新作业和学习记录信息
       return _notWordStudy();
     }else{
       return _wordStudy(isStudy ,isWork);
