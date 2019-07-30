@@ -1,16 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
-import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
-import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:tflite/tflite.dart';
 
 import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
@@ -29,14 +22,6 @@ class HomePage extends StatelessWidget {
     return Future.value(false);
   }
 
-  Future _getImage() async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    var res = await Tflite.loadModel(
-        model: "assets/model.tflite");
-    print("res $res");
-    print("base64 $appDocDir");
-  }
-
   _bulletinWindow(context){
     print("公告弹窗");
     var windowWidget = Column(
@@ -49,7 +34,6 @@ class HomePage extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    _getImage();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _bulletinWindow(context);
     });
