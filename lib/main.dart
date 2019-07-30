@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
-import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/SplashPage.dart';
-import 'package:flutter_start/page/WelcomePage.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
@@ -27,9 +25,9 @@ main() {
 }
 
 class MyApp extends StatelessWidget {
+
   final store = new Store<GSYState>(appReducer,
       middleware: middleware,
-
       ///初始化数据
       initialState: new GSYState(
         userInfo: User(),
@@ -37,6 +35,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return StoreProvider(
       store: store,
       child: new StoreBuilder<GSYState>(

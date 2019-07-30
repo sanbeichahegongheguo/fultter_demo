@@ -1,25 +1,24 @@
-import 'dart:io';
-
-import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
-
+import 'package:oktoast/oktoast.dart';
 import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
 import 'parentReward.dart';
 
 class HomePage extends StatelessWidget {
-  /// 不退出
-  Future<bool> _dialogExitApp(BuildContext context) async {
-    if (Platform.isAndroid) {
-      AndroidIntent intent = AndroidIntent(
-        action: 'android.intent.action.MAIN',
-        category: "android.intent.category.HOME",
-      );
-      await intent.launch();
+
+
+  int _exitTime = 0;
+
+  Future<bool> _exitApp() {
+    if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
+      showToast('远大小状元：再按一次退出',position:ToastPosition.bottom);
+      _exitTime = DateTime.now().millisecondsSinceEpoch;
+      return Future.value(false);
+    } else {
+      return Future.value(true);
     }
-    return Future.value(false);
   }
 
   _bulletinWindow(context){
@@ -39,13 +38,13 @@ class HomePage extends StatelessWidget {
     });
     return WillPopScope(
       onWillPop: () {
-        return _dialogExitApp(context);
+        return _exitApp();
       },
       child: new GSYTabBarWidget(
         tabViews: [
           new CoachPage(),
           new LearningEmotionPage(),
-          new parentReward(),
+          new ParentReward(),
           new Admin(),
         ],
         backgroundColor: Colors.lightBlueAccent,

@@ -122,7 +122,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
               '账号登录',
               style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(19)),
             )),
-        body: InkWell(
+        body: GestureDetector(
           onTap: () {
             print("onTap11111");
             FocusScope.of(context).requestFocus(new FocusNode());
@@ -232,13 +232,13 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   TextField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
     return TextField(
       key: key,
-      keyboardType: TextInputType.text,
+      keyboardType: !obscureText?TextInputType.number:TextInputType.text,
       obscureText: obscureText ?? false,
       controller: controller,
       style: new TextStyle(fontSize: 17.0, color: Colors.black),
       inputFormatters: !obscureText?[WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]:[],
       cursorColor: Color(0xFF333333),
-      onTap: () {
+      onTap: !obscureText?() {
         setState(() {
           if (key != null) {
             _expand = !_expand;
@@ -246,7 +246,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
             _expand = false;
           }
         });
-      },
+      }:(){},
       onChanged: key != null
           ? (input) async {
               _users.clear();
@@ -273,7 +273,6 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
             color: Color(0xFFcccccc),
           ),
         ) : Text(""):null,
-
         contentPadding: EdgeInsets.all(13),
         hintText: hintText,
         hintStyle: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16)),

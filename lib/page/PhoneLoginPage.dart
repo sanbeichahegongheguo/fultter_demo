@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:android_intent/android_intent.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +33,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   bool _expand = false;
   bool _hasdeleteIcon = false;
   StreamSubscription _stream;
+  int _exitTime = 0;
   @override
   initState() {
     super.initState();
@@ -84,14 +82,13 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
 
   /// 不退出
   Future<bool> _dialogExitApp(BuildContext context) async {
-    if (Platform.isAndroid) {
-      AndroidIntent intent = AndroidIntent(
-        action: 'android.intent.action.MAIN',
-        category: "android.intent.category.HOME",
-      );
-      await intent.launch();
+    if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
+      showToast('远大小状元：再按一次退出',position:ToastPosition.bottom);
+      _exitTime = DateTime.now().millisecondsSinceEpoch;
+      return Future.value(false);
+    } else {
+      return Future.value(true);
     }
-    return Future.value(false);
   }
 
   @override

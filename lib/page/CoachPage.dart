@@ -15,7 +15,7 @@ class CoachPage extends StatefulWidget{
 
 }
 
-class _CoachPage extends State<CoachPage>{
+class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<CoachPage>, SingleTickerProviderStateMixin{
   @override
   void initState() {
     _getheaderAdvertList();
@@ -26,7 +26,7 @@ class _CoachPage extends State<CoachPage>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    super.build(context);
     return Container(
           color: Color(0xFFf0f4f7),
           child: ListView(
@@ -256,4 +256,8 @@ class _CoachPage extends State<CoachPage>{
   Widget _swiperFootBuilder(BuildContext context, int index) {
     return (_footAdvertList[index]);
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

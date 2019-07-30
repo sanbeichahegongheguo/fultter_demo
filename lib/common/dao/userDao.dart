@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -400,29 +401,67 @@ class UserDao {
   }
   ///获取学生本学期做题数和错题数及当天学习时间
   static getStudyData() async{
-    String key = await httpManager.getAuthorization();
-    var params = {"key": key};
-    var res = await httpManager.netFetch(Address.getStudyData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
-    var result;
-    var data;
-    if (res != null && res.result) {
-      var json = res.data;
-      data = json;
+    next() async {
+      String key = await httpManager.getAuthorization();
+      var params = {"key": key};
+      var res = await httpManager.netFetch(Address.getStudyData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var data;
+      if (res != null && res.result) {
+        var json = res.data;
+        if(json["success"]){
+          data= StudyData.fromJson(jsonDecode(json["data"])["data"][0]);
+          SpUtil.putObject(Config.STUDY_MSG,data);
+        }
+        return new DataResult(data, true);
+      }else{
+        return new DataResult(null, false);
+      }
     }
-    return data;
+
+    var object = SpUtil.getObject(Config.STUDY_MSG);
+    if(null==object){
+      return await next();
+    }
+    StudyData data =  StudyData.fromJson(object);
+    DataResult dataResult = new DataResult(data, true, next: next());
+    return dataResult;
   }
+
   ///最新同步作业/口算作业/笔头作业
   static getNewHomeWork() async{
-    String key = await httpManager.getAuthorization();
-    var params = {"key": key,"curVersion":"1.4.10"};
-    var res = await httpManager.netFetch(Address.getNewHomeWork(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
-    var result;
-    var data;
-    if (res != null && res.result) {
-      var json = res.data;
-      data = json;
+    next() async {
+      String key = await httpManager.getAuthorization();
+      var params = {"key": key,"curVersion":"1.4.10"};
+      var res = await httpManager.netFetch(Address.getNewHomeWork(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      List<ParentHomeWork> list = new List<ParentHomeWork>();
+      if (res != null && res.result) {
+        var data = res.data;
+        if(data["success"]["ok"] == 0){
+          if (null!=data["success"]["parentHomeWorkList"] &&data["success"]["parentHomeWorkList"].length > 0){
+            data["success"]["parentHomeWorkList"].forEach((value){
+              list.add(ParentHomeWork.fromJson(value));
+            });
+            SpUtil.putObjectList(Config.PARENT_HOME,list);
+          }
+          return DataResult(list, true);
+        }else{
+          return DataResult(data["message"], false);
+        }
+      }else{
+        return DataResult(null, false);
+      }
     }
-    return data;
+    List<ParentHomeWork> list = new List<ParentHomeWork>();
+    var object = SpUtil.getObjectList(Config.PARENT_HOME);
+    print("object $object");
+    if(null==object){
+      return await next();
+    }
+    object.forEach((value){
+      list.add(ParentHomeWork.fromJson(value)) ;
+    });
+    DataResult dataResult = new DataResult(list, true, next: next());
+    return dataResult;
   }
 
   ///设置学生学习时间
@@ -458,41 +497,67 @@ class UserDao {
 
   ///获取热门兑换礼物列表
   static getHotGoodsList() async{
-    String key = await httpManager.getAuthorization();
-    var params = {"key":key};
-    var res = await httpManager.netFetch(Address.getHotGoodsList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
-    var result;
-    if (res != null && res.result) {
-      var json = res.data;
-      if(json["success"]["ok"]==0){
-        result = res.data["success"]["convertMallGoodsList"][0]["convertGoodsList"];
-        await SpUtil.putObjectList(Config.hotGiftList, result);
-        res.result = true;
-      }else{
-        result = res.data["success"]["message"];
-        res.result = false;
+    next() async {
+      String key = await httpManager.getAuthorization();
+      var params = {"key":key};
+      var res = await httpManager.netFetch(Address.getHotGoodsList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var result;
+      if (res != null && res.result) {
+        var json = res.data;
+        if(json["success"]["ok"]==0){
+          List<ConvertGoods> list = new List();
+          result = res.data["success"]["convertMallGoodsList"][0]["convertGoodsList"];
+          await SpUtil.putObjectList(Config.hotGiftList, result);
+          result.forEach((value){
+            list.add(ConvertGoods.fromJson(value)) ;
+          });
+          result = list;
+          res.result = true;
+        }else{
+          result = res.data["success"]["message"];
+          res.result = false;
+        }
       }
+      return new DataResult(result, res.result);
     }
-    return new DataResult(result, res.result);
+    List<ConvertGoods> list = new List();
+    var object = SpUtil.getObjectList(Config.hotGiftList);
+      if(null==object){
+        return await next();
+      }
+    object.forEach((value){
+      list.add(ConvertGoods.fromJson(value)) ;
+    });
+    DataResult dataResult = new DataResult(list, true, next: next());
+    return dataResult;
   }
 
   ///获取星星总数
   static getTotalStar() async{
-    String key = await httpManager.getAuthorization();
-    var params = {"key":key};
-    var res = await httpManager.netFetch(Address.getTotalStar(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
-    var result;
-    if (res != null && res.result) {
-      var json = res.data;
-      if(json["success"]["ok"]==0){
-        result = res.data["success"]["data"];
-        await SpUtil.putString(Config.starNum, result);
-        res.result = true;
-      }else{
-        result = res.data["success"]["message"];
-        res.result = false;
+    next() async {
+      String key = await httpManager.getAuthorization();
+      var params = {"key":key};
+      var res = await httpManager.netFetch(Address.getTotalStar(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var result;
+      if (res != null && res.result) {
+        var json = res.data;
+        if(json["success"]["ok"]==0){
+          result = res.data["success"]["data"];
+          await SpUtil.putString(Config.starNum, result);
+          res.result = true;
+        }else{
+          result = res.data["success"]["message"];
+          res.result = false;
+        }
       }
+      return new DataResult(result, res.result);
     }
-    return new DataResult(result, res.result);
+
+    var object = SpUtil.getString(Config.starNum);
+    if(ObjectUtil.isEmptyString(object)){
+      return await next();
+    }
+    DataResult dataResult = new DataResult(object, true, next: next());
+    return dataResult;
   }
 }

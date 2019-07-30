@@ -4,7 +4,7 @@ class Address {
   static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
   static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
   static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/home/";
-  static const String h5Host = "http://192.168.6.30/";
+  static const String h5Host = "http://192.168.6.30:30593/";
 
 
 
@@ -154,6 +154,7 @@ class Address {
     return "${studentHost}getTotalStar";
   }
 
+  ///天神之战地址
   static GameH5Address(){
     return "${Address.h5Host}cardGame/index.html";
   }
@@ -176,5 +177,10 @@ class Address {
   ///消息页面
   static getInfoPage() {
     return "${Address.h5Host}infoPage/index.html";
+  }
+
+  ///百万地址
+  static MillionH5Address(){
+    return "${Address.h5Host}millionsQandA/index.html";
   }
 }

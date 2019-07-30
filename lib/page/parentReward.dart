@@ -1,37 +1,41 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/bloc/ParentRewardBloc.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/ConvertGoods.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
-class parentReward extends StatefulWidget{
+class ParentReward extends StatefulWidget{
   @override
-  State<parentReward> createState() {
+  State<ParentReward> createState() {
     // TODO: implement createState
-    return _parentReward();
+    return _ParentReward();
   }
 }
 
-class _parentReward extends State<parentReward> with SingleTickerProviderStateMixin{
+class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMixin<ParentReward>, SingleTickerProviderStateMixin{
   //头部广告位轮播集合
   List<Widget> _headerAdvertList = List();
   List<String> _headerImgList = ["images/parent_reward/banner.png","images/parent_reward/banner.png"];
-  List _hotGiftList = SpUtil.getObjectList(Config.hotGiftList)==null?[]:SpUtil.getObjectList(Config.hotGiftList);
+
   List _btnList = [
     {"imgUrl":"images/parent_reward/scholarshipIcon.png","name":"兑换奖学金"},
     {"imgUrl":"images/parent_reward/starDrawIcon.png","name":"星星抽奖"},
     {"imgUrl":"images/parent_reward/exchangeCardBtn.png","name":"兑换卡牌"},
   ];
   bool _showBanner = false;
-  dynamic _totalStarNum = SpUtil.getString(Config.starNum)==null?'':SpUtil.getString(Config.starNum);
+  final ParentRewardBloc bloc = new ParentRewardBloc();
+
   @override
   void initState() {
     _getheaderAdvertList();
-    _getHotGift();
-    _getTotalStar();
+    bloc.getTotalStar();
+    bloc.getHotGift();
     super.initState();
   }
 
@@ -44,31 +48,9 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
     }
   }
 
-  void _getTotalStar() async{
-    DataResult data = await UserDao.getTotalStar();
-    if(data.result){
-      setState(() {
-        _totalStarNum = data.data;
-      });
-    }else{
-      ///请求失败
-    }
-  }
-
-  void _getHotGift() async{
-    DataResult data = await UserDao.getHotGoodsList();
-    if(data.result){
-      setState(() {
-         _hotGiftList = data.data;
-      });
-    }else{
-      ///请求失败
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    super.build(context);
     return Container(
       color: Color(0xFFf0f4f7),
       child: ListView(
@@ -155,8 +137,7 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
               width:ScreenUtil.getInstance().getWidthPx(515),
             ),
             onTap: (){
-
-              NavigatorUtil.goWebView(context, Address.GameH5Address());
+              NavigatorUtil.goWebView(context, Address.MillionH5Address());
             },
           ),
           GestureDetector(
@@ -180,7 +161,11 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
       child: Column(
         children: <Widget>[
           _hotExchangeTitle(),
-          _hotExchangeBody(),
+          StreamBuilder<List<ConvertGoods>>(
+              stream: bloc.convertGoodsStream,
+              builder: (context, AsyncSnapshot<List<ConvertGoods>> snapshot){
+                return  _hotExchangeBody(snapshot.data);
+              }),
           Container(
             margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(50)),
             child: Align(
@@ -216,7 +201,11 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
                             color: Color(0xFFf0f4f7),
                             width: ScreenUtil.getInstance().getWidthPx(280),
                             height:ScreenUtil.getInstance().getHeightPx(65),
-                            child: new Text(_totalStarNum),
+                            child: StreamBuilder<String>(
+                            stream: bloc.starNumStream,
+                            builder: (context, AsyncSnapshot<String> snapshot){
+                              return Text(snapshot.data??"");
+                            }),
                             alignment: Alignment.center,
                           ),
                         ),
@@ -268,11 +257,12 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
   }
 
   //热门兑换礼物
-  Widget _hotExchangeBody(){
+  Widget _hotExchangeBody(List<ConvertGoods> data){
     List<Widget> giftList = [];
-    for(var i = 0;i<_hotGiftList.length;i++){
-      giftList.add(
-        Container(
+    if (null!=data){
+      for(var i = 0;i<data.length;i++){
+        giftList.add(
+            Container(
               width: ScreenUtil.getInstance().getWidthPx(300),
               height: ScreenUtil.getInstance().getHeightPx(200),
               decoration: BoxDecoration(
@@ -280,31 +270,37 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
                 borderRadius: new BorderRadius.all(
                     Radius.circular((10.0))),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _hotGiftList[i]["name"].contains('奖学金')?
-                  Image.asset(
-                    'images/parent_reward/redPatImg.png',
-                    height: ScreenUtil.getInstance().getHeightPx(120),
-                    fit: BoxFit.fitHeight,
-                  ):
-                  Image.network(
-                    _hotGiftList[i]['minPicUrl'],
-                    height: ScreenUtil.getInstance().getHeightPx(120),
-                    fit: BoxFit.fitHeight,
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
-                    child: Text(_hotGiftList[i]['name'],
-                      style: TextStyle(
-                          color: Color(0xFF999999)
-                      ),),
-                  ),
-                ],
-              ),
+              child: GestureDetector(
+                onTap: (){
+                  NavigatorUtil.goWebView(context, data[i].convertUrl);
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    data[i].name.contains('奖学金')?
+                    Image.asset(
+                      'images/parent_reward/redPatImg.png',
+                      height: ScreenUtil.getInstance().getHeightPx(120),
+                      fit: BoxFit.fitHeight,
+                    ):
+                    CachedNetworkImage(
+                      imageUrl:data[i].minPicUrl,
+                      height: ScreenUtil.getInstance().getHeightPx(120),
+                      fit: BoxFit.fitHeight,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
+                      child: Text(data[i].name,
+                        style: TextStyle(
+                            color: Color(0xFF999999)
+                        ),),
+                    ),
+                  ],
+                ),
+              )
             )
-      );
+        );
+      }
     }
     var giftmsg = Container(
       margin: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(40)),
@@ -377,6 +373,10 @@ class _parentReward extends State<parentReward> with SingleTickerProviderStateMi
     );
     return btnMsg;
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 

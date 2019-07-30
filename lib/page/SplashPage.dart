@@ -6,6 +6,7 @@ import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
 
 import 'HomePage.dart';
@@ -37,8 +38,10 @@ class SplashPageState extends State<SplashPage> {
     super.didChangeDependencies();
   }
   void _initAsync() async {
+
     await SpUtil.getInstance();
     Store<GSYState> store = StoreProvider.of(context);
+
     new Future.delayed(const Duration(milliseconds: 500), () async {
           //登录
           UserDao.getUser(isNew:true,store: store).then((res){

@@ -15,6 +15,7 @@ import 'package:flutter_start/widget/TextBookWiget.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 
 class UserInfo extends StatefulWidget{
@@ -27,11 +28,15 @@ class UserInfo extends StatefulWidget{
 class _UserInfo extends State<UserInfo>{
   User _user = new User();
   var textBook = "RJ版";
+  String _version = "";
   @override
   initState() {
     super.initState();
     _getUserInfo();
     loadCache();
+    PackageInfo.fromPlatform().then((v){
+      _version = v.version;
+    });
   }
   @override
   Widget build(BuildContext context){
@@ -208,7 +213,7 @@ class _UserInfo extends State<UserInfo>{
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         _getBt(
-                            "当前版本", "images/admin/icon-edition.png", () => {}, "1.4.100", 3),
+                            "当前版本", "images/admin/icon-edition.png", () => {}, _version, 3),
                         Container(
                           width: ScreenUtil.getInstance().getWidthPx(903),
                           height: ScreenUtil.getInstance().getHeightPx(3),
@@ -298,7 +303,9 @@ class _UserInfo extends State<UserInfo>{
       var dataResult = await UserDao.uploadHeadUrl(base64encode, imgtype);
       if (dataResult.result) {
         UserDao.getUser(isNew: true, store: store);
-      } else {}
+      } else {
+
+      }
     }
   }
   //更换手机号

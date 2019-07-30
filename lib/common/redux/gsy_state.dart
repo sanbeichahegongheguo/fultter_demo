@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_start/common/redux/middleware/epic_middleware.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/models/user.dart';
+import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
 
 /**
@@ -17,6 +18,9 @@ class GSYState {
 
   ///当前手机平台默认语言
   Locale platformLocale;
+
+  ///版本号
+  String version;
 
   ///构造方法
   GSYState({this.userInfo});

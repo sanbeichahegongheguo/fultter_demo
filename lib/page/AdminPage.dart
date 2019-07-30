@@ -22,11 +22,10 @@ class Admin extends StatefulWidget {
   }
 }
 
-class _Admin extends State<Admin> {
+class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, SingleTickerProviderStateMixin{
   @override
   initState() {
     super.initState();
-
   }
   _bulletinWindow(){
     print("公告弹窗");
@@ -34,6 +33,7 @@ class _Admin extends State<Admin> {
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
     return StoreBuilder<GSYState>(builder: (context, store) {
@@ -308,4 +308,7 @@ class _Admin extends State<Admin> {
       onPressed: btPressed,
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
