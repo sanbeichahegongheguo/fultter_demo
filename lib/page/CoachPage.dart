@@ -1,5 +1,7 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 class CoachPage extends StatefulWidget{
@@ -119,12 +121,13 @@ class _CoachPage extends State<CoachPage>{
     {"imgUrl":"images/coach/btn-2.png","title":"核对答案","id":2,"type":1},
     {"imgUrl":"images/coach/btn-3.png","title":"英语随身听","id":3,"type":2},
     {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
+    {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
+    {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
   ];
   //中部按钮
   Widget _mainBt(){
     List<Widget> btList = [];
     for(var i = 0;i<_mainBtList.length;i++){
-      print(_mainBtList[i]["imgUrl"]);
       var positioned = _mainBtList[i]["type"] ==2 ? Positioned(
         top:0,
         right: 0,
@@ -141,7 +144,14 @@ class _CoachPage extends State<CoachPage>{
               Stack(
                 children: <Widget>[
                   InkWell(
-                    onTap: (){print("点击按钮id为 ${_mainBtList[i]["id"]}");},
+                    onTap: (){
+                      print("点击按钮id为 ${_mainBtList[i]["id"]}");
+                      if(_mainBtList[i]["id"] == 2){
+                        NavigatorUtil.goWebView(context,Address.getExerciseBookNew()).then((v){
+
+                        });
+                      }
+                    },
                     child:Container(
                       width: ScreenUtil.getInstance().getWidthPx(260),
                       child: Image.asset(
@@ -178,6 +188,7 @@ class _CoachPage extends State<CoachPage>{
     {"imgUrl":"images/coach/pe-2.png","id":2},
     {"imgUrl":"images/coach/pe-3.png","id":3},
     {"imgUrl":"images/coach/pe-4.png","id":4},
+    {"imgUrl":"images/coach/pe-3.png","id":3},
   ];
   //精准学习
   Widget _widgeStudy (){

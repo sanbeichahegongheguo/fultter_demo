@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
+import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/dao/InfoDao.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -69,54 +72,44 @@ class WebViewPageState extends State<WebViewPage> {
                 print("onTap");
                 FocusScope.of(context).requestFocus(new FocusNode());
               },
-              child: SafeArea(
-                child: SingleChildScrollView(
-                  child: Container(
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                      height: _deviceSize.height,
+                      child: WebView(
+                        initialUrl: widget.url,
+                        javascriptMode: JavascriptMode.unrestricted,
+                        onWebViewCreated: (WebViewController webViewController) {
+                          print("打开Webview!");
+                          _webViewController = webViewController;
+                          FocusScope.of(context).requestFocus(new FocusNode());
+                        },
+                        gestureRecognizers: Set()
+                          ..add(
+                            Factory<VerticalDragGestureRecognizer>(
+                                  () => VerticalDragGestureRecognizer(),
+                            ),
+                          ),
+                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context)].toSet(),
+                        navigationDelegate: _navigationDelegate,
+                        onPageFinished: (String url) {
+                          print('@跳转链接: $url');
+                          setState(
+                                () => _isLoading = false,
+                          );
+                        },
+                      )),
+                  _isLoading
+                      ? Container(
                     width: _deviceSize.width,
                     height: _deviceSize.height,
+                    color: Colors.white,
                     child: Center(
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                              height: _deviceSize.height,
-                              child: WebView(
-                                initialUrl: widget.url,
-                                javascriptMode: JavascriptMode.unrestricted,
-                                onWebViewCreated: (WebViewController webViewController) {
-                                  print("打开Webview!");
-                                  _webViewController = webViewController;
-                                  FocusScope.of(context).requestFocus(new FocusNode());
-                                },
-                                gestureRecognizers: Set()
-                                  ..add(
-                                    Factory<VerticalDragGestureRecognizer>(
-                                      () => VerticalDragGestureRecognizer(),
-                                    ),
-                                  ),
-                                javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context)].toSet(),
-                                navigationDelegate: _navigationDelegate,
-                                onPageFinished: (String url) {
-                                  print('@跳转链接: $url');
-                                  setState(
-                                    () => _isLoading = false,
-                                  );
-                                },
-                              )),
-                          _isLoading
-                              ? Container(
-                                  width: _deviceSize.width,
-                                  height: _deviceSize.height,
-                                  color: Colors.white,
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              : Container()
-                        ],
-                      ),
+                      child: CircularProgressIndicator(),
                     ),
-                  ),
-                ),
+                  )
+                      : Container()
+                ],
               )),
         ));
   }
@@ -125,7 +118,16 @@ class WebViewPageState extends State<WebViewPage> {
   NavigationDecision _navigationDelegate(NavigationRequest request) {
     if (request.url.startsWith('haxecallback')) {
       print('@ 回调参数 $request}');
-      Navigator.of(context).pop();
+      if(request.url.indexOf("signed")>-1){
+        print("签到");
+        Navigator.of(context).pop("signed");
+      }else if(request.url.indexOf("infoPage")>-1){
+        print("消息");
+        String msg = request.url.indexOf("studentApp") > -1?"studentApp":"infoPage";
+        Navigator.of(context).pop(msg);
+      }else{
+        Navigator.of(context).pop();
+      }
       //阻止路由替换；
       return NavigationDecision.prevent;
     }
@@ -136,7 +138,6 @@ class WebViewPageState extends State<WebViewPage> {
     );
     return NavigationDecision.navigate;
   }
-
   ///使用flutter 调用js案例
   Widget jsButton() {
     return FutureBuilder<WebViewController>(builder: (BuildContext context, AsyncSnapshot<WebViewController> controller) {
@@ -171,3 +172,5 @@ class WebViewPageState extends State<WebViewPage> {
     super.dispose();
   }
 }
+
+

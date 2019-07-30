@@ -23,4 +23,5 @@ class Config {
   static const STUDY_MSG = "studyMsg";//用户学习情况
   static const starNum = "star-num";
   static const hotGiftList = "hot-gift-list";
+  static const SIGN_TIMES = "sign-times";
 }

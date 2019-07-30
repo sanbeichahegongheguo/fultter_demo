@@ -2,9 +2,15 @@ import 'dart:async';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/dao/InfoDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
+import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住
@@ -73,7 +79,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   int _currentIndex;
   GlobalKey _globalKey = new GlobalKey();
   int _msgCount = 0;
-
+  int _signTimes = 0;//签到个数
+  String _unReadNotice = "0";//消息个数
 
   _GSYTabBarState(
     this._tabViews,
@@ -96,6 +103,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       HttpErrorEvent.errorHandleFunction(event.code, event.message, context);
     });
     _tabController = new TabController(vsync: this, length: 4);
+    _signReward();
+    _getUnReadNotice();
   }
 
   ///整个页面dispose时，记得把控制器也dispose掉，释放内存
@@ -117,48 +126,85 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       _renderTab(_currentIndex == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励", _currentIndex == 2 ? true : false),
       _renderTab(_currentIndex == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理", _currentIndex == 3 ? true : false),
     ];
-
     ///底部tab bar
-    return new Scaffold(
-        drawer: _drawer,
-        appBar: _buildTitle(),
-        body: new PageView(
-          controller: _pageController,
-          children: _tabViews,
-          onPageChanged: (index) {
-            print("onPageChanged : $index");
-            if (_currentIndex != index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            }
-            _tabController.animateTo(index);
-            _onPageChanged?.call(index);
-          },
-        ),
-        bottomNavigationBar: new Material(
-            //为了适配主题风格，包一层Material实现风格套用
-            color: Colors.white, //底部导航栏主题颜色
-            child: Container(
-//              height: MediaQuery.of(context).size.height * 0.08,
-              height: ScreenUtil.getInstance().getHeightPx(150),
-              child: new TabBar(
-                indicator: BoxDecoration(),
-                indicatorWeight: 1,
-                //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
-                controller: _tabController, //配置控制器
-                tabs: tabs,
-                onTap: (index) {
-                  _onPageChanged?.call(index);
-                  _pageController.jumpTo(MediaQuery.of(context).size.width * index);
-                }, //tab标签的下划线颜色
-              ),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
-              ),
-            )));
+      return new Scaffold(
+          drawer: _drawer,
+          appBar: _buildTitle(),
+          body: new PageView(
+            controller: _pageController,
+            children: _tabViews,
+            onPageChanged: (index) {
+              print("onPageChanged : $index");
+              if (_currentIndex != index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              }
+              _tabController.animateTo(index);
+              _onPageChanged?.call(index);
+            },
+          ),
+          bottomNavigationBar: new Material(
+              //为了适配主题风格，包一层Material实现风格套用
+              color: Colors.white, //底部导航栏主题颜色
+              child: Container(
+  //              height: MediaQuery.of(context).size.height * 0.08,
+                height: ScreenUtil.getInstance().getHeightPx(150),
+                child: new TabBar(
+                  indicator: BoxDecoration(),
+                  indicatorWeight: 1,
+                  //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
+                  controller: _tabController, //配置控制器
+                  tabs: tabs,
+                  onTap: (index) {
+                    _onPageChanged?.call(index);
+                    _pageController.jumpTo(MediaQuery.of(context).size.width * index);
+                  }, //tab标签的下划线颜色
+                ),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+                ),
+              )));
   }
 
+  ///查询签到时间
+   _signReward() async{
+    var res = await InfoDao.signReward();
+    if(res != null && res != ""){
+      if(res["err"] == 0){
+        setState(() {
+          _signTimes = res["signTimes"];
+        });
+      }
+    }
+  }
+  ///获取未读取消息总数
+  _getUnReadNotice() async{
+    var res = await InfoDao.getUnReadNotice();
+    if(res != null && res != ""){
+      if(res["success"]["ok"] == 0){
+        int unNum = int.parse(res["success"]["data"]);
+        setState(() {
+          _unReadNotice = unNum > 99 ?"...":unNum.toString();
+        });
+      }
+    }
+  }
+  ///跳转签到外链
+  void _sign(){
+    NavigatorUtil.goWebView(context,Address.goH5Sign()).then((v){
+        _signReward();
+    });
+  }
+  void _news(){
+    print("消息");
+    NavigatorUtil.goWebView(context,Address.getInfoPage()).then((v){
+      _getUnReadNotice();
+      if(v == "studentApp"){
+        NavigatorUtil.goStudentAppPage(context);
+      }
+    });
+  }
   static _renderTab(icon, text, isSelect) {
     return new Tab(
       child: new Column(
@@ -190,31 +236,38 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       title: Row(
         mainAxisAlignment:MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              SizedBox(
-                width: ScreenUtil.getInstance().getWidthPx(50),
-              ),
-              Image.asset(
-                "images/home/icon_jl.png",
-                width: ScreenUtil.getInstance().getWidthPx(100),
-              ),
-              SizedBox(
-                width: ScreenUtil.getInstance().getWidthPx(25),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "签到奖励",
-                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
-                  ),
-                  Text("已经签到5天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
-                ],
-              ),
-            ],
+          GestureDetector(
+            onTap: _sign,
+            child:Row(
+              children: <Widget>[
+                SizedBox(
+                  width: ScreenUtil.getInstance().getWidthPx(50),
+                ),
+                Image.asset(
+                  "images/home/icon_jl.png",
+                  width: ScreenUtil.getInstance().getWidthPx(100),
+                ),
+                SizedBox(
+                  width: ScreenUtil.getInstance().getWidthPx(25),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "签到奖励",
+                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+                    ),
+                    Text("已经签到$_signTimes天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+                  ],
+                ),
+                SizedBox(
+                  width: ScreenUtil.getInstance().getWidthPx(30),
+                ),
+              ],
+            ),
           ),
+
           Row(
             children: <Widget>[
               Column(
@@ -230,34 +283,39 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                   Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
                 ],
               ),
-              Container(
-                padding: EdgeInsets.only(right: 15,left: 15),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Stack(
-                      fit: StackFit.passthrough,
-                      alignment: AlignmentDirectional(1.9, -1.5),
-                      children: <Widget>[
-                        SizedBox(
-                          key: _globalKey,
-                          height: ScreenUtil.getInstance().getHeightPx(56),
-                          child: Image.asset("images/home/icon_yj.png" ,width: ScreenUtil.getInstance().getWidthPx(66)),
-                        ),
-                        ClipOval(
-                          child: Container(
-                            child: Text("10", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
-                            decoration: BoxDecoration(color: const Color(0xFFff542b)),
+
+              GestureDetector(
+                onTap: _news,
+                child:Container(
+                  padding: EdgeInsets.only(right: 15,left: 15),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Stack(
+                        fit: StackFit.passthrough,
+                        alignment: AlignmentDirectional(1.9, -1.5),
+                        children: <Widget>[
+                          SizedBox(
+                            key: _globalKey,
+                            height: ScreenUtil.getInstance().getHeightPx(56),
+                            child: Image.asset("images/home/icon_yj.png" ,width: ScreenUtil.getInstance().getWidthPx(66)),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(3),
-                    ),
-                    Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
-                  ],
-                ),),
+                          ClipOval(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(10) ),
+                              child: Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+                              decoration: BoxDecoration(color: const Color(0xFFff542b)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(3),
+                      ),
+                      Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
+                    ],
+                  ),),
+              ),
             ],
           )
         ],

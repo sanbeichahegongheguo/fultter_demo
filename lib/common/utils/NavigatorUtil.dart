@@ -9,6 +9,7 @@ import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/RegisterPage.dart';
 import 'package:flutter_start/page/ResetMobilePage.dart';
 import 'package:flutter_start/page/ResetPasswordPage.dart';
+import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 
@@ -91,6 +92,10 @@ class NavigatorUtil {
   static goResetPasswordPage(BuildContext context) {
     NavigatorRouter(context, ResetPasswordPage());
   }
+  ///远大小状元学生
+  static goStudentAppPage(BuildContext context) {
+    NavigatorRouter(context, StudentAppPage());
+  }
   ///去往webview
   static goWebView(BuildContext context, String url) async {
     String key = await httpManager.getAuthorization();
@@ -103,7 +108,7 @@ class NavigatorUtil {
       }
     }
     print("@跳转链接:$url");
-    NavigatorRouter(context, WebViewPage(url));
+    return NavigatorRouter(context, WebViewPage(url));
 //    NavigatorRouter(context,WebViewExample(url));
   }
 

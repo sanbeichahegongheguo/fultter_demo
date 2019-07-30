@@ -157,4 +157,24 @@ class Address {
   static GameH5Address(){
     return "${Address.h5Host}cardGame/index.html";
   }
+  ///查询签到信息
+  static signReward() {
+    return "${Address.studentWebHost}sign/signReward";
+  }
+  ///跳转签到h5外链
+  static goH5Sign(){
+    return "${Address.h5Host}signIn/index.html";
+  }
+  ///获取未读取消息总数
+  static getUnReadNotice() {
+    return "${studentHost}getUnReadNotice";
+  }
+  ///核对答案
+  static getExerciseBookNew() {
+    return "${Address.h5Host}exerciseBookNew/index.html";
+  }
+  ///消息页面
+  static getInfoPage() {
+    return "${Address.h5Host}infoPage/index.html";
+  }
 }
