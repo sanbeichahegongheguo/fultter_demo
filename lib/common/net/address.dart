@@ -7,10 +7,10 @@ class Address {
   static const String h5Host = "http://192.168.6.30:30593/";
 
 
-
   static const String getSchoolUrl = "http://api.k12china.com/k12-api/search/getSchool";
+
 //  static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
-//  static const String stu_app = "https://www.k12china.com/h5/";
+//  static const String h5Host = "https://www.k12china.com/h5/";
 //  static const String studentWebHost = "https://api.k12china.com/studentweb/";
 //   static const String studentHost = "https://www.k12china.com/student/student:";
 //    static const String k12apiHost = "https://www.k12china.com/k12-api/";
@@ -185,6 +185,14 @@ class Address {
   ///百万地址
   static MillionH5Address(){
     return "${Address.h5Host}millionsQandA/index.html";
+  }
+  ///核对答案
+  static getQuickKing() {
+    return "${Address.h5Host}quickKing/index.html";
+  }
+  ///客服h5
+  static getWxServer() {
+    return "${Address.h5Host}xx/wxServer.html";
   }
 
   ///更改密码

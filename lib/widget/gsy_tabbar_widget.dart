@@ -196,13 +196,17 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         _signReward();
     });
   }
+  ///跳转消息
   void _news(){
     print("消息");
     NavigatorUtil.goWebView(context,Address.getInfoPage()).then((v){
       _getUnReadNotice();
-      if(v == "studentApp"){
-        NavigatorUtil.goStudentAppPage(context);
-      }
+    });
+  }
+  ///跳转客服
+  void _wxServer(){
+    print("客服");
+    NavigatorUtil.goWebView(context,Address.getWxServer()).then((v){
     });
   }
   static _renderTab(icon, text, isSelect) {
@@ -270,20 +274,23 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
           Row(
             children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    height: ScreenUtil.getInstance().getHeightPx(56),
-                    child: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66)),
-                  ),
-                  SizedBox(
-                    height: ScreenUtil.getInstance().getHeightPx(3),
-                  ),
-                  Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
-                ],
-              ),
 
+              GestureDetector(
+                onTap: _wxServer,
+                child:Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(56),
+                      child: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66)),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(3),
+                    ),
+                    Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
+                  ],
+                ),
+              ),
               GestureDetector(
                 onTap: _news,
                 child:Container(
@@ -300,11 +307,14 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                             height: ScreenUtil.getInstance().getHeightPx(56),
                             child: Image.asset("images/home/icon_yj.png" ,width: ScreenUtil.getInstance().getWidthPx(66)),
                           ),
-                          ClipOval(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(10) ),
-                              child: Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
-                              decoration: BoxDecoration(color: const Color(0xFFff542b)),
+                          Offstage(
+                            offstage: _unReadNotice == "0",
+                            child: ClipOval(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(10) ),
+                                child: Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+                                decoration: BoxDecoration(color: const Color(0xFFff542b)),
+                              ),
                             ),
                           ),
                         ],

@@ -5,6 +5,8 @@ import 'package:flutter_start/common/dao/userDao.dart';
 
 import 'package:flutter_start/common/redux/gsy_state.dart';
 
+import 'WebViewPage.dart';
+
 class EyeProtectionPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -106,7 +108,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
                     boxShadow: [BoxShadow(color: Colors.black12)]
                 ),
                 child:MaterialButton(
-                  onPressed: ()=>{},
+                  onPressed: (){WebViewPageState.goLaunch(context,"alipays://");},
                   minWidth: ScreenUtil.getInstance().getWidthPx(983),
                   height:ScreenUtil.getInstance().getHeightPx(150),
                   color: Color(0xFFfc6061),

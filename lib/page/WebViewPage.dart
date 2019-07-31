@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/InfoDao.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 ///**
@@ -113,9 +116,13 @@ class WebViewPageState extends State<WebViewPage> {
               )),
         ));
   }
-
-  ///控制路由跳转
-  NavigationDecision _navigationDelegate(NavigationRequest request) {
+  /*
+  * 控制路由跳转
+  * @param request.url signed 签到
+  * @param request.url infoPage 消息 infoPage:studentApp 打开小状元学生
+  * @param request.url open_weixin 打开微信
+  * */
+  NavigationDecision _navigationDelegate(NavigationRequest request){
     if (request.url.startsWith('haxecallback')) {
       print('@ 回调参数 $request}');
       if(request.url.indexOf("signed")>-1){
@@ -123,8 +130,14 @@ class WebViewPageState extends State<WebViewPage> {
         Navigator.of(context).pop("signed");
       }else if(request.url.indexOf("infoPage")>-1){
         print("消息");
-        String msg = request.url.indexOf("studentApp") > -1?"studentApp":"infoPage";
-        Navigator.of(context).pop(msg);
+        if(request.url.indexOf("studentApp") > -1){
+          NavigatorUtil.goStudentAppPage(context);
+        }else{
+          Navigator.of(context).pop("infoPage");
+        }
+      }else if(request.url.indexOf("open_weixin")>-1){
+        print("打开微信");
+        goLaunch(context,"weixin://");
       }else{
         Navigator.of(context).pop();
       }
@@ -137,6 +150,23 @@ class WebViewPageState extends State<WebViewPage> {
       () => _isLoading = true,
     );
     return NavigationDecision.navigate;
+  }
+  /*
+  * 唤醒手机软件
+  * @param weixin:// 唤醒微信
+  * */
+  static goLaunch(BuildContext context,String url) async{
+    if(await canLaunch(url)){
+      await launch(url);
+    }else {
+      String msg = "程序";
+      switch(url){
+        case "weixin://":
+          msg = "微信";
+          break;
+      }
+      showToast('$msg打开失败',position:ToastPosition.bottom);
+    }
   }
   ///使用flutter 调用js案例
   Widget jsButton() {

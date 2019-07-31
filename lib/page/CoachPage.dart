@@ -146,10 +146,15 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                   InkWell(
                     onTap: (){
                       print("点击按钮id为 ${_mainBtList[i]["id"]}");
-                      if(_mainBtList[i]["id"] == 2){
-                        NavigatorUtil.goWebView(context,Address.getExerciseBookNew()).then((v){});
-                      }else if(_mainBtList[i]["id"] == 3){
-                        NavigatorUtil.goWebView(context,Address.getWxEnglish()).then((v){});
+                      switch(_mainBtList[i]["id"]){
+                        case 2:
+                          NavigatorUtil.goWebView(context,Address.getExerciseBookNew()).then((v){
+                          });
+                          break;
+                        case 1:
+                          NavigatorUtil.goWebView(context,Address.getQuickKing()).then((v){
+                          });
+                          break;
                       }
                     },
                     child:Container(

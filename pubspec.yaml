@@ -44,6 +44,7 @@ dependencies:
   flutter_swiper: ^1.0.6
   flutter_easyrefresh: ^1.2.7
   tflite: ^1.0.4
+  url_launcher: ^3.0.2
   flutter_localizations:
     sdk: flutter
 
