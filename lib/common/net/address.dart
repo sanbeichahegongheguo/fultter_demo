@@ -183,4 +183,9 @@ class Address {
   static MillionH5Address(){
     return "${Address.h5Host}millionsQandA/index.html";
   }
+
+  ///更改密码
+  static resetPwd(){
+    return "${studentHost}findStudentPassword";
+  }
 }

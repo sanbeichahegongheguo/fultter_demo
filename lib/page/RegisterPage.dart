@@ -358,9 +358,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                 cursorColor: Color(0xFF333333),
                 obscureText: !_viewPasswordText ?? false,
                 inputFormatters:[LengthLimitingTextInputFormatter(20),
-                  WhitelistingTextInputFormatter(
-                      RegExp(
-                        "[a-zA-Z]|[0-9]")),
+                  WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[0-9]")),
                 ],
                 decoration: new InputDecoration(
                   suffixIcon: _viewPassword

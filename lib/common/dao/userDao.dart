@@ -494,6 +494,21 @@ class UserDao {
     }
     return new DataResult(result, res.result);
   }
+  
+  ///忘记密码更改密码
+  static forgetRePwd(mobile, code ,password) async {
+    String key = await httpManager.getAuthorization();
+    var params = {"mobile":mobile,"code": code, "password": password};
+    var res = await httpManager.netFetch(Address.resetPwd(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"]["ok"] != 0) {
+        result = res.data["success"]["message"];
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
 
   ///获取热门兑换礼物列表
   static getHotGoodsList() async{

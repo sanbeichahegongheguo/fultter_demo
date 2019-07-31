@@ -12,6 +12,7 @@ import 'package:flutter_start/page/ResetPasswordPage.dart';
 import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
+import 'package:flutter_start/page/retrievePasswordPage.dart';
 
 class NavigatorUtil {
   ///替换
@@ -56,6 +57,11 @@ class NavigatorUtil {
   ///注册
   static goRegester(BuildContext context,{String from,bool isLogin = false,int index = 0,String userPhone}) {
     NavigatorRouter(context, RegisterPage(from:from,index: index,userPhone:userPhone,isLogin:isLogin));
+  }
+
+  ///找回密码
+  static goRePassword(BuildContext context) {
+    NavigatorRouter(context,retrievePasswordPage());
   }
 
   ///去个人资料

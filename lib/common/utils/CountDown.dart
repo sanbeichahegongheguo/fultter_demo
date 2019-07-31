@@ -7,7 +7,8 @@ class CountDown extends StatefulWidget {
   final callBack;
   final dataTwo;
   final recoverTime;
-  CountDown({Key key, this.dataTwo, this.callBack, this.recoverTime}) : super(key: key);
+  final where;
+  CountDown({Key key, this.dataTwo, this.callBack, this.recoverTime, this.where}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return CountDownState();
@@ -16,14 +17,16 @@ class CountDown extends StatefulWidget {
 
 class CountDownState extends State<CountDown> with SingleTickerProviderStateMixin{
   Timer _countdownTimer;
-  String _codeCountdownStr = '重新获取验证码';
-  int _countdownNum = 60;
+  String _codeCountdownStr = '';
+  int _countdownNum = 59;
   String data = '';
   bool _recoverTime= true;
+  String where = '';
   @override
   void initState() {
     this.data = widget.dataTwo;
     this._recoverTime = widget.recoverTime;
+    this.where = widget.where;
     print(this.data);
     super.initState();
   }
@@ -31,13 +34,17 @@ class CountDownState extends State<CountDown> with SingleTickerProviderStateMixi
   Widget build(BuildContext context) {
     if(this._recoverTime){
       _reGetCountdown();
+    }else{
+      setState(() {
+        _codeCountdownStr = '重新获取验证码';
+      });
     }
     return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(69)),
       child: GestureDetector(
-        child: Text(_codeCountdownStr,
-          style: TextStyle(color: Color(0xFF89898a), fontSize: ScreenUtil.getInstance().getSp(16))
+        child: this.where =='rePwd'?Text(_codeCountdownStr,
+          style: TextStyle(color: Color(0xFF6ed699), fontSize: ScreenUtil.getInstance().getSp(48 / 3))
+        ):Text(_codeCountdownStr,
+            style: TextStyle(color: Color(0xFF89898a), fontSize: ScreenUtil.getInstance().getSp(16))
         ),
         onTap:(){
           setState(() {
@@ -55,7 +62,7 @@ class CountDownState extends State<CountDown> with SingleTickerProviderStateMixi
       );
       print(isSend);
       if (null != isSend && isSend) {
-        _countdownNum = 60;
+        _countdownNum = 59;
         _countdownTimer = null;
         setState(() {
           this._recoverTime = true;

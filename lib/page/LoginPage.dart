@@ -166,9 +166,14 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                       SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(70),
                       ),
-                      Text(
-                        "找回密码",
-                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFFff6464)),
+                      GestureDetector(
+                        onTap: () {
+                          NavigatorUtil.goRePassword(context);
+                        },
+                        child: Text(
+                          "找回密码",
+                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFFff6464)),
+                        ),
                       ),
                       SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(70),
