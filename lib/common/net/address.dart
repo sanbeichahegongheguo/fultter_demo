@@ -178,7 +178,10 @@ class Address {
   static getInfoPage() {
     return "${Address.h5Host}infoPage/index.html";
   }
-
+  ///英语随身听
+  static getWxEnglish() {
+    return "${Address.h5Host}wxEnglish/English.html";
+  }
   ///百万地址
   static MillionH5Address(){
     return "${Address.h5Host}millionsQandA/index.html";
@@ -186,6 +189,6 @@ class Address {
 
   ///更改密码
   static resetPwd(){
-    return "${studentHost}findStudentPassword";
+    return "${k12apiHost}base/updatePasswordByCode";
   }
 }

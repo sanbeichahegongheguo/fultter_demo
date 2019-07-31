@@ -496,14 +496,15 @@ class UserDao {
   }
   
   ///忘记密码更改密码
-  static forgetRePwd(mobile, code ,password) async {
-    String key = await httpManager.getAuthorization();
-    var params = {"mobile":mobile,"code": code, "password": password};
+  static forgetRePwd(mobile, code ,newPassword) async {
+    var params = {"identity":'P',"mobile":mobile,"code": code, "newPassword": newPassword};
     var res = await httpManager.netFetch(Address.resetPwd(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
+    print(res.data);
+    print(res.result);
     if (res != null && res.result) {
-      if (res.data["success"]["ok"] != 0) {
-        result = res.data["success"]["message"];
+      if (!res.data["success"]) {
+        result = res.data["message"];
         res.result = false;
       }
     }

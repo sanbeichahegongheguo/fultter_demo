@@ -147,9 +147,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                     onTap: (){
                       print("点击按钮id为 ${_mainBtList[i]["id"]}");
                       if(_mainBtList[i]["id"] == 2){
-                        NavigatorUtil.goWebView(context,Address.getExerciseBookNew()).then((v){
-
-                        });
+                        NavigatorUtil.goWebView(context,Address.getExerciseBookNew()).then((v){});
+                      }else if(_mainBtList[i]["id"] == 3){
+                        NavigatorUtil.goWebView(context,Address.getWxEnglish()).then((v){});
                       }
                     },
                     child:Container(
