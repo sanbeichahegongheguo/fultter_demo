@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class Config {
   static const PAGE_SIZE = 20;
   static const DEBUG = true;
@@ -23,9 +25,15 @@ class Config {
   static const STUDY_MSG = "studyMsg";//用户学习情况
   static const starNum = "star-num";
   static const hotGiftList = "hot-gift-list";
+  static const ADVER_KEY = "adver";
   static const parentRewardModule = "parent-reward-module";   //家长奖励模块
   static const coachXZYModule = "coach-xzy-module";  //辅导页面小状元模块
   static const coachJZModule = "coach-jz-module";  //辅导页面精准教育模块
   static const lEmotionModule = "l-emotion-module";  //学情页面模块
   static const SIGN_TIMES = "sign-times";
+  static const ANDROID_AD_APP_ID = "1106507482";
+  static const ANDROID_BANNER_ID = "1060575419369196";
+  static const LANGUAGE = Locale('zh', 'CH');
+  static const TITLE ='远大小状元';
+  static const CUR_VERSION ='2.0.000';
 }

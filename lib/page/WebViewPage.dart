@@ -21,8 +21,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 class WebViewPage extends StatefulWidget {
   final String url;
   final Color color;
-
-  WebViewPage(this.url, {this.color});
+  final AppBar appBar;
+  WebViewPage(this.url, {this.color,this.appBar});
 
   @override
   State<StatefulWidget> createState() => new WebViewPageState();
@@ -70,6 +70,7 @@ class WebViewPageState extends State<WebViewPage> {
           }
         },
         child: Scaffold(
+          appBar: widget.appBar??null,
           body: GestureDetector(
               onTap: () {
                 print("onTap");

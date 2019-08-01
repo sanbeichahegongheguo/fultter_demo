@@ -1,8 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_start/bloc/AdBloc.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_start/bloc/ModuleBloc.dart';
@@ -26,9 +31,14 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     _getfootAdvertList();
     moduleBloc.getCoachXZYModule();
     jzModuleBloc.getCoachJZModule();
+    AdBloc.getInstance()?.getBanner();
     super.initState();
   }
-
+  @override
+  void dispose() {
+    AdBloc.getInstance()?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +106,14 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               Padding(
                 padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(50)),
                 child: Container(
-                  height:ScreenUtil.getInstance().getHeightPx(212),
-                  child: _footAdvert(),
+                  color: Colors.transparent,
+                  height:ScreenUtil.getInstance().screenWidth/6.4,
+                  child: StreamBuilder<Adver>(
+                      stream: AdBloc.getInstance().adverStream,
+                      builder: (context, AsyncSnapshot<Adver> snapshot){
+                        return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner();
+                      }
+                  ),
                 ),
               )
             ],
@@ -247,30 +263,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
         fit: BoxFit.fitWidth,
       ));
     }
-  }
-  //底部广告位
-  Widget _footAdvert(){
-    var headMsg = Swiper(
-      itemBuilder: (BuildContext context, int index) {
-        return _swiperFootBuilder(context,index);
-      },
-      index:0,
-      autoplay:false,
-      onTap:(index) {
-        print("点击了第:$index个");
-      },
-      itemCount:_footImgList.length,
-      pagination: SwiperPagination(
-          alignment: Alignment.bottomRight,
-          builder: FractionPaginationBuilder(
-            color: Colors.white,
-            activeColor: Colors.white,
-            fontSize: ScreenUtil.getInstance().getSp(30 / 3),
-            activeFontSize:ScreenUtil.getInstance().getSp(30 / 3),
-          ),
-      ),
-    );
-    return headMsg;
   }
   //底部广告位轮播
   Widget _swiperFootBuilder(BuildContext context, int index) {

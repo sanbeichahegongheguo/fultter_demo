@@ -105,7 +105,7 @@ class UserDao {
 
   ///获取图形验证码
   static getImgCode() async {
-    ResultData res = await httpManager.netFetch(Address.getImgCode(), {}, null, new Options(method: "get"));
+    ResultData res = await httpManager.netFetch(Address.getImgCode(), null, null, new Options(method: "get"));
     HttpHeaders headers = res.headers;
     String userSign = "";
     String cookieCode = "";

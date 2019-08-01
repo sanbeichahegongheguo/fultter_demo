@@ -7,8 +7,8 @@ class Address {
   static const String h5Host = "http://192.168.6.30:30593/";
 
 
-  static const String getSchoolUrl = "http://api.k12china.com/k12-api/search/getSchool";
 
+  static const String getSchoolUrl = "http://www.k12china.com/k12-api/search/getSchool";
 //  static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
 //  static const String h5Host = "https://www.k12china.com/h5/";
 //  static const String studentWebHost = "https://api.k12china.com/studentweb/";
@@ -213,6 +213,11 @@ class Address {
   ///去错题中心
   static goWrongCenter() {
     return "${Address.h5Host}wrongCenter/index.html";
+  }
+
+  ///获取Banner广告
+  static getAppRevScreenAdver(){
+    return "${studentHost}getAppRevScreenAdver";
   }
 
   ///获取模块栏目

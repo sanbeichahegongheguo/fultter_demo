@@ -1,12 +1,21 @@
+import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/bloc/AdBloc.dart';
+import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/ModuleBloc.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_start/bloc/ParentRewardBloc.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/ConvertGoods.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_start/common/dao/daoResult.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
 class ParentReward extends StatefulWidget{
   @override
@@ -19,30 +28,31 @@ class ParentReward extends StatefulWidget{
 class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMixin<ParentReward>, SingleTickerProviderStateMixin{
   //头部广告位轮播集合
   List<Widget> _headerAdvertList = List();
-  List<String> _headerImgList = ["images/parent_reward/banner.png","images/parent_reward/banner.png"];
+  List<String> _headerImgList = ["images/parent_reward/banner.png"];
 
+  List _btnList = [
+    {"imgUrl":"images/parent_reward/scholarshipIcon.png","name":"兑换奖学金"},
+    {"imgUrl":"images/parent_reward/starDrawIcon.png","name":"星星抽奖"},
+    {"imgUrl":"images/parent_reward/exchangeCardBtn.png","name":"兑换卡牌"},
+  ];
   bool _showBanner = false;
   final ParentRewardBloc bloc = new ParentRewardBloc();
   final ModuleBloc moduleBloc = new ModuleBloc();
 
   @override
   void initState() {
-    _getheaderAdvertList();
     bloc.getTotalStar();
     bloc.getHotGift();
+    AdBloc.getInstance()?.getBanner();
     moduleBloc.getParentBottomModule();
     super.initState();
   }
 
-  void _getheaderAdvertList() {
-    for(var i = 0;i<_headerImgList.length;i++){
-      _headerAdvertList.add(Image.asset(
-        _headerImgList[i],
-        fit: BoxFit.fitWidth,
-      ));
-    }
+  @override
+  void dispose() {
+    AdBloc.getInstance()?.dispose();
+    super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -57,9 +67,14 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                 height:ScreenUtil.getInstance().getHeightPx(135),
                 child: Stack(
                   children: <Widget>[
-                    _headerAdvert(),
+                    StreamBuilder<Adver>(
+                        stream: AdBloc.getInstance().adverStream,
+                        builder: (context, AsyncSnapshot<Adver> snapshot){
+                          return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner();
+                        }
+                    ),
                     Container(
-                      padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(8),left:ScreenUtil.getInstance().getWidthPx(10)),
+                        alignment:AlignmentDirectional(0.91, -0.5),
                       child: GestureDetector(
                         child: Image.asset(
                           'images/parent_reward/closeIcon.png',
@@ -100,27 +115,6 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
   }
 
 
-  //头部广告位轮播
-  Widget _swiperBuilder(BuildContext context, int index) {
-    return (_headerAdvertList[index]);
-  }
-
-  //头部广告位
-  Widget _headerAdvert(){
-    var headMsg = Swiper(
-      itemBuilder: (BuildContext context, int index) {
-        return _swiperBuilder(context,index);
-      },
-      index:0,
-      autoplay:true,
-      onTap:(index) {
-        print("点击了第:$index个");
-      },
-      duration:500,
-      itemCount:_headerImgList.length,
-    );
-    return headMsg;
-  }
 
   //百万答题，天神传说
   Widget _activity(){

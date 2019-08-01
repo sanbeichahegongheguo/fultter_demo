@@ -7,9 +7,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
-import 'package:flutter_start/widget/CodeWidget.dart';
 import 'package:oktoast/oktoast.dart';
-import 'dart:async';
 
 class JoinClassPage extends StatefulWidget{
   @override

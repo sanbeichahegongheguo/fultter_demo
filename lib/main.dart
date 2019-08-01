@@ -1,24 +1,20 @@
 import 'dart:io';
 
-import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/page/SplashPage.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'common/config/config.dart';
 import 'models/user.dart';
 
 main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
     runApp(MyApp());
   });
-  //隐藏状态栏
-//  SystemChrome.setEnabledSystemUIOverlays([]);
-//  //  SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values); //还原状态栏
   if (Platform.isIOS) {
     SystemChrome.setEnabledSystemUIOverlays([]);
   }
@@ -49,9 +45,9 @@ class MyApp extends StatelessWidget {
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                 ],
-                locale:Locale('zh', 'CH'),
-                supportedLocales:[Locale('zh', 'CH')],
-                title: '远大小状元',
+                locale: Config.LANGUAGE,
+                supportedLocales:[Config.LANGUAGE],
+                title:Config.TITLE,
                 debugShowCheckedModeBanner: false,
                 theme: ThemeData(primaryColor: Colors.lightBlueAccent),
                 home: SplashPage(),
@@ -61,14 +57,4 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  void _initAsync() async {
-    await SpUtil.getInstance();
-    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
-    if (permission != PermissionStatus.granted) {
-      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.phone]);
-//      if (permissions[PermissionGroup.phone] != PermissionStatus.granted) {
-//        return null;
-//      }
-    }
-  }
 }

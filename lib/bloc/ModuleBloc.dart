@@ -1,10 +1,9 @@
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
-import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/dao/moduleDao.dart';
-import 'package:flutter_start/models/ConvertGoods.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:rxdart/rxdart.dart';
+
 import 'BlocBase.dart';
 class ModuleBloc extends BlocBase{
   ///模块栏目
