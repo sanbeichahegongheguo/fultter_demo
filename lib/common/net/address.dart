@@ -201,6 +201,19 @@ class Address {
     return "${k12apiHost}base/updatePasswordByCode";
 
   }
+  ///获取作业列表
+  static getParentHomeWorkDataList() {
+    return "${studentHost}getParentHomeWorkDataList";
+  }
+
+  ///去错题拍拍
+  static goCtpp() {
+    return "${Address.h5Host}ctpp/index.html";
+  }
+  ///去错题中心
+  static goWrongCenter() {
+    return "${Address.h5Host}wrongCenter/index.html";
+  }
 
   ///获取模块栏目
   static getModule(){

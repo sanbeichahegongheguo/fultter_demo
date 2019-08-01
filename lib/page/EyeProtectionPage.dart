@@ -2,8 +2,10 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/net/address.dart';
 
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 
 import 'WebViewPage.dart';
 
@@ -108,7 +110,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
                     boxShadow: [BoxShadow(color: Colors.black12)]
                 ),
                 child:MaterialButton(
-                  onPressed: (){WebViewPageState.goLaunch(context,"alipays://");},
+                  onPressed: _goParentInfo,
                   minWidth: ScreenUtil.getInstance().getWidthPx(983),
                   height:ScreenUtil.getInstance().getHeightPx(150),
                   color: Color(0xFFfc6061),
@@ -157,6 +159,10 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
       listWiget.add(widgetList);
     }
     return listWiget;
+  }
+  _goParentInfo(){
+    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"starRecord").then((v){
+    });
   }
 }
 

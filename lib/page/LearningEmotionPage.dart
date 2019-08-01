@@ -9,6 +9,8 @@ import 'package:flutter_start/bloc/LearningEmotionBloc.dart';
 import 'package:flutter_start/bloc/ModuleBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/dao/wordDao.dart';
+import 'package:flutter_start/common/net/address.dart';
 
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -46,7 +48,6 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
   List<ParentHomeWork> _parentHomeWorkList  = new List<ParentHomeWork>();//用户作业
 
   int _studyIndex = 1;//判断内容加载
-
 
 
   @override
@@ -510,7 +511,7 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
 
   ///获取学生本学期做题数和错题数及当天学习时间
   void _getNewHomeWork() async{
-    var data = await UserDao.getNewHomeWork();
+    var data = await WordDao.getNewHomeWork();
     if(data != null && data != ""){
       if(data["success"]["ok"] == 0){
         setState(() {

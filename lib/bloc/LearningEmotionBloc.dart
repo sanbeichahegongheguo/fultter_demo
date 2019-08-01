@@ -1,4 +1,5 @@
 import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,7 +21,7 @@ class LearningEmotionBloc extends BlocBase{
 
   ///获取学生本学期做题数和错题数及当天学习时间
   Future<void> getStudyData() async {
-    var res = await UserDao.getStudyData();
+    var res = await WordDao.getStudyData();
     if(null!=res && res.result){
       _studyDataSink.add(res.data);
     }
@@ -31,7 +32,7 @@ class LearningEmotionBloc extends BlocBase{
 
   ///获取学生本学期做题数和错题数及当天学习时间
   void getNewHomeWork() async{
-    var res = await UserDao.getNewHomeWork();
+    var res = await WordDao.getNewHomeWork();
     if(null!=res && res.result){
       print("11  ${res.data}");
       _parentHomeWorkSink.add(res.data);

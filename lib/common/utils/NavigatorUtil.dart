@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/page/EyeProtectionPage.dart';
 import 'package:flutter_start/page/HomePage.dart';
+import 'package:flutter_start/page/HomeWorkDuePage.dart';
 import 'package:flutter_start/page/JoinClassPage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
 import 'package:flutter_start/page/PhoneLoginPage.dart';
@@ -102,18 +103,28 @@ class NavigatorUtil {
   static goStudentAppPage(BuildContext context) {
     NavigatorRouter(context, StudentAppPage());
   }
+  ///去往期作业
+  static goHomeWorkDuePage(BuildContext context) {
+    NavigatorRouter(context, HomeWorkDuePage());
+  }
   ///去往webview
-  static goWebView(BuildContext context, String url) async {
+  static goWebView(BuildContext context, String url,{String router = ""}) async {
     String key = await httpManager.getAuthorization();
     print("@key:  $key ");
+    String from = "study_parent";
+    String toFrom = "study_parent_router";
     if (null != key && "" != key) {
       if (url.contains("?")) {
-        url = "$url&t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=study_parent";
+        url = "$url&t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from";
       } else {
-        url = "$url?t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=study_parent";
+        url = "$url?t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from";
       }
     }
-    print("@跳转链接:$url");
+    if(router != ""){
+      url += "&toFrom=$toFrom#/"+router;
+    }
+
+    print("@跳转链接:${url}");
     return NavigatorRouter(context, WebViewPage(url));
 //    NavigatorRouter(context,WebViewExample(url));
   }
