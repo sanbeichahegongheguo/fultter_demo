@@ -190,32 +190,37 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                 flex: 2,
                 child: Container(
                   padding: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(25)),
-                  child: Stack(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(25),top:ScreenUtil.getInstance().getHeightPx(5)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Container(
-                            color: Color(0xFFf0f4f7),
-                            width: ScreenUtil.getInstance().getWidthPx(280),
-                            height:ScreenUtil.getInstance().getHeightPx(65),
-                            child: StreamBuilder<String>(
-                            stream: bloc.starNumStream,
-                            builder: (context, AsyncSnapshot<String> snapshot){
-                              return Text(snapshot.data??"");
-                            }),
-                            alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: (){
+//                      NavigatorUtil.goWebView(context,'').then((v){});
+                    },
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(25),top:ScreenUtil.getInstance().getHeightPx(5)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Container(
+                              color: Color(0xFFf0f4f7),
+                              width: ScreenUtil.getInstance().getWidthPx(280),
+                              height:ScreenUtil.getInstance().getHeightPx(65),
+                              child: StreamBuilder<String>(
+                                  stream: bloc.starNumStream,
+                                  builder: (context, AsyncSnapshot<String> snapshot){
+                                    return Text(snapshot.data??"");
+                                  }),
+                              alignment: Alignment.center,
+                            ),
                           ),
                         ),
-                      ),
-                      Image.asset(
-                        'images/parent_reward/starIcon.png',
-                        height: ScreenUtil.getInstance().getHeightPx(71),
-                        width:ScreenUtil.getInstance().getWidthPx(74),
-                      ),
-                    ],
-                  ),
+                        Image.asset(
+                          'images/parent_reward/starIcon.png',
+                          height: ScreenUtil.getInstance().getHeightPx(71),
+                          width:ScreenUtil.getInstance().getWidthPx(74),
+                        ),
+                      ],
+                    ),
+                  )
                 )
             ),
             Expanded(
