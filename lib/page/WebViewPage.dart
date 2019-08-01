@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
-import 'package:flutter_start/common/config/config.dart';
-import 'package:flutter_start/common/dao/InfoDao.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
