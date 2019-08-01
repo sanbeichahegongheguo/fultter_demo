@@ -1,6 +1,8 @@
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/dao/moduleDao.dart';
 import 'package:flutter_start/models/ConvertGoods.dart';
+import 'package:flutter_start/models/Module.dart';
 import 'package:rxdart/rxdart.dart';
 import 'BlocBase.dart';
 class ParentRewardBloc extends BlocBase{
@@ -25,6 +27,7 @@ class ParentRewardBloc extends BlocBase{
     return;
   }
 
+  ///获取热门兑换
   void getHotGift() async{
     DataResult data = await UserDao.getHotGoodsList();
     if(null!=data && data.result){

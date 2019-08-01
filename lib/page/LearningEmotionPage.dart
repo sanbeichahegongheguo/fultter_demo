@@ -1,15 +1,19 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/LearningEmotionBloc.dart';
+import 'package:flutter_start/bloc/ModuleBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/formatDate.dart';
+import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:flutter_start/models/user.dart';
 class LearningEmotionPage extends StatefulWidget{
@@ -22,15 +26,17 @@ class LearningEmotionPage extends StatefulWidget{
 }
 
 class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClientMixin<StatefulWidget>, SingleTickerProviderStateMixin{
+  final LearningEmotionBloc bloc = new LearningEmotionBloc();
+  final ModuleBloc moduleBloc = new ModuleBloc();
 
   @override
   initState(){
     print("进入学情");
     bloc.getStudyData();
     bloc.getNewHomeWork();
+    moduleBloc.getLEmotionModule();
+
     super.initState();
-//     _getStudyData();
-//     _getNewHomeWork();
 
   }
   var _learninText = "  同学学习情况如下：";
@@ -41,7 +47,7 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
 
   int _studyIndex = 1;//判断内容加载
 
-  final LearningEmotionBloc bloc = new LearningEmotionBloc();
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,13 +78,11 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
                 Container(
                   margin: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(54)),
                   width: ScreenUtil.getInstance().getWidthPx(980),
-                  child: Wrap(
-//              spacing: ScreenUtil.getInstance().getWidthPx(10), // 主轴(水平)方向间距
-                      runSpacing: ScreenUtil.getInstance().getHeightPx(27), // 纵轴（垂直）方向间距
-                      runAlignment:WrapAlignment.center,
-                      alignment:WrapAlignment.spaceBetween,
-                      children: _footBt()
-                  ),
+                  child: StreamBuilder<List<Module>>(
+                      stream: moduleBloc.moduleStream,
+                      builder: (context, AsyncSnapshot<List<Module>> snapshot){
+                        return  _footBt(snapshot.data);
+                      }),
                 ),
               ],
             )
@@ -224,35 +228,55 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
     {"imgUrl":"images/study/icon-look-que.png","id":1,"title":"查看错题"},
     {"imgUrl":"images/study/icon-beat-que.png","id":1,"title":"错题拍拍"},
   ];
-  List<Widget> _footBt(){
+
+  Widget _footBt(List<Module> data){
     List<Widget> btListMsg = [];
-    for(var i = 0;i<btList.length;i++){
-      btListMsg.add(
-        Container(
-          width: ScreenUtil.getInstance().getWidthPx(450),
-          decoration:BoxDecoration(
-            border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
-            borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child:MaterialButton(
-              minWidth: ScreenUtil.getInstance().getWidthPx(450),
-              color: Color(0xFFffffff),
-              height:ScreenUtil.getInstance().getHeightPx(215) ,
-              onPressed: (){},
-              child: Row(
-                children: <Widget>[
-                  Image.asset(btList[i]["imgUrl"],fit: BoxFit.fitWidth,height:ScreenUtil.getInstance().getHeightPx(100) ,),
-                  Padding(padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(36)),child: Text(btList[i]["title"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF333333) ),),),
-                ],
+    print('学情模块');
+    print(data);
+    if(null!=data){
+      for(var i = 0;i<data.length;i++){
+        btListMsg.add(
+            Container(
+              width: ScreenUtil.getInstance().getWidthPx(450),
+              decoration:BoxDecoration(
+                border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
+                borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
               ),
-            ),
-          ),
-        )
-      );
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child:MaterialButton(
+                  minWidth: ScreenUtil.getInstance().getWidthPx(450),
+                  color: Color(0xFFffffff),
+                  height:ScreenUtil.getInstance().getHeightPx(215) ,
+                  onPressed: (){
+                    NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
+                  },
+                  child: Row(
+                      children: <Widget>[
+                        CachedNetworkImage(
+                          imageUrl:data[i].iconUrl,
+                          height:ScreenUtil.getInstance().getHeightPx(100),
+                          fit: BoxFit.fitWidth,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(36)),
+                          child:
+                          Text(data[i].name, style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF333333) ),),),
+                      ],
+                    ),
+                ),
+              ),
+            )
+        );
+      }
     }
-    return btListMsg;
+    var btmsg =Wrap(
+      runSpacing: ScreenUtil.getInstance().getHeightPx(27), // 纵轴（垂直）方向间距
+      runAlignment:WrapAlignment.center,
+      alignment:WrapAlignment.spaceBetween,
+      children: btListMsg,
+    );
+    return btmsg;
   }
 
 

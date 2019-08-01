@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_start/bloc/ModuleBloc.dart';
 
 class CoachPage extends StatefulWidget{
 
@@ -12,14 +15,17 @@ class CoachPage extends StatefulWidget{
     return _CoachPage();
   }
 
-
 }
 
 class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<CoachPage>, SingleTickerProviderStateMixin{
+  final ModuleBloc moduleBloc = new ModuleBloc();
+  final ModuleBloc jzModuleBloc = new ModuleBloc();
   @override
   void initState() {
     _getheaderAdvertList();
     _getfootAdvertList();
+    moduleBloc.getCoachXZYModule();
+    jzModuleBloc.getCoachJZModule();
     super.initState();
   }
 
@@ -39,7 +45,15 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               Container(
                 width:MediaQuery.of(context).size.width,
                 color: Colors.white,
-                child: Padding(padding: EdgeInsets.fromLTRB(ScreenUtil.getInstance().getWidthPx(20), ScreenUtil.getInstance().getHeightPx(64), ScreenUtil.getInstance().getWidthPx(20), ScreenUtil.getInstance().getHeightPx(64)),child: _mainBt(),),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(ScreenUtil.getInstance().getWidthPx(20), ScreenUtil.getInstance().getHeightPx(64), ScreenUtil.getInstance().getWidthPx(20), ScreenUtil.getInstance().getHeightPx(64)),
+                  child: StreamBuilder<List<Module>>(
+                      stream: moduleBloc.moduleStream,
+                      builder: (context, AsyncSnapshot<List<Module>> snapshot){
+                        return  _mainBt(snapshot.data);
+                      }),
+//                  _mainBt()
+                ),
               ),
               Container(
                 margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(33)),
@@ -68,7 +82,12 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                       ),
                       Padding(
                         padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(50),bottom:ScreenUtil.getInstance().getHeightPx(50)),
-                        child:  _widgeStudy(),
+                        child:  StreamBuilder<List<Module>>(
+                            stream: jzModuleBloc.moduleStream,
+                            builder: (context, AsyncSnapshot<List<Module>> snapshot){
+                              return  _widgeStudy(snapshot.data);
+                            }),
+//                        _widgeStudy(),
                       ),
                     ],
                   ),
@@ -125,58 +144,48 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
   ];
   //中部按钮
-  Widget _mainBt(){
+  Widget _mainBt(List<Module> data){
     List<Widget> btList = [];
-    for(var i = 0;i<_mainBtList.length;i++){
-      var positioned = _mainBtList[i]["type"] ==2 ? Positioned(
-        top:0,
-        right: 0,
-
-        child:Image.asset(
-          "images/coach/icon-hot.png",
-          width:ScreenUtil.getInstance().getWidthPx(94),
-          height:ScreenUtil.getInstance().getHeightPx(33),
-        ),
-      ):Text("");
-      btList.add(
-          Column(
-            children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  InkWell(
-                    onTap: (){
-                      print("点击按钮id为 ${_mainBtList[i]["id"]}");
-                      switch(_mainBtList[i]["id"]){
-                        case 2:
-                          NavigatorUtil.goWebView(context,Address.getExerciseBookNew()).then((v){
-                          });
-                          break;
-                        case 1:
-                          NavigatorUtil.goWebView(context,Address.getQuickKing()).then((v){
-                          });
-                          break;
-                      }
-                    },
-                    child:Container(
-                      width: ScreenUtil.getInstance().getWidthPx(260),
-                      child: Image.asset(
-                        _mainBtList[i]["imgUrl"],
-                        fit: BoxFit.contain,
-                        height: ScreenUtil.getInstance().getHeightPx(120),
-                      ),
-                    ) ,
-                  ),
-
-                  positioned
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
-              ),
-              Text(_mainBtList[i]["title"],style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36 / 3),color: Color(0xFF999999)),),
-            ],
-          )
-      );
+    if(null!=data){
+      for(var i = 0;i<data.length;i++){
+        var positioned = data[i].status == 'free' ? Positioned(
+          top:0,
+          right: 0,
+          child:Image.asset(
+            "images/coach/icon-hot.png",
+            width:ScreenUtil.getInstance().getWidthPx(94),
+            height:ScreenUtil.getInstance().getHeightPx(33),
+          ),
+        ):Text("");
+        btList.add(
+            Column(
+              children: <Widget>[
+                Stack(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: (){
+                        NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
+                      },
+                      child:Container(
+                        width: ScreenUtil.getInstance().getWidthPx(260),
+                        child: CachedNetworkImage(
+                          imageUrl:data[i].iconUrl,
+                          height: ScreenUtil.getInstance().getHeightPx(120),
+                          fit: BoxFit.contain,
+                        ),
+                      ) ,
+                    ),
+                    positioned
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
+                ),
+                Text(data[i].name,style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36 / 3),color: Color(0xFF999999)),),
+              ],
+            )
+        );
+      }
     }
     var btmsg =Wrap(
 //      spacing: ScreenUtil.getInstance().getWidthPx(100), // 主轴(水平)方向间距
@@ -196,22 +205,28 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     {"imgUrl":"images/coach/pe-3.png","id":3},
   ];
   //精准学习
-  Widget _widgeStudy (){
+  Widget _widgeStudy (List<Module> data){
+    print('精准学习模块');
+    print(data);
     List<Widget> listWidge = [];
-    for(var i = 0; i<_studyList.length;i++){
-      listWidge.add(
-        InkWell(
-          onTap: (){print("点击按钮id为 ${_studyList[i]["id"]}");},
-          child:Container(
-            width: ScreenUtil.getInstance().getWidthPx(500),
-            child: Image.asset(
-              _studyList[i]["imgUrl"],
-              fit: BoxFit.fitWidth,
+    if(null!=data){
+      for(var i = 0; i<data.length;i++){
+        listWidge.add(
+          GestureDetector(
+            onTap: (){
+              NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
+            },
+            child:Container(
+              width: ScreenUtil.getInstance().getWidthPx(500),
+              child: CachedNetworkImage(
+              imageUrl:data[i].iconUrl,
               width:ScreenUtil.getInstance().getWidthPx(500),
+              fit: BoxFit.fitWidth,
             ),
-          ) ,
-        ),
-      );
+            ) ,
+          ),
+        );
+      }
     }
     var btmsg =Wrap(
       spacing: ScreenUtil.getInstance().getWidthPx(20), // 主轴(水平)方向间距

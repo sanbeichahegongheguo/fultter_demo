@@ -190,6 +190,7 @@ class Address {
   static getQuickKing() {
     return "${Address.h5Host}quickKing/index.html";
   }
+
   ///客服h5
   static getWxServer() {
     return "${Address.h5Host}xx/wxServer.html";
@@ -198,5 +199,13 @@ class Address {
   ///更改密码
   static resetPwd(){
     return "${k12apiHost}base/updatePasswordByCode";
+
   }
+
+  ///获取模块栏目
+  static getModule(){
+    return "${stu_app}get_parent_module";
+  }
+
+
 }

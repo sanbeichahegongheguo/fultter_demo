@@ -55,7 +55,11 @@ class HttpManager {
 
     Response response;
     try {
-      response = await dio.request(url, data: params, options: option);
+      if (option.method=="get"){
+        response = await dio.get(url,queryParameters:params,options:option);
+      }else{
+        response = await dio.request(url, data: params, options: option);
+      }
       if (response.data.data is String) {
         String str = response.data.data;
         if (str.startsWith("{")) {

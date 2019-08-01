@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/bloc/ModuleBloc.dart';
 import 'package:flutter_start/bloc/ParentRewardBloc.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/ConvertGoods.dart';
+import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:flutter_start/common/dao/daoResult.dart';
-import 'package:flutter_start/common/dao/userDao.dart';
-import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
 class ParentReward extends StatefulWidget{
   @override
@@ -23,19 +21,16 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
   List<Widget> _headerAdvertList = List();
   List<String> _headerImgList = ["images/parent_reward/banner.png","images/parent_reward/banner.png"];
 
-  List _btnList = [
-    {"imgUrl":"images/parent_reward/scholarshipIcon.png","name":"兑换奖学金"},
-    {"imgUrl":"images/parent_reward/starDrawIcon.png","name":"星星抽奖"},
-    {"imgUrl":"images/parent_reward/exchangeCardBtn.png","name":"兑换卡牌"},
-  ];
   bool _showBanner = false;
   final ParentRewardBloc bloc = new ParentRewardBloc();
+  final ModuleBloc moduleBloc = new ModuleBloc();
 
   @override
   void initState() {
     _getheaderAdvertList();
     bloc.getTotalStar();
     bloc.getHotGift();
+    moduleBloc.getParentBottomModule();
     super.initState();
   }
 
@@ -92,8 +87,12 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
             child: _hotExchange(),
           ),
           Container(
-            width: 200,
-            child: _btnBody(),
+            child:StreamBuilder<List<Module>>(
+                stream: moduleBloc.moduleStream,
+                builder: (context, AsyncSnapshot<List<Module>> snapshot){
+                  return  _btnBody(snapshot.data);
+                }),
+//            _btnBody(),
           ),
         ],
       ),
@@ -314,58 +313,64 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
     return giftmsg;
   }
 
-  //其他按钮入口
-  Widget _btnBody(){
+  //底部栏目模块按钮入口
+  Widget _btnBody(List<Module> data){
+    print('底部栏目模块按钮入口');
     List<Widget> binList = [];
-    for(var i = 0;i<_btnList.length;i++){
-      var positioned = _btnList[i]["name"] =='星星抽奖' ? Positioned(
-        top:0,
-        right: 0,
-        child:Image.asset(
-          "images/parent_reward/hotIcon.png",
-          width:ScreenUtil.getInstance().getWidthPx(113),
-          height:ScreenUtil.getInstance().getHeightPx(58),
-        ),
-      ):Text("");
-      binList.add(
-          Container(
-            alignment: Alignment.center,
-            width: ScreenUtil.getInstance().getWidthPx(300),
-            child: Stack(
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    if(null!=data){
+      for(var i = 0;i<data.length;i++){
+        var positioned = data[i].status=='hot' ? Positioned(
+          top:0,
+          right: 0,
+          child:Image.asset(
+            "images/parent_reward/hotIcon.png",
+            width:ScreenUtil.getInstance().getWidthPx(113),
+            height:ScreenUtil.getInstance().getHeightPx(58),
+          ),
+        ):Text("");
+        binList.add(
+            Container(
+              alignment: Alignment.center,
+              width: ScreenUtil.getInstance().getWidthPx(300),
+              child: GestureDetector(
+                onTap: (){
+                  NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
+                },
+                child: Stack(
                   children: <Widget>[
-                    Image.asset(
-                      _btnList[i]['imgUrl'],
-                      height: ScreenUtil.getInstance().getHeightPx(140),
-                      width: ScreenUtil.getInstance().getHeightPx(140),
-                      fit: BoxFit.fitHeight,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CachedNetworkImage(
+                          imageUrl:data[i].iconUrl,
+                          height: ScreenUtil.getInstance().getHeightPx(140),
+                          width: ScreenUtil.getInstance().getHeightPx(140),
+                          fit: BoxFit.fitHeight,
+                        ),
+                        Container(
+                          width: ScreenUtil.getInstance().getWidthPx(800),
+                          margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child : Text(data[i].name,
+                              style: TextStyle(
+                                  color: Color(0xFF999999)
+                              ),),
+                          ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: ScreenUtil.getInstance().getWidthPx(800),
-                      margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child : Text(_btnList[i]['name'],
-                          style: TextStyle(
-                              color: Color(0xFF999999)
-                          ),),
-                      ),
-                    ),
+                    positioned
                   ],
                 ),
-                positioned
-              ],
-            ),
-
-          )
-      );
+              )
+            )
+        );
+      }
     }
     var btnMsg = Container(
       margin: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(40)),
       child: Wrap(
-//        spacing: ScreenUtil.getInstance().getWidthPx(40), // 主轴(水平)方向间距
         runSpacing: ScreenUtil.getInstance().getHeightPx(30), // 纵轴（垂直）方向间距
         alignment: WrapAlignment.spaceEvenly,
         children: binList,

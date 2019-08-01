@@ -23,5 +23,9 @@ class Config {
   static const STUDY_MSG = "studyMsg";//用户学习情况
   static const starNum = "star-num";
   static const hotGiftList = "hot-gift-list";
+  static const parentRewardModule = "parent-reward-module";   //家长奖励模块
+  static const coachXZYModule = "coach-xzy-module";  //辅导页面小状元模块
+  static const coachJZModule = "coach-jz-module";  //辅导页面精准教育模块
+  static const lEmotionModule = "l-emotion-module";  //学情页面模块
   static const SIGN_TIMES = "sign-times";
 }
