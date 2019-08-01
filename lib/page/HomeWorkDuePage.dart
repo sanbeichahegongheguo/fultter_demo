@@ -11,6 +11,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
@@ -161,71 +162,79 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
         _state = isT ?"已完成":"未完成";
         _stateColor = isT ? Color(0xFF5fc589) : Color(0xFFfb6060);
       }
-      return  Container(
-        width: ScreenUtil.getInstance().getWidthPx(800),
-        decoration:BoxDecoration(
-          border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
-          borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
-        ),
-        padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(15),horizontal:ScreenUtil.getInstance().getWidthPx(30)),
-        margin:EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(30)),
-        child: Flex(
-          direction: Axis.horizontal,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child:Container(
-                margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(80)),
-                alignment: Alignment.topLeft,
-                child: Image.asset("images/study/previous_icon.png",width: ScreenUtil.getInstance().getWidthPx(100),height:ScreenUtil.getInstance().getWidthPx(100)),
+      return   InkWell(
+        onTap: _goParentInfo,
+        child: Container(
+          width: ScreenUtil.getInstance().getWidthPx(800),
+          decoration:BoxDecoration(
+            border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
+            borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+          ),
+          padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(15),horizontal:ScreenUtil.getInstance().getWidthPx(30)),
+          margin:EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(30)),
+          child: Flex(
+            direction: Axis.horizontal,
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child:Container(
+                  margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(80)),
+                  alignment: Alignment.topLeft,
+                  child: Image.asset("images/study/previous_icon.png",width: ScreenUtil.getInstance().getWidthPx(100),height:ScreenUtil.getInstance().getWidthPx(100)),
+                ),
               ),
-            ),
-            Expanded(
-              flex: 7,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Text("[${_judgeWordType(_hwType)}]",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(48/3),color: Color(0xFF2dc1ae) ),),
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(10),horizontal:ScreenUtil.getInstance().getWidthPx(15)),
-                            margin: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(24) ),
-                            decoration:BoxDecoration(
-                              color: _stateColor,
-                              borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+              Expanded(
+                flex: 7,
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Text("[${_judgeWordType(_hwType)}]",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(48/3),color: Color(0xFF2dc1ae) ),),
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(10),horizontal:ScreenUtil.getInstance().getWidthPx(15)),
+                              margin: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(24) ),
+                              decoration:BoxDecoration(
+                                color: _stateColor,
+                                borderRadius: new BorderRadius.all(new Radius.circular(5.0)),
+                              ),
+                              child: Text(_state,style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(26/3),color: Color(0xFFffffff) ),),
                             ),
-                            child: Text(_state,style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(26/3),color: Color(0xFFffffff) ),),
-                          ),
-                        ],
-                      ),
-                      Text(_startDate,style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(32/3),color: Color(0xFF999999) ),),
-                    ],
-                  ),
-                  Flex(
-                    direction: Axis.horizontal,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 4,
-                        child: Container(
-                          padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(48),right:ScreenUtil.getInstance().getWidthPx(30),bottom:ScreenUtil.getInstance().getHeightPx(48)  ),
-                          child: Text(_hwContent,style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF333333) ),),
+                          ],
                         ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: _iconImg,
-                      ),
-                    ],
-                  ),
-                ],
+                        Text(_startDate,style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(32/3),color: Color(0xFF999999) ),),
+                      ],
+                    ),
+                    Flex(
+                      direction: Axis.horizontal,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 4,
+                          child: Container(
+                            padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(48),right:ScreenUtil.getInstance().getWidthPx(30),bottom:ScreenUtil.getInstance().getHeightPx(48)  ),
+                            child: Text(_hwContent,style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF333333) ),),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: _iconImg,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        )
       );
+
+  }
+  _goParentInfo(){
+    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){
+    });
   }
   ///判断作业类型
   String _judgeWordType(int type){

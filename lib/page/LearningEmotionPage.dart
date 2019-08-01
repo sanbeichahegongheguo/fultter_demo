@@ -216,7 +216,12 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
                   Text("  最新作业",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3) ),)
                 ],
               ),
-              Text("往期作业》",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36/3),color: Color(0xFF999999)),)
+
+
+              InkWell(
+                onTap: _goWord,
+                child:Text("往期作业》",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36/3),color: Color(0xFF999999)),),
+              )
             ],
           ),
         ),
@@ -289,7 +294,9 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
       var last = data.length==1?1:2;
       for(var i = 0;i<last;i++){
         msgList.add(
-          Container(
+          InkWell(
+            onTap: _goParentInfo,
+            child:Container(
             width: ScreenUtil.getInstance().getWidthPx(980),
             decoration:BoxDecoration(
               border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
@@ -341,6 +348,7 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
                 ),
               ],
             ),
+          ),
           )
         );
       }
@@ -353,7 +361,7 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
               minWidth: ScreenUtil.getInstance().getWidthPx(515),
               color: Color(0xFFfbd953),
               height:ScreenUtil.getInstance().getHeightPx(139) ,
-              onPressed: (){},
+              onPressed: _goParentInfo,
               child: Text("完成作业",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFa83530))),
             ),
           ),
@@ -381,7 +389,7 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
                   minWidth: ScreenUtil.getInstance().getWidthPx(515),
                   color: Color(0xFF6ed699),
                   height:ScreenUtil.getInstance().getHeightPx(139) ,
-                  onPressed: (){},
+                  onPressed: _goParentInfo,
                   child: Text("自主练习",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFffffff))),
                 ),
               ),
@@ -522,7 +530,13 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
       }
     }
   }
-
+  _goParentInfo(){
+    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){
+    });
+  }
+  _goWord(){
+    NavigatorUtil.goHomeWorkDuePage(context);
+  }
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
