@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_start/common/config/config.dart';
 
 import 'NavigatorUtil.dart';
 
@@ -126,5 +129,30 @@ class CommonUtils {
               child: widget
           );
         });
+  }
+  ///腾讯banner
+  static Widget buildBanner(){
+    return Container(
+      color: Colors.transparent,
+      child: AndroidView(
+        viewType: "banner",
+        creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID},
+        creationParamsCodec: const StandardMessageCodec(),
+      ),
+    );
+  }
+
+  ///创建后台banner
+  static Widget buildMyBanner(context,ad){
+   return GestureDetector(
+      child: CachedNetworkImage(
+        width: ScreenUtil.getInstance().screenWidth,
+        imageUrl:ad.picUrl,
+        fit: BoxFit.fill,
+      ),
+      onTap: (){
+        NavigatorUtil.goAdWebView(context, ad);
+      },
+    );
   }
 }

@@ -44,7 +44,9 @@ class HttpManager {
     if (header != null) {
       headers.addAll(header);
     }
-
+    if (params is Map){
+      params["curVersion"] = "2.0.000";
+    }
     if (option != null) {
       option.headers = headers;
     } else {

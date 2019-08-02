@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/page/EyeProtectionPage.dart';
 import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/HomeWorkDuePage.dart';
@@ -127,6 +128,12 @@ class NavigatorUtil {
     print("@跳转链接:${url}");
     return NavigatorRouter(context, WebViewPage(url));
 //    NavigatorRouter(context,WebViewExample(url));
+  }
+
+  ///去往webview
+  static goAdWebView(BuildContext context, Adver ad) async {
+    AppBar appBar = new AppBar(title: Text(ad.adverName),centerTitle: true,);
+    return NavigatorRouter(context, WebViewPage(ad.target,appBar:appBar));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {

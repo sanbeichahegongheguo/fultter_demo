@@ -6,7 +6,9 @@ import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
 
 import 'HomePage.dart';
@@ -31,6 +33,7 @@ class SplashPageState extends State<SplashPage> {
       return;
     }
     hadInit = true;
+    _initPermission();
     _initAsync();
   }
   @override
@@ -43,22 +46,23 @@ class SplashPageState extends State<SplashPage> {
     Store<GSYState> store = StoreProvider.of(context);
 
     new Future.delayed(const Duration(milliseconds: 500), () async {
-          //登录
-          UserDao.getUser(isNew:true,store: store).then((res){
-            if (res != null){
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-                    (Route<dynamic> route) => false,
-              );
-            }else{
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
-                    (Route<dynamic> route) => false,
-              );
-            }
-          });
+
+            //登录
+            UserDao.getUser(isNew:true,store: store).then((res){
+              if (res != null){
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+                      (Route<dynamic> route) => false,
+                );
+              }else{
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
+                      (Route<dynamic> route) => false,
+                );
+              }
+            });
     });
 //    _loadSplashData();
 //    Observable.just(1).delay(new Duration(milliseconds: 500)).listen((_) {
@@ -150,5 +154,33 @@ class SplashPageState extends State<SplashPage> {
         ),
       ),
     );
+  }
+
+  Future _initPermission() async {
+    List<PermissionGroup> permissionsList = new List();
+    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
+    if (permission != PermissionStatus.granted) {
+        permissionsList.add(PermissionGroup.phone);
+    }
+    permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
+    if (permission != PermissionStatus.granted) {
+        permissionsList.add(PermissionGroup.storage);
+    }
+    permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
+    if (permission != PermissionStatus.granted) {
+      permissionsList.add(PermissionGroup.location);
+    }
+    if(permissionsList.length>0){
+      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions(permissionsList);
+      if (permissions[PermissionGroup.phone] != PermissionStatus.granted) {
+        showToast("请开启手机权限", position: ToastPosition.bottom);
+      }
+      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+        showToast("请开启存储权限", position: ToastPosition.bottom);
+      }
+      if (permissions[PermissionGroup.location] != PermissionStatus.granted) {
+        showToast("请开启位置权限", position: ToastPosition.bottom);
+      }
+    }
   }
 }
