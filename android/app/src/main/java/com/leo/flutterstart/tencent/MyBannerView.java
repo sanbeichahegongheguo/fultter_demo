@@ -64,6 +64,9 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
             case "loadAD":
                 loadAD();
                 break;
+            case "refreshBanner":
+                this.bannerView.loadAD();
+                break;
             default:
                 result.notImplemented();
         }

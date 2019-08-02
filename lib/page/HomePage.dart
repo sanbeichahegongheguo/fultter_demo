@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_start/bloc/BlocBase.dart';
+import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 import 'package:oktoast/oktoast.dart';
 import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
 import 'parentReward.dart';
-
+///首页
 class HomePage extends StatelessWidget {
-
 
   int _exitTime = 0;
 
@@ -40,7 +41,9 @@ class HomePage extends StatelessWidget {
       onWillPop: () {
         return _exitApp();
       },
-      child: new GSYTabBarWidget(
+      child: BlocProvider<HomeBloc>(
+        bloc: HomeBloc(),
+        child: new GSYTabBarWidget(
         tabViews: [
           new CoachPage(),
           new LearningEmotionPage(),
@@ -50,6 +53,8 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.lightBlueAccent,
         indicatorColor: Colors.lightBlueAccent,
       ),
+      )
     );
   }
+
 }

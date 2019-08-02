@@ -2,15 +2,17 @@ import 'dart:async';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/bloc/BlocBase.dart';
+import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/dao/InfoDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/net/address.dart';
-import 'package:flutter_start/common/redux/gsy_state.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/page/AdminPage.dart';
+import 'package:flutter_start/page/CoachPage.dart';
+import 'package:flutter_start/page/LearningEmotionPage.dart';
+import 'package:flutter_start/page/parentReward.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住
@@ -27,7 +29,6 @@ class GSYTabBarWidget extends StatefulWidget {
 
   final Widget floatingActionButton;
 
-  final TarWidgetControl tarWidgetControl;
 
   final ValueChanged<int> onPageChanged;
 
@@ -41,7 +42,6 @@ class GSYTabBarWidget extends StatefulWidget {
     this.title,
     this.drawer,
     this.floatingActionButton,
-    this.tarWidgetControl,
     this.onPageChanged,
     this.currentIndex = 0,
   }) : super(key: key);
@@ -53,7 +53,6 @@ class GSYTabBarWidget extends StatefulWidget {
         title,
         drawer,
         floatingActionButton,
-        tarWidgetControl,
         onPageChanged,
         currentIndex,
       );
@@ -70,7 +69,6 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
   final Widget _floatingActionButton;
 
-  final TarWidgetControl _tarWidgetControl;
 
   final PageController _pageController = PageController();
 
@@ -81,6 +79,11 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   int _msgCount = 0;
   int _signTimes = 0;//签到个数
   String _unReadNotice = "0";//消息个数
+  TabController _tabController;
+
+  List<String> pageList = [CoachPage.sName,LearningEmotionPage.sName,ParentReward.sName,Admin.sName];
+
+  HomeBloc bloc;
 
   _GSYTabBarState(
     this._tabViews,
@@ -88,15 +91,14 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     this._title,
     this._drawer,
     this._floatingActionButton,
-    this._tarWidgetControl,
     this._onPageChanged,
     this._currentIndex,
   ) : super();
 
-  TabController _tabController;
 
   @override
   void initState() {
+    bloc =  BlocProvider.of<HomeBloc>(context);
     super.initState();
     _stream = eventBus.on<HttpErrorEvent>().listen((event) {
       print("home eventBus " + event.toString());
@@ -134,7 +136,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
             controller: _pageController,
             children: _tabViews,
             onPageChanged: (index) {
-              print("onPageChanged : $index");
+              callPageLoad(index);
               if (_currentIndex != index) {
                 setState(() {
                   _currentIndex = index;
@@ -332,8 +334,32 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       ),
     );
   }
-}
-
-class TarWidgetControl {
-  List<Widget> footerButton = [];
+  Map<String,bool> initPageMap = new Map();
+  ///加载页面的时候触发
+  void callPageLoad(index){
+    if (initPageMap[pageList[index]]==null){
+      print("初始化 ${pageList[index]}");
+      initPageMap[pageList[index]]=true;
+      return;
+    }
+    switch (pageList[index]){
+      case CoachPage.sName:
+        print("切换辅导页面");
+        bloc.adBloc.getBanner(pageName: CoachPage.sName);
+        break;
+      case LearningEmotionPage.sName:
+        print("切换学情页面");
+        bloc.learningEmotionBloc.getStudyData();
+        bloc.learningEmotionBloc.getNewHomeWork();
+        break;
+      case ParentReward.sName:
+        bloc.adBloc.getBanner(pageName:ParentReward.sName);
+        bloc.parentRewardBloc.getTotalStar();
+        print("切换家长奖励页面");
+        break;
+      case Admin.sName:
+        print("切换管理页面");
+        break;
+    }
+  }
 }

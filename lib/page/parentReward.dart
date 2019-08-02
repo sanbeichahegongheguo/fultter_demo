@@ -1,23 +1,18 @@
-import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
-import 'package:flutter_start/bloc/ModuleBloc.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_start/bloc/ParentRewardBloc.dart';
+import 'package:flutter_start/bloc/HomeBloc.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/ConvertGoods.dart';
 import 'package:flutter_start/models/Module.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:flutter_start/common/dao/daoResult.dart';
-import 'package:flutter_start/common/dao/userDao.dart';
-import 'package:flutter_start/common/config/config.dart';
-import 'package:flutter_start/common/net/address.dart';
+
+///家长奖励页面
 class ParentReward extends StatefulWidget{
+  static const String sName = "parentReward";
   @override
   State<ParentReward> createState() {
     // TODO: implement createState
@@ -26,36 +21,34 @@ class ParentReward extends StatefulWidget{
 }
 
 class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMixin<ParentReward>, SingleTickerProviderStateMixin{
-  //头部广告位轮播集合
-  List<Widget> _headerAdvertList = List();
-  List<String> _headerImgList = ["images/parent_reward/banner.png"];
 
+  HomeBloc bloc;
   List _btnList = [
     {"imgUrl":"images/parent_reward/scholarshipIcon.png","name":"兑换奖学金"},
     {"imgUrl":"images/parent_reward/starDrawIcon.png","name":"星星抽奖"},
     {"imgUrl":"images/parent_reward/exchangeCardBtn.png","name":"兑换卡牌"},
   ];
   bool _showBanner = false;
-  final ParentRewardBloc bloc = new ParentRewardBloc();
-  final ModuleBloc moduleBloc = new ModuleBloc();
 
   @override
   void initState() {
-    bloc.getTotalStar();
-    bloc.getHotGift();
-    AdBloc.getInstance()?.getBanner();
-    moduleBloc.getParentBottomModule();
+    print("_ParentReward initState");
+    bloc =  BlocProvider.of<HomeBloc>(context);
+    bloc.parentRewardBloc.getTotalStar();
+    bloc.parentRewardBloc.getHotGift();
+    bloc.parentModuleBloc.getParentBottomModule();
+    bloc.adBloc.getBanner();
     super.initState();
   }
 
   @override
   void dispose() {
-    AdBloc.getInstance()?.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    print('_ParentReward build');
     return Container(
       color: Color(0xFFf0f4f7),
       child: ListView(
@@ -68,9 +61,9 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                 child: Stack(
                   children: <Widget>[
                     StreamBuilder<Adver>(
-                        stream: AdBloc.getInstance().adverStream,
+                        stream: bloc.adBloc.adverStream,
                         builder: (context, AsyncSnapshot<Adver> snapshot){
-                          return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner();
+                          return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(bloc.adBloc.adChannelMap,ParentReward.sName);
                         }
                     ),
                     Container(
@@ -103,7 +96,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
           ),
           Container(
             child:StreamBuilder<List<Module>>(
-                stream: moduleBloc.moduleStream,
+                stream: bloc.parentModuleBloc.moduleStream,
                 builder: (context, AsyncSnapshot<List<Module>> snapshot){
                   return  _btnBody(snapshot.data);
                 }),
@@ -155,7 +148,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
         children: <Widget>[
           _hotExchangeTitle(),
           StreamBuilder<List<ConvertGoods>>(
-              stream: bloc.convertGoodsStream,
+              stream: bloc.parentRewardBloc.convertGoodsStream,
               builder: (context, AsyncSnapshot<List<ConvertGoods>> snapshot){
                 return  _hotExchangeBody(snapshot.data);
               }),
@@ -199,7 +192,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                               width: ScreenUtil.getInstance().getWidthPx(280),
                               height:ScreenUtil.getInstance().getHeightPx(65),
                               child: StreamBuilder<String>(
-                                  stream: bloc.starNumStream,
+                                  stream: bloc.parentRewardBloc.starNumStream,
                                   builder: (context, AsyncSnapshot<String> snapshot){
                                     return Text(snapshot.data??"");
                                   }),

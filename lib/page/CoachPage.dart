@@ -3,6 +3,8 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_start/bloc/AdBloc.dart';
+import 'package:flutter_start/bloc/BlocBase.dart';
+import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
@@ -12,8 +14,9 @@ import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_start/bloc/ModuleBloc.dart';
 
+///辅导页面
 class CoachPage extends StatefulWidget{
-
+  static const String sName = "coach";
   @override
   State<CoachPage> createState() {
     // TODO: implement createState
@@ -23,20 +26,18 @@ class CoachPage extends StatefulWidget{
 }
 
 class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<CoachPage>, SingleTickerProviderStateMixin{
-  final ModuleBloc moduleBloc = new ModuleBloc();
-  final ModuleBloc jzModuleBloc = new ModuleBloc();
+   HomeBloc bloc;
   @override
   void initState() {
+    bloc =  BlocProvider.of<HomeBloc>(context);
+    bloc.moduleBloc.getCoachXZYModule();
+    bloc.jzModuleBloc.getCoachJZModule();
+    bloc.adBloc.getBanner();
     _getheaderAdvertList();
-    _getfootAdvertList();
-    moduleBloc.getCoachXZYModule();
-    jzModuleBloc.getCoachJZModule();
-    AdBloc.getInstance()?.getBanner();
     super.initState();
   }
   @override
   void dispose() {
-    AdBloc.getInstance()?.dispose();
     super.dispose();
   }
 
@@ -58,7 +59,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(ScreenUtil.getInstance().getWidthPx(20), ScreenUtil.getInstance().getHeightPx(64), ScreenUtil.getInstance().getWidthPx(20), ScreenUtil.getInstance().getHeightPx(64)),
                   child: StreamBuilder<List<Module>>(
-                      stream: moduleBloc.moduleStream,
+                      stream: bloc.moduleBloc.moduleStream,
                       builder: (context, AsyncSnapshot<List<Module>> snapshot){
                         return  _mainBt(snapshot.data);
                       }),
@@ -93,7 +94,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                       Padding(
                         padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(50),bottom:ScreenUtil.getInstance().getHeightPx(50)),
                         child:  StreamBuilder<List<Module>>(
-                            stream: jzModuleBloc.moduleStream,
+                            stream: bloc.jzModuleBloc.moduleStream,
                             builder: (context, AsyncSnapshot<List<Module>> snapshot){
                               return  _widgeStudy(snapshot.data);
                             }),
@@ -109,9 +110,10 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                   color: Colors.transparent,
                   height:ScreenUtil.getInstance().screenWidth/6.4,
                   child: StreamBuilder<Adver>(
-                      stream: AdBloc.getInstance().adverStream,
+                      stream: bloc.adBloc.adverStream,
                       builder: (context, AsyncSnapshot<Adver> snapshot){
-                        return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner();
+                        print("StreamBuilder adBloc");
+                        return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(bloc.adBloc.adChannelMap,CoachPage.sName);
                       }
                   ),
                 ),
@@ -222,8 +224,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
   ];
   //精准学习
   Widget _widgeStudy (List<Module> data){
-    print('精准学习模块');
-    print(data);
     List<Widget> listWidge = [];
     if(null!=data){
       for(var i = 0; i<data.length;i++){
@@ -252,21 +252,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
       children: listWidge,
     );
     return btmsg;
-  }
-  //底部广告位轮播集合
-  List<Widget> _footAdvertList = List();
-  List<String> _footImgList = ["images/coach/advert-bg.png","images/coach/advert-bg.png"];
-  void _getfootAdvertList() {
-    for(var i = 0;i<_footImgList.length;i++){
-      _footAdvertList.add(Image.asset(
-        _footImgList[i],
-        fit: BoxFit.fitWidth,
-      ));
-    }
-  }
-  //底部广告位轮播
-  Widget _swiperFootBuilder(BuildContext context, int index) {
-    return (_footAdvertList[index]);
   }
 
   @override

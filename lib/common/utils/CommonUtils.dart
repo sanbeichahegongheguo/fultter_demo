@@ -131,13 +131,19 @@ class CommonUtils {
         });
   }
   ///腾讯banner
-  static Widget buildBanner(){
+  static Widget buildBanner(Map<String,MethodChannel> map,String page){
     return Container(
       color: Colors.transparent,
       child: AndroidView(
         viewType: "banner",
         creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID},
         creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated:(id){
+          if (map !=null){
+            print("id  $page");
+            map[page] = MethodChannel("banner_$id");
+          }
+        }
       ),
     );
   }

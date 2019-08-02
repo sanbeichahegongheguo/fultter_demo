@@ -15,7 +15,11 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
 
+
+///管理页面
 class Admin extends StatefulWidget {
+  static const String sName = "admin";
+
   @override
   State<Admin> createState() {
     return _Admin();
@@ -26,10 +30,6 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   @override
   initState() {
     super.initState();
-  }
-  _bulletinWindow(){
-    print("公告弹窗");
-    //CommonUtils.showGuide(context,Text("12"));
   }
   @override
   Widget build(BuildContext context) {

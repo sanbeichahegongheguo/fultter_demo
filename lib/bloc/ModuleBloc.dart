@@ -68,6 +68,7 @@ class ModuleBloc extends BlocBase{
   }
 
   void dispose(){
+    print("ModuleBloc dispose");
     _module.close();
   }
 }

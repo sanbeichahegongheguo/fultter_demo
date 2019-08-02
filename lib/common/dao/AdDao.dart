@@ -24,8 +24,8 @@ class AdDao{
           res.result = true;
         }else if(json["success"]["ok"]==402){
           SpUtil.remove(Config.ADVER_KEY);
-          result = res.data["success"]["message"];
-          res.result = false;
+          result = null;
+          res.result = true;
         }else{
           result = res.data["success"]["message"];
           res.result = false;

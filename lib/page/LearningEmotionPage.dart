@@ -1,43 +1,36 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
-import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_start/bloc/LearningEmotionBloc.dart';
-import 'package:flutter_start/bloc/ModuleBloc.dart';
+import 'package:flutter_start/bloc/BlocBase.dart';
+import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
-import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/common/net/address.dart';
-
-import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/formatDate.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_start/models/index.dart';
-import 'package:flutter_start/models/user.dart';
+
+///学情页面
 class LearningEmotionPage extends StatefulWidget{
+  static const String sName = "learningEmotion";
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _StatefulWidget();
+    return _LearningEmotionPage();
   }
 
 }
 
-class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClientMixin<StatefulWidget>, SingleTickerProviderStateMixin{
-  final LearningEmotionBloc bloc = new LearningEmotionBloc();
-  final ModuleBloc moduleBloc = new ModuleBloc();
-
+class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeepAliveClientMixin<LearningEmotionPage>, SingleTickerProviderStateMixin{
+  HomeBloc bloc;
   @override
   initState(){
-    print("进入学情");
-    bloc.getStudyData();
-    bloc.getNewHomeWork();
-    moduleBloc.getLEmotionModule();
-
+    print("initState 学情");
+    bloc =  BlocProvider.of<HomeBloc>(context);
+    bloc.learningEmotionBloc.getStudyData();
+    bloc.learningEmotionBloc.getNewHomeWork();
+    bloc.xqModuleBloc.getLEmotionModule();
     super.initState();
 
   }
@@ -53,16 +46,17 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
   @override
   Widget build(BuildContext context) {
       super.build(context);
+      print('LearningEmotionPage build');
       return Container(
         color: Color(0xFFf0f4f7),
         child: ListView(
           children: <Widget>[
             StreamBuilder<StudyData>(
-              stream: bloc.studyDataStream,
+              stream: bloc.learningEmotionBloc.studyDataStream,
               builder: (context, AsyncSnapshot<StudyData> snapshot){
                 StudyData model = snapshot.data;
                 return StreamBuilder<List<ParentHomeWork>>(
-                    stream: bloc.parentHomeWorkStream,
+                    stream: bloc.learningEmotionBloc.parentHomeWorkStream,
                     builder: (context, AsyncSnapshot<List<ParentHomeWork>> snapshot){
                       _parentHomeWorkList = snapshot.data;
                       return Container(
@@ -80,7 +74,7 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
                   margin: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(54)),
                   width: ScreenUtil.getInstance().getWidthPx(980),
                   child: StreamBuilder<List<Module>>(
-                      stream: moduleBloc.moduleStream,
+                      stream: bloc.xqModuleBloc.moduleStream,
                       builder: (context, AsyncSnapshot<List<Module>> snapshot){
                         return  _footBt(snapshot.data);
                       }),
@@ -237,8 +231,6 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
 
   Widget _footBt(List<Module> data){
     List<Widget> btListMsg = [];
-    print('学情模块');
-    print(data);
     if(null!=data){
       for(var i = 0;i<data.length;i++){
         btListMsg.add(
@@ -545,7 +537,6 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
 
   @override
   void dispose() {
-    bloc.dispose();
     super.dispose();
   }
 }
