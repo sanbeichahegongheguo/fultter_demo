@@ -530,10 +530,12 @@ class _StatefulWidget extends State<StatefulWidget> with AutomaticKeepAliveClien
       }
     }
   }
+  ///去小状元家长介绍
   _goParentInfo(){
     NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){
     });
   }
+  ///去往期作业
   _goWord(){
     NavigatorUtil.goHomeWorkDuePage(context);
   }
