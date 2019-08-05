@@ -51,6 +51,9 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^3.0.0
   build_runner: ^1.6.1
+  #####本地库
+  ad_plugin:
+    path: ./ad_plugin
   #json_model: #flutter packages pub run json_model
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
