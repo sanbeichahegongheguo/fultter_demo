@@ -225,5 +225,10 @@ class Address {
     return "${stu_app}get_parent_module";
   }
 
+  ///星星商城地址
+  static StarMallAddress(){
+    return "${Address.h5Host}starMall/index.html";
+  }
+
 
 }
