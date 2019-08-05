@@ -166,13 +166,24 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     List<Widget> btList = [];
     if(null!=data){
       for(var i = 0;i<data.length;i++){
-        var positioned = data[i].status == 'free' ? Positioned(
+        var positioned = data[i].status != '' ? Positioned(
           top:0,
           right: 0,
-          child:Image.asset(
-            "images/coach/icon-hot.png",
-            width:ScreenUtil.getInstance().getWidthPx(94),
-            height:ScreenUtil.getInstance().getHeightPx(33),
+          child:Container(
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    "images/coach/icon-hot.png",
+                    width:ScreenUtil.getInstance().getWidthPx(94),
+                    height:ScreenUtil.getInstance().getHeightPx(33),
+                  ),
+                  Text(data[i].status,style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                      fontSize: ScreenUtil.getInstance().getSp(25 / 3),
+                  ),),
+                ],
+              )
           ),
         ):Text("");
         btList.add(
@@ -209,7 +220,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 //      spacing: ScreenUtil.getInstance().getWidthPx(100), // 主轴(水平)方向间距
       runSpacing: ScreenUtil.getInstance().getHeightPx(30), // 纵轴（垂直）方向间距
       runAlignment:WrapAlignment.center,
-      alignment: _mainBtList.length>4?WrapAlignment.start:WrapAlignment.spaceAround,
+      alignment: data.length>4?WrapAlignment.start:WrapAlignment.spaceAround,
       children: btList,
     );
     return btmsg;

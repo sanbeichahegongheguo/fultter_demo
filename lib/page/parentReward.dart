@@ -153,16 +153,22 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
               builder: (context, AsyncSnapshot<List<ConvertGoods>> snapshot){
                 return  _hotExchangeBody(snapshot.data);
               }),
-          Container(
-            margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(50)),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('更多实物兑换',style: TextStyle(
-                color: Color(0xFF999999),
-                decoration: TextDecoration.underline,
-              ),),
+          GestureDetector(
+            onTap: (){
+              NavigatorUtil.goWebView(context,Address.StarMallAddress(),router:'moreGift').then((v){});
+            },
+            child: Container(
+              margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(50)),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text('更多实物兑换',style: TextStyle(
+                  color: Color(0xFF999999),
+                  decoration: TextDecoration.underline,
+                ),),
+              ),
             ),
           ),
+
         ],
       ),
     );
@@ -180,7 +186,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                   padding: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(25)),
                   child: GestureDetector(
                     onTap: (){
-//                      NavigatorUtil.goWebView(context,'').then((v){});
+                      NavigatorUtil.goWebView(context,Address.getInfoPage(),router:'starRecord').then((v){});
                     },
                     child: Stack(
                       children: <Widget>[
@@ -230,14 +236,19 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                         width:ScreenUtil.getInstance().getWidthPx(180),
                         fit: BoxFit.fitWidth,
                       ),
-                      Container(
-                        padding: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(20),top:ScreenUtil.getInstance().getHeightPx(10) ),
-                        child: Text('我的礼物',
-                            style: TextStyle(
-                                fontSize: ScreenUtil.getInstance().getSp(38 / 3),
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFFFFFFFF)
-                            )),
+                      GestureDetector(
+                        onTap: (){
+                          NavigatorUtil.goWebView(context,Address.StarMallAddress()).then((v){});
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(20),top:ScreenUtil.getInstance().getHeightPx(10) ),
+                          child: Text('我的礼物',
+                              style: TextStyle(
+                                  fontSize: ScreenUtil.getInstance().getSp(38 / 3),
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFFFFFFFF)
+                              )),
+                        ),
                       ),
                     ],
                   ),
@@ -312,15 +323,26 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
     List<Widget> binList = [];
     if(null!=data){
       for(var i = 0;i<data.length;i++){
-        var positioned = data[i].status=='hot' ? Positioned(
+        var positioned = data[i].status!='' ? Positioned(
           top:0,
           right: 0,
-          child:Image.asset(
-            "images/parent_reward/hotIcon.png",
-            width:ScreenUtil.getInstance().getWidthPx(113),
-            height:ScreenUtil.getInstance().getHeightPx(58),
-          ),
-        ):Text("");
+          child:Container(
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Image.asset(
+                  "images/parent_reward/hotIcon.png",
+                  width:ScreenUtil.getInstance().getWidthPx(113),
+                  height:ScreenUtil.getInstance().getHeightPx(58),
+                ),
+                Text(data[i].status,style: TextStyle(
+                  color: Color(0xFFFFFFFF)
+                ),),
+              ],
+            )
+            ),
+          )
+          :Text("");
         binList.add(
             Container(
               alignment: Alignment.center,
