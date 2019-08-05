@@ -3,5 +3,6 @@
 @implementation AdPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
    [AdPlugin registerWithRegistrar:registrar];
+
 }
 @end
