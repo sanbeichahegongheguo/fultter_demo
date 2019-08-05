@@ -113,7 +113,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                       stream: bloc.adBloc.adverStream,
                       builder: (context, AsyncSnapshot<Adver> snapshot){
                         print("StreamBuilder adBloc");
-                        return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(bloc.adBloc.adChannelMap,CoachPage.sName);
+                        return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(AdBloc.adChannelMap,CoachPage.sName);
                       }
                   ),
                 ),

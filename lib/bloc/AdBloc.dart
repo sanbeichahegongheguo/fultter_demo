@@ -13,7 +13,8 @@ class AdBloc extends BlocBase{
   Sink<Adver> get _adverSink => _adver.sink;
   Observable<Adver> get adverStream => _adver.stream.asBroadcastStream();
 
-  Map<String,MethodChannel> adChannelMap = new Map();
+  static  final  Map<String,MethodChannel> adChannelMap = new Map();
+
   ///辅导页面小状元模块栏目
   void getBanner({String pageName}) async{
     DataResult data = await AdDao.getAppRevScreenAdver(4);

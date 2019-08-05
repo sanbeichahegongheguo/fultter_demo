@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/net/address.dart';
@@ -63,7 +64,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                     StreamBuilder<Adver>(
                         stream: bloc.adBloc.adverStream,
                         builder: (context, AsyncSnapshot<Adver> snapshot){
-                          return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(bloc.adBloc.adChannelMap,ParentReward.sName);
+                          return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(AdBloc.adChannelMap,ParentReward.sName);
                         }
                     ),
                     Container(
