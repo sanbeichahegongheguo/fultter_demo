@@ -230,5 +230,11 @@ class Address {
     return "${Address.h5Host}starMall/index.html";
   }
 
+  ///辅导页面公告
+  static indexNotice(){
+    return "${stu_app}announcement";
+  }
+
+
 
 }

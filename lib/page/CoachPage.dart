@@ -10,6 +10,7 @@ import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
+import 'package:flutter_start/models/CoachNotice.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_start/bloc/ModuleBloc.dart';
@@ -33,7 +34,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     bloc.moduleBloc.getCoachXZYModule();
     bloc.jzModuleBloc.getCoachJZModule();
     bloc.adBloc.getBanner();
-    _getheaderAdvertList();
+    bloc.coachBloc.getCoachNotice();
     super.initState();
   }
   @override
@@ -51,7 +52,11 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               Container(
                 width:MediaQuery.of(context).size.width,
                 height:ScreenUtil.getInstance().getHeightPx(311),
-                child: _headerAdvert(),
+                child: StreamBuilder<List<CoachNotice>>(
+                    stream: bloc.coachBloc.noticeStream,
+                    builder: (context, AsyncSnapshot<List<CoachNotice>> snapshot){
+                      return  _headerAdvert(snapshot.data);
+                    }),
               ),
               Container(
                 width:MediaQuery.of(context).size.width,
@@ -122,45 +127,32 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
           ),
     );
   }
-  //头部广告位轮播集合
-  List<Widget> _headerAdvertList = List();
-  List<String> _headerImgList = ["images/coach/coach-swiper-1.png","images/coach/coach-swiper-2.png"];
-  void _getheaderAdvertList() {
-    for(var i = 0;i<_headerImgList.length;i++){
-      _headerAdvertList.add(Image.asset(
-        _headerImgList[i],
-        fit: BoxFit.fitWidth,
-      ));
-    }
-  }
+
   //头部广告位
-  Widget _headerAdvert(){
+  Widget _headerAdvert(List<CoachNotice> data){
+    if(null!=data){
+
+    }
     var headMsg = Swiper(
         itemBuilder: (BuildContext context, int index) {
-          return _swiperBuilder(context,index);
+          return new CachedNetworkImage(
+            imageUrl:data[index].picUrl,
+            fit: BoxFit.fill,
+          );
         },
         index:0,
         autoplay:true,
         onTap:(index) {
-          print("点击了第:$index个");
+          if(data[index].target!=""){
+            NavigatorUtil.goWebView(context,data[index].target).then((v){});
+          }
         },
       duration:500,
-      itemCount:_headerImgList.length,
+      itemCount:data.length,
     );
     return headMsg;
   }
-  //头部广告位轮播
-  Widget _swiperBuilder(BuildContext context, int index) {
-    return (_headerAdvertList[index]);
-  }
-  List _mainBtList = [
-    {"imgUrl":"images/coach/btn-1.png","title":"跨越式数学王","id":1,"type":2},
-    {"imgUrl":"images/coach/btn-2.png","title":"核对答案","id":2,"type":1},
-    {"imgUrl":"images/coach/btn-3.png","title":"英语随身听","id":3,"type":2},
-    {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
-    {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
-    {"imgUrl":"images/coach/btn-3.png","title":"核对答案","id":3,"type":1},
-  ];
+
   //中部按钮
   Widget _mainBt(List<Module> data){
     List<Widget> btList = [];
@@ -226,13 +218,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     return btmsg;
   }
 
-  List _studyList = [
-    {"imgUrl":"images/coach/pe-1.png","id":1},
-    {"imgUrl":"images/coach/pe-2.png","id":2},
-    {"imgUrl":"images/coach/pe-3.png","id":3},
-    {"imgUrl":"images/coach/pe-4.png","id":4},
-    {"imgUrl":"images/coach/pe-3.png","id":3},
-  ];
   //精准学习
   Widget _widgeStudy (List<Module> data){
     List<Widget> listWidge = [];
