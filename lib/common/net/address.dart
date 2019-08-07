@@ -229,6 +229,10 @@ class Address {
   static StarMallAddress(){
     return "${Address.h5Host}starMall/index.html";
   }
+  ///`
+  static getAppVersionInfo(){
+    return "${studentHost}getAppVersionInfo";
+  }
 
   ///辅导页面公告
   static indexNotice(){

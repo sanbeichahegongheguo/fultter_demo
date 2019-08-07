@@ -9,6 +9,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'common/config/config.dart';
+import 'models/Application.dart';
 import 'models/user.dart';
 
 main() {
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       ///初始化数据
       initialState: new GSYState(
         userInfo: User(),
+        application: Application.initial(),
       ));
 
   @override

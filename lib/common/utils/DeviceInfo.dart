@@ -10,6 +10,23 @@ class DeviceInfo {
   static DeviceInfo instance = new DeviceInfo();
   Map<String, dynamic> _deviceInfoMap;
   String deviceId = "";
+  Future<Map<String, dynamic>> getDeviceInfo() async {
+    if (null == this._deviceInfoMap) {
+      DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        this._deviceInfoMap = _readAndroidBuildData(androidInfo);
+        return this._deviceInfoMap;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        this._deviceInfoMap = _readIosDeviceInfo(iosInfo);
+        return this._deviceInfoMap;
+      }
+    }
+    print(this._deviceInfoMap);
+    return this._deviceInfoMap;
+  }
+
   Future<String> getDeviceId() async {
     //直接返回
     if (ObjectUtil.isNotEmpty(this.deviceId)) {
@@ -41,23 +58,6 @@ class DeviceInfo {
       this.deviceId = uid;
     }
     return this.deviceId;
-  }
-
-  Future<Map<String, dynamic>> getDeviceInfo() async {
-    if (null == this._deviceInfoMap) {
-      DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        this._deviceInfoMap = _readAndroidBuildData(androidInfo);
-        return this._deviceInfoMap;
-      } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        this._deviceInfoMap = _readIosDeviceInfo(iosInfo);
-        return this._deviceInfoMap;
-      }
-    }
-    print(this._deviceInfoMap);
-    return null;
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {

@@ -21,36 +21,33 @@ dependencies:
   cupertino_icons: ^0.1.2
   webview_flutter: ^0.3.10+4
   dio: ^2.1.13
-  connectivity: ^0.4.3+2
+  connectivity: ^0.4.3+6
   event_bus: ^1.1.0
-  json_annotation: ^2.4.0
   oktoast: ^2.2.0
-  package_info: ^0.4.0+4
+  package_info: ^0.4.0+6
   device_info: ^0.4.0+2
-  permission_handler: ^3.2.0
+  permission_handler: ^3.2.1+1
   imei_plugin: ^1.1.0
-  image_picker: ^0.6.0+15
+  image_picker: ^0.6.1
   flustars: ^0.2.6+1
   flutter_spinkit: ^3.1.0
-  cached_network_image: ^1.1.0
+  cached_network_image: ^1.1.1
   flutter_des: ^1.1.0
   image_cropper: ^1.0.2
   flutter_redux: ^0.5.3
-  rxdart: ^0.22.0
-  uuid: 2.0.1
-  path_provider: ^0.5.0+1
-  flutter_swiper: ^1.0.6
+  rxdart: ^0.22.1+1
+  uuid: 2.0.2
+  path_provider: ^1.2.0
+  flutter_swiper: ^1.1.6
   flutter_easyrefresh: ^1.2.7
   tflite: ^1.0.4
-  url_launcher: ^3.0.2
+  url_launcher: ^5.1.2
   flutter_localizations:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  json_serializable: ^3.0.0
-  build_runner: ^1.6.1
   #####本地库
   ad_plugin:
     path: ./ad_plugin
@@ -82,6 +79,9 @@ flutter:
    - images/coach/
    - images/study/
    - images/parent_reward/
+   - images/update/ic_up_bg.png
+   - images/update/ic_update_bg.png
+   - images/update/ic_up_close.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

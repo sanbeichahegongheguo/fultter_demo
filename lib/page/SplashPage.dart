@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/Application.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -44,7 +46,9 @@ class SplashPageState extends State<SplashPage> {
 
     await SpUtil.getInstance();
     Store<GSYState> store = StoreProvider.of(context);
-
+    PackageInfo.fromPlatform().then((v){
+      store.dispatch(RefreshApplicationAction(store.state.application.copyWith(version:v.version)));
+    });
     new Future.delayed(const Duration(milliseconds: 500), () async {
 
             //登录

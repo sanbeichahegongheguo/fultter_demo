@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
-
+import 'package:flutter_start/models/AppVersionInfo.dart';
+import 'package:flutter_start/widget/update_version.dart';
 import 'NavigatorUtil.dart';
 
 class CommonUtils {
@@ -161,4 +164,19 @@ class CommonUtils {
       },
     );
   }
+
+  ///版本更新
+  static Future<Null> showUpdateDialog(BuildContext context,AppVersionInfo versionInfo) {
+    return NavigatorUtil.showGSYDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return UpdateVersionDialog(data: versionInfo);
+        });
+  }
+
+
+
+
+
 }

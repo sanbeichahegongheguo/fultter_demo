@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/redux/middleware/epic_middleware.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
+import 'package:flutter_start/models/Application.dart';
 import 'package:flutter_start/models/user.dart';
-import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
+
+import 'application_redux.dart';
 
 /**
  * Redux全局State
@@ -21,9 +23,11 @@ class GSYState {
 
   ///版本号
   String version;
+  ///关于
+  Application application;
 
   ///构造方法
-  GSYState({this.userInfo});
+  GSYState({this.userInfo,this.application});
 }
 
 ///创建 Reducer
@@ -33,6 +37,7 @@ GSYState appReducer(GSYState state, action) {
   return GSYState(
     ///通过 UserReducer 将 GSYState 内的 userInfo 和 action 关联在一起
     userInfo: UserReducer(state.userInfo, action),
+    application:ApplicationReducer(state.application,action)
   );
 }
 

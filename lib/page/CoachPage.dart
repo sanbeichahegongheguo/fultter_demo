@@ -212,7 +212,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 //      spacing: ScreenUtil.getInstance().getWidthPx(100), // 主轴(水平)方向间距
       runSpacing: ScreenUtil.getInstance().getHeightPx(30), // 纵轴（垂直）方向间距
       runAlignment:WrapAlignment.center,
-      alignment: data.length>4?WrapAlignment.start:WrapAlignment.spaceAround,
+      alignment: (data!=null && data.length>4)?WrapAlignment.start:WrapAlignment.spaceAround,
       children: btList,
     );
     return btmsg;

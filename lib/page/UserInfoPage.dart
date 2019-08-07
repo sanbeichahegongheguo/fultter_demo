@@ -5,18 +5,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/models/user.dart';
 import 'package:flutter_start/widget/TextBookWiget.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:redux/redux.dart';
 
 class UserInfo extends StatefulWidget{
   @override
@@ -28,14 +31,15 @@ class UserInfo extends StatefulWidget{
 class _UserInfo extends State<UserInfo>{
   User _user = new User();
   var textBook = "RJ版";
-  String _version = "";
+  AppVersionInfo _versionInfo;
   @override
   initState() {
     super.initState();
     _getUserInfo();
     loadCache();
-    PackageInfo.fromPlatform().then((v){
-      _version = v.version;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Store<GSYState> store = StoreProvider.of(context);
+      _getAppVersionInfo(store.state.userInfo.userId,store);
     });
   }
   @override
@@ -213,7 +217,7 @@ class _UserInfo extends State<UserInfo>{
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         _getBt(
-                            "当前版本", "images/admin/icon-edition.png", () => {}, _version, 3),
+                            "当前版本", "images/admin/icon-edition.png", _downldApp,store.state.application.version, 3,store: store),
                         Container(
                           width: ScreenUtil.getInstance().getWidthPx(903),
                           height: ScreenUtil.getInstance().getHeightPx(3),
@@ -471,19 +475,18 @@ class _UserInfo extends State<UserInfo>{
     var isOut =  CommonUtils.showEditDialog(context,outMsg,height: ScreenUtil.getInstance().getHeightPx(400),width: ScreenUtil.getInstance().getWidthPx(906));
   }
   //type>图片是否显示
-  _getBt(btName,btImg,btPressed,btMsg,type){
+  _getBt(btName,btImg,btPressed,btMsg,type,{Store<GSYState> store}){
     var icon;
     switch (type){
       case 1:
         icon = Icon(Icons.navigate_next,color: Color(0xFFcccccc),);
         break;
       case 3:
-        icon = Container(
+        icon = store.state.application.canUpdate ? Container(
           height: ScreenUtil.getInstance().getHeightPx(49),
           width: ScreenUtil.getInstance().getWidthPx(80),
           margin:new EdgeInsets.fromLTRB(10.0,0,0,0),
-          child:
-            Align(
+          child:Align(
                 alignment: Alignment.center,
                 child:Text("更新",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(26/3),color: Color(0xFFe94049)),)
             ),
@@ -492,7 +495,7 @@ class _UserInfo extends State<UserInfo>{
             border: new Border.all(color: Color(0xFFe94049)),
             borderRadius: new BorderRadius.all(Radius.circular((5.0))),
           ),
-        );
+        ):Icon(Icons.navigate_next,color: Colors.white);
         break;
       default:
         icon = Icon(Icons.navigate_next,color: Color(0xFFffffff),);
@@ -533,7 +536,23 @@ class _UserInfo extends State<UserInfo>{
       height:ScreenUtil.getInstance().getHeightPx(131) ,
       onPressed: btPressed,
     );
-
-
   }
+
+  _getAppVersionInfo(userId,Store<GSYState> store){
+    ApplicationDao.getAppVersionInfo(userId, store).then((data){
+      if (null!=data&&data.result){
+        _versionInfo = data.data;
+        if (_versionInfo.ok==0){
+          if(_versionInfo.isUp==1){
+            store.dispatch(RefreshApplicationAction(store.state.application.copyWith(canUpdate:true)));
+          }
+        }
+      }
+    });
+  }
+
+  _downldApp(){
+    CommonUtils.showUpdateDialog(context, _versionInfo);
+  }
+
 }
