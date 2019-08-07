@@ -123,6 +123,13 @@ class NavigatorUtil {
       } else {
         url = "$url?$param";
       }
+    }else{
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version";
+      if (url.contains("?")) {
+        url = "$url&$param";
+      } else {
+        url = "$url?$param";
+      }
     }
     if(router != ""){
       url += "&toFrom=$toFrom#/"+router;

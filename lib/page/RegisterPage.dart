@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/pin_input_text_field.dart';
@@ -183,11 +184,17 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   //构建ui
   Widget build(BuildContext context){
-    if(_currentPageIndex == 1){
-      setState(() {
+    setState(() {
+      if(_currentPageIndex == 0){
+        _titleName = '输入手机号';
+      }else if(_currentPageIndex == 1){
         _titleName = '验证手机号';
-      });
-    }
+      }else if(_currentPageIndex == 2 || _currentPageIndex == 3 || _currentPageIndex == 4){
+        _titleName = '填写学校班级';
+      }else{
+        _titleName = '姓名与密码设置';
+      }
+    });
     final heightScreen = MediaQuery.of(context).size.height;
     final widthSrcreen = MediaQuery.of(context).size.width;
     return StoreBuilder<GSYState>(builder: (context, store) {
@@ -245,6 +252,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                   }else{
                     NavigatorUtil.goWelcome(context);
                   }
+
                 }
             ),
             title: Text(
@@ -314,6 +322,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         _titleName = '填写学校班级';
         _hasdeleteIcon = false;
       });
+      print('头');
+      print(_titleName);
+
     }else{
       setState(() {
         _checkCodeTarget = true;
@@ -444,13 +455,18 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
             height: ScreenUtil.getInstance().getWidthPx(55),
           ),
           Container(
-            child: Text(
+            child: GestureDetector(
+              onTap: (){
+                linkTo('wxServer');
+              },
+              child:Text(
               "有问题？找客服！",
               style: TextStyle(
                 color: Color(0xFF666666),
                 fontSize: ScreenUtil.getInstance().getSp(14.82),
                 decoration: TextDecoration.underline,
               ),
+            ),
             ),
           ),
         ],
@@ -679,9 +695,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
             print(isSend);
             if (null != isSend && isSend) {
               _onTap(1);
-              setState(() {
-                _titleName = '验证手机号';
-              });
             }
           }else{
             showToast("该手机号已注册！",position: ToastPosition.center);
@@ -730,12 +743,17 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           Container(
             alignment: Alignment.center,
             padding: EdgeInsets.only(left:ScreenUtil.getInstance().getHeightPx(20),top:ScreenUtil.getInstance().getHeightPx(50)),
-            child:Text('收不到验证码？',
-                style: TextStyle(
+            child:GestureDetector(
+              onTap: (){
+                linkTo('wxServer');
+              },
+              child: Text('收不到验证码？',
+                  style: TextStyle(
                     color: Color(0xFFff6464),
                     fontSize: ScreenUtil.getInstance().getSp(14.82),
                     decoration: TextDecoration.underline,
-                )
+                  )
+              ),
             ),
           ),
         ],
@@ -919,7 +937,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         showToast("验证成功",position: ToastPosition.top);
         Navigator.pop(context);
         setState(() {
-          _titleName = '姓名与设置密码';
           if(userNameController.text!=''){
             _hasdeleteIcon = true;
           }else{
@@ -994,6 +1011,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                           fontSize: ScreenUtil.getInstance().getSp(12),
                           decoration: TextDecoration.underline,
                         ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('wxServer');
+                        },
                       ),
                     ]
                 )),
@@ -1270,9 +1290,11 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   //跳转
   void linkTo(where){
     if(where == 'education'){
-      NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg/userProtocol.html");
-    }else{
-      NavigatorUtil.goWebView(context, "https://www.k12china.com/h5/app-reg/privacyProtocol.html");
+      NavigatorUtil.goWebView(context, Address.getEducation());
+    }else if(where == 'privacy'){
+      NavigatorUtil.goWebView(context, Address.getPrivacy());
+    }else if(where == 'wxServer'){
+      NavigatorUtil.goWebView(context, Address.getWxServer());
     }
   }
 
@@ -1294,13 +1316,18 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           Container(
             padding: EdgeInsets.only(bottom: 0),
             alignment: AlignmentDirectional.bottomCenter,
-            child: Text(
+            child: GestureDetector(
+              onTap: (){
+                linkTo('wxServer');
+              },
+              child:Text(
               "有问题？找客服！",
               style: TextStyle(
                 color: Color(0xFF666666),
                 fontSize: ScreenUtil.getInstance().getSp(14.82),
                 decoration: TextDecoration.underline,
               ),
+            ),
             ),
           ),
           SizedBox(

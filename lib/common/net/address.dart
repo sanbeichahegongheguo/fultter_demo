@@ -196,6 +196,16 @@ class Address {
     return "${Address.h5Host}xx/wxServer.html";
   }
 
+  ///用户服务协议
+  static getEducation() {
+    return "${Address.h5Host}reg-app/userProtocol.html";
+  }
+
+  ///用户服务隐私协议
+  static getPrivacy() {
+    return "${Address.h5Host}reg-app/privacyProtocol.html";
+  }
+
   ///更改密码
   static resetPwd(){
     return "${k12apiHost}base/updatePasswordByCode";

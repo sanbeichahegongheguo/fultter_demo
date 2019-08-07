@@ -140,7 +140,8 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
           );
         },
         index:0,
-        autoplay:true,
+        autoplay:data.length!=1?true:false,
+        loop:data.length!=1?true:false,
         onTap:(index) {
           if(data[index].target!=""){
             NavigatorUtil.goWebView(context,data[index].target).then((v){});
