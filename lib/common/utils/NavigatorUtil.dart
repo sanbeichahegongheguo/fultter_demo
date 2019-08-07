@@ -135,7 +135,7 @@ class NavigatorUtil {
       url += "&toFrom=$toFrom#/"+router;
     }
 
-    print("@跳转链接:${url}");
+    print("NavigatorUtil @跳转链接:$url");
     return NavigatorRouter(context, WebViewPage(url));
 //    NavigatorRouter(context,WebViewExample(url));
   }

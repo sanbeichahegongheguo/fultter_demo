@@ -1,12 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -24,9 +29,9 @@ class WebViewPage extends StatefulWidget {
   State<StatefulWidget> createState() => new WebViewPageState();
 }
 
-class WebViewPageState extends State<WebViewPage> {
-  // 标记是否是加载中
-  bool _isLoading = true;
+class WebViewPageState extends State<WebViewPage> with SingleTickerProviderStateMixin{
+  //状态 0加载  1加载完成
+  int _status = 0;
   WebViewController _webViewController;
   Size _deviceSize;
 
@@ -67,12 +72,8 @@ class WebViewPageState extends State<WebViewPage> {
         },
         child: Scaffold(
           appBar: widget.appBar??null,
-          body: GestureDetector(
-              onTap: () {
-                print("onTap");
-                FocusScope.of(context).requestFocus(new FocusNode());
-              },
-              child: Stack(
+          body: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
                 children: <Widget>[
                   Container(
                       height: _deviceSize.height,
@@ -95,22 +96,13 @@ class WebViewPageState extends State<WebViewPage> {
                         onPageFinished: (String url) {
                           print('@跳转链接: $url');
                           setState(
-                                () => _isLoading = false,
+                                () => _status = 1,
                           );
                         },
                       )),
-                  _isLoading
-                      ? Container(
-                    width: _deviceSize.width,
-                    height: _deviceSize.height,
-                    color: Colors.white,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
-                      : Container()
+                  _getStatusWidget()
                 ],
-              )),
+              )
         ));
   }
   /*
@@ -135,18 +127,28 @@ class WebViewPageState extends State<WebViewPage> {
       }else if(request.url.indexOf("open_weixin")>-1){
         print("打开微信");
         goLaunch(context,"weixin://");
+      }else if(request.url.indexOf("haxecallback:tencentAd")>-1){
+        if (request.url != "haxecallback:tencentAd:0"){
+          print("tencentAd");
+          setState(() => _status = 2);
+        }
+      }else if (request.url.indexOf("webOpenCammera")>-1){
+        _getImage(0).then((v){
+          print(11);
+        });
       }else{
         Navigator.of(context).pop();
       }
       //阻止路由替换；
       return NavigationDecision.prevent;
+    }else{
+      //允许路由替换
+      print('allowing navigation to $request');
+      setState(
+            () => _status = 0,
+      );
+      return NavigationDecision.navigate;
     }
-    //允许路由替换
-    print('allowing navigation to $request');
-    setState(
-      () => _isLoading = true,
-    );
-    return NavigationDecision.navigate;
   }
   /*
   * 唤醒手机软件
@@ -154,7 +156,7 @@ class WebViewPageState extends State<WebViewPage> {
   * */
   static goLaunch(BuildContext context,String url) async{
     if(await canLaunch(url)){
-      await launch(url);
+      await launch(url, forceSafariVC: false, forceWebView: false);
     }else {
       String msg = "程序";
       switch(url){
@@ -191,6 +193,53 @@ class WebViewPageState extends State<WebViewPage> {
       }
       return Container();
     });
+  }
+  Widget _getStatusWidget(){
+    Widget widget ;
+    if (_status ==0 ){
+      //loading
+      widget = Container(
+        width: _deviceSize.width,
+        height: _deviceSize.height,
+        color: Colors.white,
+        child: Center(
+          child: CircularProgressIndicator(
+          ),
+        ),
+      );
+    }else if (_status == 2 ){
+      //广告
+      widget = Container(
+        height: ScreenUtil.getInstance().screenWidth/6.4,
+        width: _deviceSize.width,
+        color: Colors.white,
+        child: CommonUtils.buildBanner(null,null),
+      );
+    }else{
+      widget = Container();
+    }
+    return widget;
+  }
+
+
+  //调用相机或本机相册
+  Future _getImage(type) async {
+    File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera);
+    if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
+      return "";
+    }
+    image = await ImageCropper.cropImage(
+      sourcePath: image.path,
+      toolbarTitle: "选择图片",
+      ratioX: 1.0,
+      ratioY: 1.0,
+      maxHeight: 350,
+      maxWidth: 350,
+    );
+    List<int> bytes = await image.readAsBytes();
+    var base64encode = base64Encode(bytes);
+    print("base64 $base64encode");
+    return base64encode;
   }
 
   @override

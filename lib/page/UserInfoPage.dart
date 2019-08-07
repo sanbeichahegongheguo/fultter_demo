@@ -341,7 +341,6 @@ class _UserInfo extends State<UserInfo>{
     Navigator.pop(context);
     print("拍照");
     _getImage(0,store);
-
   }
   //相册
   void _album(store){
