@@ -150,6 +150,8 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
         duration:500,
         itemCount:data.length,
       );
+    }else{
+      headMsg = Container();
     }
     return headMsg;
   }

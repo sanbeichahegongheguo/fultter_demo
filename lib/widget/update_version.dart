@@ -35,7 +35,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
     if (Platform.isIOS) {
       final url = iosUrl;
       if (await canLaunch(url)) {
-        await launch(tenUrl, forceSafariVC: false, forceWebView: false);
+        await launch(url, forceSafariVC: false, forceWebView: false);
       } else {
         throw 'Could not launch $url';
       }

@@ -15,7 +15,7 @@ class ApplicationDao{
     var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
     var params ={};
     if (Platform.isIOS) {
-      params= {"userId": userId, "device": deviceInfo["utsname.machine"], "platform": 2, "systemNum": deviceInfo["systemVersion"]};
+      params= {"userId": userId, "device": deviceInfo["utsname.machine:"], "platform": 2, "systemNum": deviceInfo["systemVersion"]};
     }else{
       params= {"userId": userId, "platform": 1, "device":  deviceInfo["model"],  "systemNum": deviceInfo["version.release"]};
     }

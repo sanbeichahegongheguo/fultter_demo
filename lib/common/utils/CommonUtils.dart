@@ -135,9 +135,17 @@ class CommonUtils {
   }
   ///腾讯banner
   static Widget buildBanner(Map<String,MethodChannel> map,String page){
+    print("banner  Platform.isIOS");
     return Container(
       color: Colors.transparent,
-      child: AndroidView(
+      child: Platform.isIOS?UiKitView(
+        viewType: "banner",
+        creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID},
+        creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated:(id){
+            print("onPlatformViewCreated $id");
+        }
+      ):AndroidView(
         viewType: "banner",
         creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID},
         creationParamsCodec: const StandardMessageCodec(),
