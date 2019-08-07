@@ -555,7 +555,6 @@ class _UserInfo extends State<UserInfo>{
     }else{
       CommonUtils.showUpdateDialog(context, _versionInfo);
     }
-
   }
 
 }

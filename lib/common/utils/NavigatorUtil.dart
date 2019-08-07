@@ -15,6 +15,7 @@ import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 import 'package:flutter_start/page/retrievePasswordPage.dart';
+import 'package:package_info/package_info.dart';
 
 class NavigatorUtil {
   ///替换
@@ -114,11 +115,13 @@ class NavigatorUtil {
     print("@key:  $key ");
     String from = "study_parent";
     String toFrom = "study_parent_router";
+    var version =  (await PackageInfo.fromPlatform()).version;
     if (null != key && "" != key) {
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version";
       if (url.contains("?")) {
-        url = "$url&t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from";
+        url = "$url&$param";
       } else {
-        url = "$url?t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from";
+        url = "$url?$param";
       }
     }
     if(router != ""){
