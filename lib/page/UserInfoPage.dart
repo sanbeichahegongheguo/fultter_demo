@@ -543,16 +543,19 @@ class _UserInfo extends State<UserInfo>{
       if (null!=data&&data.result){
         _versionInfo = data.data;
         if (_versionInfo.ok==0){
-          if(_versionInfo.isUp==1){
-            store.dispatch(RefreshApplicationAction(store.state.application.copyWith(canUpdate:true)));
-          }
+            store.dispatch(RefreshApplicationAction(store.state.application.copyWith(canUpdate:_versionInfo.isUp==1?true:false)));
         }
       }
     });
   }
 
   _downldApp(){
-    CommonUtils.showUpdateDialog(context, _versionInfo);
+    if (null!=_versionInfo && _versionInfo.isUp!=1){
+      showToast("当前已是最新版本");
+    }else{
+      CommonUtils.showUpdateDialog(context, _versionInfo);
+    }
+
   }
 
 }

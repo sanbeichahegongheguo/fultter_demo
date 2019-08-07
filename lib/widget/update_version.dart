@@ -14,8 +14,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class UpdateVersionDialog extends StatefulWidget {
   final AppVersionInfo data;
-
-  UpdateVersionDialog({Key key, this.data}) : super(key: key);
+  final int mustUpdate;
+  UpdateVersionDialog({Key key, this.data,this.mustUpdate=0}):super(key: key);
 
   @override
   _UpdateVersionDialogState createState() => _UpdateVersionDialogState();
@@ -25,6 +25,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
   static const channelName = 'plugins.iwubida.com/update_version';
   static const stream = const EventChannel(channelName);
   static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
+  static const iosUrl = "https://apps.apple.com/cn/app/id1155973972";
   // 进度订阅
   StreamSubscription downloadSubscription;
 
@@ -32,9 +33,9 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
 
   _updateButtonTap(BuildContext context) async {
     if (Platform.isIOS) {
-      final url = widget.data.maxUrl;
+      final url = iosUrl;
       if (await canLaunch(url)) {
-        await launch(url, forceSafariVC: false);
+        await launch(tenUrl, forceSafariVC: false, forceWebView: false);
       } else {
         throw 'Could not launch $url';
       }
@@ -202,7 +203,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                       ),
                     ),
                     Platform.isAndroid?Padding(
-                      padding: const EdgeInsets.only(top: 10),
+                      padding: widget.mustUpdate==0?EdgeInsets.only(top: 10):EdgeInsets.fromLTRB(0, 10, 0, 10),
                       child: SizedBox(
                         width: 170,
                         height: 40,
@@ -217,7 +218,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                                 borderRadius: BorderRadius.circular(30.0))),
                       ),
                     ):Container(),
-                    Padding(
+                    widget.mustUpdate==0?Padding(
                         padding: EdgeInsets.fromLTRB(0, 8, 0, 10),
                         child: SizedBox(
                           height: 30,
@@ -234,7 +235,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                                 "暂不升级",
                                 style: TextStyle(fontSize: 13),
                               )),
-                        ))
+                        )):Container()
                   ]))
             ]));
   }

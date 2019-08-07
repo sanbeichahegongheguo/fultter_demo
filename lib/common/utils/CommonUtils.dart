@@ -166,12 +166,15 @@ class CommonUtils {
   }
 
   ///版本更新
-  static Future<Null> showUpdateDialog(BuildContext context,AppVersionInfo versionInfo) {
+  static Future<Null> showUpdateDialog(BuildContext context,AppVersionInfo versionInfo,{int mustUpdate = 0}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return UpdateVersionDialog(data: versionInfo);
+          return WillPopScope(
+              onWillPop: () => new Future.value(mustUpdate == 1 ? false:true),
+            child: UpdateVersionDialog(data: versionInfo,mustUpdate: mustUpdate),
+          );
         });
   }
 

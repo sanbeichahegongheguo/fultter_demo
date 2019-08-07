@@ -130,10 +130,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 
   //头部广告位
   Widget _headerAdvert(List<CoachNotice> data){
-    if(null!=data){
-
-    }
-    var headMsg = Swiper(
+    var headMsg;
+    if(null!=data && data.length >0 ){
+      headMsg= Swiper(
         itemBuilder: (BuildContext context, int index) {
           return new CachedNetworkImage(
             imageUrl:data[index].picUrl,
@@ -147,9 +146,10 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
             NavigatorUtil.goWebView(context,data[index].target).then((v){});
           }
         },
-      duration:500,
-      itemCount:data.length,
-    );
+        duration:500,
+        itemCount:data.length,
+      );
+    }
     return headMsg;
   }
 

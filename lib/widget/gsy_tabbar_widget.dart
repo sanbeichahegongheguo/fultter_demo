@@ -1,18 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/InfoDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/page/CoachPage.dart';
 import 'package:flutter_start/page/LearningEmotionPage.dart';
 import 'package:flutter_start/page/parentReward.dart';
+import 'package:redux/redux.dart';
 
 ///支持顶部和顶部的TabBar控件
 ///配合AutomaticKeepAliveClientMixin可以keep住
@@ -107,6 +113,10 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     _tabController = new TabController(vsync: this, length: 4);
     _signReward();
     _getUnReadNotice();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Store<GSYState> store = StoreProvider.of(context);
+      _getAppVersionInfo(store.state.userInfo.userId,store);
+    });
   }
 
   ///整个页面dispose时，记得把控制器也dispose掉，释放内存
@@ -361,5 +371,24 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         print("切换管理页面");
         break;
     }
+  }
+
+  _getAppVersionInfo(userId,Store<GSYState> store){
+    ApplicationDao.getAppVersionInfo(userId, store).then((data){
+      if (null!=data&&data.result){
+        if (data.data.ok==0){
+          if(data.data.isUp==1){
+            int must = 0;
+            if (!ObjectUtil.isEmptyString(data.data.extJson)){
+              var json = jsonDecode(data.data.extJson);
+              if (json !=null && json["must"]!=null){
+                must = json["must"];
+              }
+            }
+            CommonUtils.showUpdateDialog(context, data.data,mustUpdate: must);
+          }
+        }
+      }
+    });
   }
 }
