@@ -4,11 +4,12 @@ class Address {
   static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
   static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
   static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/home/";
-  static const String h5Host = "http://192.168.6.30:30593/";
-
-
+  static const String h5Host = "http://192.168.6.30:31221/common_dc_client/dc/send.html";
+  static const String flowStatistics = "http://192.168.6.30:31221/common_dc_client/dc/send.html";
 
   static const String getSchoolUrl = "http://www.k12china.com/k12-api/search/getSchool";
+//  static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
+//  static const String flowStatistics = " https://www.k12china.com/common_dc_client/dc/send.html";
 //  static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
 //  static const String h5Host = "https://www.k12china.com/h5/";
 //  static const String studentWebHost = "https://api.k12china.com/studentweb/";
@@ -248,6 +249,12 @@ class Address {
   static indexNotice(){
     return "${stu_app}announcement";
   }
+
+  ///流量统计
+  static statistics(){
+    return flowStatistics;
+  }
+
 
 
 
