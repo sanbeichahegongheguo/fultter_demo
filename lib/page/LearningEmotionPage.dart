@@ -505,7 +505,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   ///处理时间
   String getTimeStrBySecond(String secondTime) {
     var second = int.parse(secondTime);
-    var time =  formatDate(DateTime(0, 0, 0, 0, 0, second), [HH, ':', nn]);
+    var time = DateUtil.formatDate(DateTime(0, 0, 0, 0, 0, second),format:DataFormats.h_m);
     return time;
   }
 

@@ -15,6 +15,11 @@ class ParentRewardBloc extends BlocBase{
   Sink<List<ConvertGoods>> get _convertGoodsSink => _convertGoods.sink;
   Observable<List<ConvertGoods>> get convertGoodsStream => _convertGoods.stream;
 
+  ///家长专区广告
+  PublishSubject<bool> _parentShowBanner = PublishSubject<bool>();
+  Sink<bool> get _parentShowBannerSink => _parentShowBanner.sink;
+  Observable<bool> get parentShowBannerStream => _parentShowBanner.stream;
+  static bool _isBanner;
   ///获取星星总数
   void getTotalStar() async{
     DataResult data = await UserDao.getTotalStar();
@@ -38,10 +43,17 @@ class ParentRewardBloc extends BlocBase{
     await doNext(_convertGoodsSink,data);
     return;
   }
-
+  ///是否展示广告
+  void showBanner(bool isShow) async{
+    if (ParentRewardBloc._isBanner == null || ParentRewardBloc._isBanner != isShow){
+      _parentShowBannerSink.add(isShow);
+      ParentRewardBloc._isBanner= isShow;
+    }
+  }
 
   void dispose(){
     _starNum.close();
     _convertGoods.close();
+    _parentShowBanner.close();
   }
 }

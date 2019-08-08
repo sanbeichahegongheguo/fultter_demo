@@ -1,3 +1,5 @@
+import 'package:flutter_start/common/config/config.dart';
+
 ///地址数据
 class Address {
   static const String studentHost = "http://192.168.6.31:30915/student:";
@@ -240,9 +242,13 @@ class Address {
   static StarMallAddress(){
     return "${Address.h5Host}starMall/index.html";
   }
-  ///`
+  ///获取更新版本信息
   static getAppVersionInfo(){
     return "${studentHost}getAppVersionInfo";
+  }
+  ///获取App Store版本信息
+  static getAppStoreVersionInfo(){
+    return "https://itunes.apple.com/cn/lookup?id=${Config.IOS_APP_ID}";
   }
 
   ///辅导页面公告

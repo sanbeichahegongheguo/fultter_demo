@@ -134,7 +134,14 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         }
       }else if (request.url.indexOf("webOpenCammera")>-1){
         _getImage(0).then((v){
-          print(11);
+          var data = {"result":"success","path":""};
+          if (ObjectUtil.isEmptyString(v)){
+            data["result"] = "fail";
+          }else{
+            data["data"] = v;
+          }
+          print(jsonEncode(data));
+          _webViewController.evaluateJavascript("callPoto("+jsonEncode(data)+")");
         });
       }else{
         Navigator.of(context).pop();
@@ -212,7 +219,6 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       widget = Container(
         height: ScreenUtil.getInstance().screenWidth/6.4,
         width: _deviceSize.width,
-        color: Colors.white,
         child: CommonUtils.buildBanner(null,null),
       );
     }else{
@@ -228,17 +234,16 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
     if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
       return "";
     }
+    //压缩
     image = await ImageCropper.cropImage(
+      maxHeight: 800,
+      maxWidth: 800,
       sourcePath: image.path,
       toolbarTitle: "选择图片",
-      ratioX: 1.0,
-      ratioY: 1.0,
-      maxHeight: 350,
-      maxWidth: 350,
     );
+
     List<int> bytes = await image.readAsBytes();
     var base64encode = base64Encode(bytes);
-    print("base64 $base64encode");
     return base64encode;
   }
 

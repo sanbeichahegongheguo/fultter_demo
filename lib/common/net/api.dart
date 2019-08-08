@@ -12,6 +12,7 @@ import 'package:flutter_start/common/net/interceptors/log_interceptor.dart';
 import 'package:flutter_start/common/net/interceptors/response_interceptor.dart';
 import 'package:flutter_start/common/net/interceptors/token_interceptor.dart';
 import 'package:flutter_start/common/net/result_data.dart';
+import 'package:package_info/package_info.dart';
 
 ///http请求
 class HttpManager {
@@ -45,7 +46,7 @@ class HttpManager {
       headers.addAll(header);
     }
     if (params is Map){
-      params["curVersion"] = "2.0.000";
+      params["curVersion"] = (await PackageInfo.fromPlatform()).version;
     }
     if (option != null) {
       option.headers = headers;

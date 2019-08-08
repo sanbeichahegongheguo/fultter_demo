@@ -29,7 +29,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
     {"imgUrl":"images/parent_reward/starDrawIcon.png","name":"星星抽奖"},
     {"imgUrl":"images/parent_reward/exchangeCardBtn.png","name":"兑换卡牌"},
   ];
-  bool _showBanner = false;
+  bool _showBanner = true;
 
   @override
   void initState() {
@@ -54,37 +54,40 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
       color: Color(0xFFf0f4f7),
       child: ListView(
         children: <Widget>[
-          Offstage(
-            offstage: _showBanner,
-            child: Container(
-                width:MediaQuery.of(context).size.width,
-                height:ScreenUtil.getInstance().getHeightPx(135),
-                child: Stack(
-                  children: <Widget>[
-                    StreamBuilder<Adver>(
-                        stream: bloc.adBloc.adverStream,
-                        builder: (context, AsyncSnapshot<Adver> snapshot){
-                          return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(AdBloc.adChannelMap,ParentReward.sName);
-                        }
-                    ),
-                    Container(
-                        alignment:AlignmentDirectional(0.91, -0.5),
-                      child: GestureDetector(
-                        child: Image.asset(
-                          'images/parent_reward/closeIcon.png',
-                          height: ScreenUtil.getInstance().getHeightPx(51),
-                          width:ScreenUtil.getInstance().getWidthPx(51),
+          StreamBuilder<bool>(
+            stream: bloc.parentRewardBloc.parentShowBannerStream,
+            initialData: true,
+            builder: (context,AsyncSnapshot<bool> show){
+              return  Offstage(
+                offstage: !show.data,
+                child: Container(
+                    width:MediaQuery.of(context).size.width,
+                    height:ScreenUtil.getInstance().getHeightPx(135),
+                    child: Stack(
+                      children: <Widget>[
+                        StreamBuilder<Adver>(
+                            stream: bloc.adBloc.adverStream,
+                            builder: (context, AsyncSnapshot<Adver> snapshot){
+                              return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(AdBloc.adChannelMap,ParentReward.sName);
+                            }
                         ),
-                        onTap: (){
-                          setState(() {
-                            _showBanner = true;
-                          });
-                        },
-                      )
-                    ),
-                  ],
-                )
-            ),
+                        Container(
+                            alignment:AlignmentDirectional(0.91, -0.5),
+                            child: GestureDetector(
+                              child: Image.asset(
+                                'images/parent_reward/closeIcon.png',
+                                width:ScreenUtil.getInstance().getWidthPx(51),
+                              ),
+                              onTap: (){
+                                bloc.parentRewardBloc.showBanner(false);
+                              },
+                            )
+                        ),
+                      ],
+                    )
+                ),
+              );
+            },
           ),
           Container(
             color: Color(0xFFFFFFFF),

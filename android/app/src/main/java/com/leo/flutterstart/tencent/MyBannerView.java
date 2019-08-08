@@ -41,6 +41,7 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
         }
         if (linearLayout == null) {
             linearLayout = new LinearLayout(activity);
+            linearLayout.setBackgroundColor(0x00000000);
         }
         loadAD();
     }
@@ -98,7 +99,7 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
 
             @Override
             public void onADClosed() {
-                Log.i("BannerView", "当广告关闭时调用");
+                Log.i("BannerView", "当广告关闭时调用111");
             }
 
             @Override
@@ -123,6 +124,7 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
         });
         bannerView.setRefresh(refresh);
         linearLayout.addView(bannerView,getUnifiedBannerLayoutParams());
+
         bannerView.loadAD();
     }
     /**

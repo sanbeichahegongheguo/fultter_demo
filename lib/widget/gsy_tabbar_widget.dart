@@ -117,6 +117,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       Store<GSYState> store = StoreProvider.of(context);
       _getAppVersionInfo(store.state.userInfo.userId,store);
     });
+    initPageMap[pageList[_currentIndex]]=true;
   }
 
   ///整个页面dispose时，记得把控制器也dispose掉，释放内存
@@ -344,6 +345,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       ),
     );
   }
+
   Map<String,bool> initPageMap = new Map();
   ///加载页面的时候触发
   void callPageLoad(index){
@@ -355,6 +357,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     switch (pageList[index]){
       case CoachPage.sName:
         print("切换辅导页面");
+        bloc.coachBloc.showBanner(true);
         bloc.adBloc.getBanner(pageName: CoachPage.sName);
         break;
       case LearningEmotionPage.sName:
@@ -363,9 +366,10 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         bloc.learningEmotionBloc.getNewHomeWork();
         break;
       case ParentReward.sName:
+        print("切换家长奖励页面");
         bloc.adBloc.getBanner(pageName:ParentReward.sName);
         bloc.parentRewardBloc.getTotalStar();
-        print("切换家长奖励页面");
+        bloc.parentRewardBloc.showBanner(true);
         break;
       case Admin.sName:
         print("切换管理页面");

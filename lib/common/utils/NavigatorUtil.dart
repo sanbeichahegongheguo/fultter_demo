@@ -171,7 +171,6 @@ class NavigatorUtil {
         barrierDismissible: barrierDismissible,
         builder: (context) {
           return MediaQuery(
-
               ///不受系统字体缩放影响
               data: MediaQueryData.fromWindow(WidgetsBinding.instance.window).copyWith(textScaleFactor: 1),
               child: new SafeArea(child: builder(context)));

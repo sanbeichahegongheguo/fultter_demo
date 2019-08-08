@@ -3,9 +3,11 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,7 +27,8 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
   static const channelName = 'plugins.iwubida.com/update_version';
   static const stream = const EventChannel(channelName);
   static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
-  static const iosUrl = "https://apps.apple.com/cn/app/id1155973972";
+  static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
+
   // 进度订阅
   StreamSubscription downloadSubscription;
 
@@ -185,7 +188,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.only(top: 10,bottom: 10),
                       child: SizedBox(
                         width: 170,
                         height: 40,
@@ -203,40 +206,35 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                       ),
                     ),
                     Platform.isAndroid?Padding(
-                      padding: widget.mustUpdate==0?EdgeInsets.only(top: 10):EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                       child: SizedBox(
-                        width: 170,
                         height: 40,
-                        child: RaisedButton(
+                        width: 170,
+                        child: FlatButton(
+                            textColor: Colors.black26,
                             child: Text(
-                              "应用宝下载",
-                              style: TextStyle(color: Color(0xdfffffff)),
+                              "手动升级",
                             ),
-                            color: const Color(0xff5f9afa),
+                            highlightColor: Colors.transparent,
+                            color: Colors.transparent,
                             onPressed:_goTen,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0))),
                       ),
                     ):Container(),
-                    widget.mustUpdate==0?Padding(
-                        padding: EdgeInsets.fromLTRB(0, 8, 0, 10),
-                        child: SizedBox(
-                          height: 30,
-                          child: FlatButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              textColor: Colors.black26,
-                              color: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Text(
-                                "暂不升级",
-                                style: TextStyle(fontSize: 13),
-                              )),
-                        )):Container()
-                  ]))
+                  ])),
+                  widget.mustUpdate==0?Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: SizedBox(
+                      child: IconButton(
+                          icon: Image.asset("images/btn-close.png",fit: BoxFit.cover,width: ScreenUtil.getInstance().getWidthPx(100),),
+                          color: Colors.transparent,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                      ),
+                    ),
+                  ):Container()
             ]));
   }
 
@@ -247,7 +245,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
     if (percent > 0) {
       return "升级中$percent%";
     }
-    return "立即升级";
+    return Platform.isAndroid ? "自动升级":"立即升级";
   }
   _goTen() async {
     if (await canLaunch(tenUrl)) {

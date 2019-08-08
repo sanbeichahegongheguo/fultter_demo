@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
@@ -137,7 +139,6 @@ class CommonUtils {
   static Widget buildBanner(Map<String,MethodChannel> map,String page){
     print("banner  Platform.isIOS");
     return Container(
-      color: Colors.transparent,
       child: Platform.isIOS?UiKitView(
         viewType: "banner",
         creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID},
@@ -177,14 +178,50 @@ class CommonUtils {
   static Future<Null> showUpdateDialog(BuildContext context,AppVersionInfo versionInfo,{int mustUpdate = 0}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context) {
           return WillPopScope(
-              onWillPop: () => new Future.value(mustUpdate == 1 ? false:true),
+            onWillPop: () => new Future.value(mustUpdate == 1 ? false:true),
             child: UpdateVersionDialog(data: versionInfo,mustUpdate: mustUpdate),
           );
         });
   }
 
+  //对比版本号
+  static int compareVersion(String localVersion, String serverVersion) {
+    if (localVersion == serverVersion) {
+      return 0;
+    }
+    List<String> version1Array = localVersion.split(".");
+    List<String> version2Array = serverVersion.split(".");
+    int index = 0;
+    // 获取最小长度值
+    int minLen = min(version1Array.length, version2Array.length);
+    int diff = 0;
+    // 循环判断每位的大小
+    while (index < minLen &&
+        (diff = int.parse(version1Array[index]) -
+            int.parse(version2Array[index])) ==
+            0) {
+      index++;
+    }
+    if (diff == 0) {
+      // 如果位数不一致，比较多余位数
+      for (int i = index; i < version1Array.length; i++) {
+        if (int.parse(version1Array[i]) > 0) {
+          return 1;
+        }
+      }
+
+      for (int i = index; i < version2Array.length; i++) {
+        if (int.parse(version2Array[i]) > 0) {
+          return -1;
+        }
+      }
+      return 0;
+    } else {
+      return diff > 0 ? 1 : -1;
+    }
+  }
 
 }
