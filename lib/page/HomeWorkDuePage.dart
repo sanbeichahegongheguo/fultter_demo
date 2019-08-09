@@ -1,25 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/bezier_bounce_footer.dart';
 import 'package:flutter_easyrefresh/bezier_circle_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/common/net/address.dart';
-import 'package:flutter_start/common/net/api.dart';
-import 'package:flutter_start/common/redux/gsy_state.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:flutter_start/common/utils/formatDate.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:oktoast/oktoast.dart';
 
 class HomeWorkDuePage extends StatefulWidget{
   @override
@@ -258,10 +247,5 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
     }
     return data;
   }
-  ///处理时间格式
-  String _setTime(String timeData){
-    print("DateTime${DateUtil.getDateStrByMs(36)}");
-    var time = formatDate(DateTime.parse(timeData), [yyyy, '年', mm, '月', dd,"日"]);
-    return time;
-  }
+
 }

@@ -7,7 +7,6 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:flutter_start/common/utils/formatDate.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_start/models/index.dart';
 
@@ -418,7 +417,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   ///处理时间格式
   String _setTime(String timeData){
     print("DateTime${DateUtil.getDateStrByMs(36)}");
-    var time =  formatDate(DateTime.parse(timeData), [yyyy, '年', mm, '月', dd,"日"]);
+    var time  = DateUtil.formatDate(DateTime.parse(timeData),format:DataFormats.zh_y_mo_d);
     return time;
   }
   //学习记录内容
