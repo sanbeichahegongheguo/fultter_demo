@@ -8,7 +8,6 @@ import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
-import 'package:flutter_start/common/utils/formatDate.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
