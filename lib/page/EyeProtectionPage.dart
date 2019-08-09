@@ -161,8 +161,8 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
     return listWiget;
   }
   _goParentInfo(){
-    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"starRecord").then((v){
-    });
+//    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"starRecord").then((v){
+//    });
   }
 }
 
