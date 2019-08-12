@@ -87,4 +87,26 @@ class ApplicationDao{
     print('返回值');
     print(res.data);
   }
+
+  ///获取APP公告
+  static getAppNotice() async{
+    String key = await httpManager.getAuthorization();
+    var curVersion = (await PackageInfo.fromPlatform()).version;
+    var params = {"key":key,"curVersion":curVersion};
+    var res = await httpManager.netFetch(Address.getAppNotice(), params, null, new Options(method: "post"));
+    var result;
+    print('获取APP公告');
+    print(res);
+    print(res.data);
+    if (res != null && res.result) {
+      var json = res.data;
+      if (null!=json) {
+        result = json;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
 }

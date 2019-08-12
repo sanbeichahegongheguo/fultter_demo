@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
+import 'package:flutter_start/widget/IndexNoticeWidget.dart';
 import 'package:flutter_start/widget/update_version.dart';
 import 'NavigatorUtil.dart';
 
@@ -187,7 +188,20 @@ class CommonUtils {
         });
   }
 
-  //对比版本号
+  ///APP公告
+  static Future<dynamic> showAPPNotice(BuildContext context,notice,message) {
+    print(notice);
+    print(message);
+    return NavigatorUtil.showGSYDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            child: IndexNoticeWidget(data:notice,message:message),
+          );
+        });
+  }
+
+  ///对比版本号
   static int compareVersion(String localVersion, String serverVersion) {
     if (localVersion == serverVersion) {
       return 0;

@@ -116,6 +116,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
       _getAppVersionInfo(store.state.userInfo.userId);
+      _getAppNotice();
     });
     initPageMap[pageList[_currentIndex]]=true;
   }
@@ -395,4 +396,20 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       }
     });
   }
+
+  ///获取APP公告
+  _getAppNotice(){
+    ApplicationDao.getAppNotice().then((data){
+      if (null!=data&&data.result){
+        if(data.data["success"]["ok"]==0&&data.data["success"]["advertList"].length!=0){
+          var message = data.data["success"]["message"];
+          var notice = data.data["success"]["advertList"][0];
+          CommonUtils.showAPPNotice(context,notice,message);
+        }else{
+          ///今天已弹窗，不再弹窗
+        }
+      }
+    });
+  }
+
 }

@@ -37,7 +37,6 @@ class Address {
     return "${studentHost}uploadHeadUrl";
   }
 
-
   ///获取图形验证码
   static getImgCode() {
     return "${k12apiHost}base/getValidateCode?toBase64=T";
@@ -263,6 +262,12 @@ class Address {
   static statistics(){
     return flowStatistics;
   }
+
+  ///获取APP启动公告
+  static getAppNotice(){
+    return "${studentHost}getAppNotice";
+  }
+
 
 
 

@@ -223,7 +223,8 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                       ),
                     ):Container(),
                   ])),
-                  widget.mustUpdate==0?Padding(
+                  widget.mustUpdate==0?
+                  Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: SizedBox(
                       child: IconButton(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -30,9 +31,15 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
     bloc.learningEmotionBloc.getStudyData();
     bloc.learningEmotionBloc.getNewHomeWork();
     bloc.xqModuleBloc.getLEmotionModule();
+    test();
     super.initState();
 
   }
+  void test() async{
+    var data = await ApplicationDao.trafficStatistic(277);
+    print(data);
+  }
+
   var _learninText = "  同学学习情况如下：";
 
   StudyData _studyMsg = new StudyData();//用户信息
@@ -416,6 +423,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   }
   ///处理时间格式
   String _setTime(String timeData){
+    print(timeData);
     print("DateTime${DateUtil.getDateStrByMs(36)}");
     var time  = DateUtil.formatDate(DateTime.parse(timeData),format:DataFormats.zh_y_mo_d);
     return time;
