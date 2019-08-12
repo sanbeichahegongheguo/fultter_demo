@@ -144,8 +144,6 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
             child:MaterialButton(
               onPressed:_timeName != timeList[i]? ()async{
                 await UserDao.saveEyeshiieldTime(i+1);
-
-
                 setState(() {
                   _timeName = timeList[i];
                 });
