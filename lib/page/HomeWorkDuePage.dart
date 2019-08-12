@@ -55,11 +55,13 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
               key: _easyRefreshKey,
               refreshHeader: BezierCircleHeader(
                 key: _headerKey,
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Colors.black12,
+                backgroundColor: Color(0xFFf0f4f7),
               ),
               refreshFooter: BezierBounceFooter(
                 key: _footerKey,
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: Colors.black12,
+                backgroundColor: Color(0xFFf0f4f7),
               ),
               child: new ListView.builder(
                   //ListView的Item

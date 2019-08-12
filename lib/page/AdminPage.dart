@@ -40,6 +40,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
       return Container(
         decoration: BoxDecoration(
           color: Color(0xFFf0f4f7),
+
         ),
         child: ListView(
           children: <Widget>[
@@ -47,22 +48,23 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
               children: <Widget>[
                 Container(
                     width: double.infinity,
+                    margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(13) ),
                     decoration: BoxDecoration(
                       color: Colors.white,
+                      image: new DecorationImage(
+                        image: new AssetImage("images/admin/userInfo_bg.png"),
+                          alignment:Alignment.bottomRight
+                      ),
                     ),
                     child: Column(
                       children: <Widget>[
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(54),
-                        ),
                         Container(
-                          width: ScreenUtil.getInstance().getWidthPx(963),
-                          height: ScreenUtil.getInstance().getHeightPx(357),
+                          width: widthSrcreen,
+                          height: ScreenUtil.getInstance().getHeightPx(291),
+                          padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(81)),
                           child: new Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(
-                                width: ScreenUtil.getInstance().getWidthPx(44),
-                              ),
                               GestureDetector(
                                 onTap: () {
                                   _getHeadSculpture(store);
@@ -89,38 +91,61 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                 ),
                               ),
                               SizedBox(
-                                width: ScreenUtil.getInstance().getWidthPx(50),
+                                width: ScreenUtil.getInstance().getWidthPx(20),
                               ),
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment:CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    store.state.userInfo.realName,
-                                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(48 / 3)),
+                                  Container(
+                                    padding:EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(52) ),
+                                    child: Text(
+                                      store.state.userInfo.realName,
+                                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(64 / 3),fontWeight:FontWeight.w800 ),
+                                    ),
                                   ),
-                                  Text(
-                                    store.state.userInfo.schoolName,
-                                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36 / 3), color: Color(0xFF999999)),
+                                  SizedBox(
+                                    height: ScreenUtil.getInstance().getHeightPx(20),
                                   ),
-                                  Text(
-                                    store.state.userInfo.className,
-                                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36 / 3), color: Color(0xFF999999)),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFf7f9fb),
+                                          borderRadius: new BorderRadius.all(
+                                              Radius.circular((10.0))),
+                                        ),
+                                        child: Text(
+                                          store.state.userInfo.schoolName,
+                                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(48 / 3), color: Color(0xFF999999)),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(25)),
+                                        padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFf7f9fb),
+                                          borderRadius: new BorderRadius.all(
+                                              Radius.circular((10.0))),
+                                        ),
+                                        child: Text(
+                                          store.state.userInfo.className,
+                                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(48 / 3), color: Color(0xFF999999)),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ],
                               )
                             ],
                           ),
-                          decoration: new BoxDecoration(
-                            color: Colors.white,
-                            border: new Border.all(color: Color(0xFFa6a6a6)),
-                            borderRadius: new BorderRadius.all(Radius.circular((10.0))),
-                          ),
                         ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(54),
-                        ),
+
                       ],
-                    )),
+                    )
+                ),
                 Column(
                   children: <Widget>[
                     _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo),
