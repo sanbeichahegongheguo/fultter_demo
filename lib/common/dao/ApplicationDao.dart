@@ -10,12 +10,11 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:package_info/package_info.dart';
-import 'package:redux/redux.dart';
 import 'daoResult.dart';
 
 class ApplicationDao{
   ///获取升级信息
-  static getAppVersionInfo(userId, Store store) async {
+  static getAppVersionInfo(userId) async {
     var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
     var params ={};
     if (Platform.isIOS) {
@@ -50,6 +49,21 @@ class ApplicationDao{
       }
       return new DataResult(result, res.result);
     }
+  }
+
+  ///获取后台配置信息
+  static getAppApplication() async {
+    var res = await httpManager.netFetch(Address.getAppApplication(), null, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if (null!=json) {
+        result = json;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
   }
 
   ///流量统计

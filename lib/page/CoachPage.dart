@@ -2,12 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
@@ -15,6 +17,7 @@ import 'package:flutter_start/models/CoachNotice.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_start/bloc/ModuleBloc.dart';
+import 'package:redux/redux.dart';
 
 ///辅导页面
 class CoachPage extends StatefulWidget{
@@ -47,6 +50,8 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    Store<GSYState> store = StoreProvider.of(context);
+    print("CoachPage build");
     return Container(
           color: Color(0xFFf0f4f7),
           child: ListView(
@@ -111,7 +116,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                   ),
                 ),
               ),
-              StreamBuilder<bool>(
+              (store.state.application.showBanner==1&&store.state.application.showCoachBanner==1)?StreamBuilder<bool>(
               stream: bloc.coachBloc.coachShowBannerStream,
               initialData: true,
               builder: (context,AsyncSnapshot<bool> show){
@@ -151,8 +156,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                       )
                   ),
                 );
-              }
-              ),
+              }):Container(),
             ],
           ),
     );

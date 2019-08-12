@@ -538,7 +538,7 @@ class _UserInfo extends State<UserInfo>{
   }
 
   _getAppVersionInfo(userId,Store<GSYState> store){
-    ApplicationDao.getAppVersionInfo(userId, store).then((data){
+    ApplicationDao.getAppVersionInfo(userId).then((data){
       if (null!=data&&data.result){
         _versionInfo = data.data;
         if (_versionInfo.ok==0){

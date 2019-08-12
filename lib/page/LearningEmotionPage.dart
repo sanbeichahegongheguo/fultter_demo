@@ -504,23 +504,10 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   ///处理时间
   String getTimeStrBySecond(String secondTime) {
     var second = int.parse(secondTime);
-    var time = DateUtil.formatDate(DateTime(0, 0, 0, 0, 0, second),format:DataFormats.h_m);
+    var time = DateUtil.formatDate(DateTime(0, 0, 0, 0, second, 0),format:DataFormats.h_m);
     return time;
   }
 
-  ///获取学生本学期做题数和错题数及当天学习时间
-  void _getNewHomeWork() async{
-    var data = await WordDao.getNewHomeWork();
-    if(data != null && data != ""){
-      if(data["success"]["ok"] == 0){
-        setState(() {
-          _parentHomeWorkList = data["success"]["parentHomeWorkList"];
-          print("_parentHomeWorkList====$_parentHomeWorkList");
-          SpUtil.putObjectList(Config.PARENT_HOME,_parentHomeWorkList);
-        });
-      }
-    }
-  }
   ///去小状元家长介绍
   _goParentInfo(){
     NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){

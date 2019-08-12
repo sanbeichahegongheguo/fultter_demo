@@ -7,7 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -15,6 +17,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:redux/redux.dart';
 
 ///**
 /// *WebView
@@ -34,7 +37,8 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   int _status = 0;
   WebViewController _webViewController;
   Size _deviceSize;
-
+  bool _showAd = false;
+  Map  _oneUrl = new Map();
   /// 使用javascriptChannels发送消息
   /// javascriptChannels参数可以传入一组Channels，我们可以定义一个_alertJavascriptChannel变量，这个channel用来控制JS调用Flutter的toast功能：
   JavascriptChannel _alertJavascriptChannel(BuildContext context) {
@@ -42,6 +46,15 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         name: 'Toast',
         onMessageReceived: (JavascriptMessage message) {
           showToast(message.message);
+        });
+  }
+  JavascriptChannel _loadAd() {
+    return JavascriptChannel(
+        name: 'LoadAd',
+        onMessageReceived: (JavascriptMessage message) {
+          setState((){
+            _showAd = true;
+          } );
         });
   }
 
@@ -60,6 +73,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   @override
   Widget build(BuildContext context) {
     _deviceSize = MediaQuery.of(context).size;
+    Store<GSYState> store = StoreProvider.of(context);
     return WillPopScope(
         onWillPop: () async {
           bool can = await _webViewController.canGoBack();
@@ -78,6 +92,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                   Container(
                       height: _deviceSize.height,
                       child: WebView(
+                        initialMediaPlaybackPolicy:AutoMediaPlaybackPolicy.always_allow,
                         initialUrl: widget.url,
                         javascriptMode: JavascriptMode.unrestricted,
                         onWebViewCreated: (WebViewController webViewController) {
@@ -91,16 +106,23 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                   () => VerticalDragGestureRecognizer(),
                             ),
                           ),
-                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context)].toSet(),
+                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd()].toSet(),
                         navigationDelegate: _navigationDelegate,
                         onPageFinished: (String url) {
                           print('@跳转链接: $url');
-                          setState(
-                                () => _status = 1,
-                          );
+                          if (_oneUrl[url]==null){
+                            _oneUrl[url] = true;
+                            if( _status != 1 ||_showAd != false ){
+                              setState((){
+                                _status = 1;
+                                _showAd =false;
+                              },
+                              );
+                            }
+                          }
                         },
                       )),
-                  _getStatusWidget()
+                  _getStatusWidget(store)
                 ],
               )
         ));
@@ -130,7 +152,9 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       }else if(request.url.indexOf("haxecallback:tencentAd")>-1){
         if (request.url != "haxecallback:tencentAd:0"){
           print("tencentAd");
-          setState(() => _status = 2);
+          setState(() =>_showAd = true);
+        }else{
+          setState(() =>_showAd = false);
         }
       }else if (request.url.indexOf("webOpenCammera")>-1){
         _getImage(0).then((v){
@@ -150,9 +174,11 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       return NavigationDecision.prevent;
     }else{
       //允许路由替换
-      print('allowing navigation to $request');
-      setState(
-            () => _status = 0,
+      print('允许路由替换 $request');
+      setState((){
+        _showAd = false;
+        _status = 0;
+      }
       );
       return NavigationDecision.navigate;
     }
@@ -201,20 +227,16 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       return Container();
     });
   }
-  Widget _getStatusWidget(){
+  Widget _getStatusWidget(store){
     Widget widget ;
     if (_status ==0 ){
       //loading
       widget = Container(
-        width: _deviceSize.width,
-        height: _deviceSize.height,
-        color: Colors.white,
-        child: Center(
-          child: CircularProgressIndicator(
-          ),
-        ),
-      );
-    }else if (_status == 2 ){
+          width: _deviceSize.width,
+          height: _deviceSize.height,
+          color: Colors.white,
+          child: Center(child: CircularProgressIndicator()));
+    }else if (_showAd && (store.state.application.showBanner==1&&store.state.application.showH5Banner==1)){
       //广告
       widget = Container(
         height: ScreenUtil.getInstance().screenWidth/6.4,

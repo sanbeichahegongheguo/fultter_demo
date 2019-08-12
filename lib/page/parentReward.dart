@@ -1,16 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/ConvertGoods.dart';
 import 'package:flutter_start/models/Module.dart';
-
+import 'package:redux/redux.dart';
 ///家长奖励页面
 class ParentReward extends StatefulWidget{
   static const String sName = "parentReward";
@@ -50,11 +52,12 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
   Widget build(BuildContext context) {
     super.build(context);
     print('_ParentReward build');
+    Store<GSYState> store = StoreProvider.of(context);
     return Container(
       color: Color(0xFFf0f4f7),
       child: ListView(
         children: <Widget>[
-          StreamBuilder<bool>(
+          (store.state.application.showBanner==1&&store.state.application.showRewardBanner==1)?StreamBuilder<bool>(
             stream: bloc.parentRewardBloc.parentShowBannerStream,
             initialData: true,
             builder: (context,AsyncSnapshot<bool> show){
@@ -88,7 +91,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                 ),
               );
             },
-          ),
+          ):Container(),
           Container(
             color: Color(0xFFFFFFFF),
             child: _activity(),

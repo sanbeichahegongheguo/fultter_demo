@@ -5,14 +5,13 @@ class Address {
   static const String studentHost = "http://192.168.6.31:30915/student:";
   static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
   static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
-  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/home/";
+  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
   static const String h5Host = "http://192.168.6.30:30593/";
   static const String flowStatistics = "http://192.168.6.30:31221/common_dc_client/dc/send.html";
 
-  static const String getSchoolUrl = "http://www.k12china.com/k12-api/search/getSchool";
-//  static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
+  static const String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
 //  static const String flowStatistics = " https://www.k12china.com/common_dc_client/dc/send.html";
-//  static const String stu_app = "https://www.k12china.com/stu_app/v1/home/";
+//  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
 //  static const String h5Host = "https://www.k12china.com/h5/";
 //  static const String studentWebHost = "https://api.k12china.com/studentweb/";
 //   static const String studentHost = "https://www.k12china.com/student/student:";
@@ -128,11 +127,11 @@ class Address {
 
   ///获取学生已设置护眼时间
   static getEyeshiieldTime(){
-    return "${stu_app}get_eyeshiield_time";
+    return "${stu_app}home/get_eyeshiield_time";
   }
   ///保存学生学习时间
   static saveEyeshiieldTime(){
-    return "${stu_app}save_eyeshiield_time";
+    return "${stu_app}home/save_eyeshiield_time";
   }
   ///更改密码
   static resetPassword() {
@@ -140,7 +139,7 @@ class Address {
   }
   ///获取学生本学期做题数和错题数及当天学习时间
   static getStudyData() {
-    return "${stu_app}get_study_data";
+    return "${stu_app}home/get_study_data";
   }
   ///最新同步作业/口算作业/笔头作业
   static getNewHomeWork() {
@@ -235,7 +234,7 @@ class Address {
 
   ///获取模块栏目
   static getModule(){
-    return "${stu_app}get_parent_module";
+    return "${stu_app}home/get_parent_module";
   }
 
   ///星星商城地址
@@ -250,10 +249,14 @@ class Address {
   static getAppStoreVersionInfo(){
     return "https://itunes.apple.com/cn/lookup?id=${Config.IOS_APP_ID}";
   }
+  ///获取App后台配置信息
+  static getAppApplication(){
+    return "${stu_app}admin/application";
+  }
 
   ///辅导页面公告
   static indexNotice(){
-    return "${stu_app}announcement";
+    return "${stu_app}home/announcement";
   }
 
   ///流量统计

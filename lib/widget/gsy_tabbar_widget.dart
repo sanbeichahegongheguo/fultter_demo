@@ -115,7 +115,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     _getUnReadNotice();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
-      _getAppVersionInfo(store.state.userInfo.userId,store);
+      _getAppVersionInfo(store.state.userInfo.userId);
     });
     initPageMap[pageList[_currentIndex]]=true;
   }
@@ -377,8 +377,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     }
   }
 
-  _getAppVersionInfo(userId,Store<GSYState> store){
-    ApplicationDao.getAppVersionInfo(userId, store).then((data){
+  _getAppVersionInfo(userId){
+    ApplicationDao.getAppVersionInfo(userId).then((data){
       if (null!=data&&data.result){
         if (data.data.ok==0){
           if(data.data.isUp==1){

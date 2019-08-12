@@ -1,7 +1,10 @@
 
+import 'dart:io';
+
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
@@ -48,9 +51,16 @@ class SplashPageState extends State<SplashPage> {
     Store<GSYState> store = StoreProvider.of(context);
     PackageInfo.fromPlatform().then((v){
       store.dispatch(RefreshApplicationAction(store.state.application.copyWith(version:v.version)));
+      ApplicationDao.getAppApplication().then((res){
+        if (res!=null &&res.result){
+          var data =res.data;
+          store.dispatch(RefreshApplicationAction(store.state.application.copyWith(showBanner: data["showBanner"],
+              showCoachBanner: data["showBanner"],showRewardBanner: data["showRewardBanner"],showH5Banner: data["showH5Banner"],minAndroidVersion: data["minAndroidVersion"],minIosVersion: data["minIosVersion"]
+          )));
+        }
+      });
     });
     new Future.delayed(const Duration(milliseconds: 500), () async {
-
             //登录
             UserDao.getUser(isNew:true,store: store).then((res){
               if (res != null){
@@ -162,27 +172,32 @@ class SplashPageState extends State<SplashPage> {
 
   Future _initPermission() async {
     List<PermissionGroup> permissionsList = new List();
-    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
-    if (permission != PermissionStatus.granted) {
-        permissionsList.add(PermissionGroup.phone);
-    }
-    permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
-    if (permission != PermissionStatus.granted) {
-        permissionsList.add(PermissionGroup.storage);
-    }
-    permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
+
+    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
     if (permission != PermissionStatus.granted) {
       permissionsList.add(PermissionGroup.location);
     }
+
+    if (Platform.isAndroid){
+       permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
+      if (permission != PermissionStatus.granted) {
+        permissionsList.add(PermissionGroup.phone);
+      }
+
+      permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
+      if (permission != PermissionStatus.granted) {
+        permissionsList.add(PermissionGroup.storage);
+      }
+    }
     if(permissionsList.length>0){
       Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions(permissionsList);
-      if (permissions[PermissionGroup.phone] != PermissionStatus.granted) {
+      if (permissions[PermissionGroup.phone] !=null && permissions[PermissionGroup.phone] != PermissionStatus.granted) {
         showToast("请开启手机权限", position: ToastPosition.bottom);
       }
-      if (permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+      if (permissions[PermissionGroup.storage] !=null && permissions[PermissionGroup.storage] != PermissionStatus.granted) {
         showToast("请开启存储权限", position: ToastPosition.bottom);
       }
-      if (permissions[PermissionGroup.location] != PermissionStatus.granted) {
+      if (permissions[PermissionGroup.location] !=null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
         showToast("请开启位置权限", position: ToastPosition.bottom);
       }
     }
