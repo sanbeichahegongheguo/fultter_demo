@@ -111,8 +111,6 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                         navigationDelegate: _navigationDelegate,
                         onPageFinished: (String url) {
                           print('@跳转链接: $url');
-                          if (_oneUrl[url]==null){
-                            _oneUrl[url] = true;
                             if( _status != 1 ||_showAd != false ){
                               setState((){
                                 _status = 1;
@@ -123,9 +121,6 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                               },
                               );
                             }
-                          }else{
-                            _oneUrl.clear();
-                          }
                         },
                       )),
                   _getStatusWidget(store)
