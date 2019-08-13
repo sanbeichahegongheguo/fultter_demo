@@ -130,9 +130,12 @@ class CommonUtils {
     return NavigatorUtil.showGSYDialog(
         context: context,
         builder: (BuildContext context) {
-          return new Material(
-              color: Colors.transparent,
-              child: widget
+          return GestureDetector(
+            onTap: (){Navigator.pop(context);},
+            child: new Material(
+                color: Colors.black12,
+                child: widget
+            ),
           );
         });
   }

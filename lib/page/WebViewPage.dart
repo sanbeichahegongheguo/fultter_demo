@@ -12,6 +12,7 @@ import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/widget/ShareToWeChat.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
@@ -167,7 +168,17 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           print(jsonEncode(data));
           _webViewController.evaluateJavascript("callPoto("+jsonEncode(data)+")");
         });
-      }else{
+      }else if(request.url.indexOf("share")>-1){
+        print("分享");
+        var _urlMsg = request.url.split(":?")[1];
+        var _urlList = jsonDecode(_urlMsg);
+        String _imagePath =  Uri.decodeComponent(_urlList["webPage"]);//分享地址
+        String _thumbnail = Uri.decodeComponent(_urlList["thumbnail"]);//缩略图
+        String _title =  Uri.decodeComponent(_urlList["title"]);
+        String _description =  Uri.decodeComponent(_urlList["description"]);
+        var _shareToWeChat =  new ShareToWeChat(webPage:_imagePath,thumbnail:_thumbnail,transaction:"",title: _title,description:_description);
+        CommonUtils.showGuide(context, _shareToWeChat);
+      } else{
         Navigator.of(context).pop();
       }
       //阻止路由替换；

@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/address.dart';
-
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-
+import 'package:flutter_start/widget/ShareToWeChat.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 import 'WebViewPage.dart';
 
 class EyeProtectionPage extends StatefulWidget{
@@ -15,17 +16,19 @@ class EyeProtectionPage extends StatefulWidget{
     // TODO: implement createState
     return _EyeProtectionPage();
   }
-  
+
 }
 
-class _EyeProtectionPage extends State<EyeProtectionPage>{
-  List<String> timeList = ["30分钟","60分钟","90分钟"];
+class _EyeProtectionPage extends State<EyeProtectionPage> {
+  List<String> timeList = ["30分钟", "60分钟", "90分钟"];
   String _timeName = "";
+
   @override
-  initState(){
+  initState() {
     super.initState();
     _getEyeshiieldTime();
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -43,116 +46,133 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
             },
           ),
         ),
-        body:new Container(
+        body: new Container(
             decoration: BoxDecoration(
               color: Color(0xFFf0f4f7),
             ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child:Column(
-              children: <Widget>[
-                Container(
-                  width: ScreenUtil.getInstance().getWidthPx(950),
-                  margin: EdgeInsets.all(ScreenUtil.getInstance().getHeightPx(40)),
-                  child: Column(children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(56)),
-                        child:  RichText(
-                            text:TextSpan(
-                                children: <TextSpan>[
-                                  TextSpan(text: "该栏目设置的时间，会在“远大小状元学生”app生效。为了孩子的用眼健康着想，我们建议每天连续在线学习时间不要超过"),
-                                  TextSpan(text: "1小时",style: TextStyle(color: Color(0xFFff9494))),
-                                  TextSpan(text: "。"),
-                                ],
-                                style: TextStyle(
-                                    fontSize: ScreenUtil.getInstance().getSp(48/3),
-                                    color: Color(0xFF959595)
-                                )
-                            )
+            child: Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: ScreenUtil.getInstance().getWidthPx(950),
+                      margin: EdgeInsets.all(
+                          ScreenUtil.getInstance().getHeightPx(40)),
+                      child: Column(children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.all(
+                              ScreenUtil.getInstance().getWidthPx(56)),
+                          child: RichText(
+                              text: TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: "该栏目设置的时间，会在“远大小状元学生”app生效。为了孩子的用眼健康着想，我们建议每天连续在线学习时间不要超过"),
+                                    TextSpan(text: "1小时",
+                                        style: TextStyle(
+                                            color: Color(0xFFff9494))),
+                                    TextSpan(text: "。"),
+                                  ],
+                                  style: TextStyle(
+                                      fontSize: ScreenUtil.getInstance().getSp(
+                                          48 / 3),
+                                      color: Color(0xFF959595)
+                                  )
+                              )
+                          ),
                         ),
-                      ),
-                      Column(
-                        children: _getTimeListWidget(),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(56)),
-                        child:  RichText(
-                            text:TextSpan(
-                                children: <TextSpan>[
-                                  TextSpan(text: "温馨提示：如果学生当天学习超时，需要输入家长密码方可继续学习。"),
-                                ],
-                                style: TextStyle(
-                                    fontSize: ScreenUtil.getInstance().getSp(42/3),
-                                    color: Color(0xFFff9494)
-                                )
-                            )
+                        Column(
+                          children: _getTimeListWidget(),
                         ),
+                        Padding(
+                          padding: EdgeInsets.all(
+                              ScreenUtil.getInstance().getWidthPx(56)),
+                          child: RichText(
+                              text: TextSpan(
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: "温馨提示：如果学生当天学习超时，需要输入家长密码方可继续学习。"),
+                                  ],
+                                  style: TextStyle(
+                                      fontSize: ScreenUtil.getInstance().getSp(
+                                          42 / 3),
+                                      color: Color(0xFFff9494)
+                                  )
+                              )
+                          ),
+                        ),
+                      ],),
+                      decoration: new BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: new BorderRadius.all(
+                            Radius.circular((10.0))),
                       ),
-                  ],),
-                  decoration: new BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: new BorderRadius.all(Radius.circular((10.0))),
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                )
             )
-          )
         ),
-        bottomNavigationBar:new Container(
+        bottomNavigationBar: new Container(
           width: ScreenUtil.getInstance().getWidthPx(963),
           height: ScreenUtil.getInstance().getHeightPx(216),
           color: Color(0xFFffffff),
-          child:Align(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: Container(
-                decoration: new BoxDecoration(
-                    boxShadow: [BoxShadow(color: Colors.black12)]
+          child: Align(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      boxShadow: [BoxShadow(color: Colors.black12)]
+                  ),
+                  child: MaterialButton(
+                    onPressed: _goParentInfo,
+                    minWidth: ScreenUtil.getInstance().getWidthPx(983),
+                    height: ScreenUtil.getInstance().getHeightPx(150),
+                    color: Color(0xFFfc6061),
+                    child: Text("打开“远大小状元学生”", style: TextStyle(
+                        fontSize: ScreenUtil.getInstance().getSp(54 / 3),
+                        color: Colors.white),),
+                  ),
                 ),
-                child:MaterialButton(
-                  onPressed: _goParentInfo,
-                  minWidth: ScreenUtil.getInstance().getWidthPx(983),
-                  height:ScreenUtil.getInstance().getHeightPx(150),
-                  color: Color(0xFFfc6061),
-                  child:Text("打开“远大小状元学生”",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Colors.white ),),
-                ),
-              ),
-            )
+              )
           ),
         ),
       );
     });
   }
-  void _getEyeshiieldTime() async{
+
+  void _getEyeshiieldTime() async {
     var res = await UserDao.getEyeshiieldTime();
-    if(res != null && res != ""){
-      if(res["success"]){
+    if (res != null && res != "") {
+      if (res["success"]) {
         setState(() {
-          _timeName = res["data"]+"分钟";
+          _timeName = res["data"] + "分钟";
         });
       }
     }
   }
+
   //设置按钮
-  _getTimeListWidget(){
+  _getTimeListWidget() {
     List<Widget> listWiget = [];
-    for(var i = 0;i<timeList.length;i++){
+    for (var i = 0; i < timeList.length; i++) {
       var widgetList = Padding(
           padding: EdgeInsets.all(ScreenUtil.getInstance().getHeightPx(15),),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(50),
-            child:MaterialButton(
-              onPressed:_timeName != timeList[i]? ()async{
-                await UserDao.saveEyeshiieldTime(i+1);
+            child: MaterialButton(
+              onPressed: _timeName != timeList[i] ? () async {
+                await UserDao.saveEyeshiieldTime(i + 1);
                 setState(() {
                   _timeName = timeList[i];
                 });
-              }:null,
+              } : null,
               minWidth: ScreenUtil.getInstance().getWidthPx(521),
-              height:ScreenUtil.getInstance().getHeightPx(133),
-              color:  Color(0xFFeeeeee),
-              disabledColor:Color(0xFFfbd953),
-              child:Text(timeList[i],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color:_timeName== timeList[i]?Color(0xFFa83530): Color(0xFF999999)),),
+              height: ScreenUtil.getInstance().getHeightPx(133),
+              color: Color(0xFFeeeeee),
+              disabledColor: Color(0xFFfbd953),
+              child: Text(timeList[i], style: TextStyle(
+                  fontSize: ScreenUtil.getInstance().getSp(54 / 3),
+                  color: _timeName == timeList[i] ? Color(0xFFa83530) : Color(
+                      0xFF999999)),),
             ),
           )
       );
@@ -160,9 +180,8 @@ class _EyeProtectionPage extends State<EyeProtectionPage>{
     }
     return listWiget;
   }
-  _goParentInfo(){
-//    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"starRecord").then((v){
-//    });
+
+  _goParentInfo() {
+   
   }
 }
-
