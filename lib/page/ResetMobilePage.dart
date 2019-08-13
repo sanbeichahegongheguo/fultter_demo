@@ -202,19 +202,12 @@ class _ResetMobilePage extends State<ResetMobilePage>{
             );
             if (null != isSend && isSend) {
               print("成功");
-
               CommonUtils.showLoadingDialog(context, text: "发送中···");
-              var res = await UserDao.sendMobileCode(phoneController.text);
               Navigator.pop(context);
               setState(() {
-                if(res.result){
                   _countdownNum = 60;
                   _reGetCountdown();
                   _isCordSendOk = true;
-                  showToast("发送成功");
-                }else{
-                  showToast(res.next);
-                }
               });
             }else{
               showToast("验证码验证有误，请重新发送");

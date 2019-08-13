@@ -129,7 +129,7 @@ class _UserInfo extends State<UserInfo>{
                                   SizedBox(
                                     width: ScreenUtil.getInstance().getWidthPx(
                                         500),
-                                    child: Text("账号 ${store.state.userInfo.tUserName}" ?? "",
+                                    child: Text("账号 ${store.state.userInfo.mobile}" ?? "",
                                         style: TextStyle(
                                             fontSize: ScreenUtil.getInstance()
                                                 .getSp(42 / 3),

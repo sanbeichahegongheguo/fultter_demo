@@ -252,7 +252,7 @@ class UserDao {
         result = res.data["message"];
         res.result = false;
       } else {
-        result = res.data["success"];
+        result = res.data["error"];
       }
     }
     return new DataResult(result, res.result);

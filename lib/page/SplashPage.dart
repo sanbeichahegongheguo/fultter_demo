@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flustars/flustars.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/event/http_error_event.dart';
+import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
@@ -31,6 +34,7 @@ class SplashPageState extends State<SplashPage> {
   bool hadInit = false;
   int _status = 0;
   int _count = 3;
+  StreamSubscription _stream;
   @override
   void initState() {
     super.initState();
@@ -40,13 +44,22 @@ class SplashPageState extends State<SplashPage> {
     hadInit = true;
     _initPermission();
     _initAsync();
+    _initListener();
   }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
-  void _initAsync() async {
 
+
+  @override
+  void dispose() {
+    super.dispose();
+    _stream?.cancel();
+    _stream = null;
+  }
+
+  void _initAsync() async {
     await SpUtil.getInstance();
     Store<GSYState> store = StoreProvider.of(context);
     PackageInfo.fromPlatform().then((v){
@@ -201,5 +214,12 @@ class SplashPageState extends State<SplashPage> {
         showToast("请开启位置权限", position: ToastPosition.bottom);
       }
     }
+  }
+
+  void _initListener() {
+    _stream = eventBus.on<HttpErrorEvent>().listen((event) {
+      print("SplashPageState eventBus " + event.toString());
+      HttpErrorEvent.errorHandleFunction(event.code, event.message, context);
+    });
   }
 }

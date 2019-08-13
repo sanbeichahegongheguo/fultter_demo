@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
@@ -115,7 +116,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     _getUnReadNotice();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
-      _getAppVersionInfo(store.state.userInfo.userId);
+      _getAppVersionInfo(store.state.userInfo.userId,store);
       _getAppNotice();
     });
     initPageMap[pageList[_currentIndex]]=true;
@@ -378,16 +379,21 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     }
   }
 
-  _getAppVersionInfo(userId){
+  _getAppVersionInfo(userId,Store<GSYState> store){
     ApplicationDao.getAppVersionInfo(userId).then((data){
       if (null!=data&&data.result){
         if (data.data.ok==0){
           if(data.data.isUp==1){
             int must = 0;
-            if (!ObjectUtil.isEmptyString(data.data.extJson)){
-              var json = jsonDecode(data.data.extJson);
-              if (json !=null && json["must"]!=null){
-                must = json["must"];
+            if(Platform.isIOS){
+              if (store.state.application.minIosVersion!=""){
+                if( CommonUtils.compareVersion(store.state.application.version, store.state.application.minIosVersion)==-1){
+                  must = 1;
+                }
+              }
+            }else if (Platform.isAndroid){
+              if (CommonUtils.compareVersion(store.state.application.version, store.state.application.minAndroidVersion)==-1){
+                must = 1;
               }
             }
             CommonUtils.showUpdateDialog(context, data.data,mustUpdate: must);

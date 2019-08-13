@@ -7,7 +7,7 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 2.0.100+332373
+version: 2.0.100+332374
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -67,12 +67,7 @@ flutter:
   assets:
    - assets/model.tflite
    - images/mall_home_commend_default_avater.png
-   - images/music_icon_song_download.png
-   - images/ic_publish_inner_empty_camera.png
-   - images/ic_live_player_send_danmaku.png
-   - images/ic_category_t60.png
    - images/btn-close.png
-   - images/splash.png
    - images/home/
    - images/phone_login/
    - images/admin/

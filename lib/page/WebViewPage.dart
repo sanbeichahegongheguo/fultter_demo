@@ -120,6 +120,8 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                               },
                               );
                             }
+                          }else{
+                            _oneUrl.clear();
                           }
                         },
                       )),
@@ -181,6 +183,11 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       } else{
         Navigator.of(context).pop();
       }
+      //阻止路由替换；
+      return NavigationDecision.prevent;
+    }else if (request.url.startsWith("weixin://") || request.url.startsWith("alipays://")){
+      print("11212");
+      goLaunch(context,request.url);
       //阻止路由替换；
       return NavigationDecision.prevent;
     }else{

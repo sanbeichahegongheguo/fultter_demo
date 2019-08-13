@@ -277,7 +277,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       DataResult data = await UserDao.checkHaveAccount(userNameController.text, 'P');
       bool isLogin = false;
       if(data.result){
-        if(data.data){
+        if(data.data=="2"){
           isLogin = true;
         }
         NavigatorUtil.goRegester(context,isLogin:isLogin,index: 1,userPhone:userNameController.text);
