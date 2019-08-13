@@ -33,8 +33,8 @@ class Config {
   static const SIGN_TIMES = "sign-times";
   static const ANDROID_AD_APP_ID = "1106507482";  //安卓腾讯广告 appid
   static const ANDROID_BANNER_ID = "1060575419369196"; //安卓腾讯广告 bannerId
-  static const IOS_AD_APP_ID = "1106507482";    //IOS  腾讯广告 appid
-  static const IOS_BANNER_ID = "1060575419369196";//IOS  腾讯广告 bannerId
+  static const IOS_AD_APP_ID = "1106430707";    //IOS  腾讯广告 appid
+  static const IOS_BANNER_ID = "1060186030422542";//IOS  腾讯广告 bannerId
   static const LANGUAGE = Locale('zh', 'CH');
   static const TITLE ='远大小状元';
   static const CUR_VERSION ='2.0.000';

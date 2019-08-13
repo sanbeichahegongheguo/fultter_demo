@@ -5,11 +5,12 @@ import Flutter
 @objc class AppDelegate: FlutterAppDelegate {
     override func application(
         _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
         ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
         //Banner需要使用到controller
         let controller = window?.rootViewController
+        Yondor.register(self.registrar(forPlugin: "yondorChannel"))
         if !hasPlugin("BannerPlugin") && controller != nil {
             print("registar BannerPlugin")
             //注册插件

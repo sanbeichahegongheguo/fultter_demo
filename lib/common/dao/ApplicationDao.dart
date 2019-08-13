@@ -18,10 +18,11 @@ class ApplicationDao{
     var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
     var params ={};
     if (Platform.isIOS) {
-      var res = await httpManager.netFetch(Address.getAppStoreVersionInfo(), params, null, Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+      var res = await httpManager.netFetch(Address.getAppStoreVersionInfo(), null, null, Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
       var result;
       if (res != null && res.result) {
-         if(res.data!=null && res.data["results"]!=null && res.data["results"].leght>0 && res.data["results"][0] != null){
+        res.data = jsonDecode(res.data);
+         if(res.data!=null && res.data["results"]!=null && res.data["results"].length>0 && res.data["results"][0] != null){
            String version = res.data["results"][0]["version"];
            result = AppVersionInfo();
            result.maxVersion = version;

@@ -116,7 +116,10 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                             if( _status != 1 ||_showAd != false ){
                               setState((){
                                 _status = 1;
-                                _showAd =false;
+                                if(!url.startsWith(widget.url)){
+                                  print("false");
+                                  _showAd =false;
+                                }
                               },
                               );
                             }
