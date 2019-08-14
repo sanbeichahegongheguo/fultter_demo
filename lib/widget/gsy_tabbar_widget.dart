@@ -387,13 +387,15 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
             int must = 0;
             if(Platform.isIOS){
               if (store.state.application.minIosVersion!=""){
-                if( CommonUtils.compareVersion(store.state.application.version, store.state.application.minIosVersion)==-1){
+                if(CommonUtils.compareVersion(store.state.application.version, store.state.application.minIosVersion)==-1){
                   must = 1;
                 }
               }
             }else if (Platform.isAndroid){
-              if (CommonUtils.compareVersion(store.state.application.version, store.state.application.minAndroidVersion)==-1){
-                must = 1;
+              if (store.state.application.minAndroidVersion!=""){
+                if (CommonUtils.compareVersion(store.state.application.version, store.state.application.minAndroidVersion)==-1){
+                  must = 1;
+                }
               }
             }
             CommonUtils.showUpdateDialog(context, data.data,mustUpdate: must);
