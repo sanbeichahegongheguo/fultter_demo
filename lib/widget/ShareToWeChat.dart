@@ -1,7 +1,5 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 class ShareToWeChat extends StatefulWidget{
     const ShareToWeChat({
@@ -37,11 +35,11 @@ class _StatefulWidget extends State<ShareToWeChat>{
     this._description,
   ) : super();
   @override
-  initState(){
+  initState() async{
     super.initState();
     fluwx.register(appId:"wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
   }
-  void _share(int num){
+  void _wxshare(int num){
     fluwx.WeChatScene scene = fluwx.WeChatScene.SESSION;
     switch(num){
       case 0:
@@ -68,12 +66,17 @@ class _StatefulWidget extends State<ShareToWeChat>{
     );
     Navigator.pop(context);
   }
+  void  _qqshare(int num) async{
+
+  }
+  _shareImg(imgUrl,wide,high){
+    return Image(image:AssetImage(imgUrl) , fit: BoxFit.cover,width: wide,height: high);
+  }
   @override
   Widget build(BuildContext context) {
     List _shareMsg = [
-      {"icon":Icon(Icons.chat_bubble,size:ScreenUtil.getInstance().getHeightPx(100),color:Color(0xFF5fc589),),"title":"会话","id":1},
-      {"icon":Icon(Icons.camera,size:ScreenUtil.getInstance().getHeightPx(100),color:Color(0xFF5fc589),),"title":"朋友圈","id":1},
-      {"icon":Icon(Icons.star,size:ScreenUtil.getInstance().getHeightPx(100),color:Color(0xFF5fc589),),"title":"收藏","id":1}
+      {"icon":_shareImg("images/share/xwShare.png",ScreenUtil.getInstance().getWidthPx(120),ScreenUtil.getInstance().getWidthPx(120)),"title":"微信好友","type":1,"id":1},
+      {"icon":_shareImg("images/share/pyqShare.png",ScreenUtil.getInstance().getWidthPx(120),ScreenUtil.getInstance().getWidthPx(120)),"title":"朋友圈","type":1,"id":2},
     ];
     List<Widget> _shareList(){
       List<Widget> shareList = [];
@@ -84,17 +87,21 @@ class _StatefulWidget extends State<ShareToWeChat>{
               child: Container(
                 child: GestureDetector(
                   onTap: (){
-                    _share(i);
-                    },
+                    if(_shareMsg[i]["type"] == 1){
+                      _wxshare(i);
+                    }else{
+                      _qqshare(i);
+                    }
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       _shareMsg[i]["icon"],
                       Padding(
-                        padding: EdgeInsets.only(top:2),
+                        padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
                         child: Text(
                           _shareMsg[i]["title"],
-                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(36 / 3) , color:Color(0xFF606a81)),
+                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3) , color:Color(0xFF606a81)),
                         ),
                       ),
                     ],
@@ -119,9 +126,10 @@ class _StatefulWidget extends State<ShareToWeChat>{
               color: Color(0xFFffffff),
               child: Wrap(
                 alignment: WrapAlignment.spaceAround,
+//                spacing:ScreenUtil.getInstance().getWidthPx(40),
                 children: _shareList(),
               ),
-            )
+            ),
           ],
         ),
       ),

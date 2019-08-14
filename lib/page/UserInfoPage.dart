@@ -273,6 +273,7 @@ class _UserInfo extends State<UserInfo>{
   }
   //判断用户是否有头像
   isNetwork(imgUrl){
+    print(imgUrl.toString().replaceAll("fs.k12china-local.com", "192.168.6.30:30781"));
     if(imgUrl != null){
       return CachedNetworkImage(
         imageUrl: imgUrl.toString().replaceAll("fs.k12china-local.com", "192.168.6.30:30781"),

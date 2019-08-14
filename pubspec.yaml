@@ -79,6 +79,8 @@ flutter:
    - images/update/ic_up_bg.png
    - images/update/ic_update_bg.png
    - images/update/ic_up_close.png
+   - images/share/pyqShare.png
+   - images/share/xwShare.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
