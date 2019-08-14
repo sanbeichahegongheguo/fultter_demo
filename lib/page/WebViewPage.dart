@@ -114,7 +114,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                             if( _status != 1 ||_showAd != false ){
                               setState((){
                                 _status = 1;
-                                if(!url.startsWith(widget.url)){
+                                if(!url.startsWith(widget.url) &&_showAd!=false){
                                   print("false");
                                   _showAd =false;
                                 }
@@ -204,17 +204,18 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   * @param weixin:// 唤醒微信
   * */
   static goLaunch(BuildContext context,String url) async{
-    if(await canLaunch(url)){
-      await launch(url, forceSafariVC: false, forceWebView: false);
-    }else {
-      String msg = "程序";
-      switch(url){
-        case "weixin://":
-          msg = "微信";
-          break;
-      }
-      showToast('$msg打开失败',position:ToastPosition.bottom);
-    }
+    await launch(url, forceSafariVC: false, forceWebView: false);
+//    if(await canLaunch(url)){
+//      await launch(url, forceSafariVC: false, forceWebView: false);
+//    }else {
+//      String msg = "程序";
+//      switch(url){
+//        case "weixin://":
+//          msg = "微信";
+//          break;
+//      }
+//      showToast('$msg打开失败',position:ToastPosition.bottom);
+//    }
   }
   ///使用flutter 调用js案例
   Widget jsButton() {
