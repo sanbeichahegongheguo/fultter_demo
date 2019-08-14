@@ -17,6 +17,8 @@ import 'package:flutter_start/page/WebViewPage.dart';
 import 'package:flutter_start/page/retrievePasswordPage.dart';
 import 'package:package_info/package_info.dart';
 
+import 'DeviceInfo.dart';
+
 class NavigatorUtil {
   ///替换
   static pushReplacementNamed(BuildContext context, String routeName) {
@@ -116,15 +118,17 @@ class NavigatorUtil {
     String from = "study_parent";
     String toFrom = "study_parent_router";
     var version =  (await PackageInfo.fromPlatform()).version;
+    var deviceId = await DeviceInfo.instance.getDeviceId();
+
     if (null != key && "" != key) {
-      String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version";
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {
         url = "$url&$param";
       } else {
         url = "$url?$param";
       }
     }else{
-      String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version";
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {
         url = "$url&$param";
       } else {

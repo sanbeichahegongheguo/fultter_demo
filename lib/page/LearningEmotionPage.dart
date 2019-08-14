@@ -31,13 +31,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
     bloc.learningEmotionBloc.getStudyData();
     bloc.learningEmotionBloc.getNewHomeWork();
     bloc.xqModuleBloc.getLEmotionModule();
-    test();
     super.initState();
-
-  }
-  void test() async{
-    var data = await ApplicationDao.trafficStatistic(277);
-    print(data);
   }
 
   var _learninText = "  同学学习情况如下：";
@@ -253,6 +247,9 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
                   color: Color(0xFFffffff),
                   height:ScreenUtil.getInstance().getHeightPx(215) ,
                   onPressed: (){
+                    if(data[i].eventId!=0){
+                      ApplicationDao.trafficStatistic(data[i].eventId);
+                    }
                     NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
                   },
                   child: Row(
@@ -293,7 +290,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
       for(var i = 0;i<last;i++){
         msgList.add(
           InkWell(
-            onTap: _goParentInfo,
+            onTap: (){_goParentInfo('randWork');},
             child:Container(
             width: ScreenUtil.getInstance().getWidthPx(980),
             decoration:BoxDecoration(
@@ -359,7 +356,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
               minWidth: ScreenUtil.getInstance().getWidthPx(515),
               color: Color(0xFFfbd953),
               height:ScreenUtil.getInstance().getHeightPx(139) ,
-              onPressed: _goParentInfo,
+              onPressed: (){_goParentInfo('finishWork');},
               child: Text("完成作业",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFa83530))),
             ),
           ),
@@ -387,7 +384,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
                   minWidth: ScreenUtil.getInstance().getWidthPx(515),
                   color: Color(0xFF6ed699),
                   height:ScreenUtil.getInstance().getHeightPx(139) ,
-                  onPressed: _goParentInfo,
+                  onPressed: (){_goParentInfo('mineExercise');},
                   child: Text("自主练习",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFffffff))),
                 ),
               ),
@@ -517,12 +514,18 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   }
 
   ///去小状元家长介绍
-  _goParentInfo(){
+  _goParentInfo(where){
+    if(where=='randWork'){
+      ApplicationDao.trafficStatistic(302);
+    }else if(where=='finishWork'){
+      ApplicationDao.trafficStatistic(301);
+    }
     NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){
     });
   }
   ///去往期作业
   _goWord(){
+    ApplicationDao.trafficStatistic(303);
     NavigatorUtil.goHomeWorkDuePage(context);
   }
   @override

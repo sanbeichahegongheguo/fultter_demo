@@ -172,6 +172,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                   controller: _tabController, //配置控制器
                   tabs: tabs,
                   onTap: (index) {
+                    print('切换');
                     _onPageChanged?.call(index);
                     _pageController.jumpTo(MediaQuery.of(context).size.width * index);
                   }, //tab标签的下划线颜色
@@ -207,6 +208,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   }
   ///跳转签到外链
   void _sign(){
+    print('签到');
+    ApplicationDao.trafficStatistic(2);
     NavigatorUtil.goWebView(context,Address.goH5Sign()).then((v){
         _signReward();
     });
@@ -214,6 +217,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   ///跳转消息
   void _news(){
     print("消息");
+    ApplicationDao.trafficStatistic(20);
     NavigatorUtil.goWebView(context,Address.getInfoPage()).then((v){
       _getUnReadNotice();
     });
@@ -221,6 +225,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   ///跳转客服
   void _wxServer(){
     print("客服");
+    ApplicationDao.trafficStatistic(94);
     NavigatorUtil.goWebView(context,Address.getWxServer()).then((v){
     });
   }
@@ -359,21 +364,25 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     switch (pageList[index]){
       case CoachPage.sName:
         print("切换辅导页面");
+        ApplicationDao.trafficStatistic(289);
         bloc.coachBloc.showBanner(true);
         bloc.adBloc.getBanner(pageName: CoachPage.sName);
         break;
       case LearningEmotionPage.sName:
         print("切换学情页面");
+        ApplicationDao.trafficStatistic(300);
         bloc.learningEmotionBloc.getStudyData();
         bloc.learningEmotionBloc.getNewHomeWork();
         break;
       case ParentReward.sName:
         print("切换家长奖励页面");
+        ApplicationDao.trafficStatistic(304);
         bloc.adBloc.getBanner(pageName:ParentReward.sName);
         bloc.parentRewardBloc.getTotalStar();
         bloc.parentRewardBloc.showBanner(true);
         break;
       case Admin.sName:
+        ApplicationDao.trafficStatistic(313);
         print("切换管理页面");
         break;
     }

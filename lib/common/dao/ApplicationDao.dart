@@ -69,7 +69,7 @@ class ApplicationDao{
 
   ///流量统计
   static trafficStatistic(eventId) async {
-    var pf = 'STUDENT_APP';
+    var pf = 'PARENT_APP';
     var did = await DeviceInfo.instance.getDeviceId();
     var uid = SpUtil.getObject(Config.LOGIN_USER)["userId"];
     var cb = SpUtil.getObject(Config.LOGIN_USER)["userId"];

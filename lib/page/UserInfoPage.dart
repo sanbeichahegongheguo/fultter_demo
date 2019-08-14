@@ -316,10 +316,12 @@ class _UserInfo extends State<UserInfo>{
   //更换手机号
   void _resetMobile(store){
     print("更换手机号");
+    ApplicationDao.trafficStatistic(88);
     NavigatorUtil.goResetMobilePage(context);
   }
   //更改密码
   void _goResetPasswordPage(){
+    ApplicationDao.trafficStatistic(89);
     NavigatorUtil.goResetPasswordPage(context);
   }
   //更换头像
@@ -352,11 +354,13 @@ class _UserInfo extends State<UserInfo>{
   //设置班级
   void _setUserClass(){
     print("设置班级");
+    ApplicationDao.trafficStatistic(86);
     NavigatorUtil.goJoinClassPage(context);
   }
   final List<String> _list= ["RJ版","BS版"];
   //设置教程
   void _setTextBook(store){
+    ApplicationDao.trafficStatistic(87);
     var widgetMsg = new TextBookWiget(textBook:store.state.userInfo.textbookId==1?_list[0]:_list[1]);
     CommonUtils.showEditDialog(context, widgetMsg,height: ScreenUtil.getInstance().getHeightPx(502),width: ScreenUtil.getInstance().getWidthPx(906));
   }
@@ -550,6 +554,7 @@ class _UserInfo extends State<UserInfo>{
   }
 
   _downldApp(){
+    ApplicationDao.trafficStatistic(83);
     if (null!=_versionInfo && _versionInfo.isUp!=1){
       showToast("当前已是最新版本");
     }else{

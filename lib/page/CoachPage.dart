@@ -34,7 +34,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
    HomeBloc bloc;
   @override
   void initState() {
-    ApplicationDao.trafficStatistic(1);
+//    ApplicationDao.trafficStatistic(1);
     bloc =  BlocProvider.of<HomeBloc>(context);
     bloc.moduleBloc.getCoachXZYModule();
     bloc.jzModuleBloc.getCoachJZModule();
@@ -180,6 +180,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
           if(data[index].target!=""){
             NavigatorUtil.goWebView(context,data[index].target).then((v){});
           }
+          if(data[index].eventId!=null){
+            ApplicationDao.trafficStatistic(data[index].eventId);
+          }
         },
         duration:500,
         itemCount:data.length,
@@ -222,6 +225,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                   children: <Widget>[
                     InkWell(
                       onTap: (){
+                        if(data[i].eventId!=null){
+                          ApplicationDao.trafficStatistic(data[i].eventId);
+                        }
                         NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
                       },
                       child:Container(

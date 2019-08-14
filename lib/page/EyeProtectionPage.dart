@@ -1,6 +1,7 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
@@ -161,6 +162,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
             child: MaterialButton(
               onPressed: _timeName != timeList[i] ? () async {
                 await UserDao.saveEyeshiieldTime(i + 1);
+                ApplicationDao.trafficStatistic(317);
                 setState(() {
                   _timeName = timeList[i];
                 });

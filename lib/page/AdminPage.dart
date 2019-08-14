@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
@@ -214,12 +215,14 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         CommonUtils.buildBtn("拍照", width: ScreenUtil.getInstance().getWidthPx(638), height: ScreenUtil.getInstance().getHeightPx(114), onTap: () {
+          ApplicationDao.trafficStatistic(314);
           _photograph(store);
         }),
         SizedBox(
           height: ScreenUtil.getInstance().getHeightPx(54),
         ),
         CommonUtils.buildBtn("从相机获取", width: ScreenUtil.getInstance().getWidthPx(638), height: ScreenUtil.getInstance().getHeightPx(114), onTap: () {
+          ApplicationDao.trafficStatistic(314);
           _album(store);
         }),
       ],
@@ -244,12 +247,14 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   //去个人资料与设置
   void _goSetUserInfo() {
     print("去个人资料与设置");
+    ApplicationDao.trafficStatistic(315);
     NavigatorUtil.goUserInfo(context);
   }
 
   //去护眼
   void _goSetEye() {
     print("去护眼");
+    ApplicationDao.trafficStatistic(316);
     NavigatorUtil.goEyeProtectionPage(context);
   }
 
@@ -284,6 +289,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
   //确定
    _sureOnTap(store) async{
+     ApplicationDao.trafficStatistic(90);
      Navigator.pop(context,true);
   }
 

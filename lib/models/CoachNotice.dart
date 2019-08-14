@@ -4,6 +4,7 @@ import 'dart:convert' show json;
 class CoachNotice {
   int moAdvertiseId;
   int appid;
+  int eventId;
   String description;
   String gradeIds;
   String isDefault;
@@ -21,6 +22,7 @@ class CoachNotice {
   CoachNotice({
     this.moAdvertiseId,
     this.appid,
+    this.eventId,
     this.description,
     this.gradeIds,
     this.isDefault,
@@ -39,6 +41,7 @@ class CoachNotice {
   factory CoachNotice.fromJson(jsonRes)=>jsonRes == null? null:CoachNotice(
     moAdvertiseId : jsonRes['moAdvertiseId'],
     appid : jsonRes['appid'],
+    eventId : jsonRes['eventId'],
     description : jsonRes['description'],
     gradeIds : jsonRes['gradeIds'],
     isDefault : jsonRes['isDefault'],
@@ -57,6 +60,7 @@ class CoachNotice {
   Map<String, dynamic> toJson() => {
     'moAdvertiseId': moAdvertiseId,
     'appid': appid,
+    'eventId': eventId,
     'description': description,
     'gradeIds': gradeIds,
     'isDefault': isDefault,
