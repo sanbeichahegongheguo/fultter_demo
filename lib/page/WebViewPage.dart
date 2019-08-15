@@ -171,11 +171,12 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       }else if(request.url.indexOf("share")>-1){
         print("分享");
         var _urlMsg = request.url.split(":?")[1];
+        _urlMsg = Uri.decodeComponent(_urlMsg);
         var _urlList = jsonDecode(_urlMsg);
-        String _imagePath =  Uri.decodeComponent(_urlList["webPage"]);//分享地址
-        String _thumbnail = Uri.decodeComponent(_urlList["thumbnail"]);//缩略图
-        String _title =  Uri.decodeComponent(_urlList["title"]);
-        String _description =  Uri.decodeComponent(_urlList["description"]);
+        String _imagePath =  _urlList["webPage"];//分享地址
+        String _thumbnail = _urlList["thumbnail"];//缩略图
+        String _title =  _urlList["title"];
+        String _description =  _urlList["description"];
         var _shareToWeChat =  new ShareToWeChat(webPage:_imagePath,thumbnail:_thumbnail,transaction:"",title: _title,description:_description);
         CommonUtils.showGuide(context, _shareToWeChat);
       } else{
