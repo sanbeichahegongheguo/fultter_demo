@@ -15,6 +15,7 @@ import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
 import 'package:flutter_start/page/retrievePasswordPage.dart';
+import 'package:flutter_start/page/BuildArchivesPage.dart';
 import 'package:package_info/package_info.dart';
 
 import 'DeviceInfo.dart';
@@ -62,6 +63,11 @@ class NavigatorUtil {
   ///注册
   static goRegester(BuildContext context,{String from,bool isLogin = false,int index = 0,String userPhone}) {
     NavigatorRouter(context, RegisterPage(from:from,index: index,userPhone:userPhone,isLogin:isLogin));
+  }
+
+  ///注册前夕-建立学习档案
+  static goBuildArchives(BuildContext context) {
+    NavigatorRouter(context, BuildArchivesPage());
   }
 
   ///找回密码

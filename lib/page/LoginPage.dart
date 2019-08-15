@@ -180,7 +180,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                       ),
                       GestureDetector(
                         onTap: () {
-                          NavigatorUtil.goRegester(context);
+//                          NavigatorUtil.goRegester(context);
+                          NavigatorUtil.goBuildArchives(context);
                         },
                         child: Text(
                           "我没有账号",

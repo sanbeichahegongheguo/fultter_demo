@@ -287,7 +287,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
             itemCount: 6,
           ),
         ),
-
       );
      });
 
