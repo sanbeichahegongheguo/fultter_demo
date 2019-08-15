@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -29,7 +30,13 @@ class _IndexNoticeWidgetState extends State<IndexNoticeWidget> {
             GestureDetector(
               onTap: (){
                 print("点击公告");
+                ///进行流量统计
+                if(widget.data["dateType"]!=0){
+                  ApplicationDao.trafficStatistic(widget.data["dateType"]);
+                }
+                print('事件统计');
                 print(widget.data["clictUrl"]);
+                print(widget.data["dateType"]);
                 if(widget.data["clictUrl"]!=null){
                   NavigatorUtil.goWebView(context,widget.data["clictUrl"]);
                 }else if(widget.data["clictUrl"]==null&&widget.message=='派发奖励成功'){
