@@ -5,12 +5,14 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>www.k12china.com</string>
+				<string>pedu.k12china.com</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>weixin</string>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
@@ -79,5 +81,9 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+    <string>weixin</string>
+    </array>
 </dict>
 </plist>

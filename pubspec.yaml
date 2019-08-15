@@ -27,7 +27,7 @@ dependencies:
   device_info: ^0.4.0+2
   permission_handler: ^3.2.1+1
   imei_plugin: ^1.1.0
-  image_picker: ^0.6.1
+  image_picker: ^0.6.1+2
   flustars: ^0.2.6+1
   flutter_spinkit: ^3.1.0
   cached_network_image: ^1.1.1
@@ -41,17 +41,17 @@ dependencies:
   flutter_easyrefresh: ^1.2.7
   tflite: ^1.0.4
   url_launcher: ^5.1.2
-
+  fluwx:
+    path: ./plugins/fluwx
+  webview_flutter:
+    path: ./plugins/webview_flutter
   flutter_localizations:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  fluwx:
-    path: ./plugins/fluwx
-  webview_flutter:
-    path: ./plugins/webview_flutter
+
   #json_model: #flutter packages pub run json_model
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

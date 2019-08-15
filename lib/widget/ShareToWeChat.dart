@@ -35,9 +35,9 @@ class _StatefulWidget extends State<ShareToWeChat>{
     this._description,
   ) : super();
   @override
-  initState() async{
-    super.initState();
+  initState(){
     fluwx.register(appId:"wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
+    super.initState();
   }
   void _wxshare(int num){
     fluwx.WeChatScene scene = fluwx.WeChatScene.SESSION;
