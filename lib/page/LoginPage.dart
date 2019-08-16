@@ -43,7 +43,6 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
     userNameController.addListener(() {
       if (userNameController.text == "") {
         setState(() {
@@ -178,16 +177,16 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                       SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(70),
                       ),
-                      GestureDetector(
-                        onTap: () {
+//                      GestureDetector(
+//                        onTap: () {
 //                          NavigatorUtil.goRegester(context);
-                          NavigatorUtil.goBuildArchives(context);
-                        },
-                        child: Text(
-                          "我没有账号",
-                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFF999999)),
-                        ),
-                      ),
+////                          NavigatorUtil.goBuildArchives(context);
+//                        },
+//                        child: Text(
+//                          "我没有账号",
+//                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), decoration: TextDecoration.underline, color: Color(0xFF999999)),
+//                        ),
+//                      ),
                       Expanded(
                         child: Container(
                             padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),

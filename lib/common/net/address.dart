@@ -68,6 +68,16 @@ class Address {
     return "${k12apiHost}base/checkParentsUser";
   }
 
+  ///更改家长：136家长改为135家长
+  static updateParentMobile() {
+    return "${k12apiHost}base/updateParentMobile";
+  }
+
+  ///注册：验证手机号
+  static checkMobile() {
+    return "${k12apiHost}base/checkMobile";
+  }
+
   ///退出账号
   static logout() {
     return "${studentHost}logout";

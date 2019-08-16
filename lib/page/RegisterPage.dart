@@ -23,7 +23,13 @@ class RegisterPage extends StatefulWidget {
   final bool isLogin;
   final int index;
   final String userPhone;
-  RegisterPage({this.from,this.isLogin,this.index=0,this.userPhone});
+  final String stuPhone;
+  final String head;
+  final String name;
+  final int userId;
+  final int registerState;
+
+  RegisterPage({this.from,this.isLogin,this.index=0,this.userPhone,this.registerState, this.head,this.name, this.userId, this.stuPhone});
 
   @override
   State<StatefulWidget> createState() {
@@ -124,10 +130,15 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         });
       }
       if(pinEditingController.text.length==6&&!_checkCodeTarget){
-        if (null!=widget.isLogin && widget.isLogin){
+        if (null!=widget.isLogin && widget.isLogin && widget.registerState==2){
           _login();
+          print('我走登录');
+        }else if(null!=widget.isLogin && !widget.isLogin &&widget.registerState==3){
+          _changeParent();
+          print('验证登录,改136的家长为135家长');
         }else{
           _checkCode();
+          print('我走注册');
         }
       }
     });
@@ -217,31 +228,43 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                   });
                   if (null!=widget.isLogin && !widget.isLogin){
                     //判断当前步骤
-                    print(_currentStep);
-                    if(_currentStep==0){
+                    print('当前步骤');
+                    print(_currentPageIndex);
+                    if(_currentPageIndex==0){
                       NavigatorUtil.goLogin(context);
-                    }else if(_currentStep==1){
-                      _onTap(0);
-                      setState(() {
-                        _titleName = '输入手机号';
-                        pinEditingController.text = '';
-                      });
-                    }else if(_currentStep==2){
-                      _onTap(1);
-                      setState(() {
-                        _recoverTime = false;
-                        _titleName = '验证手机号';
-                        pinEditingController.text = '';
-                      });
-                    }else if(_currentStep==3){
+                    }else if(_currentPageIndex==1){
+                      if(widget.registerState==3){
+                        NavigatorUtil.goBuildArchives(context,registerState:widget.registerState,index: 2,userPhone:widget.userPhone,head:widget.head,name:widget.name,userId:widget.userId);
+                      }else{
+                        _onTap(0);
+                        setState(() {
+                          _titleName = '输入手机号';
+                          pinEditingController.text = '';
+                        });
+                      }
+                    }else if(_currentPageIndex==2){
+                      if(widget.registerState==1){
+                        ///进入建立档案页面
+                        NavigatorUtil.goBuildArchives(context,registerState:widget.registerState,index: 0,userPhone:widget.userPhone);
+                      }else if(widget.registerState==3){
+                        NavigatorUtil.goBuildArchives(context,registerState:widget.registerState,index: 2,userPhone:widget.userPhone,head:widget.head,name:widget.name,userId:widget.userId);
+                      }else{
+                        _onTap(1);
+                        setState(() {
+                          _recoverTime = false;
+                          _titleName = '验证手机号';
+                          pinEditingController.text = '';
+                        });
+                      }
+                    }else if(_currentPageIndex==3){
                       _onTap(2);
-                    }else if(_currentStep==4){
+                    }else if(_currentPageIndex==4){
                       _onTap(3);
                       setState(() {
                         _titleName = '填写学校班级';
                         pinEditingController.text = '';
                       });
-                    }else if(_currentStep==5){
+                    }else if(_currentPageIndex==5){
                       _onTap(4);
                       setState(() {
                         _titleName = '填写学校班级';
@@ -250,9 +273,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
                     }
                   }else{
+                    print('返回哦');
                     NavigatorUtil.goWelcome(context);
                   }
-
                 }
             ),
             title: Text(
@@ -316,14 +339,21 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     DataResult data = await UserDao.checkCode(userPhoneController.text,pinEditingController.text);
     Navigator.pop(context);
     if(data.result){
-      _onTap(2);
-      setState(() {
-        _titleName = '填写学校班级';
-        _hasdeleteIcon = false;
-      });
-      print('头');
-      print(_titleName);
-
+      print('传过来的信息');
+      print(widget.registerState);
+      ///判断走1还是3的流程
+      if(widget.registerState==1){
+        ///进入建立档案页面
+        NavigatorUtil.goBuildArchives(context,registerState:widget.registerState,index: 0,userPhone:widget.userPhone);
+      }else if(widget.registerState==3){
+        NavigatorUtil.goBuildArchives(context,registerState:widget.registerState,index: 2,userPhone:widget.userPhone,head:widget.head,name:widget.name);
+      }else{
+        _onTap(2);
+        setState(() {
+          _titleName = '填写学校班级';
+          _hasdeleteIcon = false;
+        });
+      }
     }else{
       setState(() {
         _checkCodeTarget = true;
@@ -349,6 +379,27 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
       setState(() {
         _checkCodeTarget = true;
       });
+    }
+  }
+
+  void _changeParent() async{
+    print(userPhoneController.text);
+    print(widget.userId);
+    print(pinEditingController.text);
+    Store<GSYState> store = StoreProvider.of(context);
+    CommonUtils.showLoadingDialog(context);
+    DataResult data = await UserDao.updateParentMobile(userPhoneController.text,widget.userId,pinEditingController.text);
+    Navigator.pop(context);
+    if(data.result){
+//      showToast(data.data["message"]);
+      _login();
+    }else{
+      setState(() {
+        _checkCodeTarget = true;
+      });
+      if (data!=null&&data.data?.code !=null &&data.data?.code ==400){
+        showToast("验证码错误！");
+      }
     }
   }
 
@@ -567,12 +618,22 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
       }else if(data.data['err']==0||data.data['err']==401){
         String className = "$gradeName年级$_className班";
         CommonUtils.showLoadingDialog(context, text: "注册中···");
-        DataResult data = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className);
-        Navigator.pop(context);
-        if(!data.data['success']){
-          showToast(data.data['message']);
+        DataResult registerDate;
+        print('选择没有学生账号密码过来的');
+        print(widget.registerState);
+        if(widget.registerState==3){
+          registerDate = await UserDao.register('JZZC',widget.stuPhone,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className,parentPhone:userPhoneController.text);
+//          registerDate = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className,parentPhone:widget.stuPhone);
         }else{
-          print(data.data);
+          registerDate = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className);
+        }
+        Navigator.pop(context);
+        print('注册信息');
+        print(registerDate.data);
+        if(!registerDate.data['success']){
+          showToast(registerDate.data['message']);
+        }else{
+          print(registerDate.data);
           showToast('注册成功！');
           NavigatorUtil.goLogin(context,account:(userPhoneController.text).toString(),password:(userPasswordController.text).toString());
         }
@@ -686,11 +747,14 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
       DataResult data = await UserDao.checkHaveAccount(userPhoneController.text, 'P');
       Navigator.pop(context);
        if(data.result){
-          if(data.data == false){
+         print(data.result);
+         print(data.data == "1");
+          if(data.data == "1"){
             var isSend = await CommonUtils.showEditDialog(
               context,
               CodeWidget(phone: userPhoneController.text),
             );
+            print('isSend');
             print(isSend);
             if (null != isSend && isSend) {
               _onTap(1);

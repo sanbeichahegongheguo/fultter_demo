@@ -31,7 +31,7 @@ class _IndexNoticeWidgetState extends State<IndexNoticeWidget> {
               onTap: (){
                 print("点击公告");
                 ///进行流量统计
-                if(widget.data["dateType"]!=0){
+                if(widget.data["dateType"]!=null&&widget.data["dateType"]!=0){
                   ApplicationDao.trafficStatistic(widget.data["dateType"]);
                 }
                 print('事件统计');

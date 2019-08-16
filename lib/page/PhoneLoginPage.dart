@@ -264,27 +264,56 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   }
 
   void _login() async {
+
     if (!RegexUtil.isMobileSimple(userNameController.text)) {
       showToast("请输入正确的手机号", position: ToastPosition.bottom);
       return;
     }
-    var isSend = await CommonUtils.showEditDialog(
-      context,
-      CodeWidget(phone: userNameController.text),
-    );
-    if (null != isSend && isSend) {
-      SpUtil.putString(Config.USER_PHONE, userNameController.text);
-      DataResult data = await UserDao.checkHaveAccount(userNameController.text, 'P');
-      bool isLogin = false;
-      if(data.result){
-        if(data.data=="2"){
-          isLogin = true;
-        }
-        NavigatorUtil.goRegester(context,isLogin:isLogin,index: 1,userPhone:userNameController.text);
-      }else{
-          showToast("网络异常请稍后重试！",position: ToastPosition.bottom);
+
+    SpUtil.putString(Config.USER_PHONE, userNameController.text);
+    DataResult data = await UserDao.checkHaveAccount(userNameController.text, 'P');
+    bool isLogin = false;
+    int registerState = 2;
+    String name = '';
+    String head = '';
+    int userId;
+    if(data.result){
+      print('登录状态');
+      print(data);
+      ///0：存在家长账号，2：已经有135的学生，没有135的家长
+      if(data.data["error"]=="0"||data.data["error"]=="2"){
+        isLogin = true;
+        print('0：存在家长账号，2：已经有135的学生，没有135的家长');
+        ///这个手机号没有注册过
+      }else if(data.data["error"]=="1"){
+        registerState = 1;
+        print('这个手机号没有注册过');
+        ///已经有135的学生，这个135的学生有136的家长了
+      }else if(data.data["error"]=="3"){
+        registerState = 3;
+        print('已经有135的学生，这个135的学生有136的家长了');
+        userId = data.data["ext1"];
+        name = data.data["ext2"];
+        head = data.data["ext3"];
       }
+
+      if(data.data["error"]=="0"||data.data["error"]=="2"||data.data["error"]=="1"){
+        var isSend = await CommonUtils.showEditDialog(
+          context,
+          CodeWidget(phone: userNameController.text),
+        );
+        if (null != isSend && isSend) {
+          NavigatorUtil.goRegester(context,isLogin:isLogin,index: 1,userPhone:userNameController.text,registerState:registerState);
+        }
+      }else{
+        NavigatorUtil.goBuildArchives(context,registerState:registerState,index: 2,userPhone:userNameController.text,head:head,name:name,userId:userId);
+      }
+    }else{
+      showToast("网络异常请稍后重试！",position: ToastPosition.bottom);
     }
+
+
+
 //    if (loginBtn) {
 //      CommonUtils.showLoadingDialog(context, text: "登陆中");
 //      DataResult data = await UserDao.login(userNameController.text, passwordController.text);
