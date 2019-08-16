@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flustars/flustars.dart';
@@ -9,16 +10,14 @@ import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
-import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
-import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:flutter_start/models/Application.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
-
+import 'package:device_info/device_info.dart';
 import 'HomePage.dart';
 import 'PhoneLoginPage.dart';
 
@@ -48,6 +47,7 @@ class SplashPageState extends State<SplashPage> {
   }
   @override
   void didChangeDependencies() {
+    ApplicationDao.sendDeviceInfo();
     super.didChangeDependencies();
   }
 

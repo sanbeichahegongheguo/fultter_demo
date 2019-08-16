@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_start/common/config/config.dart';
 
 ///地址数据
@@ -7,10 +9,10 @@ class Address {
   static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
   static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
   static const String h5Host = "http://192.168.6.30:30593/";
-  static const String flowStatistics = "http://192.168.6.30:31221/common_dc_client/dc/send.html";
+  static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
 
   static const String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
-//  static const String flowStatistics = " https://www.k12china.com/common_dc_client/dc/send.html";
+//  static const String common_dc_client = " https://www.k12china.com/common_dc_client/";
 //  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
 //  static const String h5Host = "https://www.k12china.com/h5/";
 //  static const String studentWebHost = "https://api.k12china.com/studentweb/";
@@ -260,14 +262,22 @@ class Address {
 
   ///流量统计
   static statistics(){
-    return flowStatistics;
+    return "${common_dc_client}dc/send.html";
   }
 
   ///获取APP启动公告
   static getAppNotice(){
     return "${studentHost}getAppNotice";
   }
+  ///设备信息收集
+  static sendDeviceInfo(){
+    if(Platform.isIOS){
+      return "${common_dc_client}dc/sendIPhoneInfo.html";
+    }else{
+      return "${common_dc_client}dc/sendPhoneInfo.html";
+    }
 
+  }
 
 
 

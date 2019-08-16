@@ -49,7 +49,7 @@ class HttpErrorEvent {
         showToast("网络异常,请稍后重试");
         break;
       default:
-        showToast("异常" + " " + message);
+        showToast("网络错误" + " " + message);
         break;
     }
     return message;

@@ -24,7 +24,6 @@ dependencies:
   event_bus: ^1.1.0
   oktoast: ^2.2.0
   package_info: ^0.4.0+6
-  device_info: ^0.4.0+2
   permission_handler: ^3.2.1+1
   imei_plugin: ^1.1.0
   image_picker: ^0.6.1+2
@@ -43,6 +42,8 @@ dependencies:
   url_launcher: ^5.1.2
   fluwx:
     path: ./plugins/fluwx
+  device_info:
+    path: ./plugins/device_info
   webview_flutter:
     path: ./plugins/webview_flutter
   flutter_localizations:

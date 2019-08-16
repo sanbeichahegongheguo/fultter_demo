@@ -8,17 +8,18 @@ import 'package:uuid/uuid.dart';
 
 class DeviceInfo {
   static DeviceInfo instance = new DeviceInfo();
+  DeviceInfoPlugin _deviceInfo = new DeviceInfoPlugin();
+  DeviceInfoPlugin get deviceInfo  =>_deviceInfo;
   Map<String, dynamic> _deviceInfoMap;
   String deviceId = "";
   Future<Map<String, dynamic>> getDeviceInfo() async {
     if (null == this._deviceInfoMap) {
-      DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
       if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
         this._deviceInfoMap = _readAndroidBuildData(androidInfo);
         return this._deviceInfoMap;
       } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
         this._deviceInfoMap = _readIosDeviceInfo(iosInfo);
         return this._deviceInfoMap;
       }

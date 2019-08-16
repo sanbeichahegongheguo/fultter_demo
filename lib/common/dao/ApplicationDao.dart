@@ -89,6 +89,40 @@ class ApplicationDao{
     print(res.data);
   }
 
+  ///设备信息统计
+  static sendDeviceInfo() async {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    int uid = 0;
+    await SpUtil.getInstance();
+    var object = SpUtil.getObject(Config.LOGIN_USER);
+    if (object!=null){
+      uid = SpUtil.getObject(Config.LOGIN_USER)["userId"];
+    }
+    String key = "sendDeviceInfo_$uid";
+    var before = SpUtil.getInt(key);
+    if(before!=null && before!=0){
+      //判断是否已经过了7天,每个用户7天发送一次
+      num d = ((now-before)/ (1000 * 60 * 60 * 24)).ceil();
+      if( d <= 7 ){
+        print("设备信息统计已经发送 时间${now-before}");
+        //7天内不发送
+        return;
+      }
+    }
+    var yondorInfo = await DeviceInfo.instance.deviceInfo.yondorInfo;
+    String  did = await DeviceInfo.instance.getDeviceId();
+    yondorInfo["did"] = did;
+    yondorInfo["kid"] = did + yondorInfo["kid"];
+    yondorInfo["uid"] = uid;
+    var params = {"dataJson": jsonEncode(yondorInfo)};
+    var res = await httpManager.netFetch(Address.sendDeviceInfo(), params, null, new Options(method: "post"));
+    if(res!=null && res.result){
+      if (res.data!=null&&res.data["success"]){
+        SpUtil.putInt(key, now);
+      }
+    }
+  }
+
   ///获取APP公告
   static getAppNotice() async{
     String key = await httpManager.getAuthorization();
