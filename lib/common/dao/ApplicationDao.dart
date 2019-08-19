@@ -66,13 +66,25 @@ class ApplicationDao{
     }
     return new DataResult(result, res.result);
   }
-
+  static Map<num,bool> _map = new Map();
   ///流量统计
   static trafficStatistic(eventId) async {
     var pf = 'PARENT_APP';
     var did = await DeviceInfo.instance.getDeviceId();
-    var uid = SpUtil.getObject(Config.LOGIN_USER)["userId"];
-    var cb = SpUtil.getObject(Config.LOGIN_USER)["userId"];
+    var user = SpUtil.getObject(Config.LOGIN_USER);
+    var uid;
+    var cb ;
+    //启动事件只统计一次
+    if(eventId==287&&_map[287]!=null){
+      return;
+    }
+    if(eventId==287){
+      _map[287] = true;
+    }
+    if (user!=null){
+      uid = user["userId"];
+      cb = user["userId"];
+    }
     var cd =  DateUtil.formatDate(new DateTime.now(),format:DataFormats.full);
     var vn = (await PackageInfo.fromPlatform()).version;
     var df = '';

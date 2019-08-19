@@ -78,11 +78,14 @@ class SplashPageState extends State<SplashPage> {
     UserDao.getUser(isNew:true,store: store).then((res){
       Future.delayed(const Duration(milliseconds: 500), () async {
       if (res != null){
+        //家长启动事件
+        ApplicationDao.trafficStatistic(287);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (BuildContext context) => HomePage()),
               (Route<dynamic> route) => false,
         );
+
       }else{
         Navigator.pushAndRemoveUntil(
           context,
