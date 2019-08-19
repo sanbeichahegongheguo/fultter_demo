@@ -137,6 +137,15 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
       }
     });
   }
+
+  void dispose() {
+    stuPhoneController?.dispose();
+    stuNewPhoneController?.dispose();
+    stuPwdController?.dispose();
+    codeController?.dispose();
+    super.dispose();
+  }
+
   Widget build(BuildContext context){
     return StoreBuilder<GSYState>(builder: (context, store) {
       return Scaffold(
@@ -334,6 +343,7 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
       ),
     );
   }
+
   ///验证：请输入孩子学生账号与密码
   void _inputStuAccountNext() async{
     if (_inputStuNextBtn) {
