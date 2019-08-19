@@ -252,11 +252,48 @@ class UserDao {
         result = res.data["message"];
         res.result = false;
       } else {
-        result = res.data["error"];
+        result = res.data;
       }
     }
     return new DataResult(result, res.result);
   }
+
+  ///更改家长：136家长改为135家长
+  static updateParentMobile(mobile, userId, code) async {
+    var params = {"mobile": mobile, "userId": userId,"code":code};
+    var res = await httpManager.netFetch(Address.updateParentMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"] == null) {
+        result = res.data;
+        res.result = false;
+      } else {
+        result = res.data;
+      }
+    }else{
+      result = res;
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///判断学生手机账号是否存在
+  static checkMobile(mobile, identity) async {
+    var params = {"mobile": mobile, "identity":identity};
+    var res = await httpManager.netFetch(Address.checkMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["success"] == null) {
+        result = res.data;
+        res.result = false;
+      } else {
+        result = res.data;
+      }
+    }else{
+      result = res;
+    }
+    return new DataResult(result, res.result);
+  }
+
   ///更换班级
   static joinClass(classId) async{
     String key = await httpManager.getAuthorization();
@@ -371,8 +408,11 @@ class UserDao {
   }
 
   ///注册
-  static register(dataFrom,mobile,password,realName,identity,classId,schoolId,className,grade,classNum) async{
+  static register(dataFrom,mobile,password,realName,identity,classId,schoolId,className,grade,classNum,{parentPhone}) async{
     var params = {"dataFrom": dataFrom,"mobile": mobile,"password": password,"realName": realName,"identity": identity,"classId": classId,"schoolId": schoolId,"className": className,"grade": grade,"classNum": classNum};
+    if(parentPhone!=null){
+      params["parentMobile"] = parentPhone;
+    }
     var res = await httpManager.netFetch(Address.register(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {

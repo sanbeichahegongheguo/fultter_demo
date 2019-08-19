@@ -4,16 +4,33 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/dao/daoResult.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/local/local_storage.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/CountDown.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/widget/CodeWidget.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:redux/redux.dart';
 
 class BuildArchivesPage extends StatefulWidget {
   static final String sName = "buildArchives";
   @override
+
+  final int registerState;
+  final int index;
+  final String userPhone;
+  final String head;
+  final String name;
+  final int userId;
+
+  BuildArchivesPage({this.registerState,this.index, this.userPhone, this.head,this.name, this.userId});
+
   State<StatefulWidget> createState() {
-    return BuildArchivesState(0);
+    return BuildArchivesState(index);
   }
 }
 
@@ -30,9 +47,104 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
   bool _hasdeleteIcon = false;
   String _helperText = "";
   bool _inputStuNextBtn = false;
+  bool _inputStuNextNewBtn = false;
   bool _sendBtn = false;
   bool _recoverTime = true;
   String _topText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    stuNewPhoneController.addListener(() {
+      if (stuNewPhoneController.text == "") {
+        setState(() {
+          _hasdeleteIcon = false;
+        });
+      } else {
+        setState(() {
+          _hasdeleteIcon = true;
+        });
+      }
+
+      if (stuNewPhoneController.text.length >= 10 && codeController.text.length >= 6) {
+        if (!this._inputStuNextNewBtn&&_sendBtn) {
+          setState(() {
+            this._inputStuNextNewBtn = true;
+          });
+        }
+      } else {
+        if (this._inputStuNextNewBtn) {
+          setState(() {
+            this._inputStuNextNewBtn = false;
+          });
+        }
+      }
+    });
+    codeController.addListener(() {
+      if (stuNewPhoneController.text.length >= 10 && codeController.text.length >= 6) {
+        if (!this._inputStuNextNewBtn&&_sendBtn) {
+          setState(() {
+            this._inputStuNextNewBtn = true;
+          });
+        }
+      } else {
+        if (this._inputStuNextNewBtn) {
+          setState(() {
+            this._inputStuNextNewBtn = false;
+          });
+        }
+      }
+    });
+
+    stuPhoneController.addListener(() {
+      if (stuPhoneController.text == "") {
+        setState(() {
+          _hasdeleteIcon = false;
+        });
+      } else {
+        setState(() {
+          _hasdeleteIcon = true;
+        });
+      }
+
+      if (stuPhoneController.text.length >= 10 && stuPwdController.text.length >= 6) {
+        if (!this._inputStuNextBtn) {
+          setState(() {
+            this._inputStuNextBtn = true;
+          });
+        }
+      } else {
+        if (this._inputStuNextBtn) {
+          setState(() {
+            this._inputStuNextBtn = false;
+          });
+        }
+      }
+    });
+    stuPwdController.addListener(() {
+      if (stuPhoneController.text.length >= 10 && stuPwdController.text.length >= 6) {
+        if (!this._inputStuNextBtn) {
+          setState(() {
+            this._inputStuNextBtn = true;
+          });
+        }
+      } else {
+        if (this._inputStuNextBtn) {
+          setState(() {
+            this._inputStuNextBtn = false;
+          });
+        }
+      }
+    });
+  }
+
+  void dispose() {
+    stuPhoneController?.dispose();
+    stuNewPhoneController?.dispose();
+    stuPwdController?.dispose();
+    codeController?.dispose();
+    super.dispose();
+  }
 
   Widget build(BuildContext context){
     return StoreBuilder<GSYState>(builder: (context, store) {
@@ -49,6 +161,7 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
                   color: Color(0xFF333333),
                 ),
                 onPressed: () {
+                  _back();
                 }
             ),
             title: Text(
@@ -149,7 +262,6 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
                 textSize: ScreenUtil.getInstance().getSp(54/3),
                 elevation: 2,
                 onTap: (){
-                  print('xxii');
                   _onChange(1);
                 }),
           ),
@@ -165,7 +277,7 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
                 textSize: ScreenUtil.getInstance().getSp(54/3),
                 elevation: 2,
                 onTap: (){
-                  NavigatorUtil.goRegester(context,index: 2);
+                  NavigatorUtil.goRegester(context,index: 2,userPhone:widget.userPhone,registerState:widget.registerState);
                 }),
           ),
         ],
@@ -196,19 +308,24 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
           ),
           Container(
             padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), right: ScreenUtil.getInstance().getWidthPx(42), top: ScreenUtil.getInstance().getHeightPx(100)),
-            child: _getTextField('您的账号/手机号',stuPhoneController,what:'phone',length:11,hasDelete:true,limteLength:true,rule:WhitelistingTextInputFormatter.digitsOnly),
+            child: _getTextField('您的孩子手机号',stuPhoneController,what:'phone',length:11,hasDelete:true,limteLength:true,rule:WhitelistingTextInputFormatter.digitsOnly),
           ),
           Container(
             padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), right: ScreenUtil.getInstance().getWidthPx(42), top: ScreenUtil.getInstance().getHeightPx(40)),
-            child: _getTextField('您的密码',stuPwdController,obscureText:true,limteLength:true,length:20,rule:WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[0-9]"))),
+            child: _getTextField('您的孩子密码',stuPwdController,obscureText:true,limteLength:true,hasDelete:false,length:20,rule:WhitelistingTextInputFormatter(RegExp("[a-zA-Z]|[0-9]"))),
           ),
           Container(
             padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(40),bottom:ScreenUtil.getInstance().getHeightPx(140)),
-            child: Text('忘记密码请打开《远大小状元学生》自行找回哦！',style: TextStyle(
-              color: Color(0xFF999999),
-              fontSize: ScreenUtil.getInstance().getSp(42/3),
-              decoration: TextDecoration.underline,
-            ),),
+            child: GestureDetector(
+              onTap: (){
+                NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo");
+              },
+              child: Text('忘记密码请打开《远大小状元学生》自行找回哦！',style: TextStyle(
+                color: Color(0xFF999999),
+                fontSize: ScreenUtil.getInstance().getSp(42/3),
+                decoration: TextDecoration.underline,
+              ),),
+            ),
           ),
           CommonUtils.buildBtn(
               '下一步',
@@ -220,11 +337,36 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
               textSize: ScreenUtil.getInstance().getSp(54/3),
               elevation: 2,
               onTap: (){
-                _onChange(2);
+                _inputStuAccountNext();
               })
         ],
       ),
     );
+  }
+
+  ///验证：请输入孩子学生账号与密码
+  void _inputStuAccountNext() async{
+    if (_inputStuNextBtn) {
+      CommonUtils.showLoadingDialog(context, text: "登陆中···");
+      Store<GSYState> store = StoreProvider.of(context);
+      DataResult data = await UserDao.login(stuPhoneController.text, stuPwdController.text, store);
+      Navigator.pop(context);
+      if (data.result) {
+        showToast("登录成功 ${data.data.realName}");
+        LocalStorage.saveUser(LoginUser(stuPhoneController.text, stuPwdController.text));
+        NavigatorUtil.goHome(context);
+      } else {
+        if (null != data.data) {
+          showToast(data?.data ?? "");
+        }
+      }
+    } else {
+      if (stuPhoneController.text.length == 0) {
+        showToast("账号不能为空");
+      } else if (stuPwdController.text.length < 6) {
+        showToast("密码必须大于6位");
+      }
+    }
   }
 
   ///您的手机号已被以下学生账号使用
@@ -253,11 +395,11 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
             child: Column(
               children: <Widget>[
                 ClipOval(
-                  child: _isNetwork(null),
+                  child: _isNetwork(widget.head),
                 ),
                 Container(
                   padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(15)),
-                  child:Text('易烊千玺',style: TextStyle(color: Color(0xff333333),fontSize:ScreenUtil.getInstance().getSp(48/3) ),),
+                  child:Text(widget.name,style: TextStyle(color: Color(0xff333333),fontSize:ScreenUtil.getInstance().getSp(48/3) ),),
                 ),
               ],
             ),
@@ -272,6 +414,7 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
               textSize: ScreenUtil.getInstance().getSp(54/3),
               elevation: 2,
               onTap: (){
+                _addStu();
               }),
           Container(
             padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(60)),
@@ -319,9 +462,9 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
                 _getTextField('请输入短信验证码',codeController,what:'phone',length:6,hasDelete:false,limteLength:true,rule:WhitelistingTextInputFormatter.digitsOnly),
                 GestureDetector(
                   onTap: (){
-//                    if(!_sendBtn){
-//                      _sendNumberCode();
-//                    }
+                    if(!_sendBtn){
+                      _sendNumberCode();
+                    }
                   },
                   child: Container(
                       margin: EdgeInsets.only(right:ScreenUtil.getInstance().getWidthPx(60)),
@@ -341,20 +484,20 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
               '下一步',
               width: ScreenUtil.getInstance().getWidthPx(845),
               height: ScreenUtil.getInstance().getHeightPx(130),
-              decorationColor: _inputStuNextBtn ? Color(0xFF6ed699) : Color(0xFFdfdfeb),
-              splashColor:_inputStuNextBtn ? Color(0xFF6ed699) : Color(0xFFdfdfeb),
+              decorationColor: _inputStuNextNewBtn ? Color(0xFF6ed699) : Color(0xFFdfdfeb),
+              splashColor:_inputStuNextNewBtn ? Color(0xFF6ed699) : Color(0xFFdfdfeb),
               textColor: Colors.white,
               textSize: ScreenUtil.getInstance().getSp(54/3),
               elevation: 2,
               onTap: (){
-                _onChange(2);
+                _bindPhoneNext();
               })
         ],
       ),
     );
   }
 
-  TextField _getTextField(String hintText,TextEditingController controller,{String what,bool obscureText,int length,bool limteLength,dynamic rule,String helpText,bool hasDelete}){
+  TextField _getTextField(String hintText,TextEditingController controller,{String what,bool obscureText,int length,bool limteLength,dynamic rule,String helpText,bool hasDelete=false}){
     return TextField(
       controller: controller,
       cursorColor: Color(0xFF333333),
@@ -392,6 +535,20 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
     );
   }
 
+  void _bindPhoneNext(){
+    if(stuNewPhoneController.text==''){
+      showToast('请先输入手机号！');
+    }else if(codeController.text==''){
+      showToast('请先输入验证码！');
+    }else if(stuNewPhoneController.text.length < 10 && codeController.text.length < 6){
+      showToast('请输入正确的格式！');
+    } else if(!_sendBtn){
+      showToast('请先发送验证码！');
+    }else{
+      _checkCode();
+    }
+  }
+
   void _onChange(int index) {
     FocusScope.of(context).requestFocus(FocusNode());
     _pageController.animateToPage(index,
@@ -422,6 +579,87 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
         width: ScreenUtil.getInstance().getWidthPx(250),
         height: ScreenUtil.getInstance().getWidthPx(250),
       );
+    }
+  }
+
+  ///直接添加
+  void _addStu() async{
+    var isSend = await CommonUtils.showEditDialog(
+      context,
+      CodeWidget(phone: widget.userPhone),
+    );
+    if (null != isSend && isSend) {
+      NavigatorUtil.goRegester(context,index: 1,userPhone:widget.userPhone,registerState:widget.registerState,userId:widget.userId,head: widget.head,name:widget.name);
+    }
+  }
+
+  void _sendNumberCode() async{
+    if(stuNewPhoneController.text==''){
+      showToast('手机号为空！');
+      return;
+    }else if(stuNewPhoneController.text.length < 11){
+      showToast('手机号码格式错误！');
+      return;
+    }
+    var isSend = await CommonUtils.showEditDialog(
+      context,
+      CodeWidget(phone: stuNewPhoneController.text),
+    );
+    if (null != isSend && isSend) {
+      setState(() {
+        _sendBtn = true;
+        if (stuNewPhoneController.text.length >= 10 && codeController.text.length >= 6) {
+          this._inputStuNextNewBtn = true;
+        }
+      });
+    }
+
+  }
+
+  //校验手机验证码
+  void _checkCode() async{
+    CommonUtils.showLoadingDialog(context, text: "验证中···");
+    DataResult data = await UserDao.checkCode(stuNewPhoneController.text,codeController.text);
+    if(data.result){
+      ///验证成功，判断手机号是否存在
+      DataResult data = await UserDao.checkMobile(stuNewPhoneController.text,'S');
+      if(data.data["success"]){
+        ///走注册流程
+        print(widget.userPhone);
+        print(stuNewPhoneController.text);
+        Navigator.pop(context);
+        NavigatorUtil.goRegester(context,index: 2,userPhone:widget.userPhone,registerState:widget.registerState,userId:widget.userId,head: widget.head,name:widget.name,stuPhone:stuNewPhoneController.text);
+
+//        NavigatorUtil.goRegester(context,index: 2,userPhone:widget.userPhone,registerState:widget.registerState,stuPhone:stuNewPhoneController.text);
+      }else{
+        showToast(data.data["message"]);
+        Navigator.pop(context);
+      }
+    }else{
+      showToast(data.data);
+      Navigator.pop(context);
+    }
+  }
+
+  ///学习档案返回
+  void _back(){
+    print(widget.registerState);
+    print(widget.index);
+    print(_currentPageIndex);
+    bool registerState1 = null!=widget.registerState&&null!=widget.index&&widget.registerState==1&&widget.index==0;
+    bool registerState3 = null!=widget.registerState&&null!=widget.index&&widget.registerState==3&&widget.index==2;
+    if(registerState1&&_currentPageIndex==0){
+      NavigatorUtil.goPhoneLoginPage(context);
+    }else if(registerState1&&_currentPageIndex==1){
+      _onChange(0);
+    }else if(registerState3&&_currentPageIndex==2){
+      NavigatorUtil.goPhoneLoginPage(context);
+    }else if(registerState3&&_currentPageIndex==3){
+      setState(() {
+        _topText = '';
+        _sendBtn = false;
+      });
+      _onChange(2);
     }
   }
 

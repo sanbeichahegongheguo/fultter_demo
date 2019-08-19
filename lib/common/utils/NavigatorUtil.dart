@@ -61,13 +61,13 @@ class NavigatorUtil {
   }
 
   ///注册
-  static goRegester(BuildContext context,{String from,bool isLogin = false,int index = 0,String userPhone}) {
-    NavigatorRouter(context, RegisterPage(from:from,index: index,userPhone:userPhone,isLogin:isLogin));
+  static goRegester(BuildContext context,{String from,bool isLogin = false,int index = 0,String userPhone,int registerState, String head,String name, int userId, String stuPhone}) {
+    NavigatorRouter(context, RegisterPage(from:from,index: index, userPhone:userPhone, isLogin:isLogin, registerState: registerState, head: head, name: name, userId: userId, stuPhone:stuPhone));
   }
 
   ///注册前夕-建立学习档案
-  static goBuildArchives(BuildContext context) {
-    NavigatorRouter(context, BuildArchivesPage());
+  static goBuildArchives(BuildContext context,{int registerState,int index = 0, String userPhone, String head, String name, int userId}) {
+    NavigatorRouter(context, BuildArchivesPage(registerState: registerState, index: index, userPhone: userPhone, head: head, name: name,userId: userId));
   }
 
   ///找回密码
