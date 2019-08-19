@@ -22,7 +22,7 @@ static const NSString *CompanyFirstDomainByWeChatRegister = @"k12china.com";
 - (void)webView:(WKWebView*)webView
     decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction
                     decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    
+
     NSURLRequest *request        = navigationAction.request;
     NSString     *scheme         = [request.URL scheme];
     NSString     *absoluteString = [navigationAction.request.URL.absoluteString stringByRemovingPercentEncoding];
@@ -30,7 +30,7 @@ static const NSString *CompanyFirstDomainByWeChatRegister = @"k12china.com";
     static NSString *endPayRedirectURL = nil;
     if ([absoluteString hasPrefix:@"https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb"] && ![absoluteString hasSuffix:[NSString stringWithFormat:@"redirect_url=pedu.%@://",CompanyFirstDomainByWeChatRegister]]) {
         decisionHandler(WKNavigationActionPolicyCancel);
-        
+
         NSString *redirectUrl = nil;
         if ([absoluteString containsString:@"redirect_url="]) {
             NSRange redirectRange = [absoluteString rangeOfString:@"redirect_url"];
@@ -39,14 +39,14 @@ static const NSString *CompanyFirstDomainByWeChatRegister = @"k12china.com";
         }else {
             redirectUrl = [absoluteString stringByAppendingString:[NSString stringWithFormat:@"&redirect_url=pedu.%@://",CompanyFirstDomainByWeChatRegister]];
         }
-        
+
         NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:redirectUrl] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:XDX_URL_TIMEOUT];
         newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
         newRequest.URL = [NSURL URLWithString:redirectUrl];
         [webView loadRequest:newRequest];
         return;
     }
-    
+
     // Judge is whether to jump to other app.
     if ([scheme isEqualToString:@"weixin"]) {
         if (endPayRedirectURL) {

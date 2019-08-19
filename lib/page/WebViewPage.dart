@@ -39,7 +39,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   WebViewController _webViewController;
   Size _deviceSize;
   bool _showAd = false;
-  Map  _oneUrl = new Map();
+
   /// 使用javascriptChannels发送消息
   /// javascriptChannels参数可以传入一组Channels，我们可以定义一个_alertJavascriptChannel变量，这个channel用来控制JS调用Flutter的toast功能：
   JavascriptChannel _alertJavascriptChannel(BuildContext context) {
@@ -135,6 +135,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   * @param request.url open_weixin 打开微信
   * */
   NavigationDecision _navigationDelegate(NavigationRequest request){
+    print('@ 1111回调参数 $request}');
     if (request.url.startsWith('haxecallback')) {
       print('@ 回调参数 $request}');
       if(request.url.indexOf("signed")>-1){
@@ -158,14 +159,22 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           setState(() =>_showAd = false);
         }
       }else if (request.url.indexOf("webOpenCammera")>-1){
-        _getImage(0).then((v){
+        var _urlMsg = request.url.split(":?");
+        var type = 0;
+        if(_urlMsg.length>1){
+          var msg = Uri.decodeComponent(_urlMsg.last);
+          var _urlList = jsonDecode(msg);
+          if (_urlList["type"]!=null){
+            type = _urlList["type"];
+          }
+        }
+        _getImage(type).then((v){
           var data = {"result":"success","path":""};
           if (ObjectUtil.isEmptyString(v)){
             data["result"] = "fail";
           }else{
             data["data"] = v;
           }
-          print(jsonEncode(data));
           _webViewController.evaluateJavascript("callPoto("+jsonEncode(data)+")");
         });
       }else if(request.url.indexOf("share")>-1){
@@ -270,7 +279,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
 
   //调用相机或本机相册
   Future _getImage(type) async {
-    File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera);
+    File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera,imageQuality:50);
     if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
       return "";
     }
@@ -281,7 +290,9 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       sourcePath: image.path,
       toolbarTitle: "选择图片",
     );
-
+    if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
+      return "";
+    }
     List<int> bytes = await image.readAsBytes();
     var base64encode = base64Encode(bytes);
     return base64encode;

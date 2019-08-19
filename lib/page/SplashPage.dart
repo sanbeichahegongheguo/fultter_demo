@@ -73,24 +73,27 @@ class SplashPageState extends State<SplashPage> {
         }
       });
     });
-    new Future.delayed(const Duration(milliseconds: 500), () async {
+
             //登录
-            UserDao.getUser(isNew:true,store: store).then((res){
-              if (res != null){
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-                      (Route<dynamic> route) => false,
-                );
-              }else{
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
-                      (Route<dynamic> route) => false,
-                );
-              }
-            });
+    UserDao.getUser(isNew:true,store: store).then((res){
+      Future.delayed(const Duration(milliseconds: 500), () async {
+      if (res != null){
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+              (Route<dynamic> route) => false,
+        );
+      }else{
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
+              (Route<dynamic> route) => false,
+        );
+      }
+      });
     });
+
+
 //    _loadSplashData();
 //    Observable.just(1).delay(new Duration(milliseconds: 500)).listen((_) {
 ////      SpUtil.putBool(Constant.key_guide, false);

@@ -148,7 +148,10 @@ class CommonUtils {
         creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID},
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated:(id){
-            print("onPlatformViewCreated $id");
+          if (map !=null){
+            print("id  $page");
+            map[page] = MethodChannel("banner_$id");
+          }
         }
       ):AndroidView(
         viewType: "banner",

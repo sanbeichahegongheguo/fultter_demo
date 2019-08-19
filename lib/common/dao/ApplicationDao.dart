@@ -110,9 +110,12 @@ class ApplicationDao{
       }
     }
     var yondorInfo = await DeviceInfo.instance.deviceInfo.yondorInfo;
+    print(jsonEncode(yondorInfo));
     String  did = await DeviceInfo.instance.getDeviceId();
     yondorInfo["did"] = did;
-    yondorInfo["kid"] = did + yondorInfo["kid"];
+    if(Platform.isAndroid){
+      yondorInfo["kid"] = did + yondorInfo["kid"];
+    }
     yondorInfo["uid"] = uid;
     var params = {"dataJson": jsonEncode(yondorInfo)};
     var res = await httpManager.netFetch(Address.sendDeviceInfo(), params, null, new Options(method: "post"));

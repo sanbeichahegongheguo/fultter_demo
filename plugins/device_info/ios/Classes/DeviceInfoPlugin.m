@@ -5,6 +5,7 @@
 #import "DeviceInfoPlugin.h"
 #import "DeviceInfoManager.h"
 #import "BatteryInfoManager.h"
+#import "NetWorkInfoManager.h"
 #import <sys/utsname.h>
 
 @implementation FLTDeviceInfoPlugin

@@ -20,7 +20,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   dio: ^2.1.13
-  connectivity: ^0.4.3+6
+  connectivity: ^0.4.3+7
   event_bus: ^1.1.0
   oktoast: ^2.2.0
   package_info: ^0.4.0+6

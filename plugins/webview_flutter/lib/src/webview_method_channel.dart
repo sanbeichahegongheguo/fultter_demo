@@ -31,9 +31,17 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
+        final String url = call.arguments['url'];
+        bool isForMainFrame = true;
+        var s = call.arguments['isForMainFrame'];
+        if (s is bool){
+          isForMainFrame = s;
+        }else if (s is num){
+          isForMainFrame = s==1?true:false;
+        }
         return _platformCallbacksHandler.onNavigationRequest(
-          url: call.arguments['url'],
-          isForMainFrame: call.arguments['isForMainFrame'],
+          url: url,
+          isForMainFrame: isForMainFrame,
         );
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']);
@@ -119,9 +127,17 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       map[key] = value;
     }
 
+    void _addSettingIfPresent<T>(String key, WebSetting<T> setting) {
+      if (!setting.isPresent) {
+        return;
+      }
+      map[key] = setting.value;
+    }
+
     _addIfNonNull('jsMode', settings.javascriptMode?.index);
     _addIfNonNull('hasNavigationDelegate', settings.hasNavigationDelegate);
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
+    _addSettingIfPresent('userAgent', settings.userAgent);
     return map;
   }
 
@@ -135,6 +151,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'initialUrl': creationParams.initialUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),
       'javascriptChannelNames': creationParams.javascriptChannelNames.toList(),
+      'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
     };
   }

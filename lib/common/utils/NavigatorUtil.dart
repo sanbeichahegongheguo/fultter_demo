@@ -1,3 +1,4 @@
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
@@ -152,7 +153,24 @@ class NavigatorUtil {
 
   ///去往webview
   static goAdWebView(BuildContext context, Adver ad) async {
-    AppBar appBar = new AppBar(title: Text(ad.adverName),centerTitle: true,);
+    AppBar appBar = AppBar(
+        brightness: Brightness.light,
+        backgroundColor: Colors.lightBlueAccent,
+        //居中显示
+        centerTitle: true,
+        leading: new IconButton(
+            icon: new Icon(
+              Icons.arrow_back_ios,
+              color: Color(0xFF333333),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            }
+        ),
+        title: Text(
+          ad.adverName,
+          style: TextStyle(color: Color(0xFF333333)))
+    );
     return NavigatorRouter(context, WebViewPage(ad.target,appBar:appBar));
   }
 
