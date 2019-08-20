@@ -40,6 +40,7 @@
                 android:value="true" />
             <intent-filter>
                 <data android:scheme="yondorstudent"/>
+                <data android:scheme="tencent1105663498" />
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
