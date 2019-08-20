@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
@@ -61,6 +62,7 @@ class SplashPageState extends State<SplashPage> {
 
   void _initAsync() async {
     await SpUtil.getInstance();
+    SpUtil.remove(Config.EVENT_287);
     Store<GSYState> store = StoreProvider.of(context);
     PackageInfo.fromPlatform().then((v){
       store.dispatch(RefreshApplicationAction(store.state.application.copyWith(version:v.version)));

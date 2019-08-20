@@ -66,7 +66,6 @@ class ApplicationDao{
     }
     return new DataResult(result, res.result);
   }
-  static Map<num,bool> _map = new Map();
   ///流量统计
   static trafficStatistic(eventId) async {
     var pf = 'PARENT_APP';
@@ -75,11 +74,11 @@ class ApplicationDao{
     var uid;
     var cb ;
     //启动事件只统计一次
-    if(eventId==287&&_map[287]!=null){
+    if (eventId==287&&(!SpUtil.getBool(Config.EVENT_287)||user==null)){
       return;
     }
     if(eventId==287){
-      _map[287] = true;
+      SpUtil.putBool(Config.EVENT_287, true);
     }
     if (user!=null){
       uid = user["userId"];
