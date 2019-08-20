@@ -134,7 +134,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
                   boxShadow: [BoxShadow(color: Colors.black12)]
               ),
               child:MaterialButton(
-                onPressed: ()=>{},
+                onPressed: (){_goParentInfo('openStudent');},
                 minWidth: ScreenUtil.getInstance().getWidthPx(845),
                 height:ScreenUtil.getInstance().getHeightPx(133),
                 color: Color(0xFFfc6061),
@@ -520,8 +520,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
     }else if(where=='finishWork'){
       ApplicationDao.trafficStatistic(301);
     }
-    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){
-    });
+    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo");
   }
   ///去往期作业
   _goWord(){

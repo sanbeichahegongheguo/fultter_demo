@@ -157,7 +157,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                         )
                     );
                   }),
-
                 );
               }):Container(),
             ],

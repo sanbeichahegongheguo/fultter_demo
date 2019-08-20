@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/widget/IndexNoticeWidget.dart';
 import 'package:flutter_start/widget/update_version.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'NavigatorUtil.dart';
 
 class CommonUtils {
@@ -206,4 +206,16 @@ class CommonUtils {
     }
   }
 
+  static Future openStudentApp() async {
+    print("打開 學生端");
+    if (await canLaunch(Config.STUDENT_SCHEME)) {
+      await launch(Config.STUDENT_SCHEME, forceSafariVC: false, forceWebView: false);
+    } else {
+      if (Platform.isIOS) {
+        await launch(Config.STUDENT_IOS_URL, forceSafariVC: false, forceWebView: false);
+      }else if (Platform.isAndroid){
+        await launch(Config.STUDENT_TEN_URL, forceSafariVC: false, forceWebView: false);
+      }
+    }
+  }
 }

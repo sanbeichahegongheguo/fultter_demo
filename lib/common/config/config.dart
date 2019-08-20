@@ -43,4 +43,7 @@ class Config {
   static const EVENT_287 ='event_287';   //启动事件
   static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
   static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
+  static const STUDENT_SCHEME = "yondorstudenthwapp://"; //学生端路由
+  static const STUDENT_TEN_URL = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
+  static const STUDENT_IOS_URL = "https://apps.apple.com/cn/app/id1109534684"; //學生端苹果商店
 }

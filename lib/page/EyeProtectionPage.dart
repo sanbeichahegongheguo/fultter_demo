@@ -184,6 +184,6 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
   }
 
   _goParentInfo() {
-   
+    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo");
   }
 }

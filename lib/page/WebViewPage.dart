@@ -50,6 +50,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           showToast(message.message);
         });
   }
+  ///加载广告
   JavascriptChannel _loadAd() {
     return JavascriptChannel(
         name: 'LoadAd',
@@ -59,6 +60,14 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           } );
         });
   }
+  ///打开学生端
+  JavascriptChannel _openStudent() {
+    return JavascriptChannel(
+        name: 'OpenStudent',
+        onMessageReceived: (JavascriptMessage message) {
+          CommonUtils.openStudentApp();
+        });
+}
 
   /// 使用手写功能
   JavascriptChannel _detectxy(BuildContext context) {
@@ -108,7 +117,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                   () => VerticalDragGestureRecognizer(),
                             ),
                           ),
-                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd()].toSet(),
+                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent()].toSet(),
                         navigationDelegate: _navigationDelegate,
                         onPageFinished: (String url) {
                           print('@跳转链接: $url');
