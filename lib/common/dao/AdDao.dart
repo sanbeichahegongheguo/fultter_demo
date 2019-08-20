@@ -3,6 +3,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
 
 import 'daoResult.dart';
@@ -20,6 +21,7 @@ class AdDao{
         var json = res.data;
         if(json["success"]["ok"]==0){
           result = Adver.fromJson(json["success"]);
+          BannerUtil.sendData(result,BannerUtil.BANNER_SHOWNED_ADVERT);
           await SpUtil.putObject(Config.ADVER_KEY, result);
           res.result = true;
         }else if(json["success"]["ok"]==402){

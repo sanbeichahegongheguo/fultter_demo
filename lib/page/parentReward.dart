@@ -8,6 +8,7 @@ import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
@@ -67,28 +68,31 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                 child: Container(
                     width:MediaQuery.of(context).size.width,
                     height:ScreenUtil.getInstance().getHeightPx(135),
-                    child: Stack(
-                      children: <Widget>[
-                        StreamBuilder<Adver>(
-                            stream: bloc.adBloc.adverStream,
-                            builder: (context, AsyncSnapshot<Adver> snapshot){
-                              return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(AdBloc.adChannelMap,ParentReward.sName);
-                            }
-                        ),
-                        Container(
-                            alignment:AlignmentDirectional(0.91, -0.5),
-                            child: GestureDetector(
-                              child: Image.asset(
-                                'images/parent_reward/closeIcon.png',
-                                width:ScreenUtil.getInstance().getWidthPx(51),
+                    child: StreamBuilder<Adver>(
+                        stream: bloc.adBloc.adverStream,
+                        builder: (context, AsyncSnapshot<Adver> snapshot){
+                          return Stack(
+                            children: <Widget>[
+                              snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,ParentReward.sName),
+                              Container(
+                                  alignment:AlignmentDirectional(0.91, -0.5),
+                                  child: GestureDetector(
+                                    child: Image.asset(
+                                      'images/parent_reward/closeIcon.png',
+                                      width:ScreenUtil.getInstance().getWidthPx(51),
+                                    ),
+                                    onTap: (){
+                                      if(snapshot.data!=null){
+                                        BannerUtil.sendData(snapshot.data, BannerUtil.BANNER_SKIP_ADVERT);
+                                      }
+                                      bloc.parentRewardBloc.showBanner(false);
+                                    },
+                                  )
                               ),
-                              onTap: (){
-                                bloc.parentRewardBloc.showBanner(false);
-                              },
-                            )
-                        ),
-                      ],
-                    )
+                            ],
+                          );
+                        }
+                    ),
                 ),
               );
             },

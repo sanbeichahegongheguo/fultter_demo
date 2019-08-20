@@ -139,47 +139,9 @@ class CommonUtils {
           );
         });
   }
-  ///腾讯banner
-  static Widget buildBanner(Map<String,MethodChannel> map,String page){
-    print("banner  Platform.isIOS");
-    return Container(
-      child: Platform.isIOS?UiKitView(
-        viewType: "banner",
-        creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID},
-        creationParamsCodec: const StandardMessageCodec(),
-        onPlatformViewCreated:(id){
-          if (map !=null){
-            print("id  $page");
-            map[page] = MethodChannel("banner_$id");
-          }
-        }
-      ):AndroidView(
-        viewType: "banner",
-        creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID},
-        creationParamsCodec: const StandardMessageCodec(),
-        onPlatformViewCreated:(id){
-          if (map !=null){
-            print("id  $page");
-            map[page] = MethodChannel("banner_$id");
-          }
-        }
-      ),
-    );
-  }
 
-  ///创建后台banner
-  static Widget buildMyBanner(context,ad){
-   return GestureDetector(
-      child: CachedNetworkImage(
-        width: ScreenUtil.getInstance().screenWidth,
-        imageUrl:ad.picUrl,
-        fit: BoxFit.fill,
-      ),
-      onTap: (){
-        NavigatorUtil.goAdWebView(context, ad);
-      },
-    );
-  }
+
+
 
   ///版本更新
   static Future<Null> showUpdateDialog(BuildContext context,AppVersionInfo versionInfo,{int mustUpdate = 0}) {

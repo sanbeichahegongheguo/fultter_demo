@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
@@ -135,7 +136,6 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   * @param request.url open_weixin 打开微信
   * */
   NavigationDecision _navigationDelegate(NavigationRequest request){
-    print('@ 1111回调参数 $request}');
     if (request.url.startsWith('haxecallback')) {
       print('@ 回调参数 $request}');
       if(request.url.indexOf("signed")>-1){
@@ -174,8 +174,8 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
             data["result"] = "fail";
           }else{
             data["data"] = v;
+            _webViewController.evaluateJavascript("window.getBackPhoto("+jsonEncode(data)+")");
           }
-          _webViewController.evaluateJavascript("callPoto("+jsonEncode(data)+")");
         });
       }else if(request.url.indexOf("share")>-1){
         print("分享");
@@ -268,7 +268,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       widget = Container(
         height: ScreenUtil.getInstance().screenWidth/6.4,
         width: _deviceSize.width,
-        child: CommonUtils.buildBanner(null,null),
+        child: BannerUtil.buildBanner(null,null),
       );
     }else{
       widget = Container();

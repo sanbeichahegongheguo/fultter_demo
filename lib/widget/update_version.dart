@@ -6,7 +6,7 @@ import 'dart:ui';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_start/common/channel/Download.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,10 +24,6 @@ class UpdateVersionDialog extends StatefulWidget {
 }
 
 class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
-  static const channelName = 'plugins.iwubida.com/update_version';
-  static const stream = const EventChannel(channelName);
-  static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
-  static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
 
   // 进度订阅
   StreamSubscription downloadSubscription;
@@ -36,7 +32,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
 
   _updateButtonTap(BuildContext context) async {
     if (Platform.isIOS) {
-      final url = iosUrl;
+      final url = Config.iosUrl;
       if (await canLaunch(url)) {
         await launch(url, forceSafariVC: false, forceWebView: false);
       } else {
@@ -90,9 +86,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
   // 开始下载
   void _startDownload() {
     if (downloadSubscription == null) {
-      downloadSubscription = stream
-          .receiveBroadcastStream(widget.data.maxUrl)
-          .listen(_updateDownload);
+      downloadSubscription = Download.startDownload(widget.data.maxUrl,downloadSubscription:downloadSubscription,updateDownload:_updateDownload);
     }
   }
 
@@ -249,10 +243,10 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
     return Platform.isAndroid ? "自动升级":"立即升级";
   }
   _goTen() async {
-    if (await canLaunch(tenUrl)) {
-      await launch(tenUrl, forceSafariVC: false, forceWebView: false);
+    if (await canLaunch(Config.tenUrl)) {
+      await launch(Config.tenUrl, forceSafariVC: false, forceWebView: false);
     } else {
-      throw 'Could not launch $tenUrl';
+      throw 'Could not launch $Config.tenUrl';
     }
   }
 }

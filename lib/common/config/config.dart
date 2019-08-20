@@ -41,4 +41,6 @@ class Config {
   static const indexNotice ='index-notice';   //辅导页面顶部公告
   static const IOS_APP_ID ='1155973972';   //苹果商店appid
   static const EVENT_287 ='event_287';   //启动事件
+  static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
+  static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
 }

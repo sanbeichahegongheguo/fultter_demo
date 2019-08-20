@@ -10,6 +10,7 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
@@ -122,39 +123,41 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               builder: (context,AsyncSnapshot<bool> show){
                 return Offstage(
                   offstage: !show.data,
-                  child:  Padding(
-                      padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(50)),
-                      child:Stack(
-                        alignment:AlignmentDirectional(0.85, -0.45),
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(50)),
-                            child: Container(
-                              color: Colors.transparent,
-                              height:ScreenUtil.getInstance().screenWidth/6.4,
-                              child: StreamBuilder<Adver>(
-                                  stream: bloc.adBloc.adverStream,
-                                  builder: (context, AsyncSnapshot<Adver> snapshot){
-                                    print("StreamBuilder adBloc");
-                                    return snapshot.data!=null?CommonUtils.buildMyBanner(context,snapshot.data):CommonUtils.buildBanner(AdBloc.adChannelMap,CoachPage.sName);
-                                  }
+                  child: StreamBuilder<Adver>(
+                  stream: bloc.adBloc.adverStream,
+                  builder: (context, AsyncSnapshot<Adver> snapshot){
+                    return Padding(
+                        padding: EdgeInsets.only(top:ScreenUtil.getInstance().getWidthPx(50),right: ScreenUtil.getInstance().screenWidth*0.01,left: ScreenUtil.getInstance().screenWidth*0.01),
+                        child:Stack(
+                          alignment:AlignmentDirectional(0.85, -0.45),
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(50)),
+                              child: Container(
+                                color: Colors.transparent,
+                                height:ScreenUtil.getInstance().screenWidth/6.4,
+                                child: snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,CoachPage.sName)
                               ),
                             ),
-                          ),
-                          Container(
-                              child: GestureDetector(
-                                child: Image.asset(
-                                  'images/parent_reward/closeIcon.png',
-                                  width:ScreenUtil.getInstance().getWidthPx(51),
-                                ),
-                                onTap: (){
-                                  bloc.coachBloc.showBanner(false);
-                                },
-                              )
-                          ),
-                        ],
-                      )
-                  ),
+                            Container(
+                                child: GestureDetector(
+                                  child: Image.asset(
+                                    'images/parent_reward/closeIcon.png',
+                                    width:ScreenUtil.getInstance().getWidthPx(51),
+                                  ),
+                                  onTap: (){
+                                    if(snapshot.data!=null){
+                                      BannerUtil.sendData(snapshot.data, BannerUtil.BANNER_SKIP_ADVERT);
+                                    }
+                                    bloc.coachBloc.showBanner(false);
+                                  },
+                                )
+                            ),
+                          ],
+                        )
+                    );
+                  }),
+
                 );
               }):Container(),
             ],

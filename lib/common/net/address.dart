@@ -274,6 +274,10 @@ class Address {
   static statistics(){
     return "${common_dc_client}dc/send.html";
   }
+  ///对象统计
+  static sendObj(){
+    return "${common_dc_client}dc/sendObj.html";
+  }
 
   ///获取APP启动公告
   static getAppNotice(){

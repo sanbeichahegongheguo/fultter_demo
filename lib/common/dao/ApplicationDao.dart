@@ -100,6 +100,31 @@ class ApplicationDao{
     print(res.data);
   }
 
+  ///对象统计
+  static sendObjTotal(data) async {
+    var pf = 'PARENT_APP';
+    var did = await DeviceInfo.instance.getDeviceId();
+    var user = SpUtil.getObject(Config.LOGIN_USER);
+    var uid;
+    var cb ;
+    if (user!=null){
+      uid = user["userId"];
+      cb = user["userId"];
+    }
+    var cd =  DateUtil.formatDate(new DateTime.now(),format:DataFormats.full);
+    var vn = (await PackageInfo.fromPlatform()).version;
+    var df = '';
+    if(Platform.isAndroid){
+      df = 'ANDROID';
+    }else if(Platform.isIOS){
+      df = 'IOS';
+    }
+    var dataJson = {"pf": pf,"did": did, "uid": uid,"cb": cb, "cd": cd,"vn": vn, "df": df, "dj": data,"tid":2};
+    var params = {"dataJson": jsonEncode(dataJson)};
+    var res = await httpManager.netFetch(Address.sendObj(), params, null, new Options(method: "post"));
+    print(res.data);
+  }
+
   ///设备信息统计
   static sendDeviceInfo() async {
     int now = DateTime.now().millisecondsSinceEpoch;
