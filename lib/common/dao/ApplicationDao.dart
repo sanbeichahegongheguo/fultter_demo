@@ -74,7 +74,7 @@ class ApplicationDao{
     var uid;
     var cb ;
     //启动事件只统计一次
-    if (eventId==287&&(!SpUtil.getBool(Config.EVENT_287)||user==null)){
+    if (eventId==287&&(SpUtil.getBool(Config.EVENT_287)||user==null)){
       return;
     }
     if(eventId==287){
