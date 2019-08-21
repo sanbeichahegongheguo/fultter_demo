@@ -209,7 +209,7 @@ class CommonUtils {
   static Future openStudentApp() async {
     print("打開 學生端");
     if (await canLaunch(Config.STUDENT_SCHEME)) {
-      await launch(Config.STUDENT_SCHEME, forceSafariVC: false, forceWebView: false);
+      await launch(Config.STUDENT_SCHEME);
     } else {
       if (Platform.isIOS) {
         await launch(Config.STUDENT_IOS_URL, forceSafariVC: false, forceWebView: false);
