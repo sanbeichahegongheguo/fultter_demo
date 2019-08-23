@@ -56,11 +56,12 @@ class WordDao{
         var data = res.data;
         if(data["success"]["ok"] == 0){
           if (null!=data["success"]["parentHomeWorkList"] &&data["success"]["parentHomeWorkList"].length > 0){
+            print("parentHomeWorkList");
             data["success"]["parentHomeWorkList"].forEach((value){
               list.add(ParentHomeWork.fromJson(value));
             });
-            SpUtil.putObjectList(Config.PARENT_HOME,list);
           }
+          SpUtil.putObjectList(Config.PARENT_HOME,list);
           return DataResult(list, true);
         }else{
           return DataResult(data["message"], false);

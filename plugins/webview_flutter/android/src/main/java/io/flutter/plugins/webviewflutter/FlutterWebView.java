@@ -8,11 +8,21 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
-import android.webkit.WebStorage;
-import android.webkit.WebViewClient;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
+import com.tencent.smtt.export.external.interfaces.JsResult;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebStorage;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.JSONUtil;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -21,33 +31,35 @@ import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm;
+import com.tencent.smtt.sdk.WebSettings;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-  private final InputAwareWebView webView;
+  private final WebView webView;
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
-  FlutterWebView(
-      final Context context,
-      BinaryMessenger messenger,
-      int id,
-      Map<String, Object> params,
-      final View containerView) {
+  FlutterWebView(final Context context, BinaryMessenger messenger, int id, Map<String, Object> params, final View containerView) {
 
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
-    DisplayManager displayManager =
-        (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+    DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
-    webView = new InputAwareWebView(context, containerView);
+//    webView = new InputAwareWebView(context, containerView);
+    webView = new WebView(context);
+//    webView.checkInputConnectionProxy(containerView);
     displayListenerProxy.onPostWebViewInitialization(displayManager);
-
     platformThreadHandler = new Handler(context.getMainLooper());
+    //初始化配置
+    initSetting(context);
+//
     // Allow local storage.
     webView.getSettings().setDomStorageEnabled(true);
+    ////设置webview自适应屏幕大小
+    webView.getSettings().setUseWideViewPort(true);
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
@@ -81,9 +93,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   // method. However leaving it raw like this means that the method will be ignored in old versions
   // of Flutter but used as an override anyway wherever it's actually defined.
   // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
-  public void onInputConnectionUnlocked() {
-    webView.unlockInputConnection();
-  }
+//  public void onInputConnectionUnlocked() {
+//    webView.unlockInputConnection();
+//  }
 
   // @Override
   // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
@@ -91,9 +103,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   // method. However leaving it raw like this means that the method will be ignored in old versions
   // of Flutter but used as an override anyway wherever it's actually defined.
   // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
-  public void onInputConnectionLocked() {
-    webView.lockInputConnection();
-  }
+//  public void onInputConnectionLocked() {
+//    webView.lockInputConnection();
+//  }
 
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
@@ -196,7 +208,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
     webView.evaluateJavascript(
         jsString,
-        new android.webkit.ValueCallback<String>() {
+        new com.tencent.smtt.sdk.ValueCallback<String>() {
           @Override
           public void onReceiveValue(String value) {
             result.success(value);
@@ -234,10 +246,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
-
-          final WebViewClient webViewClient =
-              flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
-
+          final WebViewClient webViewClient = flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
           webView.setWebViewClient(webViewClient);
           break;
         case "debuggingEnabled":
@@ -287,8 +296,39 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   @Override
   public void dispose() {
+//    webView.dispose();
     methodChannel.setMethodCallHandler(null);
-    webView.dispose();
     webView.destroy();
+  }
+
+  private void initSetting(Context context){
+      WebSettings webSetting = webView.getSettings();
+      webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
+      webSetting.setAllowFileAccess(true);
+      webSetting.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
+      webSetting.setSupportZoom(true);
+      webSetting.setBuiltInZoomControls(false);
+      webSetting.setUseWideViewPort(true);
+      webSetting.setSupportMultipleWindows(false);
+      // webSetting.setLoadWithOverviewMode(true);
+      webSetting.setAppCacheEnabled(true);
+      // webSetting.setDatabaseEnabled(true);
+      webSetting.setDomStorageEnabled(true);
+      webSetting.setJavaScriptEnabled(true);
+      webSetting.setGeolocationEnabled(true);
+      webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
+      webSetting.setSavePassword(false);
+      webSetting.setPluginState(com.tencent.smtt.sdk.WebSettings.PluginState.ON_DEMAND);
+      webSetting.setCacheMode(com.tencent.smtt.sdk.WebSettings.LOAD_NO_CACHE);
+      webSetting.setAppCachePath(context.getDir("appcache", 0).getPath());
+      webSetting.setDatabasePath(context.getDir("databases", 0).getPath());
+      webSetting.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
+      if (webView.getX5WebViewExtension() != null) {
+        Bundle data = new Bundle();
+        data.putBoolean("standardFullScreen", false);// true表示标准全屏，会调起onShowCustomView()，false表示X5全屏；不设置默认false，
+        data.putBoolean("supportLiteWnd", false);// false：关闭小窗；true：开启小窗；不设置默认true，
+        data.putInt("DefaultVideoScreen", 1);// 1：以页面内开始播放，2：以全屏开始播放；不设置默认：1
+        webView.getX5WebViewExtension().invokeMiscMethod("setVideoParams", data);
+      }
   }
 }

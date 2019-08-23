@@ -1,4 +1,4 @@
-package com.leo.flutterstart.tencent;
+package io.flutter.plugins.webviewflutter.tencent;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -24,6 +24,7 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
     private String bannerId;
     private String appId;
     private int refresh = 0;
+
     MyBannerView(Activity activity, BinaryMessenger messenger, int id, Map<String, Object> params) {
         MethodChannel methodChannel = new MethodChannel(messenger, "banner_" + id);
         methodChannel.setMethodCallHandler(this);
@@ -99,6 +100,7 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
 
             @Override
             public void onADClosed() {
+                linearLayout.getBackground().setAlpha(0);
                 Log.i("BannerView", "当广告关闭时调用111");
             }
 

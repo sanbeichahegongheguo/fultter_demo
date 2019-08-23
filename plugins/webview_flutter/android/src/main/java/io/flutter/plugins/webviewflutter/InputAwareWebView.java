@@ -7,9 +7,10 @@ package io.flutter.plugins.webviewflutter;
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
+import com.tencent.smtt.sdk.WebView;
 
 /**
  * A WebView subclass that mirrors the same implementation hacks that the system WebView does in
@@ -60,6 +61,20 @@ final class InputAwareWebView extends WebView {
   }
 
   /**
+   * Ensure that input creation happens back on {@link #containerView}'s thread once this view no
+   * longer has focus.
+   *
+   * <p>The logic in {@link #checkInputConnectionProxy} forces input creation to happen on Webview's
+   * thread for all connections. We undo it here so users will be able to go back to typing in
+   * Flutter UIs as expected.
+   */
+  @Override
+  public void clearFocus() {
+    super.clearFocus();
+    resetInputConnection();
+  }
+
+  /**
    * Creates an InputConnection from the IME thread when needed.
    *
    * <p>We only need to create a {@link ThreadedInputConnectionProxyAdapterView} and create an
@@ -74,6 +89,7 @@ final class InputAwareWebView extends WebView {
    */
   @Override
   public boolean checkInputConnectionProxy(final View view) {
+    Log.i("InputAwareWebView","checkInputConnectionProxy");
     // Check to see if the view param is WebView's ThreadedInputConnectionProxyView.
     View previousProxy = threadedInputConnectionProxyView;
     threadedInputConnectionProxyView = view;
@@ -86,26 +102,12 @@ final class InputAwareWebView extends WebView {
     // ThreadedInputConnectionProxyView. We are making the assumption that the only view that could
     // possibly be interacting with the IMM here is WebView's ThreadedInputConnectionProxyView.
     proxyAdapterView =
-        new ThreadedInputConnectionProxyAdapterView(
-            /*containerView=*/ containerView,
-            /*targetView=*/ view,
-            /*imeHandler=*/ view.getHandler());
+            new ThreadedInputConnectionProxyAdapterView(
+                    /*containerView=*/ containerView,
+                    /*targetView=*/ view,
+                    /*imeHandler=*/ view.getHandler());
     setInputConnectionTarget(/*targetView=*/ proxyAdapterView);
     return super.checkInputConnectionProxy(view);
-  }
-
-  /**
-   * Ensure that input creation happens back on {@link #containerView}'s thread once this view no
-   * longer has focus.
-   *
-   * <p>The logic in {@link #checkInputConnectionProxy} forces input creation to happen on Webview's
-   * thread for all connections. We undo it here so users will be able to go back to typing in
-   * Flutter UIs as expected.
-   */
-  @Override
-  public void clearFocus() {
-    super.clearFocus();
-    resetInputConnection();
   }
 
   /**
@@ -137,8 +139,8 @@ final class InputAwareWebView extends WebView {
         new Runnable() {
           @Override
           public void run() {
-            InputMethodManager imm =
-                (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
+              Log.i("InputAwareWebView","setInputConnectionTarget");
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
             // This is a hack to make InputMethodManager believe that the target view now has focus.
             // As a result, InputMethodManager will think that targetView is focused, and will call
             // getHandler() of the view when creating input connection.
@@ -146,7 +148,6 @@ final class InputAwareWebView extends WebView {
             // Step 1: Set targetView as InputMethodManager#mNextServedView. This does not affect
             // the real window focus.
             targetView.onWindowFocusChanged(true);
-
             // Step 2: Have InputMethodManager focus in on targetView. As a result, IMM will call
             // onCreateInputConnection() on targetView on the same thread as
             // targetView.getHandler(). It will also call subsequent InputConnection methods on this

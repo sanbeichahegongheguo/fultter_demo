@@ -95,7 +95,7 @@ class ApplicationDao{
     var dataJson = {"pf": pf,"did": did, "uid": uid,"cb": cb, "cd": cd,"vn": vn, "df": df, "eid": eventId};
     var params = {"dataJson": jsonEncode(dataJson)};
     print(params);
-    var res = await httpManager.netFetch(Address.statistics(), params, null, new Options(method: "get"));
+    var res = await httpManager.netFetch(Address.statistics(), params, null, new Options(method: "post"));
     print('返回值');
     print(res.data);
   }

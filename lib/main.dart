@@ -1,20 +1,27 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/page/SplashPage.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:redux/redux.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'common/config/config.dart';
 import 'models/Application.dart';
 import 'models/user.dart';
 
 main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
-    runApp(MyApp());
+    runZoned(() {
+      runApp(MyApp());
+    }, onError: (Object obj, StackTrace stack) {
+      print(obj);
+      print(stack);
+    });
   });
   if (Platform.isIOS) {
     SystemChrome.setEnabledSystemUIOverlays([]);

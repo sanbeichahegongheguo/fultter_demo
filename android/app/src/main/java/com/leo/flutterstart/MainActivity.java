@@ -1,5 +1,6 @@
 package com.leo.flutterstart;
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -12,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.leo.flutterstart.tencent.YondorPlugin;
+//import com.leo.flutterstart.tencent.YondorPlugin;
 
 public class MainActivity extends FlutterActivity {
   /** Channel名称  **/
@@ -23,10 +24,12 @@ public class MainActivity extends FlutterActivity {
     GeneratedPluginRegistrant.registerWith(this);
     UpdateVersionPlugin.registerWith(registrarFor("iwubida.com/update_version"));
     //Banner插件
-    YondorPlugin.registerWith(this,this);
+//    YondorPlugin.registerWith(this,this);
     final MainActivity content = this;
     //屏幕常亮
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    getWindow().setFormat(PixelFormat.TRANSLUCENT);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     new MethodChannel(getFlutterView(), "yondor").setMethodCallHandler(
             // 提供各个方法的具体实现
             new MethodCallHandler() {

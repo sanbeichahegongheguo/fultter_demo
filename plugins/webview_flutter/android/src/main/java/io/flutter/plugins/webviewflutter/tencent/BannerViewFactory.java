@@ -1,4 +1,4 @@
-package com.leo.flutterstart.tencent;
+package io.flutter.plugins.webviewflutter.tencent;
 
 import android.app.Activity;
 import android.content.Context;

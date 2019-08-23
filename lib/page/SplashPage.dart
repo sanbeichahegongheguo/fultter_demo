@@ -19,6 +19,7 @@ import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
 import 'package:device_info/device_info.dart';
+import 'package:webview_flutter/X5Sdk.dart';
 import 'HomePage.dart';
 import 'PhoneLoginPage.dart';
 
@@ -61,6 +62,9 @@ class SplashPageState extends State<SplashPage> {
   }
 
   void _initAsync() async {
+    X5Sdk.init().then((isOK) {
+      print(isOK ? "X5内核成功加载" : "X5内核加载失败");
+    });
     await SpUtil.getInstance();
     SpUtil.remove(Config.EVENT_287);
     Store<GSYState> store = StoreProvider.of(context);

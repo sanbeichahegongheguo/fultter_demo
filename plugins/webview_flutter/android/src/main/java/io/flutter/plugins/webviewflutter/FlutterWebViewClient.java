@@ -8,15 +8,13 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
-import androidx.webkit.WebViewClientCompat;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.Map;
-
 // We need to use WebViewClientCompat to get
 // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
 // invoked by the webview on older Android devices, without it pages that use iframes will
@@ -91,11 +89,11 @@ class FlutterWebViewClient {
   // https://github.com/flutter/flutter/issues/29446.
   WebViewClient createWebViewClient(boolean hasNavigationDelegate) {
     this.hasNavigationDelegate = hasNavigationDelegate;
-
+    Log.i("hasNavigationDelegate",""+hasNavigationDelegate);
     if (!hasNavigationDelegate || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return internalCreateWebViewClient();
     }
-
+    Log.i("hasNavigationDelegate",""+hasNavigationDelegate);
     return internalCreateWebViewClientCompat();
   }
 
@@ -104,11 +102,13 @@ class FlutterWebViewClient {
       @TargetApi(Build.VERSION_CODES.N)
       @Override
       public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        Log.i("shouldOverrideUrlLoa",""+request.getUrl());
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
       }
 
       @Override
       public void onPageFinished(WebView view, String url) {
+        Log.i("shouldOverrideUrlLoa",""+url);
         FlutterWebViewClient.this.onPageFinished(view, url);
       }
 
@@ -121,11 +121,11 @@ class FlutterWebViewClient {
     };
   }
 
-  private WebViewClientCompat internalCreateWebViewClientCompat() {
-    return new WebViewClientCompat() {
+  private WebViewClient internalCreateWebViewClientCompat() {
+    return new WebViewClient() {
       @Override
       public boolean shouldOverrideUrlLoading(
-          @NonNull WebView view, @NonNull WebResourceRequest request) {
+              @NonNull WebView view, @NonNull WebResourceRequest request) {
         return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
       }
 
@@ -185,7 +185,7 @@ class FlutterWebViewClient {
     private void loadUrl() {
       if (url.contains("https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb")){
         if(null != headers){
-          headers.put("Referer","http://pedu.k12china.com");
+          headers.put("Referer","http://www.k12china.com");
         }
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

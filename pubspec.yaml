@@ -48,6 +48,7 @@ dependencies:
     path: ./plugins/webview_flutter
   flutter_localizations:
     sdk: flutter
+#  x5_webview: ^0.1.4
 
 dev_dependencies:
   flutter_test:
