@@ -310,8 +310,9 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                     Container(
                       margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(10)),
                       child: Text(data[i].name,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                            color: Color(0xFF999999)
+                            color: Color(0xFF999999),
                         ),),
                     ),
                   ],

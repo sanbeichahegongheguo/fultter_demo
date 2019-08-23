@@ -623,7 +623,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         print(widget.registerState);
         if(widget.registerState==3){
           registerDate = await UserDao.register('JZZC',widget.stuPhone,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className,parentPhone:userPhoneController.text);
-//          registerDate = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className,parentPhone:widget.stuPhone);
         }else{
           registerDate = await UserDao.register('JZZC',userPhoneController.text,userPasswordController.text,userNameController.text,'S',_classId,_schoolId,className,_gradeName,_className);
         }

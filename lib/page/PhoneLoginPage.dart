@@ -269,7 +269,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       showToast("请输入正确的手机号", position: ToastPosition.bottom);
       return;
     }
-
+    CommonUtils.showLoadingDialog(context, text: "验证中···");
     SpUtil.putString(Config.USER_PHONE, userNameController.text);
     DataResult data = await UserDao.checkHaveAccount(userNameController.text, 'P');
     bool isLogin = false;
@@ -279,7 +279,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     int userId;
     if(data.result){
       print('登录状态');
-      print(data);
+      print(data.data["message"]);
       ///0：存在家长账号，2：已经有135的学生，没有135的家长
       if(data.data["error"]=="0"||data.data["error"]=="2"){
         isLogin = true;
@@ -295,8 +295,11 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
         userId = data.data["ext1"];
         name = data.data["ext2"];
         head = data.data["ext3"];
+        ///注册失败
+      }else if(data.data["error"]=="4"){
+        showToast(data.data["message"]);
       }
-
+      Navigator.pop(context);
       if(data.data["error"]=="0"||data.data["error"]=="2"||data.data["error"]=="1"){
         var isSend = await CommonUtils.showEditDialog(
           context,

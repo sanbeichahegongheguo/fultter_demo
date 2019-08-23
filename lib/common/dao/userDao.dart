@@ -276,6 +276,26 @@ class UserDao {
     return new DataResult(result, res.result);
   }
 
+  ///已有学生账号，检测学生账号和密码和家长账号
+  static checkStudent(stuMobile, stuPwd, parentsMobile) async {
+    var params = {"studentMobile": stuMobile, "studentPassword": stuPwd,"parentsMobile":parentsMobile};
+    var res = await httpManager.netFetch(Address.checkStudent(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var result;
+    print('已有学生账号，检测学生账号和密码和家长账号');
+    print(res.result);
+    if (res != null && res.result) {
+      if (res.data["success"] == null) {
+        result = res.data;
+        res.result = false;
+      } else {
+        result = res.data;
+      }
+    }else{
+      result = res;
+    }
+    return new DataResult(result, res.result);
+  }
+
   ///判断学生手机账号是否存在
   static checkMobile(mobile, identity) async {
     var params = {"mobile": mobile, "identity":identity};

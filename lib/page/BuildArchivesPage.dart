@@ -347,18 +347,26 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
   ///验证：请输入孩子学生账号与密码
   void _inputStuAccountNext() async{
     if (_inputStuNextBtn) {
-      CommonUtils.showLoadingDialog(context, text: "登陆中···");
+      CommonUtils.showLoadingDialog(context, text: "验证中···");
       Store<GSYState> store = StoreProvider.of(context);
-      DataResult data = await UserDao.login(stuPhoneController.text, stuPwdController.text, store);
-      Navigator.pop(context);
-      if (data.result) {
-        showToast("登录成功 ${data.data.realName}");
-        LocalStorage.saveUser(LoginUser(stuPhoneController.text, stuPwdController.text));
-        NavigatorUtil.goHome(context);
-      } else {
-        if (null != data.data) {
-          showToast(data?.data ?? "");
+      DataResult data = await UserDao.checkStudent(stuPhoneController.text, stuPwdController.text, widget.userPhone);
+      if(data.data["success"]){
+        Store<GSYState> store = StoreProvider.of(context);
+        print(widget.userPhone);
+        print(stuPwdController.text);
+        DataResult data = await UserDao.login(widget.userPhone, stuPwdController.text, store);
+        Navigator.pop(context);
+        if (data.result) {
+          showToast("登录成功 ${data.data.realName}");
+          LocalStorage.saveUser(LoginUser(widget.userPhone, stuPwdController.text));
+          NavigatorUtil.goHome(context);
+        } else {
+          if (null != data.data) {
+            showToast(data?.data ?? "");
+          }
         }
+      }else{
+        showToast(data.data["message"]);
       }
     } else {
       if (stuPhoneController.text.length == 0) {

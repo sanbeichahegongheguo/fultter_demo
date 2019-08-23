@@ -68,6 +68,11 @@ class Address {
     return "${k12apiHost}base/checkParentsUser";
   }
 
+  ///已有学生账号，检测学生账号和密码和家长账号
+  static checkStudent(){
+    return "${k12apiHost}base/checkStudent";
+  }
+
   ///更改家长：136家长改为135家长
   static updateParentMobile() {
     return "${k12apiHost}base/updateParentMobile";
@@ -86,11 +91,11 @@ class Address {
   static getTeacherClassList() {
     return "${studentHost}getTeacherClassList";
   }
+
   ///检查该班级是否有同名
   static checkSameRealName() {
     return "${studentHost}checkSameRealName";
   }
-
 
   ///检测验证码
   static checkCode(){
@@ -126,6 +131,7 @@ class Address {
   static checkClassSameName(){
     return "${k12apiHost}reg/checkClassSameName";
   }
+
   ///更改班级
   static joinClass(){
     return "${studentHost}joinClass";
