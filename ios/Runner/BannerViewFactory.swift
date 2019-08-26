@@ -9,13 +9,15 @@
 import Foundation
 class BannerViewFactory : NSObject, FlutterPlatformViewFactory {
     let controller: UIViewController
+    let registrar: FlutterPluginRegistrar
     
-    init(controller: UIViewController) {
+    init(controller: UIViewController,registrar: FlutterPluginRegistrar) {
         self.controller = controller
+        self.registrar = registrar
     }
     
     public func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
-        return Banner(withFrame:frame, viewId: viewId, args: args, controller: controller)
+        return Banner(withFrame:frame, viewId: viewId, args: args, controller: controller,registrar:registrar)
     }
     
     func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {

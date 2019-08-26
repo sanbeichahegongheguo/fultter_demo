@@ -71,8 +71,6 @@
 
     _webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
     _webView.scrollView.bounces = false;//禁止滑动
-    _webView.allowsInlineMediaPlayback = YES;
-    _webView.mediaPlaybackRequiresUserAction = NO;
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;

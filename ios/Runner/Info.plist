@@ -41,6 +41,7 @@
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>yondorstudenthwapp</string>
 		<string>weixin</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
