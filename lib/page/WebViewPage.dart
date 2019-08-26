@@ -339,13 +339,14 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         onMessageReceived: (JavascriptMessage message) {
           var msg = jsonDecode(message.message);
           if (msg!=null){
-            //是否能播放视频
-            X5Sdk.canUseTbsPlayer().then((can){
-              _webViewController.evaluateJavascript("window.backVideo('$can')");
-              if(can){
-                X5Sdk.openVideo(msg["url"],screenMode:msg["screenMode"]);
-              }
-            });
+            CommonUtils.showVideo(context, msg["url"]);
+//            //是否能播放视频
+//            X5Sdk.canUseTbsPlayer().then((can){
+//              _webViewController.evaluateJavascript("window.backVideo('$can')");
+//              if(can){
+//                X5Sdk.openVideo(msg["url"],screenMode:msg["screenMode"]);
+//              }
+//            });
           }
         });
   }
@@ -381,7 +382,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   }
 
 
-  /// 使用手写功能
+  /// 键盘监听
   JavascriptChannel _userState() {
     return JavascriptChannel(
         name: 'UserState',

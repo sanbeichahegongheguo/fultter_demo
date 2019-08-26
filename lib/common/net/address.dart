@@ -16,8 +16,10 @@ class Address {
 //  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
 //  static const String h5Host = "https://www.k12china.com/h5/";
 //  static const String studentWebHost = "https://api.k12china.com/studentweb/";
-//   static const String studentHost = "https://www.k12china.com/student/student:";
-//    static const String k12apiHost = "https://www.k12china.com/k12-api/";
+//  static const String studentHost = "https://www.k12china.com/student/student:";
+//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+
+
   static const String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
   ///登录  post
   static login() {

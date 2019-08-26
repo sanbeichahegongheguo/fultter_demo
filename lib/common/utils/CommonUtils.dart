@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/widget/IndexNoticeWidget.dart';
+import 'package:flutter_start/widget/VideoWidget.dart';
 import 'package:flutter_start/widget/update_version.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -166,6 +167,15 @@ class CommonUtils {
           return WillPopScope(
             child: IndexNoticeWidget(data:notice,message:message),
           );
+        });
+  }
+
+  ///视频播放
+  static Future<dynamic> showVideo(BuildContext context,String url) {
+    return NavigatorUtil.showGSYDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return  VideoWidget(url);
         });
   }
 
