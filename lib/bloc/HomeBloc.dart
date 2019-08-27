@@ -4,6 +4,7 @@ import 'CoachBloc.dart';
 import 'LearningEmotionBloc.dart';
 import 'ModuleBloc.dart';
 import 'ParentRewardBloc.dart';
+import 'TabbarBloc.dart';
 
 class HomeBloc extends BlocBase {
 
@@ -21,6 +22,7 @@ class HomeBloc extends BlocBase {
   ///辅导页面（公告）
   final CoachBloc coachBloc = new CoachBloc();
 
+  final TabbarBloc tabbarBloc = TabbarBloc();
   @override
   void dispose() {
     moduleBloc?.dispose();
@@ -31,5 +33,6 @@ class HomeBloc extends BlocBase {
     parentModuleBloc?.dispose();
     parentRewardBloc?.dispose();
     coachBloc?.dispose();
+    tabbarBloc?.dispose();
   }
 }

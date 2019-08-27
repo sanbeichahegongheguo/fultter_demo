@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flustars/flustars.dart';
@@ -105,8 +104,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
   @override
   void initState() {
-    bloc =  BlocProvider.of<HomeBloc>(context);
     super.initState();
+    bloc =  BlocProvider.of<HomeBloc>(context);
+    print("init tabbar ");
     _stream = eventBus.on<HttpErrorEvent>().listen((event) {
       print("home eventBus " + event.toString());
       HttpErrorEvent.errorHandleFunction(event.code, event.message, context);
@@ -135,12 +135,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> tabs = [
-      _renderTab(_currentIndex == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导", _currentIndex == 0 ? true : false),
-      _renderTab(_currentIndex == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情", _currentIndex == 1 ? true : false),
-      _renderTab(_currentIndex == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励", _currentIndex == 2 ? true : false),
-      _renderTab(_currentIndex == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理", _currentIndex == 3 ? true : false),
-    ];
+    print("  tabbar build");
     ///底部tab bar
       return new Scaffold(
           drawer: _drawer,
@@ -151,9 +146,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
             onPageChanged: (index) {
               callPageLoad(index);
               if (_currentIndex != index) {
-                setState(() {
-                  _currentIndex = index;
-                });
+                print("bloc.tabbarBloc.callTab $index");
+                _currentIndex = index;
+                bloc.tabbarBloc.callTab(index);
               }
               _tabController.animateTo(index);
               _onPageChanged?.call(index);
@@ -165,18 +160,27 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
               child: Container(
   //              height: MediaQuery.of(context).size.height * 0.08,
                 height: ScreenUtil.getInstance().getHeightPx(150),
-                child: new TabBar(
-                  indicator: BoxDecoration(),
-                  indicatorWeight: 1,
-                  //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
-                  controller: _tabController, //配置控制器
-                  tabs: tabs,
-                  onTap: (index) {
-                    print('切换');
-                    _onPageChanged?.call(index);
-                    _pageController.jumpTo(MediaQuery.of(context).size.width * index);
-                  }, //tab标签的下划线颜色
-                ),
+                child: StreamBuilder<int>(
+                    initialData: 0,
+                    stream: bloc.tabbarBloc.tabbarBannerStream,
+                    builder: (context, AsyncSnapshot<int> snapshot){
+                      return TabBar(
+                      indicator: BoxDecoration(),
+                      indicatorWeight: 1,
+                      //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
+                      controller: _tabController, //配置控制器
+                      tabs: [
+                          _renderTab(snapshot.data == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导", snapshot.data == 0 ? true : false),
+                          _renderTab(snapshot.data == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情", snapshot.data == 1 ? true : false),
+                          _renderTab(snapshot.data == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励", snapshot.data == 2 ? true : false),
+                          _renderTab(snapshot.data == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理", snapshot.data == 3 ? true : false),
+                      ],
+                      onTap: (index) {
+                        print('切换');
+                        _onPageChanged?.call(index);
+                        _pageController.jumpTo(MediaQuery.of(context).size.width * index);
+                      });
+                }),
                 decoration: BoxDecoration(
                   border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
                 ),
