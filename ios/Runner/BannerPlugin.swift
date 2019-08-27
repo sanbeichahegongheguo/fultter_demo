@@ -10,6 +10,6 @@ import Foundation
 
 class BannerPlugin {
     static func registerWithRegistrar(registar: FlutterPluginRegistrar, controller: UIViewController){
-        registar.register(BannerViewFactory(controller: controller,registrar:registar), withId: "banner");
+        registar.register(BannerViewFactory(controller: controller,messenger:registar.messenger()), withId: "banner");
     }
 }

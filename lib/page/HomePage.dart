@@ -8,9 +8,18 @@ import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
 import 'parentReward.dart';
 ///首页
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget{
+  static const String sName = "parentReward";
+  @override
+  State<HomePage> createState() {
+    // TODO: implement createState
+    return _HomePageState();
+  }
+}
+class _HomePageState extends State<HomePage>  {
 
   int _exitTime = 0;
+  HomeBloc _bloc;
 
   Future<bool> _exitApp() {
     if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
@@ -22,39 +31,36 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  _bulletinWindow(context){
-    print("公告弹窗");
-    var windowWidget = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-
-      ],
-    );
-    //CommonUtils.showGuide(context,Text("12"));
+  @override
+  void initState() {
+    _bloc = HomeBloc();
+    super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _bulletinWindow(context);
-    });
     return WillPopScope(
       onWillPop: () {
         return _exitApp();
       },
       child: BlocProvider<HomeBloc>(
-        bloc: HomeBloc(),
-        child: new GSYTabBarWidget(
+        bloc: _bloc,
+        child: GSYTabBarWidget(
         tabViews: [
-          new CoachPage(),
-          new LearningEmotionPage(),
-          new ParentReward(),
-          new Admin(),
+          CoachPage(),
+          LearningEmotionPage(),
+          ParentReward(),
+          Admin(),
         ],
         backgroundColor: Colors.lightBlueAccent,
         indicatorColor: Colors.lightBlueAccent,
       ),
       )
     );
+  }
+  @override
+  void dispose() {
+    _bloc?.dispose();
+    super.dispose();
   }
 
 }

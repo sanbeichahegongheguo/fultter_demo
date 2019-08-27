@@ -88,6 +88,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   TabController _tabController;
 
   List<String> pageList = [CoachPage.sName,LearningEmotionPage.sName,ParentReward.sName,Admin.sName];
+  List<int> pageTotal = [289,300,304,313];
 
   HomeBloc bloc;
 
@@ -360,6 +361,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   Map<String,bool> initPageMap = new Map();
   ///加载页面的时候触发
   void callPageLoad(index){
+    //事件统计
+    ApplicationDao.trafficStatistic(pageTotal[index]);
+
     if (initPageMap[pageList[index]]==null){
       print("初始化 ${pageList[index]}");
       initPageMap[pageList[index]]=true;
@@ -368,25 +372,26 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     switch (pageList[index]){
       case CoachPage.sName:
         print("切换辅导页面");
-        ApplicationDao.trafficStatistic(289);
-        bloc.coachBloc.showBanner(true);
-        bloc.adBloc.getBanner(pageName: CoachPage.sName);
+        if (Platform.isAndroid){
+          bloc.coachBloc.showBanner(true);
+          bloc.adBloc.getBanner(pageName: CoachPage.sName);
+        }
+
         break;
       case LearningEmotionPage.sName:
         print("切换学情页面");
-        ApplicationDao.trafficStatistic(300);
         bloc.learningEmotionBloc.getStudyData();
         bloc.learningEmotionBloc.getNewHomeWork();
         break;
       case ParentReward.sName:
         print("切换家长奖励页面");
-        ApplicationDao.trafficStatistic(304);
-        bloc.adBloc.getBanner(pageName:ParentReward.sName);
-        bloc.parentRewardBloc.getTotalStar();
-        bloc.parentRewardBloc.showBanner(true);
+        if (Platform.isAndroid){
+          bloc.adBloc.getBanner(pageName:ParentReward.sName);
+          bloc.parentRewardBloc.getTotalStar();
+          bloc.parentRewardBloc.showBanner(true);
+        }
         break;
       case Admin.sName:
-        ApplicationDao.trafficStatistic(313);
         print("切换管理页面");
         break;
     }

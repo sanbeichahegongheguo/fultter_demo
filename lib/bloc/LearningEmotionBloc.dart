@@ -11,11 +11,11 @@ class LearningEmotionBloc extends BlocBase{
 
   bool get requested => _requested;
   ///学习情况
-  PublishSubject<StudyData> _studyData = PublishSubject<StudyData>();
+  BehaviorSubject<StudyData> _studyData = BehaviorSubject<StudyData>();
   Sink<StudyData> get _studyDataSink => _studyData.sink;
   Observable<StudyData> get studyDataStream => _studyData.stream;
   ///最新作业
-  PublishSubject<List<ParentHomeWork>> _parentHomeWork = PublishSubject<List<ParentHomeWork>>();
+  BehaviorSubject<List<ParentHomeWork>> _parentHomeWork = BehaviorSubject<List<ParentHomeWork>>();
   Sink<List<ParentHomeWork>> get _parentHomeWorkSink => _parentHomeWork.sink;
   Observable<List<ParentHomeWork>> get parentHomeWorkStream => _parentHomeWork.stream;
 

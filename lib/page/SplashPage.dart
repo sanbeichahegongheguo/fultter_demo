@@ -62,9 +62,11 @@ class SplashPageState extends State<SplashPage> {
   }
 
   void _initAsync() async {
-    X5Sdk.init().then((isOK) {
-      print(isOK ? "X5内核成功加载" : "X5内核加载失败");
-    });
+    if(Platform.isAndroid) {
+      X5Sdk.init().then((isOK) {
+        print(isOK ? "X5内核成功加载" : "X5内核加载失败");
+      });
+    }
     await SpUtil.getInstance();
     SpUtil.remove(Config.EVENT_287);
     Store<GSYState> store = StoreProvider.of(context);

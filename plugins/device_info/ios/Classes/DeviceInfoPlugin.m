@@ -22,7 +22,6 @@
     UIDevice* device = [UIDevice currentDevice];
     struct utsname un;
     uname(&un);
-
     result(@{
       @"name" : [device name],
       @"systemName" : [device systemName],
@@ -30,7 +29,7 @@
       @"model" : [device model],
       @"localizedModel" : [device localizedModel],
       @"identifierForVendor" : [[device identifierForVendor] UUIDString],
-      @"isPhysicalDevice" : [self isDevicePhysical],
+      //@"isPhysicalDevice" : [self isDevicePhysical],
       @"utsname" : @{
         @"sysname" : @(un.sysname),
         @"nodename" : @(un.nodename),
@@ -215,14 +214,14 @@
 }
 
 // return value is false if code is run on a simulator
-- (NSString*)isDevicePhysical {
-#if TARGET_OS_SIMULATOR
-  NSString* isPhysicalDevice = @"false";
-#else
-  NSString* isPhysicalDevice = @"true";
-#endif
-
-  return isPhysicalDevice;
-}
+//- (NSString*)isDevicePhysical {
+//#if TARGET_OS_SIMULATOR
+//  NSString* isPhysicalDevice = @"false";
+//#else
+//  NSString* isPhysicalDevice = @"true";
+//#endif
+//
+//  return isPhysicalDevice;
+//}
 
 @end

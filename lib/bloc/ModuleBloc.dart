@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'BlocBase.dart';
 class ModuleBloc extends BlocBase{
   ///模块栏目
-  PublishSubject<List<Module>> _module = PublishSubject<List<Module>>();
+  BehaviorSubject<List<Module>> _module = BehaviorSubject<List<Module>>();
   Sink<List<Module>> get _moduleSink => _module.sink;
   Observable<List<Module>> get moduleStream => _module.stream;
 

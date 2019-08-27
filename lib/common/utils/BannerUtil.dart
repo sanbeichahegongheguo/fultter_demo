@@ -72,21 +72,20 @@ class BannerUtil{
 
   ///腾讯banner
   static Widget buildBanner(Map<String,MethodChannel> map,String page){
-    print("banner  Platform.isIOS");
-    return Container(
-      child: Platform.isIOS?UiKitView(
+    print("banner  buildBanner");
+    return Platform.isIOS?UiKitView(
           viewType: "banner",
-          creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID},
+          creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID,"time":DateTime.now().millisecondsSinceEpoch},
           creationParamsCodec: const StandardMessageCodec(),
           onPlatformViewCreated:(id){
             if (map !=null){
-              print("id  $page");
+              print("id  $page  $id");
               map[page] = MethodChannel("banner_$id");
             }
           }
       ):AndroidView(
           viewType: "banner",
-          creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID},
+          creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID,"time":DateTime.now().millisecondsSinceEpoch},
           creationParamsCodec: const StandardMessageCodec(),
           onPlatformViewCreated:(id){
             if (map !=null){
@@ -94,7 +93,6 @@ class BannerUtil{
               map[page] = MethodChannel("banner_$id");
             }
           }
-      ),
-    );
+      );
   }
 }

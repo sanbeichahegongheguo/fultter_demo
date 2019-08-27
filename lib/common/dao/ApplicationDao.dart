@@ -95,7 +95,7 @@ class ApplicationDao{
     var dataJson = {"pf": pf,"did": did, "uid": uid,"cb": cb, "cd": cd,"vn": vn, "df": df, "eid": eventId};
     var params = {"dataJson": jsonEncode(dataJson)};
     print(params);
-    var res = await httpManager.netFetch(Address.statistics(), params, null, new Options(method: "post"));
+    var res = await httpManager.netFetch(Address.statistics(), params, null, new Options(method: "post"),noTip: true);
     print('返回值');
     print(res.data);
   }
@@ -154,7 +154,7 @@ class ApplicationDao{
     }
     yondorInfo["uid"] = uid;
     var params = {"dataJson": jsonEncode(yondorInfo)};
-    var res = await httpManager.netFetch(Address.sendDeviceInfo(), params, null, new Options(method: "post"));
+    var res = await httpManager.netFetch(Address.sendDeviceInfo(), params, null, new Options(method: "post"),noTip: true);
     if(res!=null && res.result){
       if (res.data!=null&&res.data["success"]){
         SpUtil.putInt(key, now);
@@ -167,7 +167,7 @@ class ApplicationDao{
     String key = await httpManager.getAuthorization();
     var curVersion = (await PackageInfo.fromPlatform()).version;
     var params = {"key":key,"curVersion":curVersion};
-    var res = await httpManager.netFetch(Address.getAppNotice(), params, null, new Options(method: "post"));
+    var res = await httpManager.netFetch(Address.getAppNotice(), params, null, new Options(method: "post"),noTip: true);
     var result;
     print('获取APP公告');
     print(res);

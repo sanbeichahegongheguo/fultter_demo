@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
@@ -139,7 +141,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                                 child: snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,CoachPage.sName)
                               ),
                             ),
-                            Container(
+                            (Platform.isAndroid||snapshot.data!=null)?Container(
                                 child: GestureDetector(
                                   child: Image.asset(
                                     'images/parent_reward/closeIcon.png',
@@ -152,7 +154,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                                     bloc.coachBloc.showBanner(false);
                                   },
                                 )
-                            ),
+                            ):Container(),
                           ],
                         )
                     );
@@ -297,5 +299,5 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => Platform.isAndroid;
 }

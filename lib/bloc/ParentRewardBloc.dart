@@ -7,16 +7,16 @@ import 'package:rxdart/rxdart.dart';
 import 'BlocBase.dart';
 class ParentRewardBloc extends BlocBase{
   ///星星
-  PublishSubject<String> _starNum = PublishSubject<String>();
+  BehaviorSubject<String> _starNum = BehaviorSubject<String>();
   Sink<String> get _starNumSink => _starNum.sink;
   Observable<String> get starNumStream => _starNum.stream;
   ///热门兑换
-  PublishSubject<List<ConvertGoods>> _convertGoods = PublishSubject<List<ConvertGoods>>();
+  BehaviorSubject<List<ConvertGoods>> _convertGoods = BehaviorSubject<List<ConvertGoods>>();
   Sink<List<ConvertGoods>> get _convertGoodsSink => _convertGoods.sink;
   Observable<List<ConvertGoods>> get convertGoodsStream => _convertGoods.stream;
 
   ///家长专区广告
-  PublishSubject<bool> _parentShowBanner = PublishSubject<bool>();
+  BehaviorSubject<bool> _parentShowBanner = BehaviorSubject<bool>();
   Sink<bool> get _parentShowBannerSink => _parentShowBanner.sink;
   Observable<bool> get parentShowBannerStream => _parentShowBanner.stream;
   static bool _isBanner;
@@ -45,10 +45,11 @@ class ParentRewardBloc extends BlocBase{
   }
   ///是否展示广告
   void showBanner(bool isShow) async{
-    if (ParentRewardBloc._isBanner == null || ParentRewardBloc._isBanner != isShow){
-      _parentShowBannerSink.add(isShow);
-      ParentRewardBloc._isBanner= isShow;
-    }
+    _parentShowBannerSink.add(isShow);
+//    if (ParentRewardBloc._isBanner == null || ParentRewardBloc._isBanner != isShow){
+//      _parentShowBannerSink.add(isShow);
+//      ParentRewardBloc._isBanner= isShow;
+//    }
   }
 
   void dispose(){

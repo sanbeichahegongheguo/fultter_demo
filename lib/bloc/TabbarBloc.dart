@@ -5,12 +5,12 @@ import 'BlocBase.dart';
 class TabbarBloc extends BlocBase{
 
   ///页面
-  PublishSubject<int> _tabbarBanner = PublishSubject<int>();
+  BehaviorSubject<int> _tabbarBanner = BehaviorSubject<int>();
   Sink<int> get _tabbarBannerSink => _tabbarBanner.sink;
   Observable<int> get tabbarBannerStream => _tabbarBanner.stream;
 
 
-  ///是否展示广告
+  ///切换页面
   Future callTab(int page) async{
     _tabbarBannerSink.add(page);
   }
