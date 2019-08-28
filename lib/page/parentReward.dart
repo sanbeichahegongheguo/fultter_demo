@@ -68,8 +68,8 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                         builder: (context, AsyncSnapshot<Adver> snapshot){
                           return Stack(
                             children: <Widget>[
-                              snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,ParentReward.sName),
-                              Container(
+                              snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,ParentReward.sName,bloc:bloc.parentRewardBloc),
+                              snapshot.data!=null?Container(
                                   alignment:AlignmentDirectional(0.91, -0.5),
                                   child: GestureDetector(
                                     child: Image.asset(
@@ -83,7 +83,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                                       bloc.parentRewardBloc.showBanner(false);
                                     },
                                   )
-                              ),
+                              ):Container(),
                             ],
                           );
                         }

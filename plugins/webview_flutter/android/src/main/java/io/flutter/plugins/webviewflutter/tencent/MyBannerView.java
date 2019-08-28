@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import com.qq.e.ads.banner2.UnifiedBannerADListener;
 import com.qq.e.ads.banner2.UnifiedBannerView;
 import com.qq.e.comm.util.AdError;
+import com.qq.e.comm.util.StringUtil;
+
 import java.util.Map;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -23,10 +25,12 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
     private Activity activity;
     private String bannerId;
     private String appId;
+    private String page;
+    private MethodChannel methodChannel;
     private int refresh = 0;
 
     MyBannerView(Activity activity, BinaryMessenger messenger, int id, Map<String, Object> params) {
-        MethodChannel methodChannel = new MethodChannel(messenger, "banner_" + id);
+        methodChannel = new MethodChannel(messenger, "banner_" + id);
         methodChannel.setMethodCallHandler(this);
         this.activity = activity;
         if (null!=params){
@@ -35,6 +39,9 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
             }
             if(params.containsKey("bannerId")){
                 bannerId = (String)params.get("bannerId");
+            }
+            if(params.containsKey("page")){
+                page = (String)params.get("page");
             }
             if(params.containsKey("refresh")){
                 refresh = (Integer)params.get("refresh");
@@ -100,6 +107,7 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
 
             @Override
             public void onADClosed() {
+                methodChannel.invokeMethod("closeBanner",null);
                 linearLayout.getBackground().setAlpha(0);
                 Log.i("BannerView", "当广告关闭时调用111");
             }
@@ -137,7 +145,11 @@ public class MyBannerView implements PlatformView, MethodChannel.MethodCallHandl
     private FrameLayout.LayoutParams getUnifiedBannerLayoutParams() {
         Point screenSize = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(screenSize);
-        return new FrameLayout.LayoutParams(screenSize.x,  Math.round(screenSize.x / 6.4F));
+        int x =screenSize.x;
+        if (null!=page && "coach".equals(page)){
+            x = Math.round(screenSize.x * 0.94F);
+        }
+        return new FrameLayout.LayoutParams(x,  Math.round(screenSize.x / 6.4F));
     }
 
 }

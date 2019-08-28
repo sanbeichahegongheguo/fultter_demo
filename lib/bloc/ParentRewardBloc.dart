@@ -1,8 +1,6 @@
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
-import 'package:flutter_start/common/dao/moduleDao.dart';
 import 'package:flutter_start/models/ConvertGoods.dart';
-import 'package:flutter_start/models/Module.dart';
 import 'package:rxdart/rxdart.dart';
 import 'BlocBase.dart';
 class ParentRewardBloc extends BlocBase{
@@ -45,11 +43,11 @@ class ParentRewardBloc extends BlocBase{
   }
   ///是否展示广告
   void showBanner(bool isShow) async{
-    _parentShowBannerSink.add(isShow);
-//    if (ParentRewardBloc._isBanner == null || ParentRewardBloc._isBanner != isShow){
-//      _parentShowBannerSink.add(isShow);
-//      ParentRewardBloc._isBanner= isShow;
-//    }
+//    _parentShowBannerSink.add(isShow);
+    if (ParentRewardBloc._isBanner == null || ParentRewardBloc._isBanner != isShow){
+      _parentShowBannerSink.add(isShow);
+      ParentRewardBloc._isBanner= isShow;
+    }
   }
 
   void dispose(){

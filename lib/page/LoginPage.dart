@@ -118,7 +118,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                   NavigatorUtil.goWelcome(context);
                 }),
             title: Text(
-              '账号登录',
+              '手机密码登录',
               style: TextStyle(color: Color(0xFF333333), fontSize: ScreenUtil.getInstance().getSp(19)),
             )),
         body: GestureDetector(
@@ -261,6 +261,11 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                   _users.clear();
                 }else{
                   _users.retainWhere((item) => item.username.startsWith(input));
+                  if (_users.length==0){
+                    _expand = false;
+                  }else{
+                    _expand = true;
+                  }
                 }
               });
             }

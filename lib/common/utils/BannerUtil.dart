@@ -71,28 +71,48 @@ class BannerUtil{
   }
 
   ///腾讯banner
-  static Widget buildBanner(Map<String,MethodChannel> map,String page){
+  static Widget buildBanner(Map<String,MethodChannel> map,String page,{bloc}){
     print("banner  buildBanner");
     return Platform.isIOS?UiKitView(
           viewType: "banner",
-          creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID,"time":DateTime.now().millisecondsSinceEpoch},
+          creationParams: <String, dynamic>{"appId": Config.IOS_AD_APP_ID, "bannerId": Config.IOS_BANNER_ID},
           creationParamsCodec: const StandardMessageCodec(),
           onPlatformViewCreated:(id){
             if (map !=null){
               print("id  $page  $id");
               map[page] = MethodChannel("banner_$id");
+              if (bloc!=null){
+                closeBannerMethod(map[page],bloc);
+              }
+            }else if (bloc !=null){
+              closeBannerMethod(MethodChannel("banner_$id"),bloc);
             }
           }
       ):AndroidView(
           viewType: "banner",
-          creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID,"time":DateTime.now().millisecondsSinceEpoch},
+          creationParams: {"appId":Config.ANDROID_AD_APP_ID,"bannerId":Config.ANDROID_BANNER_ID,"page":page},
           creationParamsCodec: const StandardMessageCodec(),
           onPlatformViewCreated:(id){
             if (map !=null){
               print("id  $page");
               map[page] = MethodChannel("banner_$id");
+              if (bloc!=null){
+                closeBannerMethod(map[page],bloc);
+              }
+            }else if (bloc !=null){
+              closeBannerMethod(MethodChannel("banner_$id"),bloc);
             }
           }
       );
+  }
+
+  static closeBannerMethod(method,bloc){
+    method.setMethodCallHandler((MethodCall call){
+      if(call.method=="closeBanner"){
+        bloc.showBanner(false);
+      }
+      return null;
+     }
+    );
   }
 }

@@ -180,7 +180,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                             NavigatorUtil.goLogin(context);
                           },
                           child: Text(
-                            "使用帐号密码登录",
+                            "使用手机密码登录",
                             style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
                           ),
                         ),

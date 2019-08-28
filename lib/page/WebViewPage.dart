@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
@@ -45,6 +46,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   TextEditingController textController1 = TextEditingController();
   FocusNode _focusNode2 = FocusNode();
   TextEditingController textController2 = TextEditingController();
+  WebviewBloc _webviewBloc  =  WebviewBloc();
   @override
   Widget build(BuildContext context) {
     _deviceSize = MediaQuery.of(context).size;
@@ -179,7 +181,10 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       }else if(request.url.indexOf("haxecallback:tencentAd")>-1){
         if (request.url != "haxecallback:tencentAd:0"){
           print("tencentAd");
-          setState(() =>_showAd = true);
+          setState((){
+            _showAd = true;
+            _webviewBloc.showBanner(_showAd);
+          });
         }else{
           setState(() =>_showAd = false);
         }
@@ -290,11 +295,16 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           child: Center(child: CircularProgressIndicator()));
     }else if (_showAd && (store.state.application.showBanner==1&&store.state.application.showH5Banner==1)){
       //广告
-      widget = Container(
-        height: ScreenUtil.getInstance().screenWidth/6.4,
-        width: _deviceSize.width,
-        child: BannerUtil.buildBanner(null,null),
-      );
+      widget = StreamBuilder<bool>(
+          stream: _webviewBloc.showAdStream,
+          initialData: true,
+          builder: (context, AsyncSnapshot<bool> snapshot) {
+            return snapshot.data?Container(
+              height: ScreenUtil.getInstance().screenWidth/6.4,
+              width: _deviceSize.width,
+              child: BannerUtil.buildBanner(null,null,bloc: _webviewBloc),
+            ):Container();
+          });
     }else{
       widget = Container();
     }
@@ -357,6 +367,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         onMessageReceived: (JavascriptMessage message) {
           setState((){
             _showAd = true;
+            _webviewBloc.showBanner(_showAd);
           } );
         });
   }

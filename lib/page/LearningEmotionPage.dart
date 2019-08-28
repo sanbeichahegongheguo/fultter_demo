@@ -127,21 +127,14 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
         ),
         Container(
           padding: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(117) ),
-          child:  ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Container(
-              decoration: new BoxDecoration(
-                  boxShadow: [BoxShadow(color: Colors.black12)]
-              ),
-              child:MaterialButton(
+          child:  MaterialButton(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                 onPressed: (){_goParentInfo('openStudent');},
                 minWidth: ScreenUtil.getInstance().getWidthPx(845),
                 height:ScreenUtil.getInstance().getHeightPx(133),
                 color: Color(0xFFfc6061),
                 child:Text("打开“远大小状元学生”",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Colors.white ),),
               ),
-            ),
-          )
         ),
       ],
     );

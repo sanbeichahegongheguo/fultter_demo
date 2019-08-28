@@ -3,23 +3,18 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
-import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
-import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/CoachNotice.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:flutter_start/bloc/ModuleBloc.dart';
 import 'package:redux/redux.dart';
 
 ///辅导页面
@@ -113,7 +108,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                             builder: (context, AsyncSnapshot<List<Module>> snapshot){
                               return  _widgeStudy(snapshot.data);
                             }),
-//                        _widgeStudy(),
                       ),
                     ],
                   ),
@@ -129,19 +123,16 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                   stream: bloc.adBloc.adverStream,
                   builder: (context, AsyncSnapshot<Adver> snapshot){
                     return Padding(
-                        padding: EdgeInsets.only(top:ScreenUtil.getInstance().getWidthPx(50),right: ScreenUtil.getInstance().screenWidth*0.01,left: ScreenUtil.getInstance().screenWidth*0.01),
+                        padding: EdgeInsets.only(top:ScreenUtil.getInstance().getWidthPx(100),right: ScreenUtil.getInstance().screenWidth*0.03,left: ScreenUtil.getInstance().screenWidth*0.03),
                         child:Stack(
-                          alignment:AlignmentDirectional(0.85, -0.45),
+                          alignment:AlignmentDirectional(0.95, -0.65),
                           children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(50)),
-                              child: Container(
+                             Container(
                                 color: Colors.transparent,
                                 height:ScreenUtil.getInstance().screenWidth/6.4,
-                                child: snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,CoachPage.sName)
+                                child: snapshot.data!=null?BannerUtil.buildMyBanner(context,snapshot.data):BannerUtil.buildBanner(AdBloc.adChannelMap,CoachPage.sName,bloc: bloc.coachBloc)
                               ),
-                            ),
-                            (Platform.isAndroid||snapshot.data!=null)?Container(
+                            (snapshot.data!=null)?Container(
                                 child: GestureDetector(
                                   child: Image.asset(
                                     'images/parent_reward/closeIcon.png',

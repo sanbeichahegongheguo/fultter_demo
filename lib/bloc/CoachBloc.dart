@@ -30,11 +30,11 @@ class CoachBloc extends BlocBase{
 
   ///是否展示广告
   void showBanner(bool isShow) async{
-    _coachShowBannerSink.add(isShow);
-//    if (CoachBloc._isBanner == null || CoachBloc._isBanner != isShow){
-//      _coachShowBannerSink.add(isShow);
-//      CoachBloc._isBanner= isShow;
-//    }
+//    _coachShowBannerSink.add(isShow);
+    if (CoachBloc._isBanner == null || CoachBloc._isBanner != isShow){
+      _coachShowBannerSink.add(isShow);
+      CoachBloc._isBanner= isShow;
+    }
   }
 
   void dispose(){
