@@ -114,7 +114,6 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     });
     _tabController = new TabController(vsync: this, length: 4);
     _signReward();
-    _getUnReadNotice();
     _getAppNotice();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
@@ -430,7 +429,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         if(data.data["success"]["ok"]==0&&data.data["success"]["advertList"].length!=0){
           var message = data.data["success"]["message"];
           var notice = data.data["success"]["advertList"][0];
-          CommonUtils.showAPPNotice(context,notice,message);
+          CommonUtils.showAPPNotice(context,notice,message).then((_){
+            _getUnReadNotice();
+          });
         }else{
           ///今天已弹窗，不再弹窗
         }
