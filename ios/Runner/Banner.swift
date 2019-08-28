@@ -99,14 +99,14 @@ class Banner : NSObject, FlutterPlatformView, GDTUnifiedBannerViewDelegate{
     }
     
     func unifiedBannerViewDidDismissFullScreenModal(_ unifiedBannerView: GDTUnifiedBannerView) {
-        print("全屏广告页已经被关闭")
-    }
+        print("全屏广告页已经被关闭")   }
     
     func unifiedBannerViewWillLeaveApplication(_ unifiedBannerView: GDTUnifiedBannerView) {
         print("当点击应用下载或者广告调用系统程序打开")
     }
     
     func unifiedBannerViewWillClose(_ unifiedBannerView: GDTUnifiedBannerView) {
+        self.channel.invokeMethod("closeBanner", arguments: nil)
         print("banner2.0被用户关闭时调用")
     }
 }

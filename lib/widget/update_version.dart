@@ -161,7 +161,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                             fontWeight: FontWeight.w500),
                       ),
                     ),
-                    ConstrainedBox(
+                    widget.data.content!=null?ConstrainedBox(
                       constraints: BoxConstraints(maxHeight: _maxContentHeight),
                       child: Container(
                         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -172,6 +172,8 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
                           ),
                         ),
                       ),
+                    ):Container(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(33, 0, 33, 0),

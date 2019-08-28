@@ -544,7 +544,7 @@ class _UserInfo extends State<UserInfo>{
 
   _getAppVersionInfo(userId,Store<GSYState> store){
     ApplicationDao.getAppVersionInfo(userId).then((data){
-      if (null!=data&&data.result){
+      if (null!=data && data.result){
         _versionInfo = data.data;
         if (_versionInfo.ok==0){
             store.dispatch(RefreshApplicationAction(store.state.application.copyWith(canUpdate:_versionInfo.isUp==1?true:false)));
@@ -558,7 +558,9 @@ class _UserInfo extends State<UserInfo>{
     if (null!=_versionInfo && _versionInfo.isUp!=1){
       showToast("当前已是最新版本");
     }else{
-      CommonUtils.showUpdateDialog(context, _versionInfo);
+      if(_versionInfo!=null &&_versionInfo.isUp ==1){
+        CommonUtils.showUpdateDialog(context, _versionInfo);
+      }
     }
   }
 

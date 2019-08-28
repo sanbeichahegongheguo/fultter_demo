@@ -26,10 +26,12 @@ class ApplicationDao{
            String version = res.data["results"][0]["version"];
            result = AppVersionInfo();
            result.maxVersion = version;
-           if (CommonUtils.compareVersion( (await PackageInfo.fromPlatform()).version,version)>0){
-             result.isUp = 2;
-           }else{
+           result.ok = 0;
+           var compareVersion = CommonUtils.compareVersion((await PackageInfo.fromPlatform()).version,version);
+           if (compareVersion == -1){
              result.isUp = 1;
+           }else{
+             result.isUp = 2;
            }
          }else{
            res.result = false;
