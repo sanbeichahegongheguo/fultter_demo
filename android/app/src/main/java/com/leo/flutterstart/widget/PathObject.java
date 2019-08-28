@@ -6,8 +6,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
-import android.util.Log;
 
 import org.json.JSONArray;
 
@@ -21,7 +19,7 @@ public class PathObject {
     public int minX = -1;
     public int minY = -1;
     public PathObject(){
-            paths = new ArrayList<>();
+        paths = new ArrayList<>();
     }
 
     public void addPath(Path p, int x1, int y1, int x2, int y2){
@@ -32,24 +30,62 @@ public class PathObject {
         maxY = (maxY==-1)?y2:Math.max(y2,maxY);
     }
 
-    public void addPaths(PathObject obj){
+    public boolean addPaths(PathObject obj){
+        if(paths.size()>=2){
+            return false;
+        }
         paths.addAll(obj.paths);
         minX = (minX==-1)?obj.minX:Math.min(obj.minX,minX);
         minY = (minY==-1)?obj.minY:Math.min(obj.minY,minY);
         maxX = (maxX==-1)?obj.maxX:Math.max(obj.maxX,maxX);
         maxY = (maxY==-1)?obj.maxY:Math.max(obj.maxY,maxY);
+        return true;
     }
 
-    /**
-     * 判断路径是否“可能”相连
-     * 传入路径p的最小x轴坐标mX位于比较路径3/4左方时返回true
-     * */
-    public boolean checkConnect(int minx, int maxx, int miny, int maxy){        
-        boolean a = minx < maxX && maxx>minX;
-        boolean b = maxx < minX;
-        //boolean c = (minx-maxX) < (maxx-minx)/2 && (miny < minY+(maxY-minY)/3) && ((maxy-miny) < (maxY-minY)/5); //5
-        return a || b ;//|| c;
+    public boolean mustAddPaths(PathObject obj){
+        paths.addAll(obj.paths);
+        minX = (minX==-1)?obj.minX:Math.min(obj.minX,minX);
+        minY = (minY==-1)?obj.minY:Math.min(obj.minY,minY);
+        maxX = (maxX==-1)?obj.maxX:Math.max(obj.maxX,maxX);
+        maxY = (maxY==-1)?obj.maxY:Math.max(obj.maxY,maxY);
+        return true;
     }
+
+    public boolean checkConnect(PathObject obj){
+        int minx = obj.minX;
+        int maxx = obj.maxX;
+        int miny = obj.minY;
+        int maxy = obj.maxY;
+        boolean judgeTotIn = (maxx<maxX && minx>minX) || (maxx>maxX && minx < minX);
+        if(judgeTotIn){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean check5(PathObject obj) {
+        int minx = obj.minX;
+        int maxx = obj.maxX;
+        int miny = obj.minY;
+        int maxy = obj.maxY;
+        boolean judge5 = (miny < minY + (maxY - minY) / 2) && ((maxy - miny) < (maxY - minY) / 2);
+        if (minx > maxX) {
+            judge5 = judge5 && (minx - maxX) < (maxx - minx);
+        } else {
+            boolean judgeUpleft = minx < maxX && maxy < maxY;
+            judge5 = judge5 && judgeUpleft;
+        }
+        if (judge5) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkCross(PathObject obj){
+        boolean check1 = obj.maxX > minX && obj.minX < maxX;
+        return  check1;
+    }
+
 
     public Bitmap drawPath(Paint paint){
         int size = Math.max((maxX-minX), (maxY-minY));
@@ -73,7 +109,6 @@ public class PathObject {
 
     public Bitmap drawPathToSize(Paint paint, int psize){
         Bitmap b = Bitmap.createBitmap(psize, psize, Bitmap.Config.ARGB_8888);
-//        Bitmap b = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888);
         b.eraseColor(Color.parseColor("#FFFFFF"));
         Canvas c = new Canvas(b);
 
@@ -89,7 +124,7 @@ public class PathObject {
         float startY = minY*scale;
 
         for(int i=0; i<paths.size(); i++){
-            Path p = paths.get(i);
+            Path p = new Path(paths.get(i));
             p.transform(matrix);
             p.offset(-startX+offsetX, -startY+offsetY);
             c.drawPath(p, paint);

@@ -23,6 +23,7 @@ public class YdMnistClassifierLite {
     private final Interpreter mInterpreter;
     public YdMnistClassifierLite(AssetManager manager) {
         MappedByteBuffer mbb = null;
+        Interpreter tmpItpt;
         try{
             AssetFileDescriptor fileDescriptor = manager.openFd(TF.YD_MODEL_LITE);
             FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -30,21 +31,31 @@ public class YdMnistClassifierLite {
             long startOffset = fileDescriptor.getStartOffset();
             long declaredLength = fileDescriptor.getDeclaredLength();
             mbb = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+            tmpItpt = new Interpreter(mbb);
         }catch (Exception err){
             err.printStackTrace();
+            tmpItpt = null;
         }
-        mInterpreter = new Interpreter(mbb);
-
+        mInterpreter = tmpItpt;
     }
 
-    public com.leo.flutterstart.MnistData inference(ByteBuffer input){
+    public MnistData inference(ByteBuffer input){
         float[][] mResult = new float[1][10];
-        mInterpreter.run(input, mResult);
+        if(mInterpreter != null){
+            try{
+                mInterpreter.run(input, mResult);
+            }catch (Exception err){
+                err.printStackTrace();
+            }
+        }
         Log.i("mnist:", Arrays.toString(mResult[0]));
-        return new com.leo.flutterstart.MnistData(mResult[0]);
+        return new MnistData(mResult[0]);
     }
 
     public void dispose(){
+        if(mInterpreter == null){
+            return;
+        }
         mInterpreter.close();
     }
 
@@ -63,7 +74,7 @@ public class YdMnistClassifierLite {
         return newbm;
     }
 
-    public ByteBuffer ImgData(Bitmap bm, Bitmap newbm) {
+    public ByteBuffer ImgData(Bitmap newbm) {
         ByteBuffer mImgData = ByteBuffer.allocateDirect(4 * 1 * TF.MNIST_SIZE * TF.MNIST_SIZE * 1);
         mImgData.order(ByteOrder.nativeOrder());
         mImgData.rewind();
