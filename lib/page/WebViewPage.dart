@@ -218,9 +218,12 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         String _description =  _urlList["description"];
         var _shareToWeChat =  new ShareToWeChat(webPage:_imagePath,thumbnail:_thumbnail,transaction:"",title: _title,description:_description);
         CommonUtils.showGuide(context, _shareToWeChat);
-      } else{
+      }else{
         Navigator.of(context).pop();
       }
+      //阻止路由替换；
+      return NavigationDecision.prevent;
+    }else if(request.url.startsWith('appcallback')){
       //阻止路由替换；
       return NavigationDecision.prevent;
     }else if (request.url.startsWith("weixin://") || request.url.startsWith("alipays://")){
