@@ -10,10 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
+import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/user.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -218,6 +221,17 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         String _description =  _urlList["description"];
         var _shareToWeChat =  new ShareToWeChat(webPage:_imagePath,thumbnail:_thumbnail,transaction:"",title: _title,description:_description);
         CommonUtils.showGuide(context, _shareToWeChat);
+      }else if(request.url=="haxecallback:logout"){
+        print("登录失效 返回登录页面");
+        showToast("登录失效,请重新登录");
+        NavigatorUtil.goWelcome(context);
+        try{
+          httpManager.clearAuthorization();
+          Store<GSYState> store = StoreProvider.of(context);
+          store.dispatch(UpdateUserAction(User()));
+        }catch(e){
+          print(e);
+        }
       }else{
         Navigator.of(context).pop();
       }
