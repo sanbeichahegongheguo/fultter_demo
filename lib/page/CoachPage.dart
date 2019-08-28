@@ -38,6 +38,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     bloc.jzModuleBloc.getCoachJZModule();
     bloc.coachBloc.getCoachNotice();
     bloc.adBloc.getBanner();
+    if(Platform.isIOS){
+      bloc.coachBloc.showBanner(true);
+    }
     super.initState();
   }
   @override
