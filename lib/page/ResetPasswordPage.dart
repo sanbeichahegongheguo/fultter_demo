@@ -131,9 +131,8 @@ class _StatefulWidget  extends State<ResetPasswordPage>{
                     child: Text(_confirmText,style: TextStyle(color: Color(0xFFA94442)),),
                   ),
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child:MaterialButton(
+                MaterialButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     onPressed:_isConfirm?_resetPassword:null,
                     minWidth: ScreenUtil.getInstance().getWidthPx(521),
                     height:ScreenUtil.getInstance().getHeightPx(133),
@@ -141,8 +140,7 @@ class _StatefulWidget  extends State<ResetPasswordPage>{
                     disabledColor:Colors.black26,
                     child:Text("更改密码",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color:_isConfirm?Color(0xFFa83530): Colors.white70,),
                   ),
-                )
-                )
+                ),
               ],
           ),
         ),

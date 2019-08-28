@@ -205,16 +205,17 @@ class _JoinClassPage extends State<JoinClassPage>{
     List<Widget> _widgetList = [];
     for(var i = 0;i<_classInfoList.length;i++){
       var classMsg = Padding(padding: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(30), 0,0),child:
-          Align(child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
+          Align(
             child:MaterialButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
               minWidth: ScreenUtil.getInstance().getWidthPx(600),
               color: _classId==_classInfoList[i]["id"]? Color(0xFF6ed699):Color(0xFFf1f2f6),
               disabledColor: _classId==_classInfoList[i]["id"]? Color(0xFF6ed699):Color(0xFFf1f2f6),
               height:ScreenUtil.getInstance().getHeightPx(112) ,
               onPressed: _classId==_classInfoList[i]["id"]?null:(){setState(() {_classId = _classInfoList[i]["id"];});},
               child: Text(_classInfoList[i]["name"],style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color:_classId==_classInfoList[i]["id"]? Color(0xFFffffff): Color(0xFFafafb0))),
-            ),),alignment: Alignment.center,) ,) ;
+            ),
+          alignment: Alignment.center,) ,) ;
           _widgetList.add(classMsg);
     }
     var listView;

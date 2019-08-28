@@ -117,13 +117,8 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
           height: ScreenUtil.getInstance().getHeightPx(216),
           color: Color(0xFFffffff),
           child: Align(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Container(
-                  decoration: new BoxDecoration(
-                      boxShadow: [BoxShadow(color: Colors.black12)]
-                  ),
-                  child: MaterialButton(
+              child: MaterialButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     onPressed: _goParentInfo,
                     minWidth: ScreenUtil.getInstance().getWidthPx(983),
                     height: ScreenUtil.getInstance().getHeightPx(150),
@@ -132,8 +127,6 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                         fontSize: ScreenUtil.getInstance().getSp(54 / 3),
                         color: Colors.white),),
                   ),
-                ),
-              )
           ),
         ),
       );
@@ -157,9 +150,8 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
     for (var i = 0; i < timeList.length; i++) {
       var widgetList = Padding(
           padding: EdgeInsets.all(ScreenUtil.getInstance().getHeightPx(15),),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: MaterialButton(
+          child:MaterialButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
               onPressed: _timeName != timeList[i] ? () async {
                 await UserDao.saveEyeshiieldTime(i + 1);
                 ApplicationDao.trafficStatistic(317);
@@ -176,7 +168,6 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                   color: _timeName == timeList[i] ? Color(0xFFa83530) : Color(
                       0xFF999999)),),
             ),
-          )
       );
       listWiget.add(widgetList);
     }

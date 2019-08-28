@@ -233,9 +233,9 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
                 border: new Border.all(width: 1.0, color: Color(0xFFe5e5e5)),
                 borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child:MaterialButton(
+              child:MaterialButton(
+                elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   minWidth: ScreenUtil.getInstance().getWidthPx(450),
                   color: Color(0xFFffffff),
                   height:ScreenUtil.getInstance().getHeightPx(215) ,
@@ -259,7 +259,6 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
                       ],
                     ),
                 ),
-              ),
             )
         );
       }
@@ -343,16 +342,14 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
       msgList.add(
         Container(
           margin: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(58)),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child:MaterialButton(
+          child: MaterialButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
               minWidth: ScreenUtil.getInstance().getWidthPx(515),
               color: Color(0xFFfbd953),
               height:ScreenUtil.getInstance().getHeightPx(139) ,
               onPressed: (){_goParentInfo('finishWork');},
               child: Text("完成作业",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFa83530))),
             ),
-          ),
         )
       );
       msg = Container(
@@ -371,15 +368,13 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
             Text("最近两周老师无最新作业！",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF999999)),),
             Container(
               margin: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(58)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child:MaterialButton(
+              child:MaterialButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                   minWidth: ScreenUtil.getInstance().getWidthPx(515),
                   color: Color(0xFF6ed699),
                   height:ScreenUtil.getInstance().getHeightPx(139) ,
                   onPressed: (){_goParentInfo('mineExercise');},
                   child: Text("自主练习",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFffffff))),
-                ),
               ),
             ),
 
@@ -485,16 +480,14 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
     }else{
       _learninText = " 同学尚无学习记录!";
       msg = Container(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(50),
-          child:MaterialButton(
+        child:MaterialButton(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
             minWidth: ScreenUtil.getInstance().getWidthPx(515),
             color: Color(0xFF6ed699),
             height:ScreenUtil.getInstance().getHeightPx(139) ,
             onPressed: (){},
             child: Text("自主练习",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFffffff))),
           ),
-        ),
       );
     }
    return msg;
