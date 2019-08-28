@@ -38,6 +38,9 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
     bloc.parentRewardBloc.getHotGift();
     bloc.parentModuleBloc.getParentBottomModule();
     bloc.adBloc.getBanner();
+    if(Platform.isIOS){
+      bloc.parentRewardBloc.showBanner(true);
+    }
     super.initState();
   }
 
