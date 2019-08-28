@@ -58,6 +58,7 @@ class Banner : NSObject, FlutterPlatformView, GDTUnifiedBannerViewDelegate{
                                                   viewController: controller)
             bannerView.delegate = self
             bannerView.autoSwitchInterval = 0
+            bannerView.animated = false
         }
         bannerView.loadAdAndShow()
     }

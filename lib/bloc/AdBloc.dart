@@ -16,7 +16,7 @@ class AdBloc extends BlocBase{
   static  final  Map<String,MethodChannel> adChannelMap = new Map();
 
   ///辅导页面小状元模块栏目
-  void getBanner({String pageName}) async{
+  Future getBanner({String pageName}) async{
     DataResult data = await AdDao.getAppRevScreenAdver(4);
     if(null!=data && data.result){
       print('辅导页面小状元模块栏目');
