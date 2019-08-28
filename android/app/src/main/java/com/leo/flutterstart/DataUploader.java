@@ -14,8 +14,8 @@ import java.net.URL;
 public class DataUploader {
     public static boolean upload(JSONArray arr, String pathStr, String versionName){
         //String upload_url = "http://192.168.20.18:8080/pyocr/savemnistdata";
-        String upload_url = "http://192.168.6.31:30956/pyocr/savemnistdata";
-//        String upload_url = "http://api.k12china.com/pyocr/savemnistdata";
+//        String upload_url = "http://192.168.6.31:30956/pyocr/savemnistdata";
+        String upload_url = "http://api.k12china.com/pyocr/savemnistdata";
         HttpURLConnection connection = null;
         try{
             String dataJson = arr.toString();

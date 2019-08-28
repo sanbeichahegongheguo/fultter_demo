@@ -1,34 +1,28 @@
 package com.leo.flutterstart;
-import android.app.Activity;
+
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Environment;
-import android.content.Context;
-import android.content.res.Resources;
+import android.util.Log;
+import android.util.TypedValue;
+
 import com.leo.flutterstart.widget.BmpUtil;
-import android.content.res.AssetManager;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import com.leo.flutterstart.TF;
 import com.leo.flutterstart.widget.PathObject;
 
-import android.util.DisplayMetrics;
-import java.io.File;
-import java.io.FileOutputStream;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.nio.ByteBuffer;
-import java.security.cert.Extension;
 import java.util.List;
-import android.util.Log;
-import android.os.Bundle;
-import android.util.TypedValue;
 
 public class YondorMnist{
     private static YdMnistClassifierLite ydclassifierlite;
 	private static YondorMnist instance = new YondorMnist();
-	private static Boolean isUpload = false;
+	private static Boolean isUpload = true;
     private static Boolean isFirst = true;
 
     public static JSONObject detectxy(JSONArray pos, int thickness, Boolean isSave,Context context){

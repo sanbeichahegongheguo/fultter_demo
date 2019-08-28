@@ -4,12 +4,8 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.os.Build;
 import android.util.Log;
 
-import com.leo.flutterstart.TF;
-
-import org.json.JSONArray;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.FileInputStream;
