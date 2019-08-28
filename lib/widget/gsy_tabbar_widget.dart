@@ -114,7 +114,6 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     });
     _tabController = new TabController(vsync: this, length: 4);
     _signReward();
-    _getAppNotice();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
       _getAppVersionInfo(store.state.userInfo.userId,store);
@@ -397,7 +396,12 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   }
 
   _getAppVersionInfo(userId,Store<GSYState> store){
+    //获取获取更新信息在获取公告
     ApplicationDao.getAppVersionInfo(userId).then((data){
+      if(null==data || !data.result || data.data.ok!=0 ||data.data.isUp!=1){
+        _getAppNotice();
+        return;
+      }
       if (null!=data&&data.result){
         if (data.data.ok==0){
           if(data.data.isUp==1){
@@ -415,7 +419,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                 }
               }
             }
-            CommonUtils.showUpdateDialog(context, data.data,mustUpdate: must);
+            CommonUtils.showUpdateDialog(context, data.data,mustUpdate: must).then((_){
+              _getAppNotice();
+            });
           }
         }
       }
