@@ -6,7 +6,7 @@ import 'package:flutter_start/common/config/config.dart';
 class Address {
 //  static const String studentHost = "http://192.168.6.31:30915/student:";
 //  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
-//  static const String studentWebHost = "http://1 92.168.6.31:31528/studentweb/";
+//  static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
 //  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
 //  static const String h5Host = "http://192.168.6.30:30593/";
 //  static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
