@@ -120,6 +120,13 @@ class NavigatorUtil {
   }
   ///去往webview
   static goWebView(BuildContext context, String url,{String router = ""}) async {
+     if (url.indexOf("#")!=-1 && router ==""){
+       var split = url.split("#/");
+       if(split.length>1){
+         url = split[0];
+         router = split[1];
+       }
+     }
     String key = await httpManager.getAuthorization();
     print("@key:  $key ");
     String from = "study_parent";

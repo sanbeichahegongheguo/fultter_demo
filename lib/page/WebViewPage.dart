@@ -20,9 +20,9 @@ import 'package:flutter_start/models/user.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_saver/image_picker_saver.dart' as picker;
 import 'package:oktoast/oktoast.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/X5Sdk.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:redux/redux.dart';
 
@@ -136,7 +136,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                   () => VerticalDragGestureRecognizer(),
                             ),
                           ),
-                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState()].toSet(),
+                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage()].toSet(),
                         navigationDelegate: _navigationDelegate,
                         onPageFinished: (String url) {
                           print('@跳转链接: $url');
@@ -386,6 +386,28 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
             _showAd = true;
             _webviewBloc.showBanner(_showAd);
           } );
+        });
+  }
+
+  ///加载广告
+  JavascriptChannel _saveImage() {
+    return JavascriptChannel(
+        name: 'SaveImage',
+        onMessageReceived: (JavascriptMessage message) {
+          if(ObjectUtil.isEmptyString(message.message)){
+            return;
+          }
+          var msg = message.message;
+          if(message.message.startsWith("data:image/png;base64,")){
+            msg =message.message.replaceFirst("data:image/png;base64,", "");
+          }
+          picker.ImagePickerSaver.saveFile(fileData: base64Decode(msg)).then((data){
+            if(!ObjectUtil.isEmptyString(data)){
+                print(data);
+                showToast("保存成功");
+            }
+          });
+
         });
   }
   ///打开学生端
