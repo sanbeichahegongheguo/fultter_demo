@@ -55,7 +55,7 @@
     float miny = obj.minY;
     float maxx = obj.maxX;
     float maxy = obj.maxY;
-    BOOL judge5 = (miny<self.minY+(self.maxY-self.minY)/3) && ((maxy-miny)<(self.maxY-self.minY)/2);
+    BOOL judge5 = (miny<self.minY+(self.maxY-self.minY)/2) && ((maxy-miny)<(self.maxY-self.minY)/2);
     if(minx > self.maxX){
         judge5 = judge5 && (minx-self.maxX)<(maxx-minx);
     }else{
@@ -142,7 +142,13 @@
     NSMutableArray* tmpPObjs = [NSMutableArray array];   
     for(int i=0; i<[pos count]; i++){
         NSArray* points = pos[i];
-        PathObject* tmpObj = [PathObject getPathFromAxis:points withThickness:1];
+		if([points count] < 2){
+			continue;
+		}
+        PathObject* tmpObj = [PathObject getPathFromAxis:points withThickness:1];		
+		if(tmpObj.maxX == tmpObj.minX && tmpObj.maxY == tmpObj.minY){
+			continue;
+		}
         [tmpPObjs addObject:tmpObj];
         
     }    

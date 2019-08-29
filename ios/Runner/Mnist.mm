@@ -107,7 +107,7 @@ namespace mnistext{
 	}
 	
 	
-	BOOL upload(NSMutableArray* arr, NSString* pathStr){
+	BOOL upload(NSMutableArray* arr, NSString* pathStr, NSString* versionName){
 		NSLog(@"start uploading mnist result...");
 		//NSString* urlString = @"http://192.168.6.31:30956/pyocr/savemnistdata";
 		//NSString* urlString = @"http://192.168.20.18:8080/pyocr/savemnistdata";
@@ -116,7 +116,7 @@ namespace mnistext{
 		
 		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:arr options:0 error:0];
 		NSString *dataStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-		NSString *payload = [NSString stringWithFormat:@"mnistresult=%@&path=%@", dataStr, pathStr];
+		NSString *payload = [NSString stringWithFormat:@"mnistresult=%@&path=%@&ver=%@", dataStr, pathStr, versionName];
 		//NSLog(@"send data:%@", payload);
 		NSData* postData = [payload dataUsingEncoding:NSUTF8StringEncoding];
 		NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
@@ -139,8 +139,10 @@ namespace mnistext{
 		return YES;
 	}
 	
-	NSString * detectxy(NSString * jsonstr, float thickness, bool isSave){
+	NSString * detectxy(NSString * jsonstr, float thickness, bool isSave){					
+		NSLog(@"mnist plugin v20190829");		
 		NSMutableDictionary *dictionary = [[NSMutableDictionary alloc]init];  			
+				
 		NSData * jsonData = [jsonstr dataUsingEncoding:NSUTF8StringEncoding];
 		NSArray * pos = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
 		
@@ -171,6 +173,9 @@ namespace mnistext{
 			UIImage* img = [pObjs[i] drawPathToSize:28];
 			NSString* charresult =  predict(img);
 			//NSLog(@"charresult=%@",charresult);
+			if([charresult isEqualToString:@"9"] && [tmpP.paths count] >= 2){
+				charresult = @"4";
+			}			
 			if(([charresult isEqualToString:@"1"] || [charresult isEqualToString:@"6"]) && i<[pObjs count]-1){
 				PathObject* tmpP2 = pObjs[i+1];
 				if([tmpP2 checkCross:tmpP]){
@@ -182,7 +187,8 @@ namespace mnistext{
 					//NSLog(@"charresult2=%@",charresult2);
 					if([charresult2 isEqualToString:@"4"] || [charresult2 isEqualToString:@"9"]){
 						img = img2;
-						charresult = charresult2;
+						//charresult = charresult2;
+						charresult = @"4";
 						skip = YES;
 					}					
 				}
@@ -218,7 +224,9 @@ namespace mnistext{
 				[uploadObj setValue:mnistResult forKey:@"mnist"];
 				[uploadDatas addObject:uploadObj];	
 			}			
-			mnistext::upload(uploadDatas, jsonstr);			
+			NSString *ver = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+			ver = [ver stringByReplacingOccurrencesOfString:@"." withString:@""];
+			mnistext::upload(uploadDatas, jsonstr, ver);			
 		}
 		
 		//model = nil;
