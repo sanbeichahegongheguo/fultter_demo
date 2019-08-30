@@ -28,16 +28,16 @@ static const NSString *CompanyFirstDomainByWeChatRegister = @"k12china.com";
     NSString     *absoluteString = [navigationAction.request.URL.absoluteString stringByRemovingPercentEncoding];
     NSLog(@"Current URL is %@",absoluteString);
     static NSString *endPayRedirectURL = nil;
-    if ([absoluteString hasPrefix:@"https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb"] && ![absoluteString hasSuffix:[NSString stringWithFormat:@"redirect_url=pedu.%@://",CompanyFirstDomainByWeChatRegister]]) {
+    if ([absoluteString hasPrefix:@"https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb"] && ![absoluteString hasSuffix:[NSString stringWithFormat:@"redirect_url=www.%@://",CompanyFirstDomainByWeChatRegister]]) {
         decisionHandler(WKNavigationActionPolicyCancel);
 
         NSString *redirectUrl = nil;
         if ([absoluteString containsString:@"redirect_url="]) {
             NSRange redirectRange = [absoluteString rangeOfString:@"redirect_url"];
             endPayRedirectURL =  [absoluteString substringFromIndex:redirectRange.location+redirectRange.length+1];
-            redirectUrl = [[absoluteString substringToIndex:redirectRange.location] stringByAppendingString:[NSString stringWithFormat:@"redirect_url=pedu.%@://",CompanyFirstDomainByWeChatRegister]];
+            redirectUrl = [[absoluteString substringToIndex:redirectRange.location] stringByAppendingString:[NSString stringWithFormat:@"redirect_url=www.%@://",CompanyFirstDomainByWeChatRegister]];
         }else {
-            redirectUrl = [absoluteString stringByAppendingString:[NSString stringWithFormat:@"&redirect_url=pedu.%@://",CompanyFirstDomainByWeChatRegister]];
+            redirectUrl = [absoluteString stringByAppendingString:[NSString stringWithFormat:@"&redirect_url=www.%@://",CompanyFirstDomainByWeChatRegister]];
         }
 
         NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:redirectUrl] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:XDX_URL_TIMEOUT];

@@ -65,6 +65,7 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    configuration.allowsInlineMediaPlayback = true;
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
