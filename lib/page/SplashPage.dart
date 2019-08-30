@@ -43,6 +43,7 @@ class SplashPageState extends State<SplashPage> {
   String _showAdKey ="SHOW_AD";
   //默认启动延迟
   int _milliseconds = 800;
+  Widget _ad = Container();
   @override
   void initState() {
     super.initState();
@@ -90,7 +91,26 @@ class SplashPageState extends State<SplashPage> {
       });
     });
     if (SpUtil.getBool(_showAdKey)){
-      _milliseconds = 2000;
+      if(Platform.isAndroid){
+        _milliseconds = 2000;
+      }
+      setState(() {
+        _ad = Platform.isAndroid?AndroidView(
+            viewType: "splash",
+            creationParamsCodec: const StandardMessageCodec(),
+            onPlatformViewCreated:(id){
+              _methodChannel = MethodChannel("splash_$id");
+              _methodChannel.setMethodCallHandler(call);
+            }
+        ):UiKitView(
+            viewType: "splash",
+            creationParamsCodec: const StandardMessageCodec(),
+            onPlatformViewCreated:(id){
+              _methodChannel = MethodChannel("splash_$id");
+              _methodChannel.setMethodCallHandler(call);
+            }
+        );
+      });
     }
     //登录
     UserDao.getUser(store: store).then((res){
@@ -118,7 +138,7 @@ class SplashPageState extends State<SplashPage> {
   }
 
   _next(){
-    if (_adStatus!="show"){
+    if (_adStatus!="show" || Platform.isIOS){
       if (next==1){
         //家长启动事件
         ApplicationDao.trafficStatistic(287);
@@ -150,14 +170,7 @@ class SplashPageState extends State<SplashPage> {
               ),
               Offstage(
                 offstage: !(_status == 1),
-                child: AndroidView(
-                    viewType: "splash",
-                    creationParamsCodec: const StandardMessageCodec(),
-                    onPlatformViewCreated:(id){
-                      _methodChannel = MethodChannel("splash_$id");
-                      _methodChannel.setMethodCallHandler(call);
-                    }
-                ),
+                child: _ad,
               ),
             ],
           ),
@@ -174,9 +187,11 @@ class SplashPageState extends State<SplashPage> {
       _adStatus = call.method;
       switch (call.method) {
         case "show":
-          setState(() {
-            _status = 1;
-          });
+          if(Platform.isAndroid){
+            setState(() {
+              _status = 1;
+            });
+          }
           break;
         case "error":
           _next();

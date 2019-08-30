@@ -399,11 +399,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           if(ObjectUtil.isEmptyString(message.message)){
             return;
           }
-          var msg = message.message;
-          if(message.message.startsWith("data:image/png;base64,")){
-            msg =message.message.replaceFirst("data:image/png;base64,", "");
-          }
-          picker.ImagePickerSaver.saveFile(fileData: base64Decode(msg)).then((data){
+          picker.ImagePickerSaver.saveFile(fileData: base64Decode(message.message)).then((data){
             if(!ObjectUtil.isEmptyString(data)){
                 print(data);
                 showToast("保存成功");

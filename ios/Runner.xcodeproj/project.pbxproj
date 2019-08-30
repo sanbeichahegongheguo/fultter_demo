@@ -18,6 +18,8 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		AE7311502302BB77001AB5F6 /* Yondor.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE73114F2302BB77001AB5F6 /* Yondor.mm */; };
+		AE7A1E312318FF1300B76925 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7A1E302318FF1200B76925 /* SplashView.swift */; };
+		AE7A1E332319066500B76925 /* SplashViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7A1E322319066400B76925 /* SplashViewFactory.swift */; };
 		AED481F122F819BD005E93AB /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F022F819BD005E93AB /* AdSupport.framework */; };
 		AED481F322F819C6005E93AB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F222F819C6005E93AB /* CoreLocation.framework */; };
 		AED481F522F819CE005E93AB /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F422F819CE005E93AB /* QuartzCore.framework */; };
@@ -72,6 +74,8 @@
 		A7EE431142770A20AA31BCD9 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		AE73114E2302BB76001AB5F6 /* Yondor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yondor.h; sourceTree = "<group>"; };
 		AE73114F2302BB77001AB5F6 /* Yondor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Yondor.mm; sourceTree = "<group>"; };
+		AE7A1E302318FF1200B76925 /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		AE7A1E322319066400B76925 /* SplashViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewFactory.swift; sourceTree = "<group>"; };
 		AED481EE22F8194E005E93AB /* libGDTMobSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGDTMobSDK.a; path = lib/libGDTMobSDK.a; sourceTree = "<group>"; };
 		AED481F022F819BD005E93AB /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		AED481F222F819C6005E93AB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -197,6 +201,8 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				AE7A1E322319066400B76925 /* SplashViewFactory.swift */,
+				AE7A1E302318FF1200B76925 /* SplashView.swift */,
 				AE73114E2302BB76001AB5F6 /* Yondor.h */,
 				AE73114F2302BB77001AB5F6 /* Yondor.mm */,
 				AEF43F2622EEA37400765808 /* ImageData.h */,
@@ -425,6 +431,8 @@
 				AED4826822FA7ED3005E93AB /* AppDelegate.swift in Sources */,
 				AE7311502302BB77001AB5F6 /* Yondor.mm in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				AE7A1E312318FF1300B76925 /* SplashView.swift in Sources */,
+				AE7A1E332319066500B76925 /* SplashViewFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
