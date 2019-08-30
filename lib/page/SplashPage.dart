@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
@@ -34,8 +36,13 @@ class SplashPage extends StatefulWidget {
 class SplashPageState extends State<SplashPage> {
   bool hadInit = false;
   int _status = 0;
-  int _count = 3;
+  int next=0;
   StreamSubscription _stream;
+  MethodChannel _methodChannel;
+  String _adStatus = "";
+  String _showAdKey ="SHOW_AD";
+  //默认启动延迟
+  int _milliseconds = 800;
   @override
   void initState() {
     super.initState();
@@ -75,32 +82,24 @@ class SplashPageState extends State<SplashPage> {
       ApplicationDao.getAppApplication().then((res){
         if (res!=null &&res.result){
           var data =res.data;
+          SpUtil.putBool(_showAdKey, (data !=null && data["showSplash"]!=null &&data["showSplash"] is num && data["showSplash"]==1 && data["showBanner"]==1));
           store.dispatch(RefreshApplicationAction(store.state.application.copyWith(showBanner: data["showBanner"],
               showCoachBanner: data["showBanner"],showRewardBanner: data["showRewardBanner"],showH5Banner: data["showH5Banner"],minAndroidVersion: data["minAndroidVersion"],minIosVersion: data["minIosVersion"]
           )));
         }
       });
     });
-
-            //登录
-    UserDao.getUser(isNew:true,store: store).then((res){
-      Future.delayed(const Duration(milliseconds: 500), () async {
+    if (SpUtil.getBool(_showAdKey)){
+      _milliseconds = 2000;
+    }
+    //登录
+    UserDao.getUser(store: store).then((res){
       if (res != null){
-        //家长启动事件
-        ApplicationDao.trafficStatistic(287);
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-              (Route<dynamic> route) => false,
-        );
-
-      }else{
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
-              (Route<dynamic> route) => false,
-        );
+        store.dispatch(UpdateUserAction(res));
+        next=1;
       }
+      Future.delayed(Duration(milliseconds: _milliseconds), () async {
+        _next();
       });
     });
 
@@ -117,22 +116,78 @@ class SplashPageState extends State<SplashPage> {
 //      }
 //    });
   }
+
+  _next(){
+    if (_adStatus!="show"){
+      if (next==1){
+        //家长启动事件
+        ApplicationDao.trafficStatistic(287);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+              (Route<dynamic> route) => false,
+        );
+      }else{
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
+              (Route<dynamic> route) => false,
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return new StoreBuilder<GSYState>(builder: (context, store) {
-      return  Material(
-        child: Stack(
-          children: <Widget>[
-            new Offstage(
-              offstage: !(_status == 0),
-              child: _buildSplashBg(),
-            ),
-          ],
-        ),
+      return  WillPopScope(
+        onWillPop: () => Future.value(false),
+        child: Material(
+          child: Stack(
+            children: <Widget>[
+              Offstage(
+                offstage: !(_status == 0),
+                child: _buildSplashBg(),
+              ),
+              Offstage(
+                offstage: !(_status == 1),
+                child: AndroidView(
+                    viewType: "splash",
+                    creationParamsCodec: const StandardMessageCodec(),
+                    onPlatformViewCreated:(id){
+                      _methodChannel = MethodChannel("splash_$id");
+                      _methodChannel.setMethodCallHandler(call);
+                    }
+                ),
+              ),
+            ],
+          ),
+        )
       );
     });
   }
 
+
+  Future<bool> call(MethodCall call) async {
+    print(call.method);
+    await SpUtil.getInstance();
+    if(SpUtil.getBool(_showAdKey) || _status == 1){
+      _adStatus = call.method;
+      switch (call.method) {
+        case "show":
+          setState(() {
+            _status = 1;
+          });
+          break;
+        case "error":
+          _next();
+          break;
+        case "close":
+          _next();
+          break;
+      }
+    }
+    return null;
+  }
   ///背景图
   Widget _buildSplashBg() {
     return Container(

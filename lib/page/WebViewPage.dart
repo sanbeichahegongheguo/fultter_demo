@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
@@ -229,6 +230,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           httpManager.clearAuthorization();
           Store<GSYState> store = StoreProvider.of(context);
           store.dispatch(UpdateUserAction(User()));
+          SpUtil.remove(Config.LOGIN_USER);
         }catch(e){
           print(e);
         }

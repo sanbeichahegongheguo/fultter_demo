@@ -82,7 +82,11 @@ class UserDao {
         return null;
       }
     }
-    User user = User.fromJson(SpUtil.getObject(Config.LOGIN_USER));
+    var obj = SpUtil.getObject(Config.LOGIN_USER);
+    if(obj==null){
+      return null;
+    }
+    User user = User.fromJson(obj);
     return user;
   }
 
@@ -204,6 +208,7 @@ class UserDao {
   static logout(store, context) async {
     String key = await httpManager.getAuthorization();
     await httpManager.clearAuthorization();
+    SpUtil.remove(Config.LOGIN_USER);
     store.dispatch(UpdateUserAction(User()));
     var params = {"key": key};
     await httpManager.netFetch(Address.logout(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);

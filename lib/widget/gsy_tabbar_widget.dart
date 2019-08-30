@@ -8,6 +8,7 @@ import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/InfoDao.dart';
+import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/net/address.dart';
@@ -117,6 +118,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
       _getAppVersionInfo(store.state.userInfo.userId,store);
+      UserDao.getUser(isNew:true,store: store);
     });
     initPageMap[pageList[_currentIndex]]=true;
   }

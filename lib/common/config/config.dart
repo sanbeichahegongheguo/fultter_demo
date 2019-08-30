@@ -2,7 +2,7 @@ import 'dart:ui';
 
 class Config {
   static const PAGE_SIZE = 20;
-  static const DEBUG = true;
+  static const DEBUG = false;
   static const USE_NATIVE_WEBVIEW = true;
 
   /// //////////////////////////////////////常量////////////////////////////////////// ///
@@ -36,9 +36,10 @@ class Config {
   static const IOS_AD_APP_ID = "1106430707";    //IOS  腾讯广告 appid
   static const IOS_BANNER_ID = "1060186030422542";//IOS  腾讯广告 bannerId
   static const LANGUAGE = Locale('zh', 'CH');
-  static const TITLE ='远大小状元';
+  static const TITLE ='远大小状元家长';
   static const CUR_VERSION ='2.0.000';
   static const indexNotice ='index-notice';   //辅导页面顶部公告
+  static const APPAPPLICATION_KEY ='APPAPPLICATION_KEY';   //辅导页面顶部公告
   static const IOS_APP_ID ='1155973972';   //苹果商店appid
   static const EVENT_287 ='event_287';   //启动事件
   static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";

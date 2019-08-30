@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage>  {
 
   Future<bool> _exitApp() {
     if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
-      showToast('远大小状元：再按一次退出',position:ToastPosition.bottom);
+      showToast('远大小状元家长：再按一次退出',position:ToastPosition.bottom);
       _exitTime = DateTime.now().millisecondsSinceEpoch;
       return Future.value(false);
     } else {

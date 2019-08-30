@@ -56,17 +56,28 @@ class ApplicationDao{
 
   ///获取后台配置信息
   static getAppApplication() async {
-    var res = await httpManager.netFetch(Address.getAppApplication(), null, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
-    var result;
-    if (res != null && res.result) {
-      var json = res.data;
-      if (null!=json) {
-        result = json;
-      } else {
-        res.result = false;
+    next() async {
+      var res = await httpManager.netFetch(Address.getAppApplication(), null, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+      var result;
+      if (res != null && res.result) {
+        var json = res.data;
+        if (null!=json) {
+          result = json;
+          await SpUtil.putObject(Config.APPAPPLICATION_KEY, result);
+        } else {
+          res.result = false;
+        }
       }
     }
-    return new DataResult(result, res.result);
+
+    var object = SpUtil.getObject(Config.APPAPPLICATION_KEY);
+    if(object==null){
+     await next();
+     object = SpUtil.getObject(Config.APPAPPLICATION_KEY);
+    }else{
+      next();
+    }
+    return new DataResult(object, object!=null);
   }
   ///流量统计
   static trafficStatistic(eventId) async {

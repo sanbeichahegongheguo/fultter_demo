@@ -18,6 +18,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugins.webviewflutter.tencent.BannerViewFactory;
+import io.flutter.plugins.webviewflutter.tencent.SplashFactory;
 
 /** WebViewFlutterPlugin */
 public class WebViewFlutterPlugin implements MethodCallHandler {
@@ -33,6 +34,7 @@ public class WebViewFlutterPlugin implements MethodCallHandler {
   public static void registerWith(Registrar registrar) {
     registrar.platformViewRegistry().registerViewFactory("plugins.flutter.io/webview", new WebViewFactory(registrar.messenger(), registrar.view(),registrar.activity()));
     registrar.platformViewRegistry().registerViewFactory("banner", new BannerViewFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
+    registrar.platformViewRegistry().registerViewFactory("splash", new SplashFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
     FlutterCookieManager.registerWith(registrar.messenger());
     MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "plugins.flutter.io/webview");
     methodChannel.setMethodCallHandler(new WebViewFlutterPlugin(registrar.context(),registrar.activity()));
