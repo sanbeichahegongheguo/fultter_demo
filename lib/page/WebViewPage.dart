@@ -137,7 +137,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                   () => VerticalDragGestureRecognizer(),
                             ),
                           ),
-                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage()].toSet(),
+                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther()].toSet(),
                         navigationDelegate: _navigationDelegate,
                         onPageFinished: (String url) {
                           print('@跳转链接: $url');
@@ -414,6 +414,18 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         name: 'OpenStudent',
         onMessageReceived: (JavascriptMessage message) {
           CommonUtils.openStudentApp();
+        });
+  }
+  ///打开外部流浪器
+  JavascriptChannel _openOther() {
+    return JavascriptChannel(
+        name: 'OpenOther',
+        onMessageReceived: (JavascriptMessage message) async {
+          if(await canLaunch(message.message)){
+          await launch(message.message, forceSafariVC: false, forceWebView: false);
+          }else {
+          showToast('${message.message}打开失败',position:ToastPosition.bottom);
+          }
         });
   }
 
