@@ -148,50 +148,57 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
 
   Widget build(BuildContext context){
     return StoreBuilder<GSYState>(builder: (context, store) {
-      return Scaffold(
-        resizeToAvoidBottomPadding: false,
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-            brightness: Brightness.light,
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            leading: new IconButton(
-                icon: new Icon(
-                  Icons.arrow_back_ios,
-                  color: Color(0xFF333333),
-                ),
-                onPressed: () {
-                  _back();
-                }
-            ),
-            title: Text(
-              _topText,
-              style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(19)),)
-        ),
-        body: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            // 触摸收起键盘
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: new PageView.builder(
-            onPageChanged:_pageChange,
-            controller: _pageController,
-            physics: new NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context,int index){
-              if(index==0){
-                return _checkHaveStuAccount();
-              }else if(index==1){
-                return _inputStuAccount();
-              }else if(index==2){
-                return _checkAddStu();
-              }else if(index==3){
-                return _bindPhone();
-              }
-            },
-            itemCount: 4,
+      return WillPopScope(
+        onWillPop:(){
+          print("返回键点击了");
+          _back();
+          return Future.value(false);
+        },
+        child: Scaffold(
+          resizeToAvoidBottomPadding: false,
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+              brightness: Brightness.light,
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              leading: new IconButton(
+                  icon: new Icon(
+                    Icons.arrow_back_ios,
+                    color: Color(0xFF333333),
+                  ),
+                  onPressed: () {
+                    _back();
+                  }
+              ),
+              title: Text(
+                _topText,
+                style: TextStyle(color: Color(0xFF333333), fontSize:ScreenUtil.getInstance().getSp(19)),)
           ),
-        ),
+          body: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              // 触摸收起键盘
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: new PageView.builder(
+              onPageChanged:_pageChange,
+              controller: _pageController,
+              physics: new NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context,int index){
+                if(index==0){
+                  return _checkHaveStuAccount();
+                }else if(index==1){
+                  return _inputStuAccount();
+                }else if(index==2){
+                  return _checkAddStu();
+                }else if(index==3){
+                  return _bindPhone();
+                }
+              },
+              itemCount: 4,
+            ),
+          ),
+        )
       );
     });
   }
