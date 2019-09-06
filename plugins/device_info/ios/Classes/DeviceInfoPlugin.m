@@ -157,57 +157,57 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSString *strDate = [dateFormatter stringFromDate:systemUptime];
-    result(@{
-      @"cd" : timeIntervalStr,
-      @"pf" : @"PARENT_APP",
-      //cpu 5
-      @"cn" : cpuName,
-      @"cc" : @(cpuCount),
-      @"cu" : @(cpuUsage),
-      @"cf" : @(cpuFrequency),
-      @"pca" : perCPUUsage,
-      //内存，磁盘 11
-      @"as" : applicationSize,
-      @"tdi" : totalDiskInfo,
-      @"udi" : usedDiskInfo,
-      @"fdi" : freeDiskInfo,
-      @"tmi" :totalMemoryInfo,
-      @"fmi" : freeMemoryInfo,
-      @"umi" : usedMemoryInfo,
-      @"ami" : activeMemoryInfo,
-      @"iami" : inActiveMemoryInfo,
-      @"wmi" : wiredMemoryInfo,
-      @"pmi" : purgableMemoryInfo,
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:timeIntervalStr forKey:@"cd"];
+    [params setValue:@"PARENT_APP" forKey:@"pf"];
+     //cpu 5
+    [params setValue:cpuName forKey:@"cn"];
+    [params setValue:@(cpuCount) forKey:@"cc"];
+    [params setValue:@(cpuUsage) forKey:@"cu"];
+    [params setValue:@(cpuFrequency) forKey:@"cf"];
+    [params setValue:perCPUUsage forKey:@"pca"];
+    //内存，磁盘 11
+    [params setValue:applicationSize forKey:@"as"];
+    [params setValue:totalDiskInfo forKey:@"tdi"];
+    [params setValue:usedDiskInfo forKey:@"udi"];
+    [params setValue:freeDiskInfo forKey:@"fdi"];
+    [params setValue:totalMemoryInfo forKey:@"tmi"];
+    [params setValue:freeMemoryInfo forKey:@"fmi"];
+    [params setValue:usedMemoryInfo forKey:@"umi"];
+    [params setValue:activeMemoryInfo forKey:@"ami"];
+    [params setValue:inActiveMemoryInfo forKey:@"iami"];
+    [params setValue:wiredMemoryInfo forKey:@"wmi"];
+    [params setValue:purgableMemoryInfo forKey:@"pmi"];
       //设备，手机 11
-      @"idfa" : idfa,
-      @"uuid" : uuid,
-      @"dtc" : device_token_crc32,
-      @"ma" : macAddress,
-      @"di" : deviceIP,
-      @"ci" : cellIP,
-      @"wi" : wifiIP,
-      @"dn" : deviceName,
-      @"in" : iPhoneName,
-      @"dc" : deviceColor,
-      @"dec" : deviceEnclosureColor,
-      //电量，IP 16
-       @"av" : appVerion,
-       @"dm" : device_model,
-       @"lm" : localizedModel,
-       @"sn" : systemName,
-       @"sv" : systemVersion,
-       @"ifw" : initialFirmware,
-       @"lf" : latestFirmware,
-       @"cmpc" : @(canMakePhoneCall),
-       @"su" : strDate,
-       @"bf" : @(busFrequency),
-       @"rs" : @(ramSize/1024/1024),
-       @"lv" : levelValue,
-       @"cv" : capacityValue,
-       @"mv" : mahValue,
-       @"vv" : voltageValue,
-       @"bs" : batterStatus,
-    });
+    [params setValue:idfa forKey:@"idfa"];
+    [params setValue:uuid forKey:@"uuid"];
+    [params setValue:device_token_crc32 forKey:@"dtc"];
+    [params setValue:macAddress forKey:@"ma"];
+    [params setValue:deviceIP forKey:@"di"];
+    [params setValue:cellIP forKey:@"ci"];
+    [params setValue:wifiIP forKey:@"wi"];
+    [params setValue:deviceName forKey:@"dn"];
+    [params setValue:iPhoneName forKey:@"in"];
+    [params setValue:deviceColor forKey:@"dc"];
+    [params setValue:deviceEnclosureColor forKey:@"dec"];
+    //电量，IP 16
+    [params setValue:appVerion forKey:@"av"];
+    [params setValue:device_model forKey:@"dm"];
+    [params setValue:localizedModel forKey:@"lm"];
+    [params setValue:systemName forKey:@"sn"];
+    [params setValue:systemVersion forKey:@"sv"];
+    [params setValue:initialFirmware forKey:@"ifw"];
+    [params setValue:latestFirmware forKey:@"lf"];
+    [params setValue:@(canMakePhoneCall) forKey:@"cmpc"];
+    [params setValue:strDate forKey:@"su"];
+    [params setValue:@(busFrequency) forKey:@"bf"];
+    [params setValue:@(ramSize/1024/1024) forKey:@"rs"];
+    [params setValue:levelValue forKey:@"lv"];
+    [params setValue:capacityValue forKey:@"cv"];
+    [params setValue:mahValue forKey:@"mv"];
+    [params setValue:voltageValue forKey:@"vv"];
+    [params setValue:batterStatus forKey:@"bs"];
+    result(params);
   } else {
     result(FlutterMethodNotImplemented);
   }

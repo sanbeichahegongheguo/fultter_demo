@@ -140,7 +140,10 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     ///底部tab bar
       return new Scaffold(
           drawer: _drawer,
-          appBar: _buildTitle(),
+          appBar: PreferredSize(
+              child:_buildTitle(),
+            preferredSize: Size.fromHeight(ScreenUtil.getInstance().screenHeight * 0.09),
+          ),
           body: new PageView(
             controller: _pageController,
             children: _tabViews,
@@ -235,7 +238,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     });
   }
   static _renderTab(icon, text, isSelect) {
-    return new Tab(
+    return new Container(
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -257,103 +260,103 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
 
 
   Widget _buildTitle() {
-    return  AppBar(
-      elevation: 0,
-      titleSpacing: 1,
+    return  Container(
       //backgroundColor: Theme.of(context).primaryColor,
-      backgroundColor: Color(0xFFf1f2f6),
-      title: Row(
-        mainAxisAlignment:MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          GestureDetector(
-            onTap: _sign,
-            child:Row(
-              children: <Widget>[
-                SizedBox(
-                  width: ScreenUtil.getInstance().getWidthPx(50),
-                ),
-                Image.asset(
-                  "images/home/icon_jl.png",
-                  width: ScreenUtil.getInstance().getWidthPx(100),
-                ),
-                SizedBox(
-                  width: ScreenUtil.getInstance().getWidthPx(25),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "签到奖励",
-                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
-                    ),
-                    Text("已经签到$_signTimes天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
-                  ],
-                ),
-                SizedBox(
-                  width: ScreenUtil.getInstance().getWidthPx(30),
-                ),
-              ],
-            ),
-          ),
-
-          Row(
-            children: <Widget>[
-
-              GestureDetector(
-                onTap: _wxServer,
-                child:Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(56),
-                      child: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66)),
-                    ),
-                    SizedBox(
-                      height: ScreenUtil.getInstance().getHeightPx(3),
-                    ),
-                    Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
-                  ],
-                ),
+      color: Color(0xFFf1f2f6),
+      child: SizedBox(
+        height: ScreenUtil.getInstance().screenHeight * 0.09,
+        child: Row(
+          mainAxisAlignment:MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            GestureDetector(
+              onTap: _sign,
+              child:Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: ScreenUtil.getInstance().getWidthPx(50),
+                  ),
+                  Image.asset(
+                    "images/home/icon_jl.png",
+                    width: ScreenUtil.getInstance().getWidthPx(100),
+                  ),
+                  SizedBox(
+                    width: ScreenUtil.getInstance().getWidthPx(25),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        "签到奖励",
+                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: const Color(0xFF333333)),
+                      ),
+                      Text("已经签到$_signTimes天", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: const Color(0xFFacb5bc)))
+                    ],
+                  ),
+                  SizedBox(
+                    width: ScreenUtil.getInstance().getWidthPx(30),
+                  ),
+                ],
               ),
-              GestureDetector(
-                onTap: _news,
-                child:Container(
-                  padding: EdgeInsets.only(right: 15,left: 15),
-                  child: Column(
+            ),
+            Row(
+              children: <Widget>[
+
+                GestureDetector(
+                  onTap: _wxServer,
+                  child:Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Stack(
-                        fit: StackFit.passthrough,
-                        alignment: AlignmentDirectional(1.9, -1.5),
-                        children: <Widget>[
-                          SizedBox(
-                            key: _globalKey,
-                            height: ScreenUtil.getInstance().getHeightPx(56),
-                            child: Image.asset("images/home/icon_yj.png" ,width: ScreenUtil.getInstance().getWidthPx(66)),
-                          ),
-                          Offstage(
-                            offstage: _unReadNotice == "0",
-                            child: ClipOval(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(10) ),
-                                child: Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
-                                decoration: BoxDecoration(color: const Color(0xFFff542b)),
-                              ),
-                            ),
-                          ),
-                        ],
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(56),
+                        child: Image.asset("images/home/icon_lxr.png", width: ScreenUtil.getInstance().getWidthPx(66)),
                       ),
                       SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(3),
                       ),
-                      Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
+                      Text("客服", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
                     ],
-                  ),),
-              ),
-            ],
-          )
-        ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _news,
+                  child:Container(
+                    padding: EdgeInsets.only(right: 15,left: 15),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Stack(
+                          fit: StackFit.passthrough,
+                          alignment: AlignmentDirectional(1.9, -1.5),
+                          children: <Widget>[
+                            SizedBox(
+                              key: _globalKey,
+                              height: ScreenUtil.getInstance().getHeightPx(56),
+                              child: Image.asset("images/home/icon_yj.png" ,width: ScreenUtil.getInstance().getWidthPx(66)),
+                            ),
+                            Offstage(
+                              offstage: _unReadNotice == "0",
+                              child: ClipOval(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(10) ),
+                                  child: Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+                                  decoration: BoxDecoration(color: const Color(0xFFff542b)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: ScreenUtil.getInstance().getHeightPx(3),
+                        ),
+                        Text("消息", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(30 / 3), color: const Color(0xFFacb5bc))),
+                      ],
+                    ),),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

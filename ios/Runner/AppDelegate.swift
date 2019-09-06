@@ -7,7 +7,6 @@ import Flutter
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
         ) -> Bool {
-        
         GeneratedPluginRegistrant.register(with: self)
         //Banner需要使用到controller
         let controller = window?.rootViewController

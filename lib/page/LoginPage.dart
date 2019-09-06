@@ -142,12 +142,21 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                         height: ScreenUtil.getInstance().getHeightPx(150),
                       ),
                       Container(
-                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
-                        child: _getTextField("您的手机号", userNameController, key: _globalKey,obscureText: false),
-                      ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                            child: _getTextField("请输入您的手机号", userNameController, key: _globalKey,obscureText:false),
+                          )),
+//                      Container(
+//                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
+//                        child: _getTextField("您的手机号", userNameController, key: _globalKey,obscureText: false),
+//                      ),
                       Container(
-                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50), top: ScreenUtil.getInstance().getHeightPx(60)),
-                        child: _getTextField("您的密码", passwordController, obscureText: true),
+                        padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(60)),
+                        child: Container(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                              child: _getTextField("您的密码", passwordController, obscureText: true),
+                            ))
                       ),
                       SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(170),
@@ -240,7 +249,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       keyboardType: !obscureText?TextInputType.number:TextInputType.text,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: 17.0, color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
       inputFormatters: !obscureText?[WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]:[],
       cursorColor: Color(0xFF333333),
       onTap: !obscureText?() {
