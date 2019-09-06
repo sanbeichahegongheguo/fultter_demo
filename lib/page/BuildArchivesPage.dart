@@ -635,17 +635,15 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
     if(data.result){
       ///验证成功，判断手机号是否存在
       DataResult data = await UserDao.checkMobile(stuNewPhoneController.text,'S');
+      Navigator.pop(context);
       if(data.data["success"]){
         ///走注册流程
         print(widget.userPhone);
         print(stuNewPhoneController.text);
-        Navigator.pop(context);
         NavigatorUtil.goRegester(context,index: 2,userPhone:widget.userPhone,registerState:widget.registerState,userId:widget.userId,head: widget.head,name:widget.name,stuPhone:stuNewPhoneController.text);
-
 //        NavigatorUtil.goRegester(context,index: 2,userPhone:widget.userPhone,registerState:widget.registerState,stuPhone:stuNewPhoneController.text);
       }else{
         showToast(data.data["message"]);
-        Navigator.pop(context);
       }
     }else{
       showToast(data.data);

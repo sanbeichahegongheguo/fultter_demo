@@ -1140,6 +1140,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     if(_AgreementCheck){
       CommonUtils.showLoadingDialog(context, text: "正在选择年级···");
       DataResult data = await UserDao.chooseSchool(_schoolId,index+1);
+      Navigator.pop(context);
       setState(() {
         this._gradeName = index+1;
         if(index == 0){
@@ -1203,7 +1204,6 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           this.classListColor.add(false);
         }
       }
-      Navigator.pop(context);
       this._onTap(4);
     }else{
       showToast("请先阅读协议！");
