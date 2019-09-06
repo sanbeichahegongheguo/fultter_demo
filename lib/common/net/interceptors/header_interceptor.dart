@@ -11,7 +11,7 @@ class HeaderInterceptors extends InterceptorsWrapper {
   @override
   onRequest(RequestOptions options) {
     ///超时
-    options.connectTimeout = 15000;
+    options.connectTimeout = 10000;
     return options;
   }
 }

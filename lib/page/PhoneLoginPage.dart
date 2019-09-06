@@ -272,6 +272,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     CommonUtils.showLoadingDialog(context, text: "验证中···");
     SpUtil.putString(Config.USER_PHONE, userNameController.text);
     DataResult data = await UserDao.checkHaveAccount(userNameController.text, 'P');
+    Navigator.pop(context);
     bool isLogin = false;
     int registerState = 2;
     String name = '';
@@ -299,7 +300,6 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       }else if(data.data["error"]=="4"){
         showToast(data.data["message"]);
       }
-      Navigator.pop(context);
       if(data.data["error"]=="0"||data.data["error"]=="2"||data.data["error"]=="1"){
         var isSend = await CommonUtils.showEditDialog(
           context,
