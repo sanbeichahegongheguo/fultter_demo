@@ -348,15 +348,14 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
   void _inputStuAccountNext() async{
     if (_inputStuNextBtn) {
       CommonUtils.showLoadingDialog(context, text: "验证中···");
-      Store<GSYState> store = StoreProvider.of(context);
       DataResult data = await UserDao.checkStudent(stuPhoneController.text, stuPwdController.text, widget.userPhone);
-      Navigator.pop(context);
       if (data.result){
         if(data.data["success"]){
           Store<GSYState> store = StoreProvider.of(context);
           print(widget.userPhone);
           print(stuPwdController.text);
           DataResult data = await UserDao.login(widget.userPhone, stuPwdController.text, store);
+          Navigator.pop(context);
           if (data.result) {
             showToast("登录成功 ${data.data.realName}");
             LocalStorage.saveUser(LoginUser(widget.userPhone, stuPwdController.text));
@@ -367,9 +366,11 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
             }
           }
         }else{
+          Navigator.pop(context);
           showToast(data.data["message"]);
         }
       } else{
+        Navigator.pop(context);
         showToast("网络异常,请稍后重试");
       }
     } else {
