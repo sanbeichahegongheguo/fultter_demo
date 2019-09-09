@@ -51,8 +51,12 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   FocusNode _focusNode2 = FocusNode();
   TextEditingController textController2 = TextEditingController();
   WebviewBloc _webviewBloc  =  WebviewBloc();
+  Timer _timer;
+  //加载超时时间
+  Duration _timeoutSeconds = const Duration(seconds: 5);
   @override
   Widget build(BuildContext context) {
+    _timer = Timer(_timeoutSeconds,_unload);
     _deviceSize = MediaQuery.of(context).size;
     Store<GSYState> store = StoreProvider.of(context);
     return WillPopScope(
@@ -143,6 +147,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                           print('@跳转链接: $url');
                             if( _status != 1 ||_showAd != false ){
                               setState((){
+                                _timer?.cancel();
                                 _status = 1;
                                 if(!url.startsWith(widget.url) &&_showAd!=false){
                                   print("false");
@@ -253,9 +258,18 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       setState((){
         _showAd = false;
         _status = 0;
+        _timer = Timer(_timeoutSeconds, _unload);
       }
       );
       return NavigationDecision.navigate;
+    }
+  }
+  //加载失败
+  _unload(){
+    if (_status ==0 ){
+      setState(() {
+        _status =2;
+      });
     }
   }
   /*
@@ -312,6 +326,35 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           height: _deviceSize.height,
           color: Colors.white,
           child: Center(child: CircularProgressIndicator()));
+    }else if(_status ==2){
+      //加载失败
+      widget = Container(
+          width: _deviceSize.width,
+          height: _deviceSize.height,
+          color: Colors.white,
+          child: Center(
+            child: Column(
+                mainAxisAlignment:MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(90),bottom: ScreenUtil.getInstance().getHeightPx(33)),
+                  child: Image.asset("images/study/img-q.png",fit: BoxFit.cover,height:ScreenUtil.getInstance().getHeightPx(332) ,),
+                ),
+                Text("正在努力加载中···",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(42/3),color: Color(0xFF999999)),),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(58)),
+                  child:MaterialButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                    minWidth: ScreenUtil.getInstance().getWidthPx(515),
+                    color: Color(0xFF6ed699),
+                    height:ScreenUtil.getInstance().getHeightPx(139) ,
+                    onPressed: (){Navigator.of(context).pop();},
+                    child: Text("返回首页",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFffffff))),
+                  ),
+                ),
+              ],
+            ),
+          ));
     }else if (_showAd && (store.state.application.showBanner==1&&store.state.application.showH5Banner==1)){
       //广告
       widget = StreamBuilder<bool>(
