@@ -269,13 +269,11 @@ class SplashPageState extends State<SplashPage> {
 
   Future _initPermission() async {
     List<PermissionGroup> permissionsList = new List();
-
-    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
-    if (permission != PermissionStatus.granted) {
-      permissionsList.add(PermissionGroup.location);
-    }
-
     if (Platform.isAndroid){
+      PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
+      if (permission != PermissionStatus.granted) {
+        permissionsList.add(PermissionGroup.location);
+      }
        permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
       if (permission != PermissionStatus.granted) {
         permissionsList.add(PermissionGroup.phone);

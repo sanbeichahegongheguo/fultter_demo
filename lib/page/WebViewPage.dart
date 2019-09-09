@@ -172,6 +172,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   * @param request.url open_weixin 打开微信
   * */
   NavigationDecision _navigationDelegate(NavigationRequest request){
+    print('_navigationDelegate $request');
     if (request.url.startsWith('haxecallback')) {
       print('@ 回调参数 $request}');
       if(request.url.indexOf("signed")>-1){
@@ -252,9 +253,12 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       goLaunch(context,request.url);
       //阻止路由替换；
       return NavigationDecision.prevent;
+    }else if (request.url == "about:blank"){
+      //阻止路由替换；
+      return NavigationDecision.prevent;
     }else{
       //允许路由替换
-      print('允许路由替换 $request');
+      print('允许路由替换');
       setState((){
         _showAd = false;
         _status = 0;

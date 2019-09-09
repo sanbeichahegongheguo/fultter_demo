@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>34884</string>
+	<string>34885</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -60,7 +60,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Calendars</string>
 	<key>NSCameraUsageDescription</key>
-	<string>是否允许此APP使用你的相机？</string>
+	<string>是否允许此APP使用你的相机来收录错题图片或者头像？</string>
 	<key>NSContactsUsageDescription</key>
 	<string>contacts</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -86,7 +86,7 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIStatusBarHidden</key>
-	<true/>
+	<false/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>

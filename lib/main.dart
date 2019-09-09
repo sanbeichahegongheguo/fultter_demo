@@ -23,9 +23,9 @@ main() {
       print(stack);
     });
   });
-  if (Platform.isIOS) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
-  }
+//  if (Platform.isIOS) {
+//    SystemChrome.setEnabledSystemUIOverlays([]);
+//  }
 }
 
 class MyApp extends StatelessWidget {
