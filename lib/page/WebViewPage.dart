@@ -70,14 +70,16 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           }
         },
         child: Scaffold(
+//          backgroundColor: Colors.transparent,
           appBar: widget.appBar??null,
-          body: Stack(
-                alignment: AlignmentDirectional.bottomCenter,
-                children: <Widget>[
-                  Platform.isAndroid?Offstage(
+          body: SafeArea(
+            child: Stack(
+              alignment: AlignmentDirectional.bottomCenter,
+              children: <Widget>[
+                Platform.isAndroid?Offstage(
                   offstage:true,
-                    child:Row(children: <Widget>[
-                      TextField(
+                  child:Row(children: <Widget>[
+                    TextField(
                       autofocus: false,
                       focusNode: _focusNode1,
                       controller: textController1,
@@ -99,12 +101,12 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                         _focusNode1.unfocus();
                       },
                     ),
-                      TextField(
-                        autofocus: false,
-                        focusNode: _focusNode2,
-                        controller: textController2,
-                        onChanged: (text) {
-                          _webViewController.evaluateJavascript('''
+                    TextField(
+                      autofocus: false,
+                      focusNode: _focusNode2,
+                      controller: textController2,
+                      onChanged: (text) {
+                        _webViewController.evaluateJavascript('''
                                    if(current != null){
                                     current.value = '${textController2.text}';
                                     current.selectionStart = ${textController2.selection.start};
@@ -112,57 +114,58 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                     current.dispatchEvent(new Event('input'));
                                    }
                                   ''');
-                        },
-                        onSubmitted: (text) {
-                          _webViewController.evaluateJavascript('''
+                      },
+                      onSubmitted: (text) {
+                        _webViewController.evaluateJavascript('''
                                   if(current != null)
                                     current.submit();
                                   ''');
-                          _focusNode2.unfocus();
-                        },
-                      ),
-                    ],),
-                  ):Container(),
-                  Container(
-                      height: _deviceSize.height,
-                      child: WebView(
-                        initialMediaPlaybackPolicy:AutoMediaPlaybackPolicy.always_allow,
-                        initialUrl: widget.url,
-                        javascriptMode: JavascriptMode.unrestricted,
-                        onWebViewCreated: (WebViewController webViewController) {
-                          print("打开Webview!");
-                          _webViewController = webViewController;
+                        _focusNode2.unfocus();
+                      },
+                    ),
+                  ],),
+                ):Container(),
+                Container(
+                    height: _deviceSize.height,
+                    child: WebView(
+                      initialMediaPlaybackPolicy:AutoMediaPlaybackPolicy.always_allow,
+                      initialUrl: widget.url,
+                      javascriptMode: JavascriptMode.unrestricted,
+                      onWebViewCreated: (WebViewController webViewController) {
+                        print("打开Webview!");
+                        _webViewController = webViewController;
 
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                        },
-                        gestureRecognizers: Set()
-                          ..add(
-                            Factory<VerticalDragGestureRecognizer>(
-                                  () => VerticalDragGestureRecognizer(),
-                            ),
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                      },
+                      gestureRecognizers: Set()
+                        ..add(
+                          Factory<VerticalDragGestureRecognizer>(
+                                () => VerticalDragGestureRecognizer(),
                           ),
-                        javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther()].toSet(),
-                        navigationDelegate: _navigationDelegate,
-                        onPageFinished: (String url) {
-                          print('@跳转链接: $url');
-                            if( _status != 1 ||_showAd != false ){
-                              setState((){
-                                _timer?.cancel();
-                                _status = 1;
-                                if(!url.startsWith(widget.url) &&_showAd!=false){
-                                  print("false");
-                                  _showAd =false;
-                                }
-                              },
-                              );
+                        ),
+                      javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther()].toSet(),
+                      navigationDelegate: _navigationDelegate,
+                      onPageFinished: (String url) {
+                        print('@跳转链接: $url');
+                        if( _status != 1 ||_showAd != false ){
+                          setState((){
+                            _timer?.cancel();
+                            _status = 1;
+                            if(!url.startsWith(widget.url) &&_showAd!=false){
+                              print("false");
+                              _showAd =false;
                             }
-                          _input();
-                          _hideAndroidKeyboard();
-                        },
-                      )),
-                  _getStatusWidget(store)
-                ],
-              )
+                          },
+                          );
+                        }
+                        _input();
+                        _hideAndroidKeyboard();
+                      },
+                    )),
+                _getStatusWidget(store)
+              ],
+            ),
+          )
         ));
   }
   /*
@@ -623,14 +626,14 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                   console.log(param);
                   UserState.postMessage(param);
                 });
-                inputs[i].addEventListener('focusout', (e) => {
-                  var json = {
-                    "funcName": "focusout",
-                  };
-                  var param = JSON.stringify(json);
-                  console.log(param);
-                  UserState.postMessage(param);
-                })
+                //inputs[i].addEventListener('focusout', (e) => {
+                //  var json = {
+                //    "funcName": "focusout",
+                //  };
+                //  var param = JSON.stringify(json);
+                //  console.log(param);
+                //  UserState.postMessage(param);
+                //})
               };
                for (var i = 0; i < keyboards.length; i++) {
                 console.log(i);
@@ -649,14 +652,14 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                   console.log(param);
                   UserState.postMessage(param);
                 });
-                keyboards[i].addEventListener('focusout', (e) => {
-                  var json = {
-                    "funcName": "focusout",
-                  };
-                  var param = JSON.stringify(json);
-                  console.log(param);
-                  UserState.postMessage(param);
-                })
+                //keyboards[i].addEventListener('focusout', (e) => {
+                //  var json = {
+                //    "funcName": "focusout",
+                // };
+                //  var param = JSON.stringify(json);
+                //  console.log(param);
+                //  UserState.postMessage(param);
+                //})
               };
             ''');
   }
