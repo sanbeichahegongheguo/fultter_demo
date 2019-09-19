@@ -259,7 +259,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
     }else if (request.url == "about:blank"){
       //阻止路由替换；
       return NavigationDecision.prevent;
-    }else{
+    }else if (request.url.startsWith("http://")||request.url.startsWith("https://")){
       //允许路由替换
       print('允许路由替换');
       setState((){
@@ -269,11 +269,13 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       }
       );
       return NavigationDecision.navigate;
+    }else{
+      return NavigationDecision.prevent;
     }
   }
   //加载失败
   _unload(){
-    if (_status ==0 ){
+    if ( _status == 0 ){
       setState(() {
         _status =2;
       });
