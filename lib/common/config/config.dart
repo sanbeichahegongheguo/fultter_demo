@@ -46,5 +46,5 @@ class Config {
   static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
   static const STUDENT_SCHEME = "yondorstudenthwapp://"; //学生端路由
   static const STUDENT_TEN_URL = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
-  static const STUDENT_IOS_URL = "https://apps.apple.com/cn/app/id1109534684"; //學生端苹果商店
+  static const STUDENT_IOS_URL = "https://apps.apple.com/cn/app/id1475045442"; //學生端苹果商店
 }

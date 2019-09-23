@@ -18,6 +18,11 @@ main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
     runZoned(() {
       runApp(MyApp());
+      if (Platform.isAndroid) {
+        SystemUiOverlayStyle systemUiOverlayStyle =
+        SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+        SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+      }
     }, onError: (Object obj, StackTrace stack) {
       print(obj);
       print(stack);
