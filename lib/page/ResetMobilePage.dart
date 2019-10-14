@@ -154,7 +154,7 @@ class _ResetMobilePage extends State<ResetMobilePage>{
       keyboardType: TextInputType.phone,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)],
       decoration: new InputDecoration(
         suffixIcon: _hasdeleteIcon
@@ -188,7 +188,7 @@ class _ResetMobilePage extends State<ResetMobilePage>{
       keyboardType: TextInputType.phone,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
       decoration: new InputDecoration(
         suffixIcon:

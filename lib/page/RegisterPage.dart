@@ -415,6 +415,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
           Container(
               padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), right: ScreenUtil.getInstance().getWidthPx(42), top: ScreenUtil.getInstance().getHeightPx(40)),
               child: TextField(
+                style: TextStyle(textBaseline:TextBaseline.alphabetic),
                 controller: userPasswordController,
                 cursorColor: Color(0xFF333333),
                 obscureText: !_viewPasswordText ?? false,
@@ -1042,7 +1043,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                     controller: teacherNameController,
                     cursorColor: Colors.black,
                     textAlign: TextAlign.center,
-                    style: TextStyle( fontSize: ScreenUtil.getInstance().getSp(14), color: Colors.black),
+                    style: TextStyle( fontSize: ScreenUtil.getInstance().getSp(14), color: Colors.black,textBaseline:TextBaseline.alphabetic),
                     decoration: new InputDecoration(
                       hintText: '您的孩子的数学老师姓什么？',
                     ),
@@ -1524,6 +1525,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
     return TextField(
       controller: controller,
       cursorColor: Color(0xFF333333),
+      style: TextStyle(textBaseline:TextBaseline.alphabetic),
       keyboardType:  what=="phone"?TextInputType.phone:TextInputType.text,
       obscureText: obscureText ?? false,
       inputFormatters: what=="phone"?[LengthLimitingTextInputFormatter(11),WhitelistingTextInputFormatter.digitsOnly]:[],

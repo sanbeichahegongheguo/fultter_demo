@@ -160,7 +160,6 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                           child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
                         )),
                         Container(
-                          alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
                           child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
                         ),
@@ -236,7 +235,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       keyboardType: TextInputType.phone,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)],
       decoration: new InputDecoration(
         suffixIcon: _hasdeleteIcon

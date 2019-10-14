@@ -164,7 +164,7 @@ class _StatefulWidget  extends State<ResetPasswordPage>{
       keyboardType: TextInputType.text,
       obscureText: true,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
       inputFormatters: [LengthLimitingTextInputFormatter(20)],
       decoration: new InputDecoration(
         contentPadding: EdgeInsets.all(13),

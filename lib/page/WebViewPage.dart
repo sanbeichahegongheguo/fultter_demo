@@ -79,34 +79,39 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                 Platform.isAndroid?Offstage(
                   offstage:true,
                   child:Row(children: <Widget>[
-                    TextField(
-                      autofocus: false,
-                      focusNode: _focusNode1,
-                      controller: textController1,
-                      onChanged: (text) {
-                        _webViewController.evaluateJavascript('''
-                         if(current != null){
-                          current.value = '${textController1.text}';
-                          current.selectionStart = ${textController1.selection.start};
-                          current.selectionEnd = ${textController1.selection.end};
-                          current.dispatchEvent(new Event('input'));
-                         }
-                        ''');
-                      },
-                      onSubmitted: (text) {
-                        _webViewController.evaluateJavascript('''
-                        if(current != null)
-                          current.submit();
-                        ''');
-                        _focusNode1.unfocus();
-                      },
+                    SizedBox(
+                      width:10,
+                      child: TextField(
+                         autofocus: false,
+                        focusNode: _focusNode1,
+                        controller: textController1,
+                        onChanged: (text) {
+                          _webViewController.evaluateJavascript('''
+                             if(current != null){
+                              current.value = '${textController1.text}';
+                              current.selectionStart = ${textController1.selection.start};
+                              current.selectionEnd = ${textController1.selection.end};
+                              current.dispatchEvent(new Event('input'));
+                             }
+                            ''');
+                        },
+                        onSubmitted: (text) {
+                          _webViewController.evaluateJavascript('''
+                            if(current != null)
+                              current.submit();
+                            ''');
+                          _focusNode1.unfocus();
+                        },
+                      ),
                     ),
-                    TextField(
-                      autofocus: false,
-                      focusNode: _focusNode2,
-                      controller: textController2,
-                      onChanged: (text) {
-                        _webViewController.evaluateJavascript('''
+                    SizedBox(
+                      width:10,
+                      child:  TextField(
+                        autofocus: false,
+                        focusNode: _focusNode2,
+                        controller: textController2,
+                        onChanged: (text) {
+                          _webViewController.evaluateJavascript('''
                                    if(current != null){
                                     current.value = '${textController2.text}';
                                     current.selectionStart = ${textController2.selection.start};
@@ -114,16 +119,18 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                     current.dispatchEvent(new Event('input'));
                                    }
                                   ''');
-                      },
-                      onSubmitted: (text) {
-                        _webViewController.evaluateJavascript('''
+                        },
+                        onSubmitted: (text) {
+                          _webViewController.evaluateJavascript('''
                                   if(current != null)
                                     current.submit();
                                   ''');
-                        _focusNode2.unfocus();
-                      },
+                          _focusNode2.unfocus();
+                        },
+                      ),
                     ),
-                  ],),
+                  ],
+                  ),
                 ):Container(),
                 Container(
                     height: _deviceSize.height,

@@ -317,6 +317,7 @@ class retrievePasswordState extends State<retrievePasswordPage> with SingleTicke
     return TextField(
       controller: controller,
       cursorColor: Color(0xFF333333),
+      style: TextStyle(textBaseline:TextBaseline.alphabetic),
       keyboardType:  what=="phone"?TextInputType.phone:TextInputType.text,
       obscureText: obscureText ?? false,
       inputFormatters: limteLength?[LengthLimitingTextInputFormatter(length),rule]:[],

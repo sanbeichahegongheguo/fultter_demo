@@ -249,7 +249,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       keyboardType: !obscureText?TextInputType.number:TextInputType.text,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
       inputFormatters: !obscureText?[WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]:[],
       cursorColor: Color(0xFF333333),
       onTap: !obscureText?() {
@@ -339,7 +339,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         double currentW = renderObject.paintBounds.size.width;
         double currentH = renderObject.paintBounds.size.height;
         double margin = (screenW - currentW) / 2;
-        double offsetY = position.dy - ScreenUtil.getInstance().appBarHeight;
+        double offsetY = position.dy;
         double itemHeight = currentH * 0.7;
         double dividerHeight = 1;
         return Container(
@@ -355,7 +355,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
           ),
           width: currentW,
           height: (children.length * itemHeight + (children.length - 1) * dividerHeight),
-          margin: EdgeInsets.fromLTRB(margin, offsetY + currentH, margin, 0),
+          margin: EdgeInsets.fromLTRB(margin,  currentH + currentH, margin, 0),
         );
       }
     }
