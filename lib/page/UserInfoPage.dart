@@ -298,6 +298,7 @@ class _UserInfo extends State<UserInfo>{
       maxHeight: 350,
       maxWidth: 350,
       androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片"),
+
     );
     List<int> bytes = await image.readAsBytes();
     var base64encode = base64Encode(bytes);
