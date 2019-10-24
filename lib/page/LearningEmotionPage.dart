@@ -403,6 +403,9 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
       case 14:
         data = "专项作业";
         break;
+      case 15:
+        data = "试卷作业";
+        break;
     }
     return data;
   }
