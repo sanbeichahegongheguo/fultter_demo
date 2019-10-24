@@ -4,12 +4,17 @@ import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
+
+import com.leo.flutterstart.camera.CameraPlugin;
+
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugins.connectivity.ConnectivityPlugin;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +28,7 @@ public class MainActivity extends FlutterActivity {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
     UpdateVersionPlugin.registerWith(registrarFor("iwubida.com/update_version"));
+    CameraPlugin.registerWith(registrarFor("yondor/camera"));
     //Banner插件
 //    YondorPlugin.registerWith(this,this);
     final MainActivity content = this;

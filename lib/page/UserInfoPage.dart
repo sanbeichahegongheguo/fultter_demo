@@ -293,11 +293,11 @@ class _UserInfo extends State<UserInfo>{
     File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera);
     image = await ImageCropper.cropImage(
       sourcePath: image.path,
-      toolbarTitle: "选择图片",
-      ratioX: 1.0,
-      ratioY: 1.0,
+//      toolbarTitle: "选择图片",
+      aspectRatio:CropAspectRatio(ratioX:1.0,ratioY:1.0),
       maxHeight: 350,
       maxWidth: 350,
+      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片"),
     );
     List<int> bytes = await image.readAsBytes();
     var base64encode = base64Encode(bytes);

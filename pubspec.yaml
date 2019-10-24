@@ -7,7 +7,7 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 2.0.150+340002
+version: 2.0.150+340001
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -31,7 +31,7 @@ dependencies:
   flutter_spinkit: ^3.1.0
   cached_network_image: ^1.1.1
   flutter_des: ^1.1.0
-  image_cropper: ^1.0.2
+  image_cropper: ^1.1.0
   flutter_redux: ^0.5.3
   rxdart: ^0.22.2
   uuid: 2.0.2

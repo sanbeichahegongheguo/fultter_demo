@@ -15,6 +15,19 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.io/docs), which offers tutorials, 
 samples, guidance on mobile development, and a full API reference.
 
+DEBUG:
+
+flutter  build apk --debug --target-platform=android-arm
+
+Android:
+editable_text.dart
+    set selection(TextSelection newSelection) {
+      if (newSelection.start > text.length || newSelection.end > text.length)
+        //throw FlutterError('invalid text selection: $newSelection');
+text.dart
+    this.textScaleFactor = 1
+
+
 
     #configuration.allowsInlineMediaPlayback = YES;
     #configuration.mediaPlaybackRequiresUserAction = false;

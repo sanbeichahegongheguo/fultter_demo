@@ -30,7 +30,7 @@ class UserDao {
       if (json["success"]["ok"] == 0) {
         result = User.fromJson(jsonDecode(json["success"]["data"]));
         print("user key  ${result.key}");
-        SpUtil.putObject(Config.LOGIN_USER, result);
+        await SpUtil.putObject(Config.LOGIN_USER, result);
         store.dispatch(UpdateUserAction(result));
         await httpManager.setAuthorization(result.key);
       } else {
