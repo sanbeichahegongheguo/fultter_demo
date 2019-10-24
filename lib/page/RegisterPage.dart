@@ -893,7 +893,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                       height: ScreenUtil.getInstance().getHeightPx(10),
                     ),
                     Text(
-                        '注意：如再7-8月注册，应选择暑假前所在年级',
+                        '注意：如在7-8月注册，应选择暑假前所在年级',
                         style: TextStyle(color: Color(0xFFff6464), fontSize:ScreenUtil.getInstance().getSp(13.41))
                     ),
                     Container(
@@ -995,8 +995,9 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
 
   //验证数学老师姓
   _checkMathTeacher(teacherSurnname){
+      print('验证数学老师的姓名');
       print(teacherSurnname);
-      if(teacherNameController.text==teacherSurnname){
+      if(teacherNameController.text==teacherSurnname  || teacherNameController.text == teacherSurnname.substring(0,1)){
         showToast("验证成功",position: ToastPosition.top);
         Navigator.pop(context);
         setState(() {
@@ -1008,7 +1009,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         });
         _onTap(5);
       }else{
-        showToast("抱歉！您输入的数学老师姓氏错误！",position: ToastPosition.top);
+        showToast("抱歉！您输入的数学老师姓名或姓氏错误！",position: ToastPosition.top);
       }
   }
 
@@ -1024,6 +1025,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         print(data.data['msg']['error']);
         if(data.data['msg']['error']=="0"){
           teacherName = data.data['teacherName'];
+          print('老师的姓名');
+          print(teacherName);
           print(teacherName.substring(0,1));
           if (data.data['teacherName']!='' && data.data['teacherName'] != '云老师') {
             var widgetMsg =  Column(
@@ -1053,7 +1056,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
                   height: ScreenUtil.getInstance().getHeightPx(50),
                 ),
                 CommonUtils.buildBtn("验证", height: ScreenUtil.getInstance().getHeightPx(135), width: ScreenUtil.getInstance().getWidthPx(515),onTap: (){
-                  _checkMathTeacher(teacherName.substring(0,1));
+                  _checkMathTeacher(teacherName);
+//                  _checkMathTeacher(teacherName.substring(0,1));
                 }),
                 SizedBox(
                   height: ScreenUtil.getInstance().getHeightPx(50),
@@ -1507,8 +1511,8 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   Widget _buildListView(){
     List<Widget> children = _buildItems();
     return Container(
-      height: ScreenUtil.getInstance().getWidthPx(1000),
-      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), top:ScreenUtil.getInstance().getHeightPx(310),right: ScreenUtil.getInstance().getWidthPx(42)),
+      height: ScreenUtil.getInstance().screenHeight * 0.64,
+      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(42), top:ScreenUtil.getInstance().getHeightPx(350),right: ScreenUtil.getInstance().getWidthPx(42)),
       child: Card(
         color: Color(0xFFFFFFFF),
         child: Center(
