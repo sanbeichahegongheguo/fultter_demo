@@ -9,6 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
+import 'package:flutter_start/common/channel/CameraChannel.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/api.dart';
@@ -222,6 +223,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           var data = {"result":"success","path":""};
           if (ObjectUtil.isEmptyString(v)){
             data["result"] = "fail";
+            _webViewController.evaluateJavascript("window.closeCamera()");
           }else{
             data["data"] = v;
             _webViewController.evaluateJavascript("window.getBackPhoto("+jsonEncode(data)+")");
@@ -392,16 +394,18 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
 
   //调用相机或本机相册
   Future _getImage(type) async {
-    File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera,imageQuality:50);
-    if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
+    String path =  await Camera.openCamera();
+    print("====>  $path");
+    if (ObjectUtil.isEmpty(path)||ObjectUtil.isEmptyString(path)){
       return "";
     }
-    //压缩
-    image = await ImageCropper.cropImage(
+//    //压缩
+    File image = await ImageCropper.cropImage(
       maxHeight: 800,
       maxWidth: 800,
-      sourcePath: image.path,
-      toolbarTitle: "选择图片",
+      sourcePath: path,
+//      toolbarTitle: "选择图片",
+      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false),
     );
     if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
       return "";
