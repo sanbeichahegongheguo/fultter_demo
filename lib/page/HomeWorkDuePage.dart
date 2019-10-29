@@ -246,6 +246,9 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
       case 14:
         data = "专项作业";
         break;
+      case 15:
+        data = "试卷错题收集";
+        break;
     }
     return data;
   }
