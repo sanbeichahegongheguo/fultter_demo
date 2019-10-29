@@ -97,9 +97,6 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   }
 
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final heightScreen = MediaQuery.of(context).size.height;
-    final widthSrcreen = MediaQuery.of(context).size.width;
     return StoreBuilder<GSYState>(builder: (context, store) {
       return Scaffold(
         resizeToAvoidBottomPadding: false,
@@ -252,7 +249,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
       style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
       inputFormatters: !obscureText?[WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]:[],
       cursorColor: Color(0xFF333333),
-      onTap: !obscureText?() {
+      onTap: () {
         setState(() {
           if (key != null) {
             _expand = !_expand;
@@ -260,7 +257,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
             _expand = false;
           }
         });
-      }:(){},
+      },
       onChanged: key != null
           ? (input) async {
               _users.clear();
