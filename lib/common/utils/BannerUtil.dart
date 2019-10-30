@@ -27,7 +27,7 @@ class BannerUtil{
         advertObj="{'advert_id':"+data.advertId.toString()+",'advert_name':'banner','type': 'click'}";
         if(data !=null &&data.isHttp =="T"){
           //打开外链地址 ,需要在webView后前往家长专区
-          NavigatorUtil.goAdWebView(context, data);
+          NavigatorUtil.goAdWebViewExample(context, data);
         }else if(data !=null &&data.isdownload =="T"){
           //下载
           if (Platform.isAndroid){

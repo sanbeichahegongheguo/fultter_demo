@@ -22,7 +22,7 @@ flutter  build apk --debug --target-platform=android-arm
 Android:
 editable_text.dart
     set selection(TextSelection newSelection) {
-      if (newSelection.start > text.length || newSelection.end > text.length)
+        //if (newSelection.start > text.length || newSelection.end > text.length)
         //throw FlutterError('invalid text selection: $newSelection');
 text.dart
     this.textScaleFactor = 1

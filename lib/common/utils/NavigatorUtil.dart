@@ -15,6 +15,7 @@ import 'package:flutter_start/page/ResetPasswordPage.dart';
 import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
+import 'package:flutter_start/page/flutter_webview_plugin.dart';
 import 'package:flutter_start/page/retrievePasswordPage.dart';
 import 'package:flutter_start/page/BuildArchivesPage.dart';
 import 'package:package_info/package_info.dart';
@@ -179,6 +180,30 @@ class NavigatorUtil {
           style: TextStyle(color: Color(0xFF333333)))
     );
     return NavigatorRouter(context, WebViewPage(ad.target,appBar:appBar));
+  }
+  ///去往webview
+  static goAdWebViewExample(BuildContext context, Adver ad) async {
+    AppBar appBar = AppBar(
+        brightness: Brightness.light,
+        backgroundColor: Colors.lightBlueAccent,
+        //居中显示
+        centerTitle: true,
+        leading: new IconButton(
+            icon: new Icon(
+              Icons.arrow_back_ios,
+              color: Color(0xFF333333),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            }
+        ),
+        title: Text(
+            ad.adverName,
+            style: TextStyle(color: Color(0xFF333333)))
+    );
+    return Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
+      return WebViewExample(ad.target,appBar:appBar);
+    }));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {

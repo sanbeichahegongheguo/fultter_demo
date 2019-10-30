@@ -54,7 +54,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   WebviewBloc _webviewBloc  =  WebviewBloc();
   Timer _timer;
   //加载超时时间
-  Duration _timeoutSeconds = const Duration(seconds: 5);
+  Duration _timeoutSeconds = const Duration(seconds: 7);
   @override
   Widget build(BuildContext context) {
     _timer = Timer(_timeoutSeconds,_unload);
@@ -274,6 +274,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       setState((){
         _showAd = false;
         _status = 0;
+        _timer?.cancel();
         _timer = Timer(_timeoutSeconds, _unload);
       }
       );
@@ -394,16 +395,16 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
 
   //调用相机或本机相册
   Future _getImage(type) async {
-    String path =  await Camera.openCamera();
-    print("====>  $path");
-    if (ObjectUtil.isEmpty(path)||ObjectUtil.isEmptyString(path)){
+//    String path =  await Camera.openCamera();
+    File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera,imageQuality:50);
+    if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
       return "";
     }
 //    //压缩
-    File image = await ImageCropper.cropImage(
+    image = await ImageCropper.cropImage(
       maxHeight: 800,
       maxWidth: 800,
-      sourcePath: path,
+      sourcePath: image.path,
 //      toolbarTitle: "选择图片",
       androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false),
     );
