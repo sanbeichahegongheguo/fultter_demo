@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/widget/IndexNoticeWidget.dart';
 import 'package:flutter_start/widget/VideoWidget.dart';
@@ -224,7 +225,15 @@ class CommonUtils {
       if (Platform.isIOS) {
         await launch(Config.STUDENT_IOS_URL, forceSafariVC: false, forceWebView: false);
       }else if (Platform.isAndroid){
-        await launch(Config.STUDENT_TEN_URL, forceSafariVC: false, forceWebView: false);
+        var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
+        var url = Config.STUDENT_TEN_URL;
+        if (null!=deviceInfo["manufacturer"] && deviceInfo["manufacturer"] is String && "" != deviceInfo["manufacturer"]){
+              String s = deviceInfo["manufacturer"];
+              if (s.toUpperCase().indexOf("HUAWEI") !=-1){
+                url = Config.STUDENT_HUAWEI_URL;
+              }
+        }
+        await launch(url, forceSafariVC: false, forceWebView: false);
       }
     }
   }
