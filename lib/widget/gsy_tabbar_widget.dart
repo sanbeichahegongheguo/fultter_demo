@@ -464,7 +464,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   _getAppNotice(){
     ApplicationDao.getAppNotice().then((data){
       if (null!=data&&data.result){
-        if(data.data["success"]["ok"]==0&&data.data["success"]["advertList"].length!=0){
+        if(data.data["success"]["ok"]==0&&data.data["success"]["advertList"]!=null&&data.data["success"]["advertList"].length!=0){
           var message = data.data["success"]["message"];
           var notice = data.data["success"]["advertList"][0];
           CommonUtils.showAPPNotice(context,notice,message).then((_){
