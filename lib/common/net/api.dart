@@ -47,6 +47,7 @@ class HttpManager {
     }
     if (params is Map){
       params["curVersion"] = (await PackageInfo.fromPlatform()).version;
+      params["curPf"] =  Platform.isAndroid ? "android":"ios";
     }
     if (option != null) {
       option.headers = headers;
