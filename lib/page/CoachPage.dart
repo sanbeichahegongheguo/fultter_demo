@@ -223,7 +223,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                   children: <Widget>[
                     InkWell(
                       onTap: (){
-                        if(data[i].eventId!=null){
+                        if(data[i].eventId!=null && data[i].eventId!=0 ){
                           ApplicationDao.trafficStatistic(data[i].eventId);
                         }
                         NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
@@ -267,6 +267,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
         listWidge.add(
           GestureDetector(
             onTap: (){
+              if(data[i].eventId!=null && data[i].eventId!=0){
+                ApplicationDao.trafficStatistic(data[i].eventId);
+              }
               NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
             },
             child:Container(
