@@ -328,7 +328,7 @@ class UserDao {
     if (res != null && res.result) {
       var json = res.data;
       if (json["success"]["ok"] != 0) {
-        result = res.data["message"];
+        result = json["success"]["message"];
         res.result = false;
       }
     }

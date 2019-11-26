@@ -194,7 +194,11 @@ class _JoinClassPage extends State<JoinClassPage>{
         Navigator.pop(context);
         UserDao.getUser(isNew: true, store:store);
       }else{
-        showToast("更换失败");
+        if (res.data != null && res.data!=""){
+          showToast(res.data);
+        }else{
+          showToast("更换失败");
+        }
       }
     }else{
       showToast(resSameRealName.data);
