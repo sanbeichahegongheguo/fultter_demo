@@ -6,6 +6,7 @@ import 'package:flutter_start/widget/gsy_tabbar_widget.dart';
 import 'package:oktoast/oktoast.dart';
 import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
+import 'StudyInfoPage.dart';
 import 'parentReward.dart';
 ///首页
 class HomePage extends StatefulWidget{
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage>  {
         child: GSYTabBarWidget(
         tabViews: [
           CoachPage(),
-          LearningEmotionPage(),
+          StudyInfoPage(),
           ParentReward(),
           Admin(),
         ],

@@ -30,6 +30,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
     bloc =  BlocProvider.of<HomeBloc>(context);
     bloc.learningEmotionBloc.getStudyData();
     bloc.learningEmotionBloc.getNewHomeWork();
+
     bloc.xqModuleBloc.getLEmotionModule();
     super.initState();
   }

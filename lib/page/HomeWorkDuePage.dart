@@ -39,7 +39,7 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("往期作业"),
+          title: Text("作业本"),
           backgroundColor: Color(0xFFffffff),
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
@@ -49,69 +49,77 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
             },
           ),
         ),
-        body: Container(
-            color: Color(0xFFf0f4f7),
-            child: new EasyRefresh(
-              key: _easyRefreshKey,
-              refreshHeader: BezierCircleHeader(
-                key: _headerKey,
-                color: Colors.black12,
-                backgroundColor: Color(0xFFf0f4f7),
-              ),
-              refreshFooter: BezierBounceFooter(
-                key: _footerKey,
-                color: Colors.black12,
-                backgroundColor: Color(0xFFf0f4f7),
-              ),
-              child: new ListView.builder(
-                  //ListView的Item
-                    itemCount: _wordList.length+1,
-                    padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(30)),
-                    itemBuilder: (BuildContext context, int index) {
+        body: Column(
+          children: <Widget>[
+            Container(
+              height: ScreenUtil.getInstance().getHeightPx(200),
+            ),
+            Container(
+                color: Color(0xFFf0f4f7),
+                child: new EasyRefresh(
+                  key: _easyRefreshKey,
+                  refreshHeader: BezierCircleHeader(
+                    key: _headerKey,
+                    color: Colors.black12,
+                    backgroundColor: Color(0xFFf0f4f7),
+                  ),
+                  refreshFooter: BezierBounceFooter(
+                    key: _footerKey,
+                    color: Colors.black12,
+                    backgroundColor: Color(0xFFf0f4f7),
+                  ),
+                  child: new ListView.builder(
+                    //ListView的Item
+                      itemCount: _wordList.length+1,
+                      padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(30)),
+                      itemBuilder: (BuildContext context, int index) {
+                        if(index != _wordList.length){
+                          return  _getWordBodyMsg(index);
+                        }else{
+                          return Container(
+                            padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(15)),
+                            alignment: Alignment.center,
+                            child: Text(_footMsg,style: TextStyle(color: Color(0xFF999999)),),
+                          );
+                        }
 
-                      if(index != _wordList.length){
-                        return  _getWordBodyMsg(index);
-                      }else{
-                        return Container(
-                          padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(15)),
-                          alignment: Alignment.center,
-                          child: Text(_footMsg,style: TextStyle(color: Color(0xFF999999)),),
-                        );
-                      }
-
-                      ;
-                    }),
-              onRefresh: () async {
-                await new Future.delayed(const Duration(seconds: 2), () {
-                  setState(() {
-                    _pageNum = 1;
-                    _footMsg = "上拉加载更多！";
-                    _getParentHomeWorkDataList(_pageNum);
-                  });
-                });
-              },
-              loadMore: () async {
-                await new Future.delayed(const Duration(seconds: 1), () {
-                  setState(() {
-                    _pageNum++;
-                    _getParentHomeWorkDataList(_pageNum);
-                  });
-                });
-              },
-            )
-          ),
+                        ;
+                      }),
+                  onRefresh: () async {
+                    await new Future.delayed(const Duration(seconds: 2), () {
+                      setState(() {
+                        _pageNum = 1;
+                        _footMsg = "上拉加载更多！";
+                        _getParentHomeWorkDataList(_pageNum);
+                      });
+                    });
+                  },
+                  loadMore: () async {
+                    await new Future.delayed(const Duration(seconds: 1), () {
+                      setState(() {
+                        _pageNum++;
+                        _getParentHomeWorkDataList(_pageNum);
+                      });
+                    });
+                  },
+                )
+            ),
+        ],)
         );
 
   }
   ///获取作业集合
   void _getParentHomeWorkDataList(pageNum)async{
     var res = await WordDao.getParentHomeWorkDataList(pageNum);
+    print("作业集合===>${res.toString()}");
     if(res["success"]["ok"] == 0){
       setState(() {
         if(pageNum == 1){
-          _wordList =  res["success"]["hwmeWorkList"];
-          if(_wordList.length <5){
-            _footMsg = "没有更多了";
+          if(null != res["success"]["hwmeWorkList"]){
+            _wordList =  res["success"]["hwmeWorkList"];
+            if(_wordList.length <5){
+              _footMsg = "没有更多了";
+            }
           }
         }else{
           if(res["success"]["hwmeWorkList"] != null && res["success"]["hwmeWorkList"] != ""){

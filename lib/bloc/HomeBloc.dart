@@ -13,6 +13,7 @@ class HomeBloc extends BlocBase {
   final ModuleBloc jzModuleBloc = new ModuleBloc();
   final ModuleBloc xqModuleBloc = new ModuleBloc();
   final ModuleBloc parentModuleBloc = new ModuleBloc();
+  final ModuleBloc studyModuleBloc = new ModuleBloc();
   ///广告
   final AdBloc adBloc = new AdBloc();
   ///学情
@@ -21,6 +22,7 @@ class HomeBloc extends BlocBase {
   final ParentRewardBloc parentRewardBloc = new ParentRewardBloc();
   ///辅导页面（公告）
   final CoachBloc coachBloc = new CoachBloc();
+  ///新版学情
 
   final TabbarBloc tabbarBloc = TabbarBloc();
   @override
@@ -34,5 +36,7 @@ class HomeBloc extends BlocBase {
     parentRewardBloc?.dispose();
     coachBloc?.dispose();
     tabbarBloc?.dispose();
+    studyModuleBloc?.dispose();
+
   }
 }
