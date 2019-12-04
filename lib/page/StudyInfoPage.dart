@@ -126,7 +126,10 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
         "bg":"images/study/icon-homeword.png",
         "isRedDot":true,
         "redDotNum":_homeWorkNum == null?"0":_homeWorkNum,
-        "fn":(){_goWord();}
+        "fn":(){
+
+          _goWord();
+        }
       },
       {
         "title":"考前复习",
@@ -165,7 +168,10 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
             "bg":"images/study/icon-practice.png",
             "isRedDot":false,
             "redDotNum":0,
-            "fn":(){_goH5StudyInfo("practice");}
+            "fn":(){
+              ApplicationDao.trafficStatistic(302);
+              _goH5StudyInfo("practice");
+            }
           },
           {
             "title":"考前复习",
@@ -173,7 +179,10 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
             "bg":"images/study/icon-review.png",
             "isRedDot":false,
             "redDotNum":0,
-            "fn":(){_goH5StudyInfo("testReview");}
+            "fn":(){
+              ApplicationDao.trafficStatistic(487);
+              _goH5StudyInfo("testReview");
+            }
           }
         ];
         _studerMsgList.add(setTopBtn(topBtns));
@@ -188,7 +197,10 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
             "bg":"images/study/icon-practice.png",
             "isRedDot":false,
             "redDotNum":0,
-            "fn":(){_goH5StudyInfo("practice");}
+            "fn":(){
+              ApplicationDao.trafficStatistic(302);
+              _goH5StudyInfo("practice");
+            }
           },
           {
             "title":"考前复习",
@@ -196,7 +208,10 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
             "bg":"images/study/icon-review.png",
             "isRedDot":false,
             "redDotNum":0,
-            "fn":(){_goH5StudyInfo("testReview");}
+            "fn":(){
+              ApplicationDao.trafficStatistic(487);
+              _goH5StudyInfo("testReview");
+            }
           }
         ];
         _studerMsgList.add(setTopBtn(topBtns));
@@ -656,7 +671,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
                 minWidth: ScreenUtil.getInstance().getWidthPx(760),
                 color: Color(0xFF6ed699),
                 height:ScreenUtil.getInstance().getHeightPx(139) ,
-                onPressed: (){_goH5StudyInfo("easyCuot");},
+                onPressed: (){ApplicationDao.trafficStatistic(484);_goH5StudyInfo("easyCuot");},
                 child: Text("高频易错题",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFFffffff))),
               ),
               Positioned(
@@ -703,10 +718,12 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
   }
   ///去错题拍拍
   _goCtpp(){
+    ApplicationDao.trafficStatistic(305);
     NavigatorUtil.goWebView(context,Address.goCtpp());
   }
   ///去往期作业
   _goWord(){
+    ApplicationDao.trafficStatistic(302);
     NavigatorUtil.goWebView(context,Address.goH5StudyInfo(),router:"allHomeword");
   }
   @override
