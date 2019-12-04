@@ -4,23 +4,23 @@ import 'package:flutter_start/common/config/config.dart';
 
 ///地址数据
 class Address {
-//  static const String studentHost = "http://192.168.6.31:30915/student:";
-//  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
-//  static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
-//  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
-//  static const String h5Host = "http://192.168.6.30:30593/";
-//  static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
+  static const String studentHost = "http://192.168.6.31:30915/student:";
+  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
+  static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
+  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
+  static const String h5Host = "http://192.168.6.30:30593/";
+  static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
 
 
-  static const String common_dc_client = "https://www.k12china.com/common_dc_client/";
-  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
-  static const String h5Host = "https://www.k12china.com/h5/";
-  static const String studentWebHost = "https://api.k12china.com/studentweb/";
-  static const String studentHost = "https://www.k12china.com/student/student:";
-  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+//  static const String common_dc_client = "https://www.k12china.com/common_dc_client/";
+//  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
+//  static const String h5Host = "https://www.k12china.com/h5/";
+//  static const String studentWebHost = "https://api.k12china.com/studentweb/";
+//  static const String studentHost = "https://www.k12china.com/student/student:";
+//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
 
   static const String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
-  ///登录  post
+  ///登录  postgetParentHomeWorkDataList
   static login() {
     return "${studentHost}login";
   }
@@ -163,7 +163,18 @@ class Address {
   static getNewHomeWork() {
     return "${studentHost}getNewHomeWork";
   }
-
+  ///获取所有单元
+  static getSynerrData() {
+    return "${stu_app}home/get_synerr_data";
+  }
+  ///获取高频易错题做到第几题
+  static getStudymsgQues() {
+    return "${stu_app}home/get_studymsg_ques";
+  }
+  ///获取本学期未完成作业数量
+  static getParentHomeWorkDataTotal() {
+    return "${studentWebHost}getParentHomeWorkDataTotal";
+  }
   ///获取热门兑换礼物
   static getHotGoodsList(){
     return "${studentHost}getHotConvertMallGoodsList";
@@ -185,6 +196,10 @@ class Address {
   ///跳转签到h5外链
   static goH5Sign(){
     return "${Address.h5Host}signIn/index.html";
+  }
+  ///跳转学情h5外链
+  static goH5StudyInfo(){
+    return "${Address.h5Host}sturdyInfo/index.html";
   }
   ///获取未读取消息总数
   static getUnReadNotice() {

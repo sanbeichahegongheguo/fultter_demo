@@ -2,7 +2,7 @@ import 'dart:ui';
 
 class Config {
   static const PAGE_SIZE = 20;
-  static const DEBUG = false;
+  static const DEBUG = true;
   static const USE_NATIVE_WEBVIEW = true;
 
   /// //////////////////////////////////////常量////////////////////////////////////// ///
@@ -22,6 +22,9 @@ class Config {
   static const DES_IV = "myyondor"; //加密偏移值
   static const PHONE_UID = "phone-uid"; //加密偏移值
   static const PARENT_HOME = "parentHomeWorkList";//最近作业集合
+  static const All_UNIT = "all-unit";//所有单元集合
+  static const STUDY_QUES = "study-quesData";//所有单元集合
+  static const HOME_NUM = "home_num";//用户本学期作业数据
   static const STUDY_MSG = "studyMsg";//用户学习情况
   static const starNum = "star-num";
   static const hotGiftList = "hot-gift-list";

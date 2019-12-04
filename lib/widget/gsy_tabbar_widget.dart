@@ -19,6 +19,7 @@ import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/page/CoachPage.dart';
 import 'package:flutter_start/page/LearningEmotionPage.dart';
+import 'package:flutter_start/page/StudyInfoPage.dart';
 import 'package:flutter_start/page/parentReward.dart';
 import 'package:redux/redux.dart';
 
@@ -89,7 +90,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   String _unReadNotice = "0";//消息个数
   TabController _tabController;
 
-  List<String> pageList = [CoachPage.sName,LearningEmotionPage.sName,ParentReward.sName,Admin.sName];
+  List<String> pageList = [CoachPage.sName,StudyInfoPage.sName,ParentReward.sName,Admin.sName];
   List<int> pageTotal = [289,300,304,313];
 
   HomeBloc bloc;
@@ -423,6 +424,14 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         break;
       case Admin.sName:
         print("切换管理页面");
+        break;
+      case StudyInfoPage.sName:
+        print("切换新版学情页面");
+        bloc.learningEmotionBloc.getStudyData();
+        bloc.learningEmotionBloc.getNewHomeWork();
+        bloc.learningEmotionBloc.getSynerrData();
+        bloc.learningEmotionBloc.getStudymsgQues();
+        bloc.learningEmotionBloc.getParentHomeWorkDataTotal();
         break;
     }
   }

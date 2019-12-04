@@ -31,7 +31,8 @@ class ParentHomeWork {
     state : jsonRes['state'],
     headUrl : jsonRes['headUrl'],
     title : jsonRes['title'],
-    extJson : jsonRes['extJson'],);
+    extJson : jsonRes['extJson']
+  );
 
   Map<String, dynamic> toJson() => {
     'hwId': hwId,
