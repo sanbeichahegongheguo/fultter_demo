@@ -169,7 +169,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
             "isRedDot":false,
             "redDotNum":0,
             "fn":(){
-              ApplicationDao.trafficStatistic(302);
+              ApplicationDao.trafficStatistic(483);
               _goH5StudyInfo("practice");
             }
           },
@@ -198,7 +198,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
             "isRedDot":false,
             "redDotNum":0,
             "fn":(){
-              ApplicationDao.trafficStatistic(302);
+              ApplicationDao.trafficStatistic(483);
               _goH5StudyInfo("practice");
             }
           },
@@ -723,7 +723,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
   }
   ///去往期作业
   _goWord(){
-    ApplicationDao.trafficStatistic(302);
+    ApplicationDao.trafficStatistic(489);
     NavigatorUtil.goWebView(context,Address.goH5StudyInfo(),router:"allHomeword");
   }
   @override
