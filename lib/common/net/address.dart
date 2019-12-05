@@ -213,6 +213,11 @@ class Address {
   static getInfoPage() {
     return "${Address.h5Host}infoPage/index.html";
   }
+
+  ///用户隐私保护协议
+  static getPrivacyProtocol() {
+    return "${Address.h5Host}reg-app/privacyProtocol.html";
+  }
   ///英语随身听
   static getWxEnglish() {
     return "${Address.h5Host}wxEnglish/English.html";

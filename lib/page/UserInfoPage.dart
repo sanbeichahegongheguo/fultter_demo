@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
@@ -234,8 +235,15 @@ class _UserInfo extends State<UserInfo>{
                             color: Color(0xFFf5f5f7),
                           ),
                         ),
-                        _getBt(
-                            "更改密码", "images/admin/icon-password.png", _goResetPasswordPage, "", 1),
+                        _getBt("更改密码", "images/admin/icon-password.png", _goResetPasswordPage, "", 1),
+                        Container(
+                          width: ScreenUtil.getInstance().getWidthPx(903),
+                          height: ScreenUtil.getInstance().getHeightPx(3),
+                          decoration: new BoxDecoration(
+                            color: Color(0xFFf5f5f7),
+                          ),
+                        ),
+                        _getBt("用户隐私保护协议", "images/admin/icon_protocol.png", _goProtocol, "", 1),
                       ],
                     ),
                     decoration: BoxDecoration(
@@ -324,6 +332,10 @@ class _UserInfo extends State<UserInfo>{
   void _goResetPasswordPage(){
     ApplicationDao.trafficStatistic(89);
     NavigatorUtil.goResetPasswordPage(context);
+  }
+
+  void _goProtocol(){
+    NavigatorUtil.goWebView(context,Address.getPrivacyProtocol());
   }
   //更换头像
   void _getHeadSculpture(store){
