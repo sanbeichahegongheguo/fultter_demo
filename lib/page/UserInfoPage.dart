@@ -335,6 +335,7 @@ class _UserInfo extends State<UserInfo>{
   }
 
   void _goProtocol(){
+    ApplicationDao.trafficStatistic(490);
     NavigatorUtil.goWebView(context,Address.getPrivacyProtocol());
   }
   //更换头像
