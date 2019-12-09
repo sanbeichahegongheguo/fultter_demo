@@ -4,9 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -29,8 +35,18 @@ public class CameraDelegate implements PluginRegistry.ActivityResultListener {
         if (REQUEST_CAMERA == requestCode){
             Log.i(TAG,"resultCode:"+resultCode);
             if (Activity.RESULT_OK == resultCode){
-                finishWithSuccess(data.getStringExtra("data"));
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("path",data.getStringExtra("data"));
+                    object.put("type",data.getIntExtra("type",0));
+                    finishWithSuccess(object.toString());
+                } catch (JSONException e) {
+                    finishWithSuccess("");
+                    e.printStackTrace();
+                }
                 return true;
+            }else if (Activity.RESULT_CANCELED == resultCode){
+                finishWithSuccess("");
             }
         }
         return false;
@@ -38,11 +54,22 @@ public class CameraDelegate implements PluginRegistry.ActivityResultListener {
 
 
 
-    public void startCamera(MethodCall call, MethodChannel.Result result){
+    public void startCamera(MethodCall call, MethodChannel.Result result, Map<String,Object> param){
         Log.i(TAG,"startCamera");
         methodCall = call;
         pendingResult = result;
         Intent camera = new Intent(this.activity, CameraActivity.class);
+        camera.putExtra("isSingle",false);
+        if (param.containsKey("isSingle")){
+            camera.putExtra("isSingle",Boolean.valueOf(param.get("isSingle").toString()));
+        }
+        if (param.containsKey("type")){
+            camera.putExtra("type",Integer.valueOf(param.get("type").toString()));
+        }
+        if (param.containsKey("msg")){
+            camera.putExtra("msg",param.get("msg").toString());
+        }
+        Log.i(TAG,param.toString());
         this.activity.startActivityForResult(camera,REQUEST_CAMERA);
     }
 

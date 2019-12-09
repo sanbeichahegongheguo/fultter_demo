@@ -42,17 +42,20 @@ class HttpErrorEvent {
         }
         break;
       case 403:
-        showToast("403权限错误");
+        showToast("权限不足");
+        print("403权限错误:$message");
         break;
       case 404:
-        showToast("找不到该链接");
+        showToast("网络异常,请稍后重试");
+        print("找不到该链接:$message");
         break;
       case Code.NETWORK_TIMEOUT:
         //超时
         showToast("网络异常,请稍后重试");
         break;
       default:
-        showToast("网络错误" + " " + message);
+        showToast("网络异常,请稍后重试");
+        print("网络错误:$message");
         break;
     }
     return message;

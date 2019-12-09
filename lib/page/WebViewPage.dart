@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/CameraChannel.dart';
@@ -53,6 +54,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   TextEditingController textController2 = TextEditingController();
   WebviewBloc _webviewBloc  =  WebviewBloc();
   Timer _timer;
+  int _MAX_SIZE = 512000;
   //加载超时时间
   Duration _timeoutSeconds = const Duration(seconds: 7);
   @override
@@ -219,13 +221,11 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
             type = _urlList["type"];
           }
         }
-        _getImage(type).then((v){
-          var data = {"result":"success","path":""};
-          if (ObjectUtil.isEmptyString(v)){
-            data["result"] = "fail";
+        _getImage(type,request.url).then((data){
+          print("-----!!!!!!------$data");
+          if (ObjectUtil.isEmpty(data) || data["result"] == "fail"){
             _webViewController.evaluateJavascript("window.closeCamera()");
           }else{
-            data["data"] = v;
             _webViewController.evaluateJavascript("window.getBackPhoto("+jsonEncode(data)+")");
           }
         });
@@ -394,27 +394,67 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
 
 
   //调用相机或本机相册
-  Future _getImage(type) async {
-//    String path =  await Camera.openCamera();
-    File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera,imageQuality:50);
-    if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
-      return "";
+  Future _getImage(type,url) async {
+    File image;
+    String path;
+    Map data = {"result":"success","path":"","isSingle":false};
+    var param = {};
+    param["type"] = 0;
+    var result;
+    if (Platform.isAndroid){
+      url = Uri.decodeComponent(url);
+      List<String> split = url.split(":");
+      if (split.length>=5){
+        if (split[3] !=""){
+          param["msg"] = split[3];
+        }
+        if (split[4] =="single"){
+          param["isSingle"] = true;
+          data["isSingle"] = true;
+        }else if(split[4] =="staySingle") {
+          param["type"] = 1;
+        }
+      }
+      path =  await Camera.openCamera(param: param);
+      if(ObjectUtil.isEmptyString(path)){
+        data["result"] = "fail";
+        return data;
+      }
+      result = jsonDecode(path);
+      data["type"] = result["type"];
+    }else{
+      //ios 选择图片
+      image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera,imageQuality:50);
+      if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
+        data["result"] = "fail";
+        return data;
+      }
     }
-//    //压缩
     image = await ImageCropper.cropImage(
-      maxHeight: 800,
-      maxWidth: 800,
-      sourcePath: image.path,
+      sourcePath: image?.path ?? result["path"],
 //      toolbarTitle: "选择图片",
-      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false),
+      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false,initAspectRatio: CropAspectRatioPreset.original),
     );
+    //压缩
+    if  (image!=null){
+      int size = (await image.length());
+      while(size > _MAX_SIZE){
+        image = await FlutterNativeImage.compressImage(image.path,percentage:70,quality:70);
+        size = (await image.length());
+      }
+    }
+
+
     if (ObjectUtil.isEmpty(image)||ObjectUtil.isEmptyString(image.path)){
-      return "";
+      data["result"] = "fail";
+      return data;
     }
     List<int> bytes = await image.readAsBytes();
     var base64encode = base64Encode(bytes);
-    return base64encode;
+    data["data"] = base64encode;
+    return data;
   }
+
   /// 使用javascriptChannels发送消息
   /// javascriptChannels参数可以传入一组Channels，我们可以定义一个_alertJavascriptChannel变量，这个channel用来控制JS调用Flutter的toast功能：
   JavascriptChannel _alertJavascriptChannel(BuildContext context) {

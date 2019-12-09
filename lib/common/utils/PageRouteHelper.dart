@@ -5,72 +5,77 @@ class PageRouteBuilderHelper<T> extends PageRoute<T>{
   ///
   /// The [pageBuilder], [transitionsBuilder], [opaque], [barrierDismissible],
   /// and [maintainState] arguments must not be null.
+  /// Construct a MaterialPageRoute whose contents are defined by [builder].
+  ///
+  /// The values of [builder], [maintainState], and [fullScreenDialog] must not
+  /// be null.
   PageRouteBuilderHelper({
+    @required this.builder,
     RouteSettings settings,
-    @required this.pageBuilder,
-    this.transitionsBuilder = myTransition,
-    this.transitionDuration = const Duration(milliseconds: 350),
-    this.opaque = true,
-    this.barrierDismissible = false,
-    this.barrierColor,
-    this.barrierLabel,
     this.maintainState = true,
-  }) : assert(pageBuilder != null),
-        assert(transitionsBuilder != null),
-        assert(barrierDismissible != null),
+    bool fullscreenDialog = false,
+  }) : assert(builder != null),
         assert(maintainState != null),
-        assert(opaque != null),
-        super(settings: settings);
+        assert(fullscreenDialog != null),
+        assert(opaque),
+        super(settings: settings, fullscreenDialog: fullscreenDialog);
 
-  /// Used build the route's primary contents.
-  ///
-  /// See [ModalRoute.buildPage] for complete definition of the parameters.
-  final RoutePageBuilder pageBuilder;
-
-  /// Used to build the route's transitions.
-  ///
-  /// See [ModalRoute.buildTransitions] for complete definition of the parameters.
-  final RouteTransitionsBuilder transitionsBuilder;
-
-  @override
-  final Duration transitionDuration;
-
-  @override
-  final bool opaque;
-
-  @override
-  final bool barrierDismissible;
-
-  @override
-  final Color barrierColor;
-
-  @override
-  final String barrierLabel;
+  /// Builds the primary contents of the route.
+  final WidgetBuilder builder;
 
   @override
   final bool maintainState;
 
-
-
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 0);
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-    return pageBuilder(context, animation, secondaryAnimation);
+  Color get barrierColor => null;
+
+  @override
+  String get barrierLabel => null;
+
+  @override
+  bool canTransitionFrom(TransitionRoute<dynamic> previousRoute) {
+    return previousRoute is MaterialPageRoute || previousRoute is PageRouteBuilderHelper;
+  }
+
+  @override
+  bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
+    // Don't perform outgoing animation if the next route is a fullscreen dialog.
+    return (nextRoute is MaterialPageRoute && !nextRoute.fullscreenDialog)
+        || (nextRoute is PageRouteBuilderHelper && !nextRoute.fullscreenDialog);
+  }
+
+  @override
+  Widget buildPage(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      ) {
+    final Widget result = builder(context);
+    assert(() {
+      if (result == null) {
+        throw FlutterError(
+            'The builder for route "${settings.name}" returned null.\n'
+                'Route builders must never return null.'
+        );
+      }
+      return true;
+    }());
+    return Semantics(
+      scopesRoute: true,
+      explicitChildNodes: true,
+      child: result,
+    );
   }
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-    return transitionsBuilder(context, animation, secondaryAnimation, child);
+    final PageTransitionsTheme theme = Theme.of(context).pageTransitionsTheme;
+    return theme.buildTransitions<T>(this, context, animation, secondaryAnimation, child);
   }
 
-}
-
-Widget myTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-  return new SlideTransition(
-    position: new Tween<Offset>(
-      begin: Offset(1.0, 0.0),
-      end: Offset(0.0, 0.0),
-    ).animate(animation),
-    child: child,
-  );
+  @override
+  String get debugLabel => '${super.debugLabel}(${settings.name})';
 }

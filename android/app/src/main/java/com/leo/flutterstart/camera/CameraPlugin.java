@@ -1,6 +1,11 @@
 package com.leo.flutterstart.camera;
 
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatDelegate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -19,6 +24,7 @@ public class CameraPlugin implements MethodChannel.MethodCallHandler {
 
     /** Plugin registration. */
     public static void registerWith(PluginRegistry.Registrar registrar) {
+        
         final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
         final CameraDelegate delegate = new CameraDelegate(registrar.activity());
         registrar.addActivityResultListener(delegate);
@@ -32,7 +38,21 @@ public class CameraPlugin implements MethodChannel.MethodCallHandler {
             return;
         }
         if (call.method.equals("open")) {
-            delegate.startCamera(call, result);
+            Map<String,Object> param = new HashMap<>();
+            Object type = call.argument("type");
+            Object isSingle = call.argument("isSingle");
+            Object msg = call.argument("msg");
+            if(null!=type){
+                param.put("type",type);
+            }
+            if (null != isSingle){
+                param.put("isSingle",isSingle);
+            }
+            if (null != msg){
+                param.put("msg",msg);
+            }
+            Log.i("CameraPlugin",param.toString());
+            delegate.startCamera(call, result,param);
         }
     }
 

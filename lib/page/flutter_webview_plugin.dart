@@ -72,6 +72,10 @@ class _WebViewExample extends State<WebViewExample>{
       print("加载类型 "  + state.type.toString());
       // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
       switch (state.type) {
+        case WebViewState.stopLoad:
+          //拦截加载
+
+          break;
         case WebViewState.abortLoad:
           break;
         case WebViewState.shouldStart:

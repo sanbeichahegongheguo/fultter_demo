@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/page/EyeProtectionPage.dart';
 import 'package:flutter_start/page/HomePage.dart';
@@ -18,6 +21,7 @@ import 'package:flutter_start/page/WebViewPage.dart';
 import 'package:flutter_start/page/flutter_webview_plugin.dart';
 import 'package:flutter_start/page/retrievePasswordPage.dart';
 import 'package:flutter_start/page/BuildArchivesPage.dart';
+import 'package:flutter_start/page/webview_plugin.dart';
 import 'package:package_info/package_info.dart';
 
 import 'DeviceInfo.dart';
@@ -155,7 +159,11 @@ class NavigatorUtil {
     }
 
     print("NavigatorUtil @跳转链接:$url");
-    return NavigatorRouter(context, WebViewPage(url));
+    if (Platform.isAndroid){
+      return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url)));
+    }else{
+          return NavigatorRouter(context, WebViewPlugin(url));
+    }
 //    NavigatorRouter(context,WebViewExample(url));
   }
 

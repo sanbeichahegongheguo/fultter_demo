@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +23,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
@@ -47,14 +47,13 @@ import com.otaliastudios.cameraview.controls.Preview;
 import com.otaliastudios.cameraview.filter.Filters;
 import com.otaliastudios.cameraview.frame.Frame;
 import com.otaliastudios.cameraview.frame.FrameProcessor;
-import com.otaliastudios.cameraview.gesture.Gesture;
-import com.otaliastudios.cameraview.gesture.GestureAction;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import es.dmoral.toasty.Toasty;
 
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener, OptionView.Callback {
@@ -80,6 +79,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private int COLLECTION_METHOD = 0; //默认整页收录
     //视频
     private VideoView videoPlayView;
+    private ImageView demon_button;
     //视频背景框
     private View videoPlayBoxView;
     /*记录是否打开了拍照示范*/
@@ -116,6 +116,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             outputFile = new File(outputPath);
         }
 
+
         setContentView(R.layout.activity_camera);
         CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
         camera = findViewById(R.id.camera);
@@ -151,9 +152,16 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         //监听点击事件
-        findViewById(R.id.take_all_linear).setOnClickListener(this);
-        findViewById(R.id.take_single_linear).setOnClickListener(this);
-        findViewById(R.id.demon_button).setOnClickListener(this);
+        if (getIntent().getExtras().getBoolean("isSingle",false)) {
+            findViewById(R.id.take_all_linear).setVisibility(View.INVISIBLE);
+            findViewById(R.id.take_single_linear).setVisibility(View.INVISIBLE);
+        }else{
+            findViewById(R.id.take_all_linear).setOnClickListener(this);
+            findViewById(R.id.take_single_linear).setOnClickListener(this);
+        }
+
+        demon_button = findViewById(R.id.demon_button);
+        demon_button.setOnClickListener(this);
         findViewById(R.id.capturePictureSnapshot).setOnClickListener(this);
         findViewById(R.id.close_button).setOnClickListener(this);
         findViewById(R.id.album_button).setOnClickListener(this);
@@ -173,6 +181,14 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         videoPlayBoxView = findViewById(R.id.video_play_box);
         videoPlayView.setVisibility(View.INVISIBLE);
         videoPlayBoxView.setVisibility(View.INVISIBLE);
+
+        //处理入参
+        int type = getIntent().getExtras().getInt("type",0);
+        switchTake(type);
+        String msg = getIntent().getExtras().getString("msg");
+        if (null!=msg && !"".equals(msg)){
+            Toasty.normal(this, msg).show();
+        }
         ViewGroup group = (ViewGroup) controlPanel.getChildAt(0);
         camera.setOnTouchListener(takePictureSlideListen);
         List<Option<?>> options = Arrays.asList(
@@ -419,6 +435,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }else{
             System.out.println("@关闭总相机按钮：");
             closeCamera();
+            setResult(Activity.RESULT_CANCELED);
             finish();
         }
     }
@@ -479,15 +496,21 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private void take_single_linear(){
         switchTake(1);
     }
+    private boolean toastFlag = true;
     private void switchTake(int model){
         if(model==0 && COLLECTION_METHOD!=0){
-                COLLECTION_METHOD = 0;
-                System.out.println("@点击整页拍：");
-                System.out.println(COLLECTION_METHOD);
-                take_all.setTextColor(0xFF3BBBF5);
-                take_single.setTextColor(0xFF666666);
-                take_all_shape.setEnabled(true);
-                take_single_shape.setEnabled(false);
+            if (toastFlag){
+                Toasty.normal(this, "请拍下试卷的标题").show();
+                toastFlag = false;
+            }
+            COLLECTION_METHOD = 0;
+            System.out.println("@点击整页拍：");
+            System.out.println(COLLECTION_METHOD);
+            take_all.setTextColor(0xFF3BBBF5);
+            take_single.setTextColor(0xFF666666);
+            take_all_shape.setEnabled(true);
+            take_single_shape.setEnabled(false);
+            demon_button.setVisibility(View.VISIBLE);
         }else if(model==1&& COLLECTION_METHOD!=1){
             COLLECTION_METHOD = 1;
             System.out.println("@点击单页拍：");
@@ -496,6 +519,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             take_single.setTextColor(0xFF3BBBF5);
             take_all_shape.setEnabled(false);
             take_single_shape.setEnabled(true);
+            demon_button.setVisibility(View.INVISIBLE);
         }
     }
     @Override
@@ -572,7 +596,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         /*相册回调*/
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            setResult(RESULT_OK,new Intent().putExtra("data", getRealPathFromURI(uri)));
+            Intent result = new Intent();
+            result.putExtra("data", getRealPathFromURI(uri));
+            result.putExtra("type",COLLECTION_METHOD);
+            setResult(RESULT_OK,result);
             finish();
         }
     }
@@ -582,7 +609,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onFileReady(@Nullable File file) {
                 message("onFileReady:"+file.getAbsolutePath(),false);
-                setResult(RESULT_OK, new Intent().putExtra("data", file.getAbsolutePath()));
+                Intent data = new Intent();
+                data.putExtra("data", file.getAbsolutePath());
+                data.putExtra("type",COLLECTION_METHOD);
+                setResult(RESULT_OK, data);
                 finish();
             }
         });

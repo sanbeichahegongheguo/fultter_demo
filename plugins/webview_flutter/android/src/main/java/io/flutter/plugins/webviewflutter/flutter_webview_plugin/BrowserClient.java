@@ -62,7 +62,6 @@ public class BrowserClient extends WebViewClient {
         super.onPageFinished(view, url);
         Map<String, Object> data = new HashMap<>();
         data.put("url", url);
-
         FlutterWebviewPlugin.channel.invokeMethod("onUrlChanged", data);
 
         data.put("type", "finishLoad");
@@ -77,11 +76,17 @@ public class BrowserClient extends WebViewClient {
         // while returning false causes the WebView to continue loading the URL as usual.
         String url = request.getUrl().toString();
         try {
-            Log.i("BrowserClient","url="+url);
+//            Log.i("BrowserClient","url="+url);
             if (url.startsWith("weixin://")  || url.startsWith("alipays://")) {
                 Log.i("BrowserClient","url=+weixin");
                 Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
                 context.startActivity(intent);
+                return true;
+            }else if(url.startsWith("haxecallback")||url.startsWith("appcallback")){
+                Map<String, Object> data = new HashMap<>();
+                data.put("url", url);
+                data.put("type", "stopLoad");
+                FlutterWebviewPlugin.channel.invokeMethod("onState", data);
                 return true;
             }
         }catch (Exception e){
@@ -101,11 +106,17 @@ public class BrowserClient extends WebViewClient {
         // returning true causes the current WebView to abort loading the URL,
         // while returning false causes the WebView to continue loading the URL as usual.
         try {
-            Log.i("BrowserClient","url="+url);
+//            Log.i("BrowserClient","url="+url);
             if (url.startsWith("weixin://")  || url.startsWith("alipays://")) {
                 Log.i("BrowserClient","url=+weixin");
                 Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
                 context.startActivity(intent);
+                return true;
+            }else if(url.startsWith("haxecallback")||url.startsWith("appcallback")||url.startsWith("about:blank")){
+                Map<String, Object> data = new HashMap<>();
+                data.put("url", url);
+                data.put("type", "stopLoad");
+                FlutterWebviewPlugin.channel.invokeMethod("onState", data);
                 return true;
             }
         }catch (Exception e){

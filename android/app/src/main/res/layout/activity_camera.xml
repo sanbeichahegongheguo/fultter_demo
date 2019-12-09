@@ -25,7 +25,7 @@
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/camera"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_marginBottom="115dp"
         android:keepScreenOn="true"
@@ -45,8 +45,6 @@
         app:cameraPlaySounds="true"
         app:cameraPreview="glSurface"
         app:cameraUseDeviceOrientation="false">
-
-
 
 
     </com.otaliastudios.cameraview.CameraView>
@@ -101,7 +99,7 @@
                     android:id="@+id/take_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="整页收录"
+                    android:text="试卷收录"
                     android:textColor="@color/colorBlue"
                     android:textSize='14dp'
                     />

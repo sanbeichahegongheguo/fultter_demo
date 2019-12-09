@@ -5,8 +5,8 @@ class Camera {
 
 
   ///openCamera 打开相机
-  static Future<String> openCamera() async{
-    var result = await _channel.invokeMethod("open");
+  static Future<String> openCamera({Map param}) async{
+    var result = await _channel.invokeMethod("open",param);
     return result;
   }
 }
