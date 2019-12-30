@@ -218,6 +218,14 @@ class Address {
   static getPrivacyProtocol() {
     return "${Address.h5Host}app-reg/privacyProtocol.html";
   }
+  ///用户保护协议
+  static getUserProtocol() {
+    return "${Address.h5Host}app-reg/userProtocol.html";
+  }
+  ///注销账号地址
+  static goLogout() {
+    return "${Address.h5Host}xx/wxServer.html?discontent=logout";
+  }
   ///英语随身听
   static getWxEnglish() {
     return "${Address.h5Host}wxEnglish/English.html";

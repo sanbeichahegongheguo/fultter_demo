@@ -243,6 +243,22 @@ class _UserInfo extends State<UserInfo>{
                             color: Color(0xFFf5f5f7),
                           ),
                         ),
+                        _getBt("注销账号", "images/admin/icon_logout.png", _goWxServer, "", 1),
+                        Container(
+                          width: ScreenUtil.getInstance().getWidthPx(903),
+                          height: ScreenUtil.getInstance().getHeightPx(3),
+                          decoration: new BoxDecoration(
+                            color: Color(0xFFf5f5f7),
+                          ),
+                        ),
+                        _getBt("用户保护协议", "images/admin/icon-user-protocol.png", _goUserProtocol, "", 1),
+                        Container(
+                          width: ScreenUtil.getInstance().getWidthPx(903),
+                          height: ScreenUtil.getInstance().getHeightPx(3),
+                          decoration: new BoxDecoration(
+                            color: Color(0xFFf5f5f7),
+                          ),
+                        ),
                         _getBt("用户隐私保护协议", "images/admin/icon_protocol.png", _goProtocol, "", 1),
                       ],
                     ),
@@ -337,6 +353,14 @@ class _UserInfo extends State<UserInfo>{
   void _goProtocol(){
     ApplicationDao.trafficStatistic(490);
     NavigatorUtil.goWebView(context,Address.getPrivacyProtocol());
+  }
+  void _goUserProtocol(){
+//    ApplicationDao.trafficStatistic(490);
+    NavigatorUtil.goWebView(context,Address.getUserProtocol());
+  }
+  void _goWxServer(){
+//    ApplicationDao.trafficStatistic(490);
+    NavigatorUtil.goWebView(context,Address.goLogout());
   }
   //更换头像
   void _getHeadSculpture(store){

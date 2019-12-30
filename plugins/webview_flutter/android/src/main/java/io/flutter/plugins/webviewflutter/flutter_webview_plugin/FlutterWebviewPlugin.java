@@ -5,17 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.Build;
-import android.os.Bundle;
 import android.view.Display;
 import android.widget.FrameLayout;
-
-import com.tencent.smtt.sdk.CookieManager;
-import com.tencent.smtt.sdk.ValueCallback;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebStorage;
-import com.tencent.smtt.sdk.WebView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +15,19 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.webviewflutter.flutter_webview_plugin.byo.WebviewManagerByo;
 
 /**
  * FlutterWebviewPlugin
  */
 public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
     private Activity activity;
-    private WebviewManager webViewManager;
+    private WebviewManagerInterface webViewManager;
     private Context context;
-    static MethodChannel channel;
+    public static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-
+    private int openType = 1;
     public static void registerWith(PluginRegistry.Registrar registrar) {
         if (registrar.activity() != null) {
             channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
@@ -106,7 +98,6 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     private void cleanCache(MethodChannel.Result result) {
         webViewManager.cleanCache();
-        WebStorage.getInstance().deleteAllData();
         result.success(null);
     }
 
@@ -131,18 +122,31 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean geolocationEnabled = call.argument("geolocationEnabled");
         boolean debuggingEnabled = call.argument("debuggingEnabled");
 
-        if (webViewManager == null || webViewManager.closed == true) {
+        if (call.hasArgument("openType")){
+            openType = call.argument("openType");
+        }
+
+        if (webViewManager == null || webViewManager.getClosed() == true) {
             Map<String, Object> arguments = (Map<String, Object>) call.arguments;
             List<String> channelNames = new ArrayList();
             if (arguments.containsKey(JS_CHANNEL_NAMES_FIELD)) {
                 channelNames = (List<String>) arguments.get(JS_CHANNEL_NAMES_FIELD);
             }
-            webViewManager = new WebviewManager(activity, context, channelNames);
+            if (openType ==2){
+                webViewManager = new WebviewManagerByo(activity, context, channelNames);
+            }else{
+                webViewManager = new WebviewManager(activity, context, channelNames);
+            }
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
-
-        activity.addContentView(webViewManager.webView, params);
+        if (this.openType==2){
+            android.webkit.WebView webView = webViewManager.getWebView();
+            activity.addContentView(webView , params);
+        }else{
+            com.tencent.smtt.sdk.WebView webView = webViewManager.getWebView();
+            activity.addContentView(webView , params);
+        }
 
         webViewManager.openUrl(withJavascript,
                 clearCache,
@@ -299,15 +303,8 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     }
 
     private void cleanCookies(MethodCall call, final MethodChannel.Result result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().removeAllCookies(new ValueCallback<Boolean>() {
-                @Override
-                public void onReceiveValue(Boolean aBoolean) {
-
-                }
-            });
-        } else {
-            CookieManager.getInstance().removeAllCookie();
+        if (webViewManager != null) {
+            webViewManager.cleanCookies(call, result);
         }
         result.success(null);
     }
@@ -319,8 +316,15 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     @Override
     public boolean onActivityResult(int i, int i1, Intent intent) {
-        if (webViewManager != null && webViewManager.resultHandler != null) {
-            return webViewManager.resultHandler.handleResult(i, i1, intent);
+        if (webViewManager != null && webViewManager.getResultHandler() != null) {
+            if (this.openType==2){
+                WebviewManagerByo.ResultHandler resultHandler = webViewManager.getResultHandler();
+                return resultHandler.handleResult(i, i1, intent);
+            }else{
+                WebviewManager.ResultHandler resultHandler = webViewManager.getResultHandler();
+                return resultHandler.handleResult(i, i1, intent);
+            }
+
         }
         return false;
     }

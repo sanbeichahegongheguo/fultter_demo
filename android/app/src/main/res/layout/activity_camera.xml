@@ -172,21 +172,21 @@
     </LinearLayout>
 
     <!-- video_play_box -->
-    <LinearLayout
-        android:id="@+id/video_play_box"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@android:color/background_dark"
-        android:visibility="invisible">
-        <VideoView
-            android:id="@+id/video_play"
-            android:layout_width="fill_parent"
-            android:layout_gravity="center"
-            android:layout_height="fill_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/video_play_box"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:background="@android:color/background_dark"-->
+<!--        android:visibility="invisible">-->
+<!--        <VideoView-->
+<!--            android:id="@+id/video_play"-->
+<!--            android:layout_width="fill_parent"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_height="fill_parent"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:layout_centerVertical="true" />-->
+<!--    </LinearLayout>-->
 
     <ImageView
         android:id="@+id/close_button"

@@ -33,13 +33,14 @@ class WebViewPlugin extends StatefulWidget{
   String  url;
   Color color;
   final AppBar appBar;
-  WebViewPlugin(this.url,{this.color,this.appBar});
+  final int openType;
+  WebViewPlugin(this.url,{this.color,this.appBar,this.openType=1});
 
   @override
   State<StatefulWidget> createState()=>new _WebViewPlugin();
 
 }
-class _WebViewPlugin extends State<WebViewPlugin>{
+class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
 
   // 标记是否是加载中
   bool loading = true;
@@ -72,7 +73,32 @@ class _WebViewPlugin extends State<WebViewPlugin>{
      onStateChanged = setOnStateChanged();
      onUrlChanged = setOnUrlChanged();
      onBackChanged = setOnBackChanged();
+     WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        //前台展示
+//        print('应用程序可见并响应用户输入。');
+        flutterWebViewPlugin.evalJavascript("window.resumed()");
+        break;
+      case AppLifecycleState.inactive:
+//        print('应用程序处于非活动状态，并且未接收用户输入');
+        break;
+      case AppLifecycleState.paused:
+        //后台展示
+//        print('用户当前看不到应用程序，没有响应');
+        flutterWebViewPlugin.evalJavascript("window.paused()");
+        break;
+      case AppLifecycleState.suspending:
+//        print('应用程序将暂停。');
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _timer = Timer(_timeoutSeconds,_unload);
@@ -98,6 +124,7 @@ class _WebViewPlugin extends State<WebViewPlugin>{
             withJavascript: true, // 允许执行js代码
             bottomNavigationBar: _getStatusWidget(store),
             initialChild: Container(),
+            openType: widget.openType,
           ),
     ),
     )
@@ -169,13 +196,19 @@ class _WebViewPlugin extends State<WebViewPlugin>{
   }
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     // 回收相关资源
     // Every listener should be canceled, the same should be done with this stream.
     onUrlChanged?.cancel();
     onStateChanged?.cancel();
+    onBackChanged?.cancel();
     flutterWebViewPlugin?.dispose();
   }
+
+
+
+
   StreamSubscription<Null>  setOnBackChanged(){
     return flutterWebViewPlugin.onBack.listen((n){
       print("OnBackChanged");

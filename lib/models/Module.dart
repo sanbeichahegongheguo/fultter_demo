@@ -11,7 +11,7 @@ class Module {
   String name;
   String targetUrl;
   String status;
-
+  int openType;
   Module({
     this.id,
     this.eventId,
@@ -21,6 +21,7 @@ class Module {
     this.name,
     this.targetUrl,
     this.status,
+    this.openType,
   });
 
   factory Module.fromJson(jsonRes)=>jsonRes == null? null:Module(
@@ -32,6 +33,7 @@ class Module {
     name : jsonRes['name'],
     targetUrl : jsonRes['targetUrl'],
     status : jsonRes['status'],
+    openType : jsonRes['openType'],
     );
 
   Map<String, dynamic> toJson() => {
@@ -43,6 +45,7 @@ class Module {
     'name': name,
     'targetUrl': targetUrl,
     'status': status,
+    'openType': openType,
   };
   @override
   String  toString() {

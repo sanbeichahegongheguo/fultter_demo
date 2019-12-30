@@ -1,4 +1,4 @@
-package io.flutter.plugins.webviewflutter.flutter_webview_plugin;
+package io.flutter.plugins.webviewflutter.flutter_webview_plugin.byo;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -15,16 +14,14 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
+import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
-
 import androidx.core.content.FileProvider;
-
-import com.tencent.smtt.sdk.CookieManager;
-import com.tencent.smtt.sdk.ValueCallback;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebStorage;
-import com.tencent.smtt.sdk.WebView;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +34,8 @@ import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.webviewflutter.flutter_webview_plugin.FlutterWebviewPlugin;
+import io.flutter.plugins.webviewflutter.flutter_webview_plugin.WebviewManagerInterface;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -44,7 +43,8 @@ import static android.app.Activity.RESULT_OK;
  * Created by lejard_h on 20/12/2017.
  */
 
-class WebviewManager implements WebviewManagerInterface{
+public class WebviewManagerByo implements WebviewManagerInterface {
+
 
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageArray;
@@ -59,8 +59,9 @@ class WebviewManager implements WebviewManagerInterface{
         return returnCursor.getLong(sizeIndex);
     }
 
+
     @TargetApi(7)
-    class ResultHandler {
+    public class ResultHandler {
         public boolean handleResult(int requestCode, int resultCode, Intent intent) {
             boolean handled = false;
             if (Build.VERSION.SDK_INT >= 21) {
@@ -126,7 +127,30 @@ class WebviewManager implements WebviewManagerInterface{
     ResultHandler resultHandler;
     Context context;
 
-    public WebviewManager(final Activity activity, final Context context, final List<String> channelNames) {
+
+    private Uri getOutputFilename(String intentType) {
+        String prefix = "";
+        String suffix = "";
+
+        if (intentType == MediaStore.ACTION_IMAGE_CAPTURE) {
+            prefix = "image-";
+            suffix = ".jpg";
+        } else if (intentType == MediaStore.ACTION_VIDEO_CAPTURE) {
+            prefix = "video-";
+            suffix = ".mp4";
+        }
+
+        String packageName = context.getPackageName();
+        File capturedFile = null;
+        try {
+            capturedFile = createCapturedFile(prefix, suffix);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return FileProvider.getUriForFile(context, packageName + ".fileprovider", capturedFile);
+    }
+
+    public WebviewManagerByo(final Activity  activity,final Context context, final List<String> channelNames) {
         this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.context = context;
@@ -257,28 +281,6 @@ class WebviewManager implements WebviewManagerInterface{
             }
         });
         registerJavaScriptChannelNames(channelNames);
-    }
-
-    private Uri getOutputFilename(String intentType) {
-        String prefix = "";
-        String suffix = "";
-
-        if (intentType == MediaStore.ACTION_IMAGE_CAPTURE) {
-            prefix = "image-";
-            suffix = ".jpg";
-        } else if (intentType == MediaStore.ACTION_VIDEO_CAPTURE) {
-            prefix = "video-";
-            suffix = ".mp4";
-        }
-
-        String packageName = context.getPackageName();
-        File capturedFile = null;
-        try {
-            capturedFile = createCapturedFile(prefix, suffix);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return FileProvider.getUriForFile(context, packageName + ".fileprovider", capturedFile);
     }
 
     private File createCapturedFile(String prefix, String suffix) throws IOException {
@@ -569,10 +571,10 @@ class WebviewManager implements WebviewManagerInterface{
     }
 
     private void initSetting(WebView webView,Context context){
-        com.tencent.smtt.sdk.WebSettings webSetting = webView.getSettings();
+        WebSettings webSetting = webView.getSettings();
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
         webSetting.setAllowFileAccess(true);
-        webSetting.setLayoutAlgorithm(com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setSupportZoom(true);
         webSetting.setBuiltInZoomControls(false);
         webSetting.setUseWideViewPort(true);
@@ -584,19 +586,13 @@ class WebviewManager implements WebviewManagerInterface{
         webSetting.setJavaScriptEnabled(true);
         webSetting.setGeolocationEnabled(true);
         webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
-        webSetting.setMediaPlaybackRequiresUserGesture(false);
+//        webSetting.setMediaPlaybackRequiresUserGesture(false);
         webSetting.setSavePassword(false);
-        webSetting.setPluginState(com.tencent.smtt.sdk.WebSettings.PluginState.ON_DEMAND);
-        webSetting.setCacheMode(com.tencent.smtt.sdk.WebSettings.LOAD_NO_CACHE);
+        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSetting.setAppCachePath(context.getDir("appcache", 0).getPath());
         webSetting.setDatabasePath(context.getDir("databases", 0).getPath());
         webSetting.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
-        if (webView.getX5WebViewExtension() != null) {
-            Bundle data = new Bundle();
-            data.putBoolean("standardFullScreen", false);// true表示标准全屏，会调起onShowCustomView()，false表示X5全屏；不设置默认false，
-            data.putBoolean("supportLiteWnd", false);// false：关闭小窗；true：开启小窗；不设置默认true，
-            data.putInt("DefaultVideoScreen", 1);// 1：以页面内开始播放，2：以全屏开始播放；不设置默认：1
-            webView.getX5WebViewExtension().invokeMiscMethod("setVideoParams", data);
-        }
+
     }
 }

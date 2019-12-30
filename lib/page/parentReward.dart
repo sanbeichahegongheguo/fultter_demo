@@ -379,7 +379,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                   if(data[i].eventId!=0){
                     ApplicationDao.trafficStatistic(data[i].eventId);
                   }
-                  NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){
+                  NavigatorUtil.goWebView(context,data[i].targetUrl,openType: data[i].openType).then((v){
                     bloc.parentRewardBloc.getTotalStar();
                   });
                 },

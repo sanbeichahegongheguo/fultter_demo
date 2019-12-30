@@ -33,6 +33,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.leo.flutterstart.R;
+import com.leo.flutterstart.VideoShowActivity;
 import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
@@ -95,6 +96,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     public static final String KEY_OUTPUT_FILE_PATH = "outputFilePath";
     private static final int PERMISSIONS_EXTERNAL_STORAGE = 801;
     public  static  final int REQUEST_CODE_PICK_IMAGE = 100;
+    public  static  final int REQUEST_CODE_PICK_M = 101;
 
 
 
@@ -177,10 +179,11 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         controlPanel = findViewById(R.id.controls);
         /*拍照示范背景框*/
 
-        videoPlayView = findViewById(R.id.video_play);
-        videoPlayBoxView = findViewById(R.id.video_play_box);
-        videoPlayView.setVisibility(View.INVISIBLE);
-        videoPlayBoxView.setVisibility(View.INVISIBLE);
+//        videoPlayView = findViewById(R.id.video_play);
+//        videoPlayBoxView = findViewById(R.id.video_play_box);
+//        videoPlayView.setVisibility(View.INVISIBLE);
+//        videoPlayBoxView.setVisibility(View.INVISIBLE);
+
 
         //处理入参
         int type = getIntent().getExtras().getInt("type",0);
@@ -429,9 +432,9 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         if(videoOpen == 1){
             videoOpen = 0;
             System.out.println("@关闭视频：");
-            videoPlayView.setVisibility(View.INVISIBLE);
-            videoPlayBoxView.setVisibility(View.INVISIBLE);
-            videoPlayView.stopPlayback();
+//            videoPlayView.setVisibility(View.INVISIBLE);
+//            videoPlayBoxView.setVisibility(View.INVISIBLE);
+//            videoPlayView.stopPlayback();
         }else{
             System.out.println("@关闭总相机按钮：");
             closeCamera();
@@ -472,20 +475,22 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     //拍照示例
     private void demon_button(){
-       message("拍照示例",false);
-        videoOpen = 1;
-        videoPlayView.setVisibility(View.VISIBLE);
-        videoPlayBoxView.setVisibility(View.VISIBLE);
-        // 加载视屏
-        String videoUrl = "android.resource://" + getPackageName() + "/" + R.raw.demo;
-        //设置视频控制器
-        videoPlayView.setMediaController(new MediaController(this));
-        //播放完成回调
-        //videoView.setOnCompletionListener(new MyPlayerOnCompletionListener());
-        //设置视频路径
-        videoPlayView.setVideoPath(videoUrl);
-        //开始播放视频
-        videoPlayView.start();
+        Intent camera = new Intent(this, VideoShowActivity.class);
+        startActivityForResult(camera,REQUEST_CODE_PICK_M);
+//       message("拍照示例",false);
+//        videoOpen = 1;
+//        videoPlayView.setVisibility(View.VISIBLE);
+//        videoPlayBoxView.setVisibility(View.VISIBLE);
+//        // 加载视屏
+//        String videoUrl = "android.resource://" + getPackageName() + "/" + R.raw.demo;
+//        //设置视频控制器
+//        videoPlayView.setMediaController(new MediaController(this));
+//        //播放完成回调
+//        //videoView.setOnCompletionListener(new MyPlayerOnCompletionListener());
+//        //设置视频路径
+//        videoPlayView.setVideoPath(videoUrl);
+//        //开始播放视频
+//        videoPlayView.start();
     }
 
     //整页拍

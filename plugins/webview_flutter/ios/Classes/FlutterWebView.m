@@ -140,7 +140,7 @@
         errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
-  } else {
+  }   else {
     result(nil);
   }
 }

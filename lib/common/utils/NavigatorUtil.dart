@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/page/EyeProtectionPage.dart';
@@ -23,7 +25,7 @@ import 'package:flutter_start/page/retrievePasswordPage.dart';
 import 'package:flutter_start/page/BuildArchivesPage.dart';
 import 'package:flutter_start/page/webview_plugin.dart';
 import 'package:package_info/package_info.dart';
-
+import 'package:redux/redux.dart';
 import 'DeviceInfo.dart';
 
 class NavigatorUtil {
@@ -124,7 +126,7 @@ class NavigatorUtil {
     NavigatorRouter(context, HomeWorkDuePage());
   }
   ///去往webview
-  static goWebView(BuildContext context, String url,{String router = ""}) async {
+  static goWebView(BuildContext context, String url,{String router = "",int openType}) async {
      if (url.indexOf("#")!=-1 && router ==""){
        var split = url.split("#/");
        if(split.length>1){
@@ -158,11 +160,20 @@ class NavigatorUtil {
       url += "&toFrom=$toFrom#/"+router;
     }
 
+
     print("NavigatorUtil @跳转链接:$url");
     if (Platform.isAndroid){
-      return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url)));
+      if(openType==null || openType ==0 ){
+        //外链默认打开内核 1:X5内核 2:手机自带内核
+        openType = 1;
+        Store<GSYState> store = StoreProvider.of(context);
+        if (store!=null &&  store.state !=null && store.state.application !=null&& store.state.application.webViewOpenType !=null && store.state.application.webViewOpenType >0){
+          openType  = store.state.application.webViewOpenType;
+        }
+      }
+      return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: openType,)));
     }else{
-          return NavigatorRouter(context, WebViewPlugin(url));
+      return NavigatorRouter(context, WebViewPage(url));
     }
 //    NavigatorRouter(context,WebViewExample(url));
   }

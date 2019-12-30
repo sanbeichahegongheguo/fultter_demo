@@ -226,7 +226,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                         if(data[i].eventId!=null && data[i].eventId!=0 ){
                           ApplicationDao.trafficStatistic(data[i].eventId);
                         }
-                        NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
+                        NavigatorUtil.goWebView(context,data[i].targetUrl,openType:data[i].openType).then((v){});
                       },
                       child:Container(
                         width: ScreenUtil.getInstance().getWidthPx(260),
@@ -270,7 +270,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               if(data[i].eventId!=null && data[i].eventId!=0){
                 ApplicationDao.trafficStatistic(data[i].eventId);
               }
-              NavigatorUtil.goWebView(context,data[i].targetUrl).then((v){});
+              NavigatorUtil.goWebView(context,data[i].targetUrl,openType: data[i].openType).then((v){});
             },
             child:Container(
               width: ScreenUtil.getInstance().getWidthPx(500),
