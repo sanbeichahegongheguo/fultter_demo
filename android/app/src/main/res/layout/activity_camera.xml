@@ -29,7 +29,7 @@
         android:layout_gravity="center"
         android:layout_marginBottom="115dp"
         android:keepScreenOn="true"
-        app:cameraAudio="on"
+        app:cameraAudio="off"
         app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
         app:cameraEngine="camera2"
         app:cameraExperimental="true"
@@ -44,7 +44,8 @@
         app:cameraMode="picture"
         app:cameraPlaySounds="true"
         app:cameraPreview="glSurface"
-        app:cameraUseDeviceOrientation="false">
+        app:cameraUseDeviceOrientation="false"
+        >
 
 
     </com.otaliastudios.cameraview.CameraView>

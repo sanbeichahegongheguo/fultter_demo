@@ -251,7 +251,7 @@ class _UserInfo extends State<UserInfo>{
                             color: Color(0xFFf5f5f7),
                           ),
                         ),
-                        _getBt("用户保护协议", "images/admin/icon-user-protocol.png", _goUserProtocol, "", 1),
+                        _getBt("用户服务协议", "images/admin/icon-user-protocol.png", _goUserProtocol, "", 1),
                         Container(
                           width: ScreenUtil.getInstance().getWidthPx(903),
                           height: ScreenUtil.getInstance().getHeightPx(3),
