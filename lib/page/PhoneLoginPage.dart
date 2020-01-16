@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flustars/flustars.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -33,6 +35,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   bool _expand = false;
   bool _hasdeleteIcon = false;
   StreamSubscription _stream;
+  bool _AgreementCheck = true;
   int _exitTime = 0;
   @override
   initState() {
@@ -204,9 +207,66 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                                 SizedBox(
                                   height: ScreenUtil.getInstance().getHeightPx(20),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                                Container(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        child: _AgreementCheck ? new Icon(
+                                          Icons.check_circle,
+                                          color: Color(0xFF5fc589),
+                                          size:16.0,
+                                        ):new Icon(
+                                          Icons.radio_button_unchecked,
+                                          color: Color(0xFF5fc589),
+                                          size:16.0,
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            _AgreementCheck = !_AgreementCheck;
+                                          });
+                                        },
+                                      ),
+                                      Text.rich(TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: "已阅读并同意",
+                                              style: TextStyle(
+                                                color: Color(0xFF666666),
+                                                fontSize: ScreenUtil.getInstance().getSp(11),
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: "《远大教育用户服务协议》",
+                                              style: TextStyle(
+                                                color: Color(0xFF5fc589),
+                                                fontSize: ScreenUtil.getInstance().getSp(11),
+                                              ),
+                                              recognizer: TapGestureRecognizer()..onTap = () {
+                                                linkTo('education');
+                                              },
+                                            ),
+                                            TextSpan(
+                                              text: "与",
+                                              style: TextStyle(
+                                                color: Color(0xFF666666),
+                                                fontSize: ScreenUtil.getInstance().getSp(11),
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: "《远大教育隐私协议》",
+                                              style: TextStyle(
+                                                color: Color(0xFF5fc589),
+                                                fontSize: ScreenUtil.getInstance().getSp(11),
+                                              ),
+                                              recognizer: TapGestureRecognizer()..onTap = () {
+                                                linkTo('privacy');
+                                              },
+                                            ),
+                                          ]
+                                      )),
+                                    ],
+                                  ),
                                 )
                               ])),
                           flex: 2,
@@ -227,7 +287,16 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       );
     });
   }
-
+  //跳转
+  void linkTo(where){
+    if(where == 'education'){
+      NavigatorUtil.goWebView(context, Address.getEducation());
+    }else if(where == 'privacy'){
+      NavigatorUtil.goWebView(context, Address.getPrivacy());
+    }else if(where == 'wxServer'){
+      NavigatorUtil.goWebView(context, Address.getWxServer());
+    }
+  }
   ///getTextField 构建输入框
   TextFormField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
     return TextFormField(
@@ -263,7 +332,10 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   }
 
   void _login() async {
-
+    if(!_AgreementCheck){
+      showToast("请先同意协议！");
+      return;
+    }
     if (!RegexUtil.isMobileSimple(userNameController.text)) {
       showToast("请输入正确的手机号", position: ToastPosition.bottom);
       return;

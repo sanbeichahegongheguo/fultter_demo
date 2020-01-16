@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -51,6 +52,8 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
   bool _sendBtn = false;
   bool _recoverTime = true;
   String _topText = '';
+  ///协议选中未选中状态
+  bool _AgreementCheck = true;
 
   @override
   void initState() {
@@ -123,7 +126,7 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
     });
     stuPwdController.addListener(() {
       if (stuPhoneController.text.length >= 10 && stuPwdController.text.length >= 6) {
-        if (!this._inputStuNextBtn) {
+        if (!this._inputStuNextBtn && _AgreementCheck) {
           setState(() {
             this._inputStuNextBtn = true;
           });
@@ -345,7 +348,86 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
               elevation: 2,
               onTap: (){
                 _inputStuAccountNext();
-              })
+              }),
+        Expanded(
+          flex: 2,
+          child: Container(
+            padding: EdgeInsets.only(bottom: 20),
+            alignment: AlignmentDirectional.bottomCenter,
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                GestureDetector(
+                  child: _AgreementCheck ? new Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF5fc589),
+                    size:16.0,
+                  ):new Icon(
+                    Icons.radio_button_unchecked,
+                    color: Color(0xFF5fc589),
+                    size:16.0,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      _AgreementCheck = !_AgreementCheck;
+                      if (!_AgreementCheck) {
+                        setState(() {
+                          this._inputStuNextBtn = false;
+                        });
+                      }
+                      if (stuPhoneController.text.length >= 10 && stuPwdController.text.length >= 6) {
+                        if (!this._inputStuNextBtn && _AgreementCheck) {
+                          setState(() {
+                            this._inputStuNextBtn = true;
+                          });
+                        }
+                      }
+                    });
+                  },
+                ),
+                Text.rich(TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "已阅读并同意",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
+                        ),
+                      ),
+                      TextSpan(
+                        text: "《远大教育用户服务协议》",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('education');
+                        },
+                      ),
+                      TextSpan(
+                        text: "与",
+                        style: TextStyle(
+                          color: Color(0xFF666666),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
+                        ),
+                      ),
+                      TextSpan(
+                        text: "《远大教育隐私协议》",
+                        style: TextStyle(
+                          color: Color(0xFF5fc589),
+                          fontSize: ScreenUtil.getInstance().getSp(11),
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          linkTo('privacy');
+                        },
+                      ),
+                    ]
+                )),
+              ],
+            ),
+          ),
+        )
+
         ],
       ),
     );
@@ -353,6 +435,10 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
 
   ///验证：请输入孩子学生账号与密码
   void _inputStuAccountNext() async{
+    if(!_AgreementCheck){
+      showToast("请先同意协议！");
+      return;
+    }
     if (_inputStuNextBtn) {
       CommonUtils.showLoadingDialog(context, text: "验证中···");
       DataResult data = await UserDao.checkStudent(stuPhoneController.text, stuPwdController.text, widget.userPhone);
@@ -386,6 +472,17 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
       } else if (stuPwdController.text.length < 6) {
         showToast("密码必须大于6位");
       }
+    }
+  }
+
+  //跳转
+  void linkTo(where){
+    if(where == 'education'){
+      NavigatorUtil.goWebView(context, Address.getEducation());
+    }else if(where == 'privacy'){
+      NavigatorUtil.goWebView(context, Address.getPrivacy());
+    }else if(where == 'wxServer'){
+      NavigatorUtil.goWebView(context, Address.getWxServer());
     }
   }
 
