@@ -407,7 +407,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           bloc.coachBloc.showBanner(true);
           bloc.adBloc.getBanner(pageName: CoachPage.sName);
         }
-
+        _getUnReadNotice();
         break;
       case LearningEmotionPage.sName:
         print("切换学情页面");
@@ -472,13 +472,12 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   ///获取APP公告
   _getAppNotice(){
     ApplicationDao.getAppNotice().then((data){
+      _getUnReadNotice();
       if (null!=data&&data.result){
         if(data.data["success"]["ok"]==0&&data.data["success"]["advertList"]!=null&&data.data["success"]["advertList"].length!=0){
           var message = data.data["success"]["message"];
           var notice = data.data["success"]["advertList"][0];
-          CommonUtils.showAPPNotice(context,notice,message).then((_){
-            _getUnReadNotice();
-          });
+          CommonUtils.showAPPNotice(context,notice,message);
         }else{
           ///今天已弹窗，不再弹窗
         }
