@@ -173,7 +173,7 @@ class NavigatorUtil {
       }
       return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: openType,)));
     }else{
-      return NavigatorRouter(context, WebViewPage(url));
+     return NavigatorRouter(context, WebViewPage(url));
     }
 //    NavigatorRouter(context,WebViewExample(url));
   }

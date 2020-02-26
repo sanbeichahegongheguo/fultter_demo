@@ -20,6 +20,22 @@
 		AE7311502302BB77001AB5F6 /* Yondor.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE73114F2302BB77001AB5F6 /* Yondor.mm */; };
 		AE7A1E312318FF1300B76925 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7A1E302318FF1200B76925 /* SplashView.swift */; };
 		AE7A1E332319066500B76925 /* SplashViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7A1E322319066400B76925 /* SplashViewFactory.swift */; };
+		AEC4092D23B1EF88000F8FDC /* CameraMic.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC4092323B1EF87000F8FDC /* CameraMic.m */; };
+		AEC4092E23B1EF88000F8FDC /* CustomGallery.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC4092423B1EF88000F8FDC /* CustomGallery.m */; };
+		AEC4092F23B1EF88000F8FDC /* CameraPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC4092523B1EF88000F8FDC /* CameraPlugin.m */; };
+		AEC4093023B1EF88000F8FDC /* BJImageCropper.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC4092923B1EF88000F8FDC /* BJImageCropper.m */; };
+		AEC4093123B1EF88000F8FDC /* CustomCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = AEC4092C23B1EF88000F8FDC /* CustomCamera.m */; };
+		AEC4097B23B2EBC5000F8FDC /* PEPhotoCropEditor.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097023B2EBC4000F8FDC /* PEPhotoCropEditor.bundle */; };
+		AEC4097C23B2EBC5000F8FDC /* bd_ocr_light_on.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097123B2EBC4000F8FDC /* bd_ocr_light_on.png */; };
+		AEC4097D23B2EBC5000F8FDC /* bd_ocr_close1.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097223B2EBC4000F8FDC /* bd_ocr_close1.png */; };
+		AEC4097E23B2EBC5000F8FDC /* bd_ocr_close.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097323B2EBC4000F8FDC /* bd_ocr_close.png */; };
+		AEC4097F23B2EBC5000F8FDC /* test.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097423B2EBC5000F8FDC /* test.mp4 */; };
+		AEC4098023B2EBC5000F8FDC /* photo_demonstration_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097523B2EBC5000F8FDC /* photo_demonstration_icon.png */; };
+		AEC4098123B2EBC5000F8FDC /* gallery_hdpi.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097623B2EBC5000F8FDC /* gallery_hdpi.png */; };
+		AEC4098223B2EBC5000F8FDC /* gallery_xhdpi.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097723B2EBC5000F8FDC /* gallery_xhdpi.png */; };
+		AEC4098323B2EBC5000F8FDC /* bd_ocr_gallery1.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097823B2EBC5000F8FDC /* bd_ocr_gallery1.png */; };
+		AEC4098423B2EBC5000F8FDC /* gallery_xxhdpi.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097923B2EBC5000F8FDC /* gallery_xxhdpi.png */; };
+		AEC4098523B2EBC5000F8FDC /* bd_ocr_light_off.png in Resources */ = {isa = PBXBuildFile; fileRef = AEC4097A23B2EBC5000F8FDC /* bd_ocr_light_off.png */; };
 		AED481F122F819BD005E93AB /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F022F819BD005E93AB /* AdSupport.framework */; };
 		AED481F322F819C6005E93AB /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F222F819C6005E93AB /* CoreLocation.framework */; };
 		AED481F522F819CE005E93AB /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F422F819CE005E93AB /* QuartzCore.framework */; };
@@ -76,6 +92,28 @@
 		AE73114F2302BB77001AB5F6 /* Yondor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Yondor.mm; sourceTree = "<group>"; };
 		AE7A1E302318FF1200B76925 /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		AE7A1E322319066400B76925 /* SplashViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewFactory.swift; sourceTree = "<group>"; };
+		AEC4092223B1EF87000F8FDC /* CustomGallery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomGallery.h; path = camera/CustomGallery.h; sourceTree = "<group>"; };
+		AEC4092323B1EF87000F8FDC /* CameraMic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraMic.m; path = camera/CameraMic.m; sourceTree = "<group>"; };
+		AEC4092423B1EF88000F8FDC /* CustomGallery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomGallery.m; path = camera/CustomGallery.m; sourceTree = "<group>"; };
+		AEC4092523B1EF88000F8FDC /* CameraPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraPlugin.m; path = camera/CameraPlugin.m; sourceTree = "<group>"; };
+		AEC4092623B1EF88000F8FDC /* CameraPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraPlugin.h; path = camera/CameraPlugin.h; sourceTree = "<group>"; };
+		AEC4092723B1EF88000F8FDC /* CameraMic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraMic.h; path = camera/CameraMic.h; sourceTree = "<group>"; };
+		AEC4092823B1EF88000F8FDC /* Call.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Call.h; path = camera/Call.h; sourceTree = "<group>"; };
+		AEC4092923B1EF88000F8FDC /* BJImageCropper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BJImageCropper.m; path = camera/BJImageCropper.m; sourceTree = "<group>"; };
+		AEC4092A23B1EF88000F8FDC /* BJImageCropper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BJImageCropper.h; path = camera/BJImageCropper.h; sourceTree = "<group>"; };
+		AEC4092B23B1EF88000F8FDC /* CustomCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomCamera.h; path = camera/CustomCamera.h; sourceTree = "<group>"; };
+		AEC4092C23B1EF88000F8FDC /* CustomCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomCamera.m; path = camera/CustomCamera.m; sourceTree = "<group>"; };
+		AEC4097023B2EBC4000F8FDC /* PEPhotoCropEditor.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = PEPhotoCropEditor.bundle; path = Resources/PEPhotoCropEditor.bundle; sourceTree = "<group>"; };
+		AEC4097123B2EBC4000F8FDC /* bd_ocr_light_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_light_on.png; path = Resources/bd_ocr_light_on.png; sourceTree = "<group>"; };
+		AEC4097223B2EBC4000F8FDC /* bd_ocr_close1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_close1.png; path = Resources/bd_ocr_close1.png; sourceTree = "<group>"; };
+		AEC4097323B2EBC4000F8FDC /* bd_ocr_close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_close.png; path = Resources/bd_ocr_close.png; sourceTree = "<group>"; };
+		AEC4097423B2EBC5000F8FDC /* test.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = test.mp4; path = Resources/test.mp4; sourceTree = "<group>"; };
+		AEC4097523B2EBC5000F8FDC /* photo_demonstration_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = photo_demonstration_icon.png; path = Resources/photo_demonstration_icon.png; sourceTree = "<group>"; };
+		AEC4097623B2EBC5000F8FDC /* gallery_hdpi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gallery_hdpi.png; path = Resources/gallery_hdpi.png; sourceTree = "<group>"; };
+		AEC4097723B2EBC5000F8FDC /* gallery_xhdpi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gallery_xhdpi.png; path = Resources/gallery_xhdpi.png; sourceTree = "<group>"; };
+		AEC4097823B2EBC5000F8FDC /* bd_ocr_gallery1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_gallery1.png; path = Resources/bd_ocr_gallery1.png; sourceTree = "<group>"; };
+		AEC4097923B2EBC5000F8FDC /* gallery_xxhdpi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gallery_xxhdpi.png; path = Resources/gallery_xxhdpi.png; sourceTree = "<group>"; };
+		AEC4097A23B2EBC5000F8FDC /* bd_ocr_light_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_light_off.png; path = Resources/bd_ocr_light_off.png; sourceTree = "<group>"; };
 		AED481EE22F8194E005E93AB /* libGDTMobSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGDTMobSDK.a; path = lib/libGDTMobSDK.a; sourceTree = "<group>"; };
 		AED481F022F819BD005E93AB /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		AED481F222F819C6005E93AB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -201,6 +239,18 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				AEC4096F23B21C77000F8FDC /* Resources */,
+				AEC4092A23B1EF88000F8FDC /* BJImageCropper.h */,
+				AEC4092923B1EF88000F8FDC /* BJImageCropper.m */,
+				AEC4092823B1EF88000F8FDC /* Call.h */,
+				AEC4092723B1EF88000F8FDC /* CameraMic.h */,
+				AEC4092323B1EF87000F8FDC /* CameraMic.m */,
+				AEC4092623B1EF88000F8FDC /* CameraPlugin.h */,
+				AEC4092523B1EF88000F8FDC /* CameraPlugin.m */,
+				AEC4092B23B1EF88000F8FDC /* CustomCamera.h */,
+				AEC4092C23B1EF88000F8FDC /* CustomCamera.m */,
+				AEC4092223B1EF87000F8FDC /* CustomGallery.h */,
+				AEC4092423B1EF88000F8FDC /* CustomGallery.m */,
 				AE7A1E322319066400B76925 /* SplashViewFactory.swift */,
 				AE7A1E302318FF1200B76925 /* SplashView.swift */,
 				AE73114E2302BB76001AB5F6 /* Yondor.h */,
@@ -233,6 +283,24 @@
 			children = (
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AEC4096F23B21C77000F8FDC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AEC4097323B2EBC4000F8FDC /* bd_ocr_close.png */,
+				AEC4097223B2EBC4000F8FDC /* bd_ocr_close1.png */,
+				AEC4097823B2EBC5000F8FDC /* bd_ocr_gallery1.png */,
+				AEC4097A23B2EBC5000F8FDC /* bd_ocr_light_off.png */,
+				AEC4097123B2EBC4000F8FDC /* bd_ocr_light_on.png */,
+				AEC4097623B2EBC5000F8FDC /* gallery_hdpi.png */,
+				AEC4097723B2EBC5000F8FDC /* gallery_xhdpi.png */,
+				AEC4097923B2EBC5000F8FDC /* gallery_xxhdpi.png */,
+				AEC4097023B2EBC4000F8FDC /* PEPhotoCropEditor.bundle */,
+				AEC4097523B2EBC5000F8FDC /* photo_demonstration_icon.png */,
+				AEC4097423B2EBC5000F8FDC /* test.mp4 */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		AED4824C22F82BDE005E93AB /* lib */ = {
@@ -307,7 +375,7 @@
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = US9G9C67S4;
+						DevelopmentTeam = 4Y8238M4Y4;
 						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 					};
@@ -336,10 +404,21 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEC4098323B2EBC5000F8FDC /* bd_ocr_gallery1.png in Resources */,
+				AEC4097C23B2EBC5000F8FDC /* bd_ocr_light_on.png in Resources */,
+				AEC4097E23B2EBC5000F8FDC /* bd_ocr_close.png in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
+				AEC4098023B2EBC5000F8FDC /* photo_demonstration_icon.png in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
+				AEC4098423B2EBC5000F8FDC /* gallery_xxhdpi.png in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+				AEC4097D23B2EBC5000F8FDC /* bd_ocr_close1.png in Resources */,
+				AEC4098223B2EBC5000F8FDC /* gallery_xhdpi.png in Resources */,
+				AEC4097F23B2EBC5000F8FDC /* test.mp4 in Resources */,
+				AEC4098523B2EBC5000F8FDC /* bd_ocr_light_off.png in Resources */,
+				AEC4098123B2EBC5000F8FDC /* gallery_hdpi.png in Resources */,
+				AEC4097B23B2EBC5000F8FDC /* PEPhotoCropEditor.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,12 +504,17 @@
 				AEF43F2B22EEA37400765808 /* PathObject.mm in Sources */,
 				AED4820A22F8264B005E93AB /* Banner.swift in Sources */,
 				AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */,
+				AEC4093023B1EF88000F8FDC /* BJImageCropper.m in Sources */,
+				AEC4092F23B1EF88000F8FDC /* CameraPlugin.m in Sources */,
 				AED4820822F82622005E93AB /* BannerViewFactory.swift in Sources */,
+				AEC4092D23B1EF88000F8FDC /* CameraMic.m in Sources */,
+				AEC4092E23B1EF88000F8FDC /* CustomGallery.m in Sources */,
 				AEF43F2D22EEA37400765808 /* Mnist.mm in Sources */,
 				AED4820522F825BD005E93AB /* BannerPlugin.swift in Sources */,
 				AED4826822FA7ED3005E93AB /* AppDelegate.swift in Sources */,
 				AE7311502302BB77001AB5F6 /* Yondor.mm in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				AEC4093123B1EF88000F8FDC /* CustomCamera.m in Sources */,
 				AE7A1E312318FF1300B76925 /* SplashView.swift in Sources */,
 				AE7A1E332319066500B76925 /* SplashViewFactory.swift in Sources */,
 			);
@@ -521,7 +605,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = US9G9C67S4;
+				DEVELOPMENT_TEAM = 4Y8238M4Y4;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -562,7 +646,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.student;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.studentIPA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -693,7 +777,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = US9G9C67S4;
+				DEVELOPMENT_TEAM = 4Y8238M4Y4;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -734,7 +818,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.student;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.studentIPA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -757,7 +841,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = US9G9C67S4;
+				DEVELOPMENT_TEAM = 4Y8238M4Y4;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -798,7 +882,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.student;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.studentIPA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

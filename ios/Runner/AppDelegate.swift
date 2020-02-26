@@ -16,6 +16,7 @@ import Flutter
             //注册插件
             BannerPlugin.registerWithRegistrar(registar: registrar(forPlugin: "BannerPlugin"), controller: controller!)
         }
+        FLTCameraPlugin.register(with: self.registrar(forPlugin: "FLTCameraPlugin"))
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }

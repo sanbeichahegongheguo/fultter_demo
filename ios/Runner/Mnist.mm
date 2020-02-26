@@ -215,7 +215,7 @@ namespace mnistext{
 			[uploadDatas addObject:uploadObj];
 		}
 		
-		if(isUpload == YES){
+		if(isSave){
 			if([mnistResult length] > 1){
 				NSMutableDictionary* uploadObj = [[NSMutableDictionary alloc] init];
 				UIImage* img = [allPObj drawPathToSize:224];

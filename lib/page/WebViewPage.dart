@@ -222,7 +222,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           }
         }
         _getImage(type,request.url).then((data){
-          print("-----!!!!!!------$data");
+//          print("-----!!!!!!------$data");
           if (ObjectUtil.isEmpty(data) || data["result"] == "fail"){
             _webViewController.evaluateJavascript("window.closeCamera()");
           }else{
@@ -401,7 +401,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
     var param = {};
     param["type"] = 0;
     var result;
-    if (Platform.isAndroid){
+    if (true){
       url = Uri.decodeComponent(url);
       List<String> split = url.split(":");
       if (split.length>=5){
@@ -430,11 +430,16 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
         return data;
       }
     }
-    image = await ImageCropper.cropImage(
-      sourcePath: image?.path ?? result["path"],
+    if (Platform.isAndroid){
+      image = await ImageCropper.cropImage(
+        sourcePath: image?.path ?? result["path"],
 //      toolbarTitle: "选择图片",
-      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false,initAspectRatio: CropAspectRatioPreset.original),
-    );
+        androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false,initAspectRatio: CropAspectRatioPreset.original),
+      );
+    }else{
+      image = new File(image?.path ?? result["path"]);
+    }
+
     //压缩
     if  (image!=null){
       int size = (await image.length());

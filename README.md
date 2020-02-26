@@ -41,3 +41,21 @@ text.dart
     #_navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     #_webView.navigationDelegate = _navigationDelegate;
     #_webView.scrollView.bounces = false;//禁止滑动
+IOS:
+editable_text.dart
+  set selection(TextSelection newSelection) {
+      //if (newSelection.start > text.length || newSelection.end > text.length)
+      //throw FlutterError('invalid text selection: $newSelection');
+    value = value.copyWith(selection: newSelection, composing: TextRange.empty);
+  }
+text_selection.dart
+      try{
+        addToolbarButtonIfNeeded(localizations.cutButtonLabel, canCut, handleCut);
+        addToolbarButtonIfNeeded(localizations.copyButtonLabel, canCopy, handleCopy);
+        addToolbarButtonIfNeeded(localizations.pasteButtonLabel, canPaste, handlePaste);
+        addToolbarButtonIfNeeded(localizations.selectAllButtonLabel, canSelectAll, handleSelectAll);
+      }catch(e){
+        print(e);
+      }
+text.dart
+      this.textScaleFactor = 1

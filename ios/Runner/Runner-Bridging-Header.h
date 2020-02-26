@@ -9,3 +9,4 @@
 #import "GDTSDKConfig.h"
 #import "GDTUnifiedBannerView.h"
 #import "Yondor.h"
+#import "CameraPlugin.h"

@@ -349,7 +349,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
               child:OutlineButton(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50),),
                 borderSide: BorderSide(color:  Color(0xFF6ed699),width: 2),
-                onPressed: (){_goH5StudyInfo("aUnit?unit=${unitData[i].racSyntestName}&racSyntestId=${unitData[i].racSyntestId}");},
+                onPressed: (){_goH5StudyInfo("aUnit?unit=${Uri.encodeComponent(unitData[i].racSyntestName)}&racSyntestId=${unitData[i].racSyntestId}");},
                 child: Text("前往",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3),color: Color(0xFF6ed699))),
               ),
             )
