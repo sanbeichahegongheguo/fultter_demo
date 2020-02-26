@@ -16,8 +16,14 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 DEBUG:
-
+cmd执行
 flutter  build apk --debug --target-platform=android-arm
+
+
+编辑main.dart运行方法
+在build flavor加上命令
+--use-application-binary=build/app/outputs/apk/debug/app-debug.apk
+
 
 Android:
 editable_text.dart
