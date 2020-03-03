@@ -129,7 +129,6 @@ class SplashPageState extends State<SplashPage> {
         _initListener();
         _initAsync();
         _initPermission();
-        ApplicationDao.sendDeviceInfo();
         return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -138,7 +137,6 @@ class SplashPageState extends State<SplashPage> {
         _initListener();
         _initAsync();
         _initPermission();
-        ApplicationDao.sendDeviceInfo();
       });
     });
   }
@@ -273,34 +271,38 @@ class SplashPageState extends State<SplashPage> {
   }
 
   Future _initPermission() async {
-    List<PermissionGroup> permissionsList = new List();
-    if (Platform.isAndroid){
-      PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
-      if (permission != PermissionStatus.granted) {
-        permissionsList.add(PermissionGroup.location);
+    try{
+      List<PermissionGroup> permissionsList = new List();
+      if (Platform.isAndroid){
+        PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
+        if (permission != PermissionStatus.granted) {
+          permissionsList.add(PermissionGroup.location);
+        }
+        permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
+        if (permission != PermissionStatus.granted) {
+          permissionsList.add(PermissionGroup.phone);
+        }
+        permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
+        if (permission != PermissionStatus.granted) {
+          permissionsList.add(PermissionGroup.storage);
+        }
       }
-       permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
-      if (permission != PermissionStatus.granted) {
-        permissionsList.add(PermissionGroup.phone);
-      }
-
-      permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
-      if (permission != PermissionStatus.granted) {
-        permissionsList.add(PermissionGroup.storage);
-      }
-    }
-    if(permissionsList.length>0){
-      Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions(permissionsList);
-      if (permissions[PermissionGroup.phone] !=null && permissions[PermissionGroup.phone] != PermissionStatus.granted) {
-        showToast("请开启手机权限", position: ToastPosition.bottom);
-      }
-      if (permissions[PermissionGroup.storage] !=null && permissions[PermissionGroup.storage] != PermissionStatus.granted) {
-        showToast("请开启存储权限", position: ToastPosition.bottom);
-      }
-      if (permissions[PermissionGroup.location] !=null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
+      if(permissionsList.length>0){
+        Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions(permissionsList);
+        if (permissions[PermissionGroup.phone] !=null && permissions[PermissionGroup.phone] != PermissionStatus.granted) {
+          showToast("请开启手机权限", position: ToastPosition.bottom);
+        }
+        if (permissions[PermissionGroup.storage] !=null && permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+          showToast("请开启存储权限", position: ToastPosition.bottom);
+        }
+        if (permissions[PermissionGroup.location] !=null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
 //        showToast("请开启位置权限", position: ToastPosition.bottom);
+        }
       }
+    }catch(err){
+      print("_initPermission $err");
     }
+    ApplicationDao.sendDeviceInfo();
   }
 
   void _initListener() {
