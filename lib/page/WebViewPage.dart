@@ -153,7 +153,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                 () => VerticalDragGestureRecognizer(),
                           ),
                         ),
-                      javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther()].toSet(),
+                      javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context,store),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther()].toSet(),
                       navigationDelegate: _navigationDelegate,
                       onPageFinished: (String url) {
                         print('@跳转链接: $url');
@@ -539,13 +539,13 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
   }
 
   /// 使用手写功能
-  JavascriptChannel _detectxy(BuildContext context) {
+  JavascriptChannel _detectxy(BuildContext context,Store<GSYState> store) {
     return JavascriptChannel(
         name: 'Detectxy',
         onMessageReceived: (JavascriptMessage message) async {
           var msg = jsonDecode(message.message);
           print(msg["pos"]);
-          var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"]);
+          var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"]??store.state.application.detectxySave==1);
           _webViewController.evaluateJavascript("window.dx('$result')");
         });
   }

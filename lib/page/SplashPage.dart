@@ -84,7 +84,7 @@ class SplashPageState extends State<SplashPage> {
           SpUtil.putBool(_showAdKey, (data !=null && data["showSplash"]!=null &&data["showSplash"] is num && data["showSplash"]==1 && data["showBanner"]==1));
           store.dispatch(RefreshApplicationAction(store.state.application.copyWith(showBanner: data["showBanner"],
               showCoachBanner: data["showBanner"],showRewardBanner: data["showRewardBanner"],showH5Banner: data["showH5Banner"],minAndroidVersion: data["minAndroidVersion"],minIosVersion: data["minIosVersion"],
-            webViewOpenType: data["openType"]
+              webViewOpenType: data["openType"],detectxySave: data["detectxySave"]
           )));
         }
       });

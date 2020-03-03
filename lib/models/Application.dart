@@ -8,7 +8,9 @@ class Application{
   final String minAndroidVersion;
   final String minIosVersion;
   final int webViewOpenType;
-  Application({this.version,this.canUpdate,this.showBanner,this.showCoachBanner,this.showRewardBanner,this.showH5Banner,this.minAndroidVersion,this.minIosVersion,this.webViewOpenType});
+  final int detectxySave;
+
+  Application({this.version,this.canUpdate,this.showBanner,this.showCoachBanner,this.showRewardBanner,this.showH5Banner,this.minAndroidVersion,this.minIosVersion,this.webViewOpenType,this.detectxySave});
 
   factory Application.initial() {
     return Application(
@@ -21,10 +23,11 @@ class Application{
       minAndroidVersion:"",
       minIosVersion:"",
       webViewOpenType:1,
+      detectxySave:0,
     );
   }
 
-  Application copyWith({String version,bool canUpdate,int showBanner,int showCoachBanner,int showRewardBanner,int showH5Banner,String minAndroidVersion,String minIosVersion,int webViewOpenType}) {
+  Application copyWith({String version,bool canUpdate,int showBanner,int showCoachBanner,int showRewardBanner,int showH5Banner,String minAndroidVersion,String minIosVersion,int webViewOpenType,int detectxySave}) {
     return Application(
       version: version ?? this.version,
       canUpdate:canUpdate??this.canUpdate,
@@ -34,7 +37,8 @@ class Application{
       showH5Banner:showH5Banner??this.showH5Banner,
       minAndroidVersion:minAndroidVersion??this.minAndroidVersion,
       minIosVersion:minIosVersion??this.minIosVersion,
-      webViewOpenType:webViewOpenType??this.webViewOpenType
+      webViewOpenType:webViewOpenType??this.webViewOpenType,
+      detectxySave:detectxySave??this.detectxySave
     );
   }
 }

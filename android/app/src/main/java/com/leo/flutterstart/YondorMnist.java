@@ -31,6 +31,7 @@ public class YondorMnist{
             AssetManager manager = context.getAssets();
             ydclassifierlite = new YdMnistClassifierLite(manager);
         }
+        Log.i("java.hx:", "isSave:"+ isSave);
         int code = 200;
         String message ;
         final JSONArray uploadArr = new JSONArray();
@@ -59,16 +60,16 @@ public class YondorMnist{
                 //小数点判断
                 if(str0.length() == 0 && tmpP.paths.size() == 1 && i >= 1){
                     PathObject lastObj = pObjs.get(i-1);
-                    Log.i("java.hx:", "i="+i +"PathObject:"+ lastObj);
+//                    Log.i("java.hx:", "i="+i +"PathObject:"+ lastObj);
                     int lastW = lastObj.maxX - lastObj.minX;
-                    Log.i("java.hx:", "lastW:"+ lastW);
+//                    Log.i("java.hx:", "lastW:"+ lastW);
                     int lastH = lastObj.maxY - lastObj.minY;
-                    Log.i("java.hx:", "lastH:"+ lastH);
+//                    Log.i("java.hx:", "lastH:"+ lastH);
                     float size1 = Math.max(lastObj.maxX-lastObj.minX, lastObj.maxY-lastObj.minY);
-                    Log.i("java.hx:", "size1:"+ size1);
+//                    Log.i("java.hx:", "size1:"+ size1);
                     float size2 = tmpP.maxX - tmpP.minX;
-                    Log.i("java.hx:", "size2:"+ size2);
-                    Log.i("java.hx:", "if::"+ String.valueOf(size2 < size1*0.3 && tmpP.minY > lastObj.minY + lastH/2));
+//                    Log.i("java.hx:", "size2:"+ size2);
+//                    Log.i("java.hx:", "if::"+ String.valueOf(size2 < size1*0.3 && tmpP.minY > lastObj.minY + lastH/2));
                     if(size2 < size1*0.3
                                 && tmpP.minY > lastObj.minY + lastH/2){
                         str0 = ".";
@@ -80,7 +81,7 @@ public class YondorMnist{
                     ydclassifierlite.inference(imgData);
                     MnistData mnistResult = ydclassifierlite.inference(imgData);
                     int idx0 = mnistResult.topIndex();
-                    Log.i("java.hx:", "idx0:"+ idx0);
+//                    Log.i("java.hx:", "idx0:"+ idx0);
                     str0 = TF.labels.substring(idx0,idx0+1);
                     if(str0.equals("÷") && tmpP.paths.size() == 4){
                         str0 = "六";
@@ -119,7 +120,7 @@ public class YondorMnist{
                     }
 
                 }
-                Log.i("java.hx:", "str0:"+ str0);
+//                Log.i("java.hx:", "str0:"+ str0);
                 builder.append(str0);
 
                 if(isSave){

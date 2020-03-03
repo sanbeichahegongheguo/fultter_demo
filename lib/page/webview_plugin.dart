@@ -117,7 +117,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
         body:SafeArea(
           child:WebviewScaffold(
             key: scaffoldKey,
-            javascriptChannels:_jsChannels(),
+            javascriptChannels:_jsChannels(store),
             url:widget.url, // 登录的URL
             withZoom: true,  // 允许网页缩放
             withLocalStorage: true, // 允许LocalStorage
@@ -421,7 +421,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
       showToast('$msg打开失败',position:ToastPosition.bottom);
     }
   }
-  Set<JavascriptChannel> _jsChannels(){
+  Set<JavascriptChannel> _jsChannels(Store<GSYState> store){
     return  [
       /// 使用javascriptChannels发送消息
       /// javascriptChannels参数可以传入一组Channels，我们可以定义一个_alertJavascriptChannel变量，这个channel用来控制JS调用Flutter的toast功能：
@@ -491,7 +491,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
           onMessageReceived: (JavascriptMessage message) async {
             var msg = jsonDecode(message.message);
             print(msg["pos"]);
-            var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"]);
+            var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"]??store.state.application.detectxySave==1);
             flutterWebViewPlugin.evalJavascript("window.dx('$result')");
           })
     ].toSet();
