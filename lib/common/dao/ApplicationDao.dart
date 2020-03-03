@@ -82,7 +82,7 @@ class ApplicationDao{
   ///流量统计
   static trafficStatistic(eventId) async {
     var pf = 'PARENT_APP';
-    var did = await DeviceInfo.instance.getDeviceId();
+    var did = await DeviceInfo.instance.getYondorDeviceId();
     var user = SpUtil.getObject(Config.LOGIN_USER);
     var uid;
     var cb ;
@@ -116,7 +116,7 @@ class ApplicationDao{
   ///对象统计
   static sendObjTotal(data) async {
     var pf = 'PARENT_APP';
-    var did = await DeviceInfo.instance.getDeviceId();
+    var did = await DeviceInfo.instance.getYondorDeviceId();
     var user = SpUtil.getObject(Config.LOGIN_USER);
     var uid;
     var cb ;
@@ -140,6 +140,7 @@ class ApplicationDao{
 
   ///设备信息统计
   static sendDeviceInfo() async {
+    print("sendDeviceInfo");
     int now = DateTime.now().millisecondsSinceEpoch;
     int uid = 0;
     await SpUtil.getInstance();

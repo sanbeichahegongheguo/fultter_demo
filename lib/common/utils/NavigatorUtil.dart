@@ -139,8 +139,7 @@ class NavigatorUtil {
     String from = "study_parent";
     String toFrom = "study_parent_router";
     var version =  (await PackageInfo.fromPlatform()).version;
-    var deviceId = await DeviceInfo.instance.getDeviceId();
-
+    var deviceId = await DeviceInfo.instance.getYondorDeviceId();
     if (null != key && "" != key) {
       String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {

@@ -36,6 +36,11 @@ public class MnistData {
         return builder.toString();
     }
 
+    public int topIndex(){
+        Item item = items.get(0);
+        return (int)item.index;
+    }
+
     public String output() {
         return String.valueOf(items.get(0).index);
     }

@@ -361,8 +361,6 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   void _gainUsers() async {
     print("_gainUsers");
-//    var deviceId = await DeviceInfo.instance.getDeviceId();
-//    print("deviceId $deviceId");
     PackageInfo info = await PackageInfo.fromPlatform();
     _version = info.version;
     _users.clear();

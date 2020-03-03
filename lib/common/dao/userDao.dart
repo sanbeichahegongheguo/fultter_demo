@@ -18,7 +18,8 @@ class UserDao {
   ///登录
   static login(userName, password, Store store, {String code}) async {
     await httpManager.clearAuthorization();
-    var deviceId = await DeviceInfo.instance.getDeviceId();
+    var deviceId = await DeviceInfo.instance.getYondorDeviceId();
+
     var params = {"mobile": userName, "password": password, "datafrom": Config.DATA_FROM, "deviceId": deviceId};
     if (code != null) {
       params["code"] = code;

@@ -117,6 +117,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     });
     _tabController = new TabController(vsync: this, length: 4);
     _signReward();
+    _getUnReadNotice();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Store<GSYState> store = StoreProvider.of(context);
       _getAppVersionInfo(store.state.userInfo.userId,store);

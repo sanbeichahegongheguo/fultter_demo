@@ -15,6 +15,7 @@ import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
@@ -51,13 +52,10 @@ class SplashPageState extends State<SplashPage> {
       return;
     }
     hadInit = true;
-    _initPermission();
-    _initAsync();
-    _initListener();
+    _initProtocol();
   }
   @override
   void didChangeDependencies() {
-    ApplicationDao.sendDeviceInfo();
     super.didChangeDependencies();
   }
 
@@ -123,21 +121,27 @@ class SplashPageState extends State<SplashPage> {
         _next();
       });
     });
-
-
-//    _loadSplashData();
-//    Observable.just(1).delay(new Duration(milliseconds: 500)).listen((_) {
-////      SpUtil.putBool(Constant.key_guide, false);
-//      if (SpUtil.getBool(Constant.key_guide, defValue: true) &&
-//          ObjectUtil.isNotEmpty(_guideList)) {
-//        SpUtil.putBool(Constant.key_guide, false);
-//        _initBanner();
-//      } else {
-//        _initSplash();
-//      }
-//    });
   }
 
+  Future<void> _initProtocol() async{
+    await SpUtil.getInstance();
+    if (SpUtil.getBool(Config.EVENT_PROTOCOL)){
+        _initListener();
+        _initAsync();
+        _initPermission();
+        ApplicationDao.sendDeviceInfo();
+        return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      CommonUtils.showProtocolDialog(context).then((data){
+      SpUtil.putBool(Config.EVENT_PROTOCOL,true);
+        _initListener();
+        _initAsync();
+        _initPermission();
+        ApplicationDao.sendDeviceInfo();
+      });
+    });
+  }
   _next(){
     if (_adStatus!="show" || Platform.isIOS){
       if (next==1){
@@ -294,7 +298,7 @@ class SplashPageState extends State<SplashPage> {
         showToast("请开启存储权限", position: ToastPosition.bottom);
       }
       if (permissions[PermissionGroup.location] !=null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
-        showToast("请开启位置权限", position: ToastPosition.bottom);
+//        showToast("请开启位置权限", position: ToastPosition.bottom);
       }
     }
   }

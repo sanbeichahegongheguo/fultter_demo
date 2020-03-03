@@ -9,6 +9,7 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/widget/IndexNoticeWidget.dart';
+import 'package:flutter_start/widget/ProtocolDialog.dart';
 import 'package:flutter_start/widget/VideoWidget.dart';
 import 'package:flutter_start/widget/update_version.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -154,6 +155,19 @@ class CommonUtils {
           return WillPopScope(
             onWillPop: () => new Future.value(mustUpdate == 1 ? false:true),
             child: UpdateVersionDialog(data: versionInfo,mustUpdate: mustUpdate),
+          );
+        });
+  }
+
+  ///版本更新
+  static Future<Null> showProtocolDialog(BuildContext context) {
+    return NavigatorUtil.showGSYDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () => new Future.value(false),
+            child: ProtocolDialog(),
           );
         });
   }

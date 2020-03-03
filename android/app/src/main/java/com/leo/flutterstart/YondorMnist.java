@@ -1,5 +1,6 @@
 package com.leo.flutterstart;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -25,7 +26,7 @@ public class YondorMnist{
 	private static Boolean isUpload = true;
     private static Boolean isFirst = true;
 
-    public static JSONObject detectxy(JSONArray pos, int thickness, Boolean isSave,Context context){
+    public static JSONObject detectxy(JSONArray pos, int thickness, Boolean isSave, Activity context){
         if(ydclassifierlite == null){
             AssetManager manager = context.getAssets();
             ydclassifierlite = new YdMnistClassifierLite(manager);
@@ -38,72 +39,90 @@ public class YondorMnist{
 
         Paint pt = new Paint();
         pt.setColor(Color.BLACK);
-
         pt.setStrokeWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TF.DRAW_THICKNESS, context.getResources().getDisplayMetrics()));
         pt.setStyle(Paint.Style.STROKE);
 
-        boolean skip = false;
         StringBuilder builder = new StringBuilder();
         try{
-            List<PathObject> pObjs = BmpUtil.getPathObject(pos);
-            for(int i=0; i<pObjs.size(); i++){
-                if(skip==true){
-                    skip = false;
-                    continue;
-                }
-
+            PathObject mP = null;
+            List<PathObject> pObjs = BmpUtil.getPathObject(pos, ydclassifierlite, context);
+            for(int i=0; i<pObjs.size(); i++){            
                 PathObject tmpP = pObjs.get(i);
-
-                if(i < pObjs.size()-1){
-                    PathObject tmpP2 = pObjs.get(i+1);
-                    if(tmpP2.check5(tmpP)){
-                        tmpP2.addPaths(tmpP);
-                        pObjs.set(i+1, tmpP2);
-                        continue;
-                    }
-                }
-
-
                 Bitmap tmpBmp = tmpP.drawPathToSize(pt, TF.MNIST_SIZE);
-                ByteBuffer imgData = ydclassifierlite.ImgData(tmpBmp);
-                if(isFirst){
+                String str0 = "";
+                if(tmpP.checked8){
+                    str0 = "八";
+                }
+                if(tmpP.checked5){
+                    str0 = "5";
+                }
+                //小数点判断
+                if(str0.length() == 0 && tmpP.paths.size() == 1 && i >= 1){
+                    PathObject lastObj = pObjs.get(i-1);
+                    Log.i("java.hx:", "i="+i +"PathObject:"+ lastObj);
+                    int lastW = lastObj.maxX - lastObj.minX;
+                    Log.i("java.hx:", "lastW:"+ lastW);
+                    int lastH = lastObj.maxY - lastObj.minY;
+                    Log.i("java.hx:", "lastH:"+ lastH);
+                    float size1 = Math.max(lastObj.maxX-lastObj.minX, lastObj.maxY-lastObj.minY);
+                    Log.i("java.hx:", "size1:"+ size1);
+                    float size2 = tmpP.maxX - tmpP.minX;
+                    Log.i("java.hx:", "size2:"+ size2);
+                    Log.i("java.hx:", "if::"+ String.valueOf(size2 < size1*0.3 && tmpP.minY > lastObj.minY + lastH/2));
+                    if(size2 < size1*0.3
+                                && tmpP.minY > lastObj.minY + lastH/2){
+                        str0 = ".";
+                    }                            
+                }
+
+                if(str0.length() == 0){
+                    ByteBuffer imgData = ydclassifierlite.ImgData(tmpBmp);
                     ydclassifierlite.inference(imgData);
-                    isFirst = false;
-                }
-                MnistData mnistResult = ydclassifierlite.inference(imgData);
-                String str0 = mnistResult.topWithoutValue(1);
-
-                if(str0.equals("9") && tmpP.paths.size() >= 2){
-                    str0 = "4";
-                }
-                if((str0.equals("1") || str0.equals("6")) && i < pObjs.size()-1){
-                    PathObject tmpP2 = pObjs.get(i+1);
-                    if(tmpP2.checkCross(tmpP)){
-                        PathObject tmpP3 = new PathObject();
-                        boolean added = tmpP3.addPaths(tmpP);
-                        added = tmpP3.addPaths(tmpP2);
-                        if (!added){
-                            break;
+                    MnistData mnistResult = ydclassifierlite.inference(imgData);
+                    int idx0 = mnistResult.topIndex();
+                    Log.i("java.hx:", "idx0:"+ idx0);
+                    str0 = TF.labels.substring(idx0,idx0+1);
+                    if(str0.equals("÷") && tmpP.paths.size() == 4){
+                        str0 = "六";
+                    }else if(str0.equals("<") && tmpP.paths.size() == 2){
+                        str0 = "七";
+                    }else if(str0.equals("m")){
+                        mP = tmpP;
+                        continue;
+                    }else if(mP!=null){
+                        boolean ism23 = false;
+                        if(str0.equals("2")){
+                            str0 = "㎡";       
+                            ism23 = true;                            
+                        }else if(str0.equals("3")){
+                            str0 = "m³";
+                            ism23 = true;
+                        }else{
+                            builder.append("m");
+                            if(isSave){
+                                Bitmap mBmp = mP.drawPathToSize(pt, TF.MNIST_SIZE);
+                                String b64 = BmpUtil.bitmapToBase64(mBmp);
+                                JSONObject tmpObj = new JSONObject();
+                                tmpObj.put("mnist", "m");
+                                tmpObj.put("b64", b64);
+                                uploadArr.put(tmpObj);
+                            }
+                        }  
+                        if(ism23 && isSave){
+                            PathObject nP = new PathObject();
+                            nP.addPaths(mP);
+                            nP.addPaths(tmpP);
+                            tmpP = nP;
+                            tmpBmp = tmpP.drawPathToSize(pt, TF.MNIST_SIZE);
                         }
-
-                        Bitmap tmpBmp2 = tmpP3.drawPathToSize(pt, TF.MNIST_SIZE);
-                        ByteBuffer imgData2 = ydclassifierlite.ImgData(tmpBmp2);
-                        MnistData mnistResult2 = ydclassifierlite.inference(imgData2);
-                        String str1 = mnistResult2.topWithoutValue(1);
-                        if(str1.equals("4") || str1.equals("9")){
-                            tmpBmp = tmpBmp2;
-                            mnistResult = mnistResult2;
-                            imgData = imgData2;
-                            //str0 = str1;
-                            str0 = "4";
-                            skip = true;
-                        }
+                        mP = null;                             
                     }
-                }
 
+                }
+                Log.i("java.hx:", "str0:"+ str0);
                 builder.append(str0);
 
-                if(isUpload){
+                if(isSave){
                     String b64 = BmpUtil.bitmapToBase64(tmpBmp);
                     JSONObject tmpObj = new JSONObject();
                     tmpObj.put("mnist", str0);
@@ -111,9 +130,9 @@ public class YondorMnist{
                     uploadArr.put(tmpObj);
                 }
             }
-            builder.reverse();
+            // builder.reverse();
 
-            if(isUpload){
+            if(isSave){
                 if(builder.toString().length() > 1){
                     Bitmap bigBmp = BmpUtil.DrawWholeByAxis(pos, TF.DRAW_THICKNESS, context.getResources().getDisplayMetrics());
                     String b64 = BmpUtil.bitmapToBase64(bigBmp);
@@ -135,8 +154,8 @@ public class YondorMnist{
 
 
         }catch (Exception err){
+            err.printStackTrace();
             code = 500;
-            message = err.getMessage();
         }
         Log.i("java.hx:", builder.toString());
 

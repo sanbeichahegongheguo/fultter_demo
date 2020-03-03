@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
@@ -12,6 +13,7 @@ class DeviceInfo {
   DeviceInfoPlugin get deviceInfo  =>_deviceInfo;
   Map<String, dynamic> _deviceInfoMap;
   String deviceId = "";
+  String _yondorDeviceId = "";
   Future<Map<String, dynamic>> getDeviceInfo() async {
     if (null == this._deviceInfoMap) {
       if (Platform.isAndroid) {
@@ -40,7 +42,8 @@ class DeviceInfo {
     }
     //根据平台获取deviceId
     if (Platform.isAndroid) {
-      var imei = await ImeiPlugin.getImei();
+      var imei = await ImeiPlugin.getImei;
+
       if (null != imei && imei == "Permission Denied") {
         this.deviceId = this._deviceInfoMap["androidId"];
       } else {
@@ -60,7 +63,20 @@ class DeviceInfo {
     }
     return this.deviceId;
   }
+  Future<String> getYondorDeviceId() async {
+    //直接返回
+    if (ObjectUtil.isNotEmpty(this._yondorDeviceId)) {
+      return this._yondorDeviceId;
+    }
 
+    var did = await this.getDeviceId();
+    if (Platform.isAndroid) {
+      var yondorInfo = await new DeviceInfo().deviceInfo.yondorInfo;
+      did =  did + yondorInfo["kid"];
+    }
+    this._yondorDeviceId = did;
+    return this._yondorDeviceId;
+  }
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,

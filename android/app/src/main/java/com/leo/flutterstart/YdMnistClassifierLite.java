@@ -5,9 +5,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
-
 import org.tensorflow.lite.Interpreter;
-
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,7 +17,6 @@ public class YdMnistClassifierLite {
     private final Interpreter mInterpreter;
     public YdMnistClassifierLite(AssetManager manager) {
         MappedByteBuffer mbb = null;
-        Interpreter tmpItpt;
         try{
             AssetFileDescriptor fileDescriptor = manager.openFd(TF.YD_MODEL_LITE);
             FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -27,31 +24,21 @@ public class YdMnistClassifierLite {
             long startOffset = fileDescriptor.getStartOffset();
             long declaredLength = fileDescriptor.getDeclaredLength();
             mbb = fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
-            tmpItpt = new Interpreter(mbb);
         }catch (Exception err){
             err.printStackTrace();
-            tmpItpt = null;
         }
-        mInterpreter = tmpItpt;
+        mInterpreter = new Interpreter(mbb);
+
     }
 
     public MnistData inference(ByteBuffer input){
-        float[][] mResult = new float[1][10];
-        if(mInterpreter != null){
-            try{
-                mInterpreter.run(input, mResult);
-            }catch (Exception err){
-                err.printStackTrace();
-            }
-        }
-        Log.i("mnist:", Arrays.toString(mResult[0]));
+        float[][] mResult = new float[1][TF.labels.length()];
+        mInterpreter.run(input, mResult);
+        // Log.i("mnist:", Arrays.toString(mResult[0]));
         return new MnistData(mResult[0]);
     }
 
     public void dispose(){
-        if(mInterpreter == null){
-            return;
-        }
         mInterpreter.close();
     }
 
@@ -80,13 +67,17 @@ public class YdMnistClassifierLite {
 
         int pixel = 0;
         for (int i = 0; i < TF.MNIST_SIZE; ++i) {
-//            String tmp = "";
+            StringBuilder b = new StringBuilder();
             for (int j = 0; j < TF.MNIST_SIZE; ++j) {
+                if(mImagePixels[pixel]==-1){
+                    b.append(0);
+                }else{
+                    b.append(1);
+                }
                 final int val = mImagePixels[pixel++];
                 mImgData.putFloat(1-convertToGreyScale(val));
-//                tmp += 1-convertToGreyScale(val);
             }
-//            Log.i("mnist:",tmp);
+            Log.i("mnist", b.toString());
         }
 
         return mImgData;

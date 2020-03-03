@@ -45,6 +45,7 @@ class Config {
   static const APPAPPLICATION_KEY ='APPAPPLICATION_KEY';   //辅导页面顶部公告
   static const IOS_APP_ID ='1155973972';   //苹果商店appid
   static const EVENT_287 ='event_287';   //启动事件
+  static const EVENT_PROTOCOL ='event_protocol';   //用户协议
   static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
   static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
   static const STUDENT_SCHEME = "yondorstudenthwapp://"; //学生端路由
