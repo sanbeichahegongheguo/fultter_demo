@@ -37,7 +37,7 @@ class _ProtocolDialogState extends State<ProtocolDialog> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                  width: screenSize.height > screenSize.width ? 265 : 370,
+                  width: ScreenUtil.getInstance().screenWidth * 0.7,
                   decoration: ShapeDecoration(
                       color: Color(0xFFFFFFFF),
                       shape: RoundedRectangleBorder(
@@ -64,7 +64,7 @@ class _ProtocolDialogState extends State<ProtocolDialog> {
                                 style: TextStyle(color: Color(0xFF9ba8b9),fontSize: ScreenUtil.getInstance().getSp(38/3)),
                                 children: [
                                   TextSpan(
-                                    text:  "远大小状元",
+                                    text:  "远大小状元，",
                                   ),
                                   TextSpan(
                                       text: "我们非常重视您的个人信息和隐私保护。"
