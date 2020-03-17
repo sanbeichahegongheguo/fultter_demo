@@ -42,6 +42,7 @@ class Config {
   static const TITLE ='远大小状元家长';
   static const CUR_VERSION ='2.0.000';
   static const indexNotice ='index-notice';   //辅导页面顶部公告
+  static const mainLastCourse ='main-last-course';   //课程数据
   static const APPAPPLICATION_KEY ='APPAPPLICATION_KEY';   //辅导页面顶部公告
   static const IOS_APP_ID ='1155973972';   //苹果商店appid
   static const EVENT_287 ='event_287';   //启动事件

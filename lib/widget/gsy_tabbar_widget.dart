@@ -408,6 +408,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           bloc.coachBloc.showBanner(true);
           bloc.adBloc.getBanner(pageName: CoachPage.sName);
         }
+        bloc.coachBloc.getMainLastCourse();
         _getUnReadNotice();
         break;
       case LearningEmotionPage.sName:

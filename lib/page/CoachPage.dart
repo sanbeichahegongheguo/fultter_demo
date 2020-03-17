@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,12 +10,14 @@ import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
+import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/CoachNotice.dart';
 import 'package:flutter_start/models/Module.dart';
+import 'package:flutter_start/widget/courseCountDownWidget.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:redux/redux.dart';
 
@@ -34,12 +38,14 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
   void initState() {
 //    ApplicationDao.trafficStatistic(1);
     bloc =  BlocProvider.of<HomeBloc>(context);
+    bloc.coachBloc.getMainLastCourse();
     bloc.moduleBloc.getCoachXZYModule();
     bloc.jzModuleBloc.getCoachJZModule();
     bloc.coachBloc.getCoachNotice();
     bloc.adBloc.getBanner();
     if(Platform.isIOS){
       bloc.coachBloc.showBanner(true);
+
     }
     super.initState();
   }
@@ -79,12 +85,19 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 //                  _mainBt()
                 ),
               ),
+              //课程中心模块
+              StreamBuilder<String>(
+              stream: bloc.coachBloc.getCoachNoticeStream,
+              builder: (context, AsyncSnapshot<String> snapshot){
+                return  _getCoachNotice(snapshot.data);
+              }),
+              //精准学习模块
               Container(
                 margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(33)),
                 color: Colors.white,
                 width:MediaQuery.of(context).size.width,
                 child: Padding(
-                  padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(77)),
+                  padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(50)),
                   child: Column(
                     children: <Widget>[
                       Padding(
@@ -258,7 +271,185 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     );
     return btmsg;
   }
+  //跳转到课程中心
+   _goCourseCenter(){
+     NavigatorUtil.goWebView(context,Address.goCourseCenter()).then((v){
+       bloc.coachBloc.getMainLastCourse();
+     });
+   }
 
+   //跳转到课程中心
+   _goBroadcastHor(productId,courseallotId){
+     NavigatorUtil.goWebView(
+         context,Address.goBroadcastHor()+
+         "?productId="+productId.toString()+
+         "&courseallotId="+courseallotId.toString()+
+         "&backUrl=haxecallback:broadcastHor"
+     ).then((v){
+       bloc.coachBloc.getMainLastCourse();
+     });
+   }
+   Timer _timer;//计时器
+   ///获取课程中心布局
+   Widget _getCoachNotice(data){
+
+     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+     print(data);
+     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+     if(data == "null"){
+       return Text("");
+     }
+     var dataJson =  jsonDecode(data.toString());
+     print(dataJson["courseName"]);
+
+     var courseName = dataJson["courseName"];//课时名称
+     var startDate = _getStartDate(dataJson["startDate"]);//开始时间
+     var timeDate = _getTime(dataJson["nextCourseStartTime"]) +"-"+ _getTime(dataJson["nextCourseEndTime"]);//获取开始结束时间
+     var countdown = dataJson["countdown"];//倒计时时间
+     var productId = dataJson["productId"];//课时id
+     var courseallotId = dataJson["courseallotId"];//目录id
+     var courseStatus = dataJson["courseStatus"];//是否在上课
+     var coachView = Container(
+       margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(33)),
+       color: Colors.white,
+       width:MediaQuery.of(context).size.width,
+       child: Padding(
+         padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(50)),
+         child: Column(
+           children: <Widget>[
+             Padding(
+               padding: EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(53)),
+               child:  Row(
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: <Widget>[
+                   new Row(
+                     children: <Widget>[
+                       Container(
+                         width:ScreenUtil.getInstance().getWidthPx(12),
+                         height: ScreenUtil.getInstance().getHeightPx(46),
+                         decoration:BoxDecoration(
+                           borderRadius: new BorderRadius.all(
+                               Radius.circular((30.0))),
+                           color: Color(0xFF5fc589),
+                         ),
+                       ),
+                       Text("  我的课程",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3) )),
+                     ],
+                   ),
+                   Padding(
+                     padding: EdgeInsets.only(right:ScreenUtil.getInstance().getWidthPx(53)),
+                     child: InkWell(
+                       onTap: (){ _goCourseCenter();},
+                       child: Text("课程中心 >",
+                           style: TextStyle(
+                               fontSize: ScreenUtil.getInstance().getSp(42/3),
+                               color: Color(0xFF999999)
+                           )
+                       ),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             Padding(
+                 padding: EdgeInsets.only(
+                     right:ScreenUtil.getInstance().getWidthPx(53),
+                     left:ScreenUtil.getInstance().getWidthPx(53),
+                     top:ScreenUtil.getInstance().getHeightPx(10),
+                     bottom:ScreenUtil.getInstance().getHeightPx(50)
+                 ),
+                 child:  Row(
+                   mainAxisAlignment: MainAxisAlignment.start,
+                   children: <Widget>[
+                     Image.asset(
+                       "images/coach/icon-course.png",
+                       width:ScreenUtil.getInstance().getWidthPx(232),
+                       height:ScreenUtil.getInstance().getHeightPx(255),
+                     ),
+                     Container(
+                       alignment: Alignment.topLeft,
+                       margin: EdgeInsets.only(
+                           left:ScreenUtil.getInstance().getWidthPx(38)
+                       ),
+                       child: new Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                         crossAxisAlignment:CrossAxisAlignment.start,
+                         children: <Widget>[
+                           //标题区域
+                           Container(
+                             margin: EdgeInsets.only(
+                               top:ScreenUtil.getInstance().getHeightPx(25),
+                             ),
+                             child: Row(
+                               children: <Widget>[
+                                 Container(
+                                   margin: EdgeInsets.only(
+                                     right:ScreenUtil.getInstance().getWidthPx(25),
+                                   ),
+                                   decoration:new BoxDecoration(
+                                       borderRadius: BorderRadius.only(topLeft:Radius.circular(4.0),bottomRight:Radius.circular(4.0)),
+                                       color:Color(0xFFfb7d5f)
+                                   ),
+                                   padding: EdgeInsets.all(ScreenUtil.getInstance().getWidthPx(9)),
+                                   child: Text("数学",style: TextStyle(color: Color(0xFFffffff))),
+                                 ),
+                                 Container(
+                                   padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getWidthPx(9)),
+                                   child: Text(courseName,
+                                     style: TextStyle(
+                                         fontSize: ScreenUtil.getInstance().getSp(48/3),
+                                         color: Color(0xFF666666)
+                                     ),
+                                     textAlign: TextAlign.left,
+                                   ),
+                                 ),
+                               ],
+                             ),
+                           ),
+                           //时间区域
+                           Container(
+                             margin:EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getHeightPx(10)),
+                             child: Row(
+                               mainAxisAlignment: MainAxisAlignment.start,
+                               crossAxisAlignment:CrossAxisAlignment.start,
+                               children: <Widget>[
+                                 Text(startDate+" ·  "+timeDate,
+                                     style: TextStyle(
+                                       fontSize: ScreenUtil.getInstance().getSp(36/3),
+                                       color: Color(0xFF999999),
+                                     )),
+                               ],
+                             ),
+                           ),
+                           //倒计时区域
+                           _countDownView(countdown,productId,courseallotId,courseStatus),
+                           //上课按钮
+                         ],
+                       ),
+                     ),
+                   ],
+                 )
+             ),
+           ],
+         ),
+       ),
+     );
+     return coachView;
+  }
+
+   _countDownView(countdown,productId,courseallotId,courseStatus){
+     var courseCountDownWidget  = new CourseCountDownWidget(countdown:countdown,productId:productId,courseallotId:courseallotId,courseStatus:courseStatus);
+     return  courseCountDownWidget;
+   }
+  ///获取开始月日
+  String _getStartDate(data){
+    return data.split('-')[1] + "月" + data.split('-')[2] + "日";
+  }
+  ///获取开始结束时间
+  String _getTime(data){
+    var time = data.split('T')[1].split('+')[0];
+    return time.split(':')[0] +":"+ time.split(':')[1];
+  }
   //精准学习
   Widget _widgeStudy (List<Module> data){
     List<Widget> listWidge = [];

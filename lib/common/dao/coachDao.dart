@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
@@ -45,4 +47,31 @@ class CoachDao {
     DataResult dataResult = new DataResult(list, true, next: next());
     return dataResult;
   }
+  ///获取可查看课程
+  static getMainLastCourse() async {
+      next() async {
+        String key = await httpManager.getAuthorization();
+        var params = {key:key};
+        var res = await httpManager.netFetch(Address.getMainLastCourse(), params, null, new Options(method: "get"));
+        print(res.data);
+        var result;
+        var json = res.data;
+        if (!json["success"]) {
+          result = json["message"];
+          res.result = false;
+        }else{
+          result = jsonEncode(json["data"]);
+          await SpUtil.putString(Config.mainLastCourse, result);
+          result = result;
+          res.result = true;
+        }
+        return new DataResult(result, res.result);
+      }
+      var str = SpUtil.getString(Config.mainLastCourse);
+      if(null==str){
+        return await next();
+      }
+      DataResult dataResult = new DataResult(str, true, next: next());
+      return dataResult;
+    }
 }

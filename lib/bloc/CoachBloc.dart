@@ -9,11 +9,25 @@ class CoachBloc extends BlocBase{
   Sink<List<CoachNotice>> get _noticSink => _notice.sink;
   Observable<List<CoachNotice>> get noticeStream => _notice.stream;
 
+  ///获取可查看课程
+  BehaviorSubject<String>  _getCoachNotice = BehaviorSubject<String> ();
+  Sink<String> get _getCoachNoticeSink => _getCoachNotice.sink;
+  Observable<String> get getCoachNoticeStream => _getCoachNotice.stream;
+
   ///教辅专区广告
   BehaviorSubject<bool> _coachShowBanner = BehaviorSubject<bool>();
   Sink<bool> get _coachShowBannerSink => _coachShowBanner.sink;
   Observable<bool> get coachShowBannerStream => _coachShowBanner.stream;
   static bool _isBanner;
+
+
+  ///获取可查看课程
+  void getMainLastCourse() async{
+    DataResult data =await CoachDao.getMainLastCourse();
+    _getCoachNoticeSink.add(data.data);
+    await doNext(_getCoachNoticeSink,data);
+    return;
+  }
 
   ///公告
   void getCoachNotice() async{
@@ -26,7 +40,6 @@ class CoachBloc extends BlocBase{
     await doNext(_noticSink,data);
     return;
   }
-
 
   ///是否展示广告
   void showBanner(bool isShow) async{
@@ -41,5 +54,6 @@ class CoachBloc extends BlocBase{
     print("CoachBloc dispose");
     _notice.close();
     _coachShowBanner.close();
+    _getCoachNotice.close();
   }
 }
