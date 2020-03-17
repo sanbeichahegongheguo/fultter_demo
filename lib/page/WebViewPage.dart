@@ -153,7 +153,7 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
                                 () => VerticalDragGestureRecognizer(),
                           ),
                         ),
-                      javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context,store),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther()].toSet(),
+                      javascriptChannels: <JavascriptChannel>[_alertJavascriptChannel(context), _detectxy(context,store),_loadAd(),_openStudent(),_openVideo(),_userState(),_saveImage(),_openOther(),_openWebView()].toSet(),
                       navigationDelegate: _navigationDelegate,
                       onPageFinished: (String url) {
                         print('@跳转链接: $url');
@@ -525,6 +525,19 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
           CommonUtils.openStudentApp();
         });
   }
+  ///新建WebView
+  JavascriptChannel _openWebView() {
+    return JavascriptChannel(
+    name: 'OpenWebView',
+    onMessageReceived: (JavascriptMessage message) {
+      if(ObjectUtil.isEmptyString(message.message)){
+        return;
+      }
+      var msg = jsonDecode(message.message);
+      NavigatorUtil.goWebView(context,msg["url"],openType:msg["type"]);
+    });
+  }
+
   ///打开外部流浪器
   JavascriptChannel _openOther() {
     return JavascriptChannel(

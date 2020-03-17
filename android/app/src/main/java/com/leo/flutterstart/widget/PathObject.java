@@ -23,6 +23,7 @@ public class PathObject {
     public int minY = -1;
     public boolean checked8 = false;
     public boolean checked5 = false;
+    public boolean checkedGe = false;
     public PathObject(){
             paths = new ArrayList<>();
     }
@@ -144,6 +145,22 @@ public class PathObject {
         return false;
     }
 
+    public boolean checkGe(PathObject obj){
+        // int w1 = maxX - minX;
+        // int w2 = obj.maxX - obj.minX;
+        if(paths.size() == 2 && obj.paths.size() == 1){
+            if(maxY > obj.maxY){
+                return true;
+            }
+        }
+        if(paths.size()==1 && obj.paths.size()==2){
+            if(maxY < obj.maxY){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public Bitmap drawPath(Paint paint){
         int size = Math.max((maxX-minX), (maxY-minY));
@@ -223,18 +240,4 @@ public class PathObject {
         return obj;
     }
 
-    @Override
-    public String toString() {
-        return "PathObject{" +
-                "paths=" + paths +
-                ", startPoint=" + startPoint +
-                ", endPoint=" + endPoint +
-                ", maxX=" + maxX +
-                ", maxY=" + maxY +
-                ", minX=" + minX +
-                ", minY=" + minY +
-                ", checked8=" + checked8 +
-                ", checked5=" + checked5 +
-                '}';
-    }
 }

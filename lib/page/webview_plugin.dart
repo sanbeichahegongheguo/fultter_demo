@@ -469,6 +469,16 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
               }
             });
           }),
+      ///新建WebView
+      JavascriptChannel(
+          name: 'OpenWebView',
+          onMessageReceived: (JavascriptMessage message) {
+            if(ObjectUtil.isEmptyString(message.message)){
+              return;
+            }
+            var msg = jsonDecode(message.message);
+            NavigatorUtil.goWebView(context,msg["url"],openType:msg["type"]);
+          }),
       ///打开学生端
       JavascriptChannel(
           name: 'OpenStudent',

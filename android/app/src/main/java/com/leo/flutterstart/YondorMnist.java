@@ -23,7 +23,7 @@ import java.util.List;
 public class YondorMnist{
     private static YdMnistClassifierLite ydclassifierlite;
 	private static YondorMnist instance = new YondorMnist();
-	private static Boolean isUpload = true;
+	private static Boolean isUpload = false;
     private static Boolean isFirst = true;
 
     public static JSONObject detectxy(JSONArray pos, int thickness, Boolean isSave, Activity context){
@@ -31,7 +31,6 @@ public class YondorMnist{
             AssetManager manager = context.getAssets();
             ydclassifierlite = new YdMnistClassifierLite(manager);
         }
-        Log.i("java.hx:", "isSave:"+ isSave);
         int code = 200;
         String message ;
         final JSONArray uploadArr = new JSONArray();
@@ -46,30 +45,27 @@ public class YondorMnist{
         StringBuilder builder = new StringBuilder();
         try{
             PathObject mP = null;
-            List<PathObject> pObjs = BmpUtil.getPathObject(pos, ydclassifierlite, context);
+            List<PathObject> pObjs = BmpUtil.getPathObject(pos, ydclassifierlite,  context);
             for(int i=0; i<pObjs.size(); i++){            
                 PathObject tmpP = pObjs.get(i);
                 Bitmap tmpBmp = tmpP.drawPathToSize(pt, TF.MNIST_SIZE);
                 String str0 = "";
-                if(tmpP.checked8){
-                    str0 = "八";
-                }
-                if(tmpP.checked5){
-                    str0 = "5";
-                }
+                 if(tmpP.checked8 && tmpP.paths.size()==2){
+                        str0 = "八";
+                    }
+                    if(tmpP.checked5){
+                        str0 = "5";
+                    }
+                    if(tmpP.checkedGe && tmpP.paths.size()==3){
+                        str0 = "个";
+                    }
                 //小数点判断
                 if(str0.length() == 0 && tmpP.paths.size() == 1 && i >= 1){
-                    PathObject lastObj = pObjs.get(i-1);
-//                    Log.i("java.hx:", "i="+i +"PathObject:"+ lastObj);
+                    PathObject lastObj = pObjs.get(i-1);                          
                     int lastW = lastObj.maxX - lastObj.minX;
-//                    Log.i("java.hx:", "lastW:"+ lastW);
                     int lastH = lastObj.maxY - lastObj.minY;
-//                    Log.i("java.hx:", "lastH:"+ lastH);
                     float size1 = Math.max(lastObj.maxX-lastObj.minX, lastObj.maxY-lastObj.minY);
-//                    Log.i("java.hx:", "size1:"+ size1);
                     float size2 = tmpP.maxX - tmpP.minX;
-//                    Log.i("java.hx:", "size2:"+ size2);
-//                    Log.i("java.hx:", "if::"+ String.valueOf(size2 < size1*0.3 && tmpP.minY > lastObj.minY + lastH/2));
                     if(size2 < size1*0.3
                                 && tmpP.minY > lastObj.minY + lastH/2){
                         str0 = ".";
@@ -80,8 +76,7 @@ public class YondorMnist{
                     ByteBuffer imgData = ydclassifierlite.ImgData(tmpBmp);
                     ydclassifierlite.inference(imgData);
                     MnistData mnistResult = ydclassifierlite.inference(imgData);
-                    int idx0 = mnistResult.topIndex();
-//                    Log.i("java.hx:", "idx0:"+ idx0);
+                    int idx0 = mnistResult.topIndex();                
                     str0 = TF.labels.substring(idx0,idx0+1);
                     if(str0.equals("÷") && tmpP.paths.size() == 4){
                         str0 = "六";
@@ -119,8 +114,7 @@ public class YondorMnist{
                         mP = null;                             
                     }
 
-                }
-//                Log.i("java.hx:", "str0:"+ str0);
+                }                       
                 builder.append(str0);
 
                 if(isSave){
@@ -155,8 +149,10 @@ public class YondorMnist{
 
 
         }catch (Exception err){
-            err.printStackTrace();
             code = 500;
+            message = err.getMessage();
+            err.printStackTrace();
+
         }
         Log.i("java.hx:", builder.toString());
 

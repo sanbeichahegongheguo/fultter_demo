@@ -86,6 +86,7 @@ public class BmpUtil {
                         if(str0.equals("5")){
                             tmpObj3.checked5=true;
                             pObjs.set(j, tmpObj3);
+                            tmpObj = tmpObj3;
                             isAdded = true;
                             break;
                         }
@@ -93,6 +94,7 @@ public class BmpUtil {
 
                     tmpObj2.addPaths(tmpObj);
                     pObjs.set(j, tmpObj2);
+                    tmpObj = tmpObj2;
                     isAdded = true;
                     break;
                 }   
@@ -102,25 +104,63 @@ public class BmpUtil {
                     MnistData mnistResult = ydclassifierlite.inference(imgData);
                     int idx0 = mnistResult.topIndex();
                     String str0 = TF.labels.substring(idx0,idx0+1);
-                    if(str0.equals("√") || str0.equals("1")){
-                        PathObject tmpObj3 = new PathObject();
-                        tmpObj3.addPaths(tmpObj);
-                        tmpObj3.addPaths(tmpObj2);
-                        tmpBmp = tmpObj3.drawPathToSize(pt, TF.MNIST_SIZE);
-                        imgData = ydclassifierlite.ImgData(tmpBmp);
-                        mnistResult = ydclassifierlite.inference(imgData);
-                        idx0 = mnistResult.topIndex();
-                        str0 = TF.labels.substring(idx0,idx0+1);
-                        // Log.i("mnist", "check 8 : " + str0);
-                        if(str0.equals("八")){
-                            tmpObj3.checked8 = true;
-                            pObjs.set(j, tmpObj3);
-                            isAdded = true;
-                            break;
-                        }
+                    if(!str0.equals("√") && !str0.equals("1")){
+                        continue;
+                    }
+                    
+                    PathObject tmpObj3 = new PathObject();
+                    tmpObj3.addPaths(tmpObj);
+                    tmpObj3.addPaths(tmpObj2);
+                    tmpBmp = tmpObj3.drawPathToSize(pt, TF.MNIST_SIZE);
+                    imgData = ydclassifierlite.ImgData(tmpBmp);
+                    mnistResult = ydclassifierlite.inference(imgData);
+                    idx0 = mnistResult.topIndex();
+                    str0 = TF.labels.substring(idx0,idx0+1);
+                    // Log.i("mnist", "check 8 : " + str0);
+                    if(str0.equals("八")){
+                        tmpObj3.checked8 = true;
+                        pObjs.set(j, tmpObj3);
+                        tmpObj = tmpObj3;
+                        isAdded = true;
+                        break;
                     }
                 }
             }
+
+            PathObject tmpObjGe = null;
+            int geIndex = pObjs.size()-1;
+            for(int k=pObjs.size()-1; k >= 0; k--){
+                if(tmpObjGe == null){
+                    tmpObjGe = new PathObject();
+                    tmpObjGe.addPaths(tmpObj);
+                }
+                PathObject tmpObjGe1 = pObjs.get(k);
+                if(tmpObjGe1 == tmpObj){
+                    continue;
+                }
+                tmpObjGe.addPaths(tmpObjGe1);
+                if(tmpObjGe.paths.size() ==3){
+                    geIndex = k;
+                    break;
+                }else if(tmpObjGe.paths.size() > 3){
+                    tmpObjGe = null;
+                }
+            }
+            if(tmpObjGe!=null && tmpObjGe.paths.size()==3){
+                Bitmap tmpBmp = tmpObjGe.drawPathToSize(pt, TF.MNIST_SIZE);
+                ByteBuffer imgData = ydclassifierlite.ImgData(tmpBmp);
+                MnistData mnistResult = ydclassifierlite.inference(imgData);
+                int idx0 = mnistResult.topIndex();
+                String str0 = TF.labels.substring(idx0,idx0+1);
+                if(str0.equals("个")){
+                    tmpObjGe.checkedGe = true;
+                    isAdded = true;
+                    tmpObj = tmpObjGe;
+                    pObjs = pObjs.subList(0,geIndex);
+                    pObjs.add(tmpObjGe);
+                }
+            }
+
             if(!isAdded){
                 pObjs.add(tmpObj);
             }

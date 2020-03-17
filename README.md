@@ -21,7 +21,7 @@ flutter  build apk --debug --target-platform=android-arm
 
 
 编辑main.dart运行方法
-在build flavor加上命令
+在Additional arguments加上命令
 --use-application-binary=build/app/outputs/apk/debug/app-debug.apk
 
 
