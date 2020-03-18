@@ -394,8 +394,10 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                                    child: Text("数学",style: TextStyle(color: Color(0xFFffffff))),
                                  ),
                                  Container(
+                                   width: ScreenUtil.getInstance().getWidthPx(600),
                                    padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getWidthPx(9)),
                                    child: Text(courseName,
+                                     softWrap:true,
                                      style: TextStyle(
                                          fontSize: ScreenUtil.getInstance().getSp(48/3),
                                          color: Color(0xFF666666)
@@ -443,12 +445,24 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
    }
   ///获取开始月日
   String _getStartDate(data){
-    return data.split('-')[1] + "月" + data.split('-')[2] + "日";
+    var date = "";
+    try {
+      date = data.split('-')[1] + "月" + data.split('-')[2] + "日";
+    }catch{
+
+    }
+    return date;
   }
   ///获取开始结束时间
   String _getTime(data){
-    var time = data.split('T')[1].split('+')[0];
-    return time.split(':')[0] +":"+ time.split(':')[1];
+    var date = "";
+    try {
+      var time = data.split('T')[1].split('+')[0];
+      date = time.split(':')[0] +":"+ time.split(':')[1];
+    }catch{
+
+    }
+    return date;
   }
   //精准学习
   Widget _widgeStudy (List<Module> data){
