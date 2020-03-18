@@ -448,7 +448,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     var date = "";
     try {
       date = data.split('-')[1] + "月" + data.split('-')[2] + "日";
-    }catch{
+    }catch(e){
 
     }
     return date;
@@ -459,7 +459,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
     try {
       var time = data.split('T')[1].split('+')[0];
       date = time.split(':')[0] +":"+ time.split(':')[1];
-    }catch{
+    }catch(e){
 
     }
     return date;
