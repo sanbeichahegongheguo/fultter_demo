@@ -161,8 +161,7 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
     NavigatorUtil.goWebView(
         context,Address.goBroadcastHor()+
         "?productId="+productId.toString()+
-        "&courseallotId="+courseallotId.toString()+
-        "&backUrl=haxecallback:broadcastHor"
+        "&courseallotId="+courseallotId.toString()
     ).then((v){
       bloc.coachBloc.getMainLastCourse();
     });

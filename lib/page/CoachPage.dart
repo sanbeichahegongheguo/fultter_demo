@@ -290,13 +290,13 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
      });
    }
    Timer _timer;//计时器
-   ///获取课程中心布局
+   ///获取课程中心布局courseallotId
    Widget _getCoachNotice(data){
 
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
      print(data);
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-     if(data == "null"){
+     if(data == "null" || data == null){
        return Text("");
      }
      var dataJson =  jsonDecode(data.toString());
@@ -307,7 +307,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
      var timeDate = _getTime(dataJson["nextCourseStartTime"]) +"-"+ _getTime(dataJson["nextCourseEndTime"]);//获取开始结束时间
      var countdown = dataJson["countdown"];//倒计时时间
      var productId = dataJson["productId"];//课时id
-     var courseallotId = dataJson["courseallotId"];//目录id
+     var courseallotId = dataJson["peLiveCourseallotId"];//目录id
      var courseStatus = dataJson["courseStatus"];//是否在上课
      var coachView = Container(
        margin: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(33)),
