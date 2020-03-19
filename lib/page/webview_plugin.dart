@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/CameraChannel.dart';
@@ -28,12 +29,15 @@ import 'package:image_picker_saver/image_picker_saver.dart' as picker;
 import 'package:webview_flutter/X5Sdk.dart';
 import 'package:webview_flutter/flutter_webview_plugin.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:orientation/orientation.dart';
 
 class WebViewPlugin extends StatefulWidget{
   String  url;
   Color color;
   final AppBar appBar;
   final int openType;
+
+
   WebViewPlugin(this.url,{this.color,this.appBar,this.openType=1});
 
   @override
@@ -67,6 +71,8 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   Timer _timer;
   //加载超时时间
   Duration _timeoutSeconds = const Duration(seconds: 7);
+  //旋转方向
+  int orientation;
   @override
   void initState() {
      super.initState();
@@ -96,6 +102,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
 //        print('应用程序将暂停。');
         break;
       default:
+        break;
     }
   }
 
@@ -225,6 +232,18 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state){
       print("加载类型 "  + state.type.toString());
 
+      if(state.url.indexOf(':ROTATE') > - 1){
+        //是否包含横屏，如果包含，则强制横屏
+        print('包含横屏，选择');
+        OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+        orientation = 1;
+      }else{
+        //当前的旋转状态是横屏才进行矫正
+        print('不包含横屏，选择竖屏');
+        if(orientation == 1){
+          OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+        }
+      }
       // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
       switch (state.type) {
         case WebViewState.stopLoad:
@@ -326,6 +345,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   StreamSubscription<String> setOnUrlChanged() {
     return flutterWebViewPlugin.onUrlChanged.listen((String url) {
       print("跳转连接成功 : "+url);
+
       if( _status != 1 ||_showAd != false ){
         setState((){
           _timer?.cancel();
