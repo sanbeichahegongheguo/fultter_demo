@@ -4,22 +4,22 @@ import 'package:flutter_start/common/config/config.dart';
 
 ///地址数据
 class Address {
-//  static const String studentHost = "http://192.168.6.31:30915/student:";
-//  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
-//  static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
-//  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
-//  static const String h5Host = "http://192.168.6.30:30593/";
-//  static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
-//  static const String sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
+  static const String studentHost = "http://192.168.6.31:30915/student:";
+  static const String k12apiHost = "http://192.168.6.30:31191/k12-api/";
+  static const String studentWebHost = "http://192.168.6.31:31528/studentweb/";
+  static const String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
+  static const String h5Host = "http://192.168.6.30:30593/";
+  static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
+  static const String sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
 
 
-  static const String common_dc_client = "https://www.k12china.com/common_dc_client/";
-  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
-  static const String h5Host = "https://www.k12china.com/h5/";
-  static const String studentWebHost = "https://api.k12china.com/studentweb/";
-  static const String studentHost = "https://www.k12china.com/student/student:";
-  static const String k12apiHost = "https://www.k12china.com/k12-api/";
-  static const String sw_api_ = "https://api.k12china.com/sw/api/v1/";
+//  static const String common_dc_client = "https://www.k12china.com/common_dc_client/";
+//  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
+//  static const String h5Host = "https://www.k12china.com/h5/";
+//  static const String studentWebHost = "https://api.k12china.com/studentweb/";
+//  static const String studentHost = "https://www.k12china.com/student/student:";
+//  static const String k12apiHost = "https://www.k12china.com/k12-api/";
+//  static const String sw_api_ = "https://api.k12china.com/sw/api/v1/";
 
   static const String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
   ///登录  postgetParentHomeWorkDataList

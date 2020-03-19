@@ -54,7 +54,7 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if(_isTimer){
+    if(_isTimer && _start !="O"){
       _countDown();
     }
     // TODO: implement build
@@ -158,6 +158,7 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
   }
   //跳转到课程中心
   _goBroadcastHor(productId,courseallotId){
+
     NavigatorUtil.goWebView(
         context,Address.goBroadcastHor()+
         "?productId="+productId.toString()+
