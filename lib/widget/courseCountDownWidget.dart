@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 
@@ -158,11 +159,12 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
   }
   //跳转到课程中心
   _goBroadcastHor(productId,courseallotId){
-
+    ApplicationDao.trafficStatistic(547);
     NavigatorUtil.goWebView(
         context,Address.goBroadcastHor()+
         "?productId="+productId.toString()+
-        "&courseallotId="+courseallotId.toString()
+        "&courseallotId="+courseallotId.toString()+
+        "&:ROTATE"
     ).then((v){
       bloc.coachBloc.getMainLastCourse();
     });

@@ -273,6 +273,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
   }
   //跳转到课程中心
    _goCourseCenter(){
+     ApplicationDao.trafficStatistic(548);
      NavigatorUtil.goWebView(context,Address.goCourseCenter()).then((v){
        bloc.coachBloc.getMainLastCourse();
      });
