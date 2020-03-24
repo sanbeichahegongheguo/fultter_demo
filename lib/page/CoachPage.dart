@@ -313,10 +313,10 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
      print(data);
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-//     if(data == "null" || data == null){
-//       return Text("");
-//     }
-     data = '{"productId":159,"productName":"","courseStatus":"O","startDate":"2020-03-23","endDate":"2020-03-23","courseName":"五年级应用题专题-相遇问题","peLiveCourseallotId":569838,"countdown":60,"nextCourseStartTime":"2020-03-23T19:30:00+08:00","nextCourseEndTime":"2020-03-23T20:40:00+08:00"}';
+     if(data == "null" || data == null){
+       return Text("");
+     }
+//     data = '{"productId":159,"productName":"","courseStatus":"O","startDate":"2020-03-23","endDate":"2020-03-23","courseName":"五年级应用题专题-相遇问题","peLiveCourseallotId":569838,"countdown":60,"nextCourseStartTime":"2020-03-23T19:30:00+08:00","nextCourseEndTime":"2020-03-23T20:40:00+08:00"}';
      var dataJson =  jsonDecode(data.toString());
 
      var courseName = dataJson["courseName"];//课时名称
@@ -325,7 +325,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
      countdown = dataJson["countdown"];//倒计时时间
      var productId = dataJson["productId"];//课时id
 
-     
+
      var courseallotId = dataJson["peLiveCourseallotId"];//目录id
      var courseStatus = dataJson["courseStatus"];//是否在上课
      var coachView = Container(
