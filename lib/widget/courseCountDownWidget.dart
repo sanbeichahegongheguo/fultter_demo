@@ -59,6 +59,8 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
     if(_isTimer && _start !="O"){
       _countDown();
     }
+
+
     // TODO: implement build
     return StreamBuilder<int>(
         stream: bloc.coachBloc.getCountdownStream,
