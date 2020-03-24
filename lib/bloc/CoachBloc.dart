@@ -1,6 +1,7 @@
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/coachDao.dart';
 import 'package:flutter_start/models/CoachNotice.dart';
+import 'package:flutter_start/widget/courseCountDownWidget.dart';
 import 'package:rxdart/rxdart.dart';
 import 'BlocBase.dart';
 class CoachBloc extends BlocBase{
@@ -14,19 +15,28 @@ class CoachBloc extends BlocBase{
   Sink<String> get _getCoachNoticeSink => _getCoachNotice.sink;
   Observable<String> get getCoachNoticeStream => _getCoachNotice.stream;
 
+  ///倒计时
+  BehaviorSubject<int>  _getCountdown = BehaviorSubject<int> ();
+  Sink<int> get _getCountdownSink => _getCountdown.sink;
+  Observable<int> get getCountdownStream => _getCountdown.stream;
+
   ///教辅专区广告
   BehaviorSubject<bool> _coachShowBanner = BehaviorSubject<bool>();
   Sink<bool> get _coachShowBannerSink => _coachShowBanner.sink;
   Observable<bool> get coachShowBannerStream => _coachShowBanner.stream;
   static bool _isBanner;
 
-
   ///获取可查看课程
   void getMainLastCourse() async{
     DataResult data =await CoachDao.getMainLastCourse();
     _getCoachNoticeSink.add(data.data);
+//    setCourseCountDownWidget(null);
     await doNext(_getCoachNoticeSink,data);
     return;
+  }
+
+  void getCountdownSink(data){
+    _getCountdownSink.add(data);
   }
 
   ///公告
@@ -55,5 +65,6 @@ class CoachBloc extends BlocBase{
     _notice.close();
     _coachShowBanner.close();
     _getCoachNotice.close();
+    _getCountdown.close();
   }
 }

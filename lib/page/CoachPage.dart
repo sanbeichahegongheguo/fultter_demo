@@ -9,6 +9,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/AdBloc.dart';
 import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
@@ -32,8 +33,14 @@ class CoachPage extends StatefulWidget{
 
 }
 
+
+
+
 class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<CoachPage>, SingleTickerProviderStateMixin{
    HomeBloc bloc;
+
+
+
   @override
   void initState() {
 //    ApplicationDao.trafficStatistic(1);
@@ -189,7 +196,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
         loop:data.length!=1?true:false,
         onTap:(index) {
           if(data[index].target!=""){
-            NavigatorUtil.goWebView(context,data[index].target).then((v){});
+            NavigatorUtil.goWebView(context,data[index].target).then((v){
+              bloc.coachBloc.getMainLastCourse();
+            });
           }
           if(data[index].eventId!=null){
             ApplicationDao.trafficStatistic(data[index].eventId);
@@ -239,7 +248,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                         if(data[i].eventId!=null && data[i].eventId!=0 ){
                           ApplicationDao.trafficStatistic(data[i].eventId);
                         }
-                        NavigatorUtil.goWebView(context,data[i].targetUrl,openType:data[i].openType).then((v){});
+                        NavigatorUtil.goWebView(context,data[i].targetUrl,openType:data[i].openType).then((v){
+                          bloc.coachBloc.getMainLastCourse();
+                        });
                       },
                       child:Container(
                         width: ScreenUtil.getInstance().getWidthPx(260),
@@ -285,28 +296,33 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
          context,Address.goBroadcastHor()+
          "?productId="+productId.toString()+
          "&courseallotId="+courseallotId.toString()+
-         "&backUrl=haxecallback:broadcastHor"
+         "&backUrl=haxecallback:broadcastHor",openType: 2
      ).then((v){
        bloc.coachBloc.getMainLastCourse();
      });
    }
-   Timer _timer;//计时器
+
+  ///倒计时
+   int countdown;
+
+
+
    ///获取课程中心布局courseallotId
    Widget _getCoachNotice(data){
 
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
      print(data);
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-     if(data == "null" || data == null){
-       return Text("");
-     }
+//     if(data == "null" || data == null){
+//       return Text("");
+//     }
+     data = '{"productId":159,"productName":"","courseStatus":"O","startDate":"2020-03-23","endDate":"2020-03-23","courseName":"五年级应用题专题-相遇问题","peLiveCourseallotId":569838,"countdown":60,"nextCourseStartTime":"2020-03-23T19:30:00+08:00","nextCourseEndTime":"2020-03-23T20:40:00+08:00"}';
      var dataJson =  jsonDecode(data.toString());
-     print(dataJson["courseName"]);
 
      var courseName = dataJson["courseName"];//课时名称
      var startDate = _getStartDate(dataJson["startDate"]);//开始时间
      var timeDate = _getTime(dataJson["nextCourseStartTime"]) +"-"+ _getTime(dataJson["nextCourseEndTime"]);//获取开始结束时间
-     var countdown = dataJson["countdown"];//倒计时时间
+     countdown = dataJson["countdown"];//倒计时时间
      var productId = dataJson["productId"];//课时id
      var courseallotId = dataJson["peLiveCourseallotId"];//目录id
      var courseStatus = dataJson["courseStatus"];//是否在上课
@@ -440,9 +456,16 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
      return coachView;
   }
 
-   _countDownView(countdown,productId,courseallotId,courseStatus){
-     var courseCountDownWidget  = new CourseCountDownWidget(countdown:countdown,productId:productId,courseallotId:courseallotId,courseStatus:courseStatus);
-     return  courseCountDownWidget;
+   CourseCountDownWidget courseCountDownWidget;
+
+
+    _countDownView(countdown,productId,courseallotId,courseStatus){
+//     var courseCountDownWidget  = new CourseCountDownWidget(countdown:200,productId:productId,courseallotId:courseallotId,courseStatus:"F");
+     print("倒计时${countdown}");
+     bloc.coachBloc.getCountdownSink(countdown);
+     courseCountDownWidget  = new CourseCountDownWidget(countdown:countdown,productId:productId,courseallotId:courseallotId,courseStatus:courseStatus);
+
+     return courseCountDownWidget;
    }
   ///获取开始月日
   String _getStartDate(data){
@@ -476,7 +499,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               if(data[i].eventId!=null && data[i].eventId!=0){
                 ApplicationDao.trafficStatistic(data[i].eventId);
               }
-              NavigatorUtil.goWebView(context,data[i].targetUrl,openType: data[i].openType).then((v){});
+              NavigatorUtil.goWebView(context,data[i].targetUrl,openType: data[i].openType).then((v){
+                bloc.coachBloc.getMainLastCourse();
+              });
             },
             child:Container(
               width: ScreenUtil.getInstance().getWidthPx(500),

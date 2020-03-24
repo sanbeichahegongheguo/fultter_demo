@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,14 +11,14 @@ import 'package:flutter_start/common/net/address.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 
 class CourseCountDownWidget extends StatefulWidget {
-  const CourseCountDownWidget({
+   CourseCountDownWidget({
     Key key,
-    @required this.countdown,
+     @required this.countdown,
     @required this.productId,
     @required this.courseallotId,
     @required this.courseStatus,
   }) : super(key: key);
-  final int countdown;
+   final int countdown;
   final int productId;
   final int courseallotId;
   final String courseStatus;
@@ -59,29 +60,38 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
       _countDown();
     }
     // TODO: implement build
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _getDownView(),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(
-                  left:ScreenUtil.getInstance().getWidthPx(406)
-              ),
-              child: MaterialButton(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                color: _start != "F" ?Color(0xFFfd716b):Color(0xFFa7a3a3),
-                padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getWidthPx(26),horizontal:ScreenUtil.getInstance().getWidthPx(52) ),
-                onPressed: (){_goBroadcastHor(_productId,_courseallotId);},
-                child: Text(_getName(_start),style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(48/3),color: Color(0xFFffffff))),
-              ),
-            ),
-          ],
-        )
-      ],
-    ) ;
+    return StreamBuilder<int>(
+        stream: bloc.coachBloc.getCountdownStream,
+        builder: (context, AsyncSnapshot<int> snapshot){
+          if(snapshot.data != null){
+            _countdown = snapshot.data;
+          }
+          return  new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _getDownView(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(
+                        left:ScreenUtil.getInstance().getWidthPx(406)
+                    ),
+                    child: MaterialButton(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                      color: _start != "F" ?Color(0xFFfd716b):Color(0xFFa7a3a3),
+                      padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getWidthPx(26),horizontal:ScreenUtil.getInstance().getWidthPx(52) ),
+                      onPressed: (){_goBroadcastHor(_productId,_courseallotId);},
+                      child: Text(_getName(_start),style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(48/3),color: Color(0xFFffffff))),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ) ;
+        });
+
+
   }
   _getDownView(){
     var view = Container(
@@ -173,8 +183,8 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
   _countDown(){
     _isTimer = false;
     _timer =  new Timer.periodic(new Duration(seconds: 1), (timer) {
-      setState(() {
         _countdown--;
+        bloc.coachBloc.getCountdownSink(_countdown);
         if(_countdown <= 0){
           _start = "O";
           _second = "00";
@@ -208,9 +218,8 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
         }else{
           _second = s.toString();
         }
-//        print(_countdown);
+        print(_countdown);
       });
-    });
   }
   ///清除计时器
   static cancelTimer() {
