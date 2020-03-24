@@ -65,6 +65,5 @@ class CoachBloc extends BlocBase{
     _notice.close();
     _coachShowBanner.close();
     _getCoachNotice.close();
-    _getCountdown.close();
   }
 }

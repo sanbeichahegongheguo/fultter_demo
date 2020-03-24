@@ -465,9 +465,47 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 //     var courseCountDownWidget  = new CourseCountDownWidget(countdown:200,productId:productId,courseallotId:courseallotId,courseStatus:"F");
      print("倒计时${countdown}");
      bloc.coachBloc.getCountdownSink(countdown);
-     courseCountDownWidget  = new CourseCountDownWidget(countdown:countdown,productId:productId,courseallotId:courseallotId,courseStatus:courseStatus);
+//     courseCountDownWidget  = new CourseCountDownWidget(countdown:countdown,productId:productId,courseallotId:courseallotId,courseStatus:courseStatus);
+//
+    var _start = courseStatus;
+     return  new Column(
+       crossAxisAlignment: CrossAxisAlignment.start,
+       children: <Widget>[
+         Row(
+           crossAxisAlignment: CrossAxisAlignment.end,
+           children: <Widget>[
+             Container(
+               margin: EdgeInsets.only(
+                   left:ScreenUtil.getInstance().getWidthPx(406)
+               ),
+               child: MaterialButton(
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                 color: _start != "F" ?Color(0xFFfd716b):Color(0xFFa7a3a3),
+                 padding: EdgeInsets.symmetric(vertical:ScreenUtil.getInstance().getWidthPx(26),horizontal:ScreenUtil.getInstance().getWidthPx(52) ),
+                 onPressed: (){_goBroadcastHor(productId,courseallotId);},
+                 child: Text(_getName(_start),style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(48/3),color: Color(0xFFffffff))),
+               ),
+             ),
+           ],
+         )
+       ],
+     ) ;
+   }
 
-     return courseCountDownWidget;
+   _getName(data){
+     var name = "";
+     switch(data){
+       case "O":
+         name = "正在上课";
+         break;
+       case "T":
+         name = "进入课堂";
+         break;
+       case "F":
+         name = "即将上课";
+         break;
+     }
+     return name;
    }
   ///获取开始月日
   String _getStartDate(data){
