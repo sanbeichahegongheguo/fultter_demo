@@ -96,7 +96,11 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               StreamBuilder<String>(
               stream: bloc.coachBloc.getCoachNoticeStream,
               builder: (context, AsyncSnapshot<String> snapshot){
-                return  _getCoachNotice(snapshot.data);
+                if(snapshot.data != null){
+                  return  _getCoachNotice(snapshot.data);
+                }else{
+                  return Text("");
+                }
               }),
               //精准学习模块
               Container(
@@ -292,11 +296,12 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 
    //跳转到课程中心
    _goBroadcastHor(productId,courseallotId){
+     ApplicationDao.trafficStatistic(547);
      NavigatorUtil.goWebView(
          context,Address.goBroadcastHor()+
          "?productId="+productId.toString()+
          "&courseallotId="+courseallotId.toString()+
-         "&backUrl=haxecallback:broadcastHor",openType: 2
+         "&:ROTATE"
      ).then((v){
        bloc.coachBloc.getMainLastCourse();
      });
