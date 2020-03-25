@@ -174,7 +174,56 @@ class NavigatorUtil {
     }else{
      return NavigatorRouter(context, WebViewPage(url));
     }
-//    NavigatorRouter(context,WebViewExample(url));
+  }
+
+  static h5GoWebView(BuildContext context, String url,{String router = "",int openType}) async {
+     if (url.indexOf("#")!=-1 && router ==""){
+       var split = url.split("#/");
+       if(split.length>1){
+         url = split[0];
+         router = split[1];
+       }
+     }
+    String key = await httpManager.getAuthorization();
+    print("@key:  $key ");
+    String from = "study_parent";
+    String toFrom = "study_parent_router";
+    var version =  (await PackageInfo.fromPlatform()).version;
+    var deviceId = await DeviceInfo.instance.getYondorDeviceId();
+    if (null != key && "" != key) {
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
+      if (url.contains("?")) {
+        url = "$url&$param";
+      } else {
+        url = "$url?$param";
+      }
+    }else{
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
+      if (url.contains("?")) {
+        url = "$url&$param";
+      } else {
+        url = "$url?$param";
+      }
+    }
+    if(router != ""){
+      url += "&toFrom=$toFrom#/"+router;
+    }
+
+
+    print("NavigatorUtil @跳转链接:$url");
+    if (Platform.isAndroid){
+      if(openType==null || openType ==0 ){
+        //外链默认打开内核 1:X5内核 2:手机自带内核
+        openType = 1;
+        Store<GSYState> store = StoreProvider.of(context);
+        if (store!=null &&  store.state !=null && store.state.application !=null&& store.state.application.webViewOpenType !=null && store.state.application.webViewOpenType >0){
+          openType  = store.state.application.webViewOpenType;
+        }
+      }
+      return Navigator.pushReplacement(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: openType,)));
+    }else{
+     return NavigatorRouter(context, WebViewPage(url));
+    }
   }
 
   ///去往webview

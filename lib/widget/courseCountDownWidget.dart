@@ -177,7 +177,7 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
         "?productId="+productId.toString()+
         "&courseallotId="+courseallotId.toString()+
         "&:ROTATE"
-    ).then((v){
+    ,openType: 2).then((v){
       bloc.coachBloc.getMainLastCourse();
     });
   }

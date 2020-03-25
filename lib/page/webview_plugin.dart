@@ -80,6 +80,8 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
      onUrlChanged = setOnUrlChanged();
      onBackChanged = setOnBackChanged();
      WidgetsBinding.instance.addObserver(this);
+
+
   }
 
   @override
@@ -203,6 +205,8 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   }
   @override
   void dispose() {
+
+    print("_WebViewPlugin  dispose");
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     // 回收相关资源
@@ -211,6 +215,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     onStateChanged?.cancel();
     onBackChanged?.cancel();
     flutterWebViewPlugin?.dispose();
+    _timer?.cancel();
   }
 
 
@@ -496,8 +501,17 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
             if(ObjectUtil.isEmptyString(message.message)){
               return;
             }
-            var msg = jsonDecode(message.message);
-            NavigatorUtil.goWebView(context,msg["url"],openType:msg["type"]);
+            try{
+              var msg = jsonDecode(message.message);
+                NavigatorUtil.goWebView(context,msg["url"],openType:msg["type"]);
+            }catch(e){
+              print(e);
+            }
+          }),
+      JavascriptChannel(
+          name: 'GetOpenType',
+          onMessageReceived: (JavascriptMessage message) {
+            flutterWebViewPlugin.evalJavascript("window.getOpenType('${widget.openType}')");
           }),
       ///打开学生端
       JavascriptChannel(
