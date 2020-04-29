@@ -388,15 +388,16 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
                                         textMain: needTime,
                                         textEnd: ' (一小时)前不再进入本app学习，如需延时请点以下按钮！',
                                         textMainColor: 0xfff46f73),
-                                    new Container(height: 15.0),
-                                    CommonUtils.buildBtn("加时学习",
-                                        width:
-                                        ScreenUtil.getInstance().getWidthPx(846),
-                                        height:
-                                        ScreenUtil.getInstance().getHeightPx(135),
-                                        onTap: () {
-                                          _addOverTime();
-                                        }),
+//                                    隐藏加时学习的功能
+//                                    new Container(height: 15.0),
+//                                    CommonUtils.buildBtn("加时学习",
+//                                        width:
+//                                        ScreenUtil.getInstance().getWidthPx(846),
+//                                        height:
+//                                        ScreenUtil.getInstance().getHeightPx(135),
+//                                        onTap: () {
+//                                          _addOverTime();
+//                                        }),
                                     new Container(height: 15.0),
                                     CommonUtils.buildBtn("退出APP",
                                         width:
@@ -508,14 +509,34 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
                                   textEnd: _delayTarget ? overTimeEnd : normalEnd,
                                   textMainColor: 0xfff46f73),
                               new Container(height: 15.0),
-                              CommonUtils.buildBtn("更改连续学习上限",
-                                  width:
-                                  ScreenUtil.getInstance().getWidthPx(846),
-                                  height:
-                                  ScreenUtil.getInstance().getHeightPx(135),
-                                  onTap: () {
-                                    _goSetEye();
-                                  }),
+                              Container(
+                                width: ScreenUtil.getInstance().screenWidth * 0.7,
+                                padding: new EdgeInsets.only(
+                                  left: 44.0,
+                                  right: 44.0,
+                                  top: 15.0,
+                                  bottom: 15.0
+                                ),
+                                child: _fontBasic('如需修改每次在线时间，您可以在', 0xff333333,
+                                    textSize: 16.0,
+                                    textMain: '管理>护眼模式',
+                                    textEnd: '设置',
+                                    textMainColor: 0xff333333,
+                                    mainWeight: FontWeight.w800),
+                                decoration: new BoxDecoration(
+                                    color: Color(0xffbbd5ef),
+//                                    border: new Border.all(color: Color(0xFFacc6e0), width: 0.5),
+                                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                ),
+                              ),
+//                              CommonUtils.buildBtn("更改连续学习上限",
+//                                  width:
+//                                  ScreenUtil.getInstance().getWidthPx(846),
+//                                  height:
+//                                  ScreenUtil.getInstance().getHeightPx(135),
+//                                  onTap: () {
+//                                    _goSetEye();
+//                                  }),
                               new Container(height: 10.0),
                             ],
                           ),
@@ -620,7 +641,9 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
         String textMain = '',
         String textEnd = '',
         int textMainColor,
-        FontWeight textWeight = FontWeight.w400}) {
+        FontWeight textWeight = FontWeight.w400,
+        FontWeight mainWeight = FontWeight.w400,
+      }) {
     return RichText(
       text: TextSpan(
           style: TextStyle(
@@ -632,7 +655,7 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
             TextSpan(
                 text: textMain,
                 style: textMainColor != null
-                    ? TextStyle(color: Color(textMainColor))
+                    ? TextStyle(color: Color(textMainColor),fontWeight: mainWeight)
                     : TextStyle(color: Color(textColor))),
             TextSpan(text: textEnd),
           ]),
