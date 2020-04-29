@@ -67,7 +67,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                               text: TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: "该栏目设置的时间，会在“远大小状元家长/学生”app生效。为了您和孩子的用眼健康着想，我们建议每天连续在线学习时间不要超过"),
+                                        text: "该栏目设置的时间，会同时在“远大小状元学生”和“远大小状元家长”app生效。为了孩子的用眼健康着想,我们建议每天连续在线学习时间不要超过"),
                                     TextSpan(text: "1小时",
                                         style: TextStyle(
                                             color: Color(0xFFff9494))),
@@ -91,7 +91,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                               text: TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: "温馨提示：如果当天学习超时，需要输入家长密码方可继续学习。"),
+                                        text: "温馨提示：如果学生当天学习超时，需要输入家长密码方可继续学习。"),
                                   ],
                                   style: TextStyle(
                                       fontSize: ScreenUtil.getInstance().getSp(
