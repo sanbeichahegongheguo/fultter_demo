@@ -386,7 +386,8 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
                                     _fontBasic('本次连续在线学习时间已超时，现在是强制休息时间，请您马上休息您的眼睛，并确保在', 0xff707477,
                                         textSize: 18.0,
                                         textMain: needTime,
-                                        textEnd: ' (一小时)前不再进入本app学习，如需延时请点以下按钮！',
+//                                        textEnd: ' (一小时)前不再进入本app学习，如需延时请点以下按钮！',
+                                        textEnd: ' (一小时)前不再进入本app学习！',
                                         textMainColor: 0xfff46f73),
 //                                    隐藏加时学习的功能
 //                                    new Container(height: 15.0),
