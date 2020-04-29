@@ -54,4 +54,5 @@ class Config {
   static const STUDENT_TEN_URL = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
   static const STUDENT_HUAWEI_URL = "https://appstore.huawei.com/app/C101097841";//学生端华为应用商店
   static const STUDENT_IOS_URL = "https://apps.apple.com/cn/app/id1475045442"; //學生端苹果商店
+  static const Leave_Time = "0";
 }
