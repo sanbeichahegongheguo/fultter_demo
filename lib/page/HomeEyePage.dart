@@ -41,6 +41,7 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
   int leaveTime = 0;
   String needTime = '00:00'; //需要什么时候才进来app
   bool _delayTarget = false; //是否是延时的时间
+  bool _appBack = false; //app是否在后台
 
   String overTimeStart = '本次加时学习';
   String overTimeEnd = '分钟！为了您的眼睛健康，请注意您的眼睛休息！';
@@ -226,8 +227,8 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
       setState(() {
         countTime += 1;
       });
-      // 如果到了规定的时间，则弹出禁锢弹窗
-      if(int.parse(_times['really']) == countTime){
+      // 如果到了规定的时间,且应用处于前台，则弹出禁锢弹窗
+      if(int.parse(_times['really']) == countTime && !_appBack){
         print('到了禁锢时间，弹窗，并取消计时');
         // 发送禁锢时间
         _saveForbidTime();
@@ -239,7 +240,13 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
         });
         _countdownTimer?.cancel();
       }else{
-        _saveStudyTotalTime();
+        // 处于后台5分钟后，不存储数据
+        if(countTime-leaveTime > 5 && _appBack){
+          print('处于后台五分钟，停止计时');
+          _countdownTimer?.cancel();
+        }else{
+          _saveStudyTotalTime();
+        }
       }
       print('定时器：'+countTime.toString());
     });
@@ -253,12 +260,17 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
         break;
       case AppLifecycleState.resumed:// 应用程序可见，前台
         print('展示的时间为：'+countTime.toString() + '离开的时间：' + leaveTime.toString() + '相差的时间' + (countTime-leaveTime).toString());
+        setState(() {
+          _appBack = false;
+          leaveTime = 0;
+        });
         countEye(false);
         break;
       case AppLifecycleState.paused: // 应用程序不可见，后台
         //退出后台后，存储我离开的时间
         setState(() {
           leaveTime = countTime;
+          _appBack = true;
         });
         print('离开的时间为'+leaveTime.toString());
         break;
