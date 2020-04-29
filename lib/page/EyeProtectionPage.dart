@@ -67,7 +67,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                               text: TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: "该栏目设置的时间，会在“远大小状元学生”app生效。为了孩子的用眼健康着想，我们建议每天连续在线学习时间不要超过"),
+                                        text: "该栏目设置的时间，会在“远大小状元家长/学生”app生效。为了您和孩子的用眼健康着想，我们建议每天连续在线学习时间不要超过"),
                                     TextSpan(text: "1小时",
                                         style: TextStyle(
                                             color: Color(0xFFff9494))),
@@ -91,7 +91,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                               text: TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: "温馨提示：如果学生当天学习超时，需要输入家长密码方可继续学习。"),
+                                        text: "温馨提示：如果当天学习超时，需要输入家长密码方可继续学习。"),
                                   ],
                                   style: TextStyle(
                                       fontSize: ScreenUtil.getInstance().getSp(
@@ -112,23 +112,23 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                 )
             )
         ),
-        bottomNavigationBar: new Container(
-          width: ScreenUtil.getInstance().getWidthPx(963),
-          height: ScreenUtil.getInstance().getHeightPx(216),
-          color: Color(0xFFffffff),
-          child: Align(
-              child: MaterialButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                    onPressed: _goParentInfo,
-                    minWidth: ScreenUtil.getInstance().getWidthPx(983),
-                    height: ScreenUtil.getInstance().getHeightPx(150),
-                    color: Color(0xFFfc6061),
-                    child: Text("打开“远大小状元学生”", style: TextStyle(
-                        fontSize: ScreenUtil.getInstance().getSp(54 / 3),
-                        color: Colors.white),),
-                  ),
-          ),
-        ),
+//        bottomNavigationBar: new Container(
+//          width: ScreenUtil.getInstance().getWidthPx(963),
+//          height: ScreenUtil.getInstance().getHeightPx(216),
+//          color: Color(0xFFffffff),
+//          child: Align(
+//              child: MaterialButton(
+//                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+//                    onPressed: _goParentInfo,
+//                    minWidth: ScreenUtil.getInstance().getWidthPx(983),
+//                    height: ScreenUtil.getInstance().getHeightPx(150),
+//                    color: Color(0xFFfc6061),
+//                    child: Text("打开“远大小状元学生”", style: TextStyle(
+//                        fontSize: ScreenUtil.getInstance().getSp(54 / 3),
+//                        color: Colors.white),),
+//                  ),
+//          ),
+//        ),
       );
     });
   }
