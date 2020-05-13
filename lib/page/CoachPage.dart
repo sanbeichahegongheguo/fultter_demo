@@ -12,6 +12,7 @@ import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -289,7 +290,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
   //跳转到课程中心
    _goCourseCenter(){
      ApplicationDao.trafficStatistic(548);
-     NavigatorUtil.goWebView(context,Address.goCourseCenter(),openType: 2).then((v){
+     NavigatorUtil.goWebView(context,AddressUtil.getInstance().goCourseCenter(),openType: 2).then((v){
        bloc.coachBloc.getMainLastCourse();
      });
    }
@@ -298,7 +299,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
    _goBroadcastHor(productId,courseallotId){
      ApplicationDao.trafficStatistic(547);
      NavigatorUtil.goWebView(
-         context,Address.goBroadcastHor()+
+         context,AddressUtil.getInstance().goBroadcastHor()+
          "?productId="+productId.toString()+
          "&courseallotId="+courseallotId.toString()+
          "&:ROTATE"

@@ -4,6 +4,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -175,6 +176,6 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
   }
 
   _goParentInfo() {
-    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo");
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getInfoPage(),router:"parentInfo");
   }
 }

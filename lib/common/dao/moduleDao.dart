@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/models/Module.dart';
 
@@ -10,7 +11,7 @@ class ModuleDao {
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"mapId": mapId};
-      var res = await httpManager.netFetch(Address.getModule(), params, null, new Options(method: "get"));
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getModule(), params, null, new Options(method: "get"));
       var result;
       if (res != null && res.result) {
         var json = res.data;

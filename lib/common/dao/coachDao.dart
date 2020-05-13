@@ -5,6 +5,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/models/CoachNotice.dart';
 
@@ -13,8 +14,8 @@ class CoachDao {
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"type": "6"};
-      print(Address.indexNotice());
-      var res = await httpManager.netFetch(Address.indexNotice(), params, null, new Options(method: "get"));
+      print(AddressUtil.getInstance().indexNotice());
+      var res = await httpManager.netFetch(AddressUtil.getInstance().indexNotice(), params, null, new Options(method: "get"));
       var result;
       print('嘻嘻嘻');
       print(res.data);
@@ -52,7 +53,7 @@ class CoachDao {
       next() async {
         String key = await httpManager.getAuthorization();
         var params = {key:key};
-        var res = await httpManager.netFetch(Address.getMainLastCourse(), params, null, new Options(method: "get"));
+        var res = await httpManager.netFetch(AddressUtil.getInstance().getMainLastCourse(), params, null, new Options(method: "get"));
         print(res.data);
         var result;
         var json = res.data;

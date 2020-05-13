@@ -9,6 +9,7 @@ import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/CountDown.dart';
@@ -328,7 +329,7 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
             padding: EdgeInsets.only(top:ScreenUtil.getInstance().getHeightPx(40),bottom:ScreenUtil.getInstance().getHeightPx(140)),
             child: GestureDetector(
               onTap: (){
-                NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo");
+                NavigatorUtil.goWebView(context,AddressUtil.getInstance().getInfoPage(),router:"parentInfo");
               },
               child: Text('忘记密码请打开《远大小状元学生》自行找回哦！',style: TextStyle(
                 color: Color(0xFF999999),
@@ -478,11 +479,11 @@ class BuildArchivesState extends State<BuildArchivesPage> with SingleTickerProvi
   //跳转
   void linkTo(where){
     if(where == 'education'){
-      NavigatorUtil.goWebView(context, Address.getEducation());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getEducation());
     }else if(where == 'privacy'){
-      NavigatorUtil.goWebView(context, Address.getPrivacy());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getPrivacy());
     }else if(where == 'wxServer'){
-      NavigatorUtil.goWebView(context, Address.getWxServer());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getWxServer());
     }
   }
 

@@ -10,6 +10,7 @@ import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -290,11 +291,11 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   //跳转
   void linkTo(where){
     if(where == 'education'){
-      NavigatorUtil.goWebView(context, Address.getEducation());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getEducation());
     }else if(where == 'privacy'){
-      NavigatorUtil.goWebView(context, Address.getPrivacy());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getPrivacy());
     }else if(where == 'wxServer'){
-      NavigatorUtil.goWebView(context, Address.getWxServer());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getWxServer());
     }
   }
   ///getTextField 构建输入框

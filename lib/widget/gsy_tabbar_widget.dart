@@ -13,6 +13,7 @@ import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -221,7 +222,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   void _sign(){
     print('签到');
     ApplicationDao.trafficStatistic(2);
-    NavigatorUtil.goWebView(context,Address.goH5Sign()).then((v){
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goH5Sign()).then((v){
         _signReward();
     });
   }
@@ -229,7 +230,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   void _news(){
     print("消息");
     ApplicationDao.trafficStatistic(20);
-    NavigatorUtil.goWebView(context,Address.getInfoPage()).then((v){
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getInfoPage()).then((v){
       _getUnReadNotice();
     });
   }
@@ -237,7 +238,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   void _wxServer(){
     print("客服");
     ApplicationDao.trafficStatistic(94);
-    NavigatorUtil.goWebView(context,Address.getWxServer()).then((v){
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getWxServer()).then((v){
     });
   }
   static _renderTab(icon, text, isSelect) {

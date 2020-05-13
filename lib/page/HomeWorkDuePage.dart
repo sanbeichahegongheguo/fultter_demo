@@ -8,6 +8,7 @@ import 'package:flutter_easyrefresh/bezier_circle_header.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 
 class HomeWorkDuePage extends StatefulWidget{
@@ -232,7 +233,7 @@ class _HomeWorkDuePage extends State<HomeWorkDuePage>{
 
   }
   _goParentInfo(){
-    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo").then((v){
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getInfoPage(),router:"parentInfo").then((v){
     });
   }
   ///判断作业类型

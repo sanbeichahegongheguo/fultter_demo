@@ -12,6 +12,7 @@ import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/event/http_error_event.dart';
 import 'package:flutter_start/common/event/index.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
@@ -125,6 +126,8 @@ class SplashPageState extends State<SplashPage> {
 
   Future<void> _initProtocol() async{
     await SpUtil.getInstance();
+    await AddressUtil.getInstance().init();
+
     if (SpUtil.getBool(Config.EVENT_PROTOCOL)){
         _initListener();
         _initAsync();

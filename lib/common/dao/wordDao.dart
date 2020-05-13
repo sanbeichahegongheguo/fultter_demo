@@ -5,6 +5,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/models/UnitData.dart';
@@ -15,7 +16,7 @@ class WordDao{
   static getParentHomeWorkDataList(int pageNum)async{
     String key = await httpManager.getAuthorization();
     var params = {"key":key,"pageNum":pageNum,"curVersion":"1.4.300"};
-    var res = await httpManager.netFetch(Address.getParentHomeWorkDataList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getParentHomeWorkDataList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var data = res.data;
     return data;
   }
@@ -24,7 +25,7 @@ class WordDao{
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key": key};
-      var res = await httpManager.netFetch(Address.getStudyData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getStudyData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
       var data;
       if (res != null && res.result) {
         var json = res.data;
@@ -52,7 +53,7 @@ class WordDao{
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key": key,"curVersion":"1.4.10"};
-      var res = await httpManager.netFetch(Address.getNewHomeWork(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getNewHomeWork(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
       List<ParentHomeWork> list = new List<ParentHomeWork>();
       if (res != null && res.result) {
         var data = res.data;
@@ -89,7 +90,7 @@ class WordDao{
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key": key};
-      var res = await httpManager.netFetch(Address.getSynerrData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getSynerrData(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
       List<UnitData> list = new List<UnitData>();
       if (res != null && res.result) {
         var data = res.data;
@@ -126,7 +127,7 @@ class WordDao{
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key": key,"Type":2};
-      var res = await httpManager.netFetch(Address.getStudymsgQues(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getStudymsgQues(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
 
       if (res != null && res.result) {
         var data = res.data;
@@ -163,7 +164,7 @@ class WordDao{
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key": key,"curVersion":"1.3.300"};
-      var res = await httpManager.netFetch(Address.getParentHomeWorkDataTotal(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getParentHomeWorkDataTotal(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
       if (res != null && res.result) {
         var data = res.data;
         print("获取本学期未完成作业数量===》${data.toString()}");

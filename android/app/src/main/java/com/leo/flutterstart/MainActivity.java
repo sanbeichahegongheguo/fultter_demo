@@ -1,5 +1,7 @@
 package com.leo.flutterstart;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
@@ -66,4 +68,15 @@ public class MainActivity extends FlutterActivity {
               }
             });
   }
+
+    @Override
+    public Resources getResources() {
+        // 字体大小不跟随系统
+        Resources res = super.getResources();
+        Configuration config = new Configuration();
+        config.setToDefaults();
+        res.updateConfiguration(config, res.getDisplayMetrics());
+        return res;
+    }
+
 }

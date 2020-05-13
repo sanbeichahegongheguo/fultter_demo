@@ -56,7 +56,7 @@ class HttpManager {
       option.headers = headers;
     }
     option.contentType = ContentType.parse(contentType);
-
+    option.connectTimeout = 1000;
     Response response;
     try {
       if (option.method=="get"){

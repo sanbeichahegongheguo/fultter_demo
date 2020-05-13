@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
@@ -18,7 +19,7 @@ class ApplicationDao{
     var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
     var params ={};
     if (Platform.isIOS) {
-      var res = await httpManager.netFetch(Address.getAppStoreVersionInfo(), null, null, Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getAppStoreVersionInfo(), null, null, Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
       var result;
       if (res != null && res.result) {
         res.data = jsonDecode(res.data);
@@ -40,7 +41,7 @@ class ApplicationDao{
       return new DataResult(result, res.result);
     }else{
       params= {"userId": userId, "platform": 1, "device":  deviceInfo["model"],  "systemNum": deviceInfo["version.release"]};
-      var res = await httpManager.netFetch(Address.getAppVersionInfo(), params, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getAppVersionInfo(), params, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
       var result;
       if (res != null && res.result) {
         var json = res.data;
@@ -57,7 +58,7 @@ class ApplicationDao{
   ///获取后台配置信息
   static getAppApplication() async {
     next() async {
-      var res = await httpManager.netFetch(Address.getAppApplication(), null, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getAppApplication(), null, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
       var result;
       if (res != null && res.result) {
         var json = res.data;
@@ -108,7 +109,7 @@ class ApplicationDao{
     var dataJson = {"pf": pf,"did": did, "uid": uid,"cb": cb, "cd": cd,"vn": vn, "df": df, "eid": eventId};
     var params = {"dataJson": jsonEncode(dataJson)};
     print(params);
-    var res = await httpManager.netFetch(Address.statistics(), params, null, new Options(method: "post"),noTip: true);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().statistics(), params, null, new Options(method: "post"),noTip: true);
     print('返回值');
     print(res.data);
   }
@@ -134,7 +135,7 @@ class ApplicationDao{
     }
     var dataJson = {"pf": pf,"did": did, "uid": uid,"cb": cb, "cd": cd,"vn": vn, "df": df, "dj": data,"tid":2};
     var params = {"dataJson": jsonEncode(dataJson)};
-    var res = await httpManager.netFetch(Address.sendObj(), params, null, new Options(method: "post"));
+    var res = await httpManager.netFetch(AddressUtil.getInstance().sendObj(), params, null, new Options(method: "post"));
     print(res.data);
   }
 
@@ -168,7 +169,7 @@ class ApplicationDao{
     }
     yondorInfo["uid"] = uid;
     var params = {"dataJson": jsonEncode(yondorInfo)};
-    var res = await httpManager.netFetch(Address.sendDeviceInfo(), params, null, new Options(method: "post"),noTip: true);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().sendDeviceInfo(), params, null, new Options(method: "post"),noTip: true);
     if(res!=null && res.result){
       if (res.data!=null&&res.data["success"]){
         SpUtil.putInt(key, now);
@@ -181,7 +182,7 @@ class ApplicationDao{
     String key = await httpManager.getAuthorization();
     var curVersion = (await PackageInfo.fromPlatform()).version;
     var params = {"key":key,"curVersion":curVersion};
-    var res = await httpManager.netFetch(Address.getAppNotice(), params, null, new Options(method: "post"),noTip: true);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getAppNotice(), params, null, new Options(method: "post"),noTip: true);
     var result;
     print('获取APP公告');
     print(res);
@@ -195,6 +196,21 @@ class ApplicationDao{
       }
     }
     return new DataResult(result, res.result);
+  }
+
+  static appCheck(String address) async {
+    var res = await httpManager.netFetch(address, null, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if (null!=json) {
+        result = json;
+        await SpUtil.putObject(Config.APPAPPLICATION_KEY, result);
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, result!=null);
   }
 
 }

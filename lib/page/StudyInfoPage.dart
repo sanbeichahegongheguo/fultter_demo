@@ -7,6 +7,7 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/wordDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Module.dart';
 import 'package:flutter_start/models/UnitData.dart';
@@ -705,11 +706,11 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
     }else if(where=='finishWork'){
       ApplicationDao.trafficStatistic(301);
     }
-    NavigatorUtil.goWebView(context,Address.getInfoPage(),router:"parentInfo");
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getInfoPage(),router:"parentInfo");
   }
   ///去h5学情
   _goH5StudyInfo(router){
-    NavigatorUtil.goWebView(context,Address.goH5StudyInfo(),router:router).then((v){
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goH5StudyInfo(),router:router).then((v){
       bloc.learningEmotionBloc.getStudyData();
       bloc.learningEmotionBloc.getNewHomeWork();
       bloc.learningEmotionBloc.getSynerrData();
@@ -719,12 +720,12 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
   ///去错题拍拍
   _goCtpp(){
     ApplicationDao.trafficStatistic(305);
-    NavigatorUtil.goWebView(context,Address.goCtpp());
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goCtpp());
   }
   ///去往期作业
   _goWord(){
     ApplicationDao.trafficStatistic(489);
-    NavigatorUtil.goWebView(context,Address.goH5StudyInfo(),router:"allHomeword");
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goH5StudyInfo(),router:"allHomeword");
   }
   @override
   // TODO: implement wantKeepAlive

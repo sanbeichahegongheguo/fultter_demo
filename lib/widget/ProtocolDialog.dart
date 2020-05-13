@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -196,11 +197,11 @@ class _ProtocolDialogState extends State<ProtocolDialog> {
   //跳转
   void linkTo(where){
     if(where == 'education'){
-      NavigatorUtil.goWebView(context, Address.getEducation());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getEducation());
     }else if(where == 'privacy'){
-      NavigatorUtil.goWebView(context, Address.getPrivacy());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getPrivacy());
     }else if(where == 'wxServer'){
-      NavigatorUtil.goWebView(context, Address.getWxServer());
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getWxServer());
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/net/result_data.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
@@ -24,7 +25,7 @@ class UserDao {
     if (code != null) {
       params["code"] = code;
     }
-    var res = await httpManager.netFetch(Address.login(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().login(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -45,7 +46,7 @@ class UserDao {
   ///发送手机验证码
   static sendMobileCode(mobile) async {
     var params = {"mobile": mobile};
-    var res = await httpManager.netFetch(Address.sendMobileCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().sendMobileCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -65,7 +66,7 @@ class UserDao {
         return null;
       }
       var params = {"key": key};
-      var res = await httpManager.netFetch(Address.getUserLoginInfo(), params, null, new Options(method: "post"));
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getUserLoginInfo(), params, null, new Options(method: "post"));
       var json = res.data;
       var result;
       if (res != null && res.result) {
@@ -95,7 +96,7 @@ class UserDao {
   static uploadHeadUrl(baseImg, imgtype) async {
     String key = await httpManager.getAuthorization();
     var params = {"key": key, "content": baseImg, "imgtype": imgtype};
-    var res = await httpManager.netFetch(Address.uploadHeadUrl(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().uploadHeadUrl(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     print("res==>$res");
     var result;
     if (res != null && res.result) {
@@ -110,7 +111,7 @@ class UserDao {
 
   ///获取图形验证码
   static getImgCode() async {
-    ResultData res = await httpManager.netFetch(Address.getImgCode(), null, null, new Options(method: "get"));
+    ResultData res = await httpManager.netFetch(AddressUtil.getInstance().getImgCode(), null, null, new Options(method: "get"));
     HttpHeaders headers = res.headers;
     String userSign = "";
     String cookieCode = "";
@@ -143,7 +144,7 @@ class UserDao {
 
   ///获取认证码
   static getValidateCode(String mobile) async {
-    var res = await httpManager.netFetch(Address.getValidateCode(), {"mobile": mobile}, null, new Options(method: "post"));
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getValidateCode(), {"mobile": mobile}, null, new Options(method: "post"));
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == false) {
@@ -159,7 +160,7 @@ class UserDao {
   ///发送短信
   static sendMobileCodeWithValiCode(String mobile, String vcode, var codeDataJson) async {
     var params = {"mobile": mobile, "datafrom": "parent_reg", "vcode": vcode, "codeDataJson": codeDataJson};
-    var res = await httpManager.netFetch(Address.sendMobileCodeWithValiCode(), params, null, new Options(method: "post"));
+    var res = await httpManager.netFetch(AddressUtil.getInstance().sendMobileCodeWithValiCode(), params, null, new Options(method: "post"));
     print("res==>$res");
     var result;
     if (res != null && res.result) {
@@ -177,7 +178,7 @@ class UserDao {
   static resetTextbookId(textbookId) async {
     String key = await httpManager.getAuthorization();
     var params = {"key": key, "textbookId": textbookId};
-    var res = await httpManager.netFetch(Address.resetTextbookId(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().resetTextbookId(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -193,7 +194,7 @@ class UserDao {
   static resetMobile(oldMobile, newMobile, code) async {
     String key = await httpManager.getAuthorization();
     var params = {"key": key, "oldMobile": oldMobile, "newMobile": newMobile, "code": code};
-    var res = await httpManager.netFetch(Address.resetMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().resetMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -212,13 +213,13 @@ class UserDao {
     SpUtil.remove(Config.LOGIN_USER);
     store.dispatch(UpdateUserAction(User()));
     var params = {"key": key};
-    await httpManager.netFetch(Address.logout(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    await httpManager.netFetch(AddressUtil.getInstance().logout(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
   }
 
   ///通过老师手机查询班级
   static getTeacherClassList(mobile) async {
     var params = {"mobile": mobile};
-    var res = await httpManager.netFetch(Address.getTeacherClassList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getTeacherClassList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     print("res  ${res.data["success"]["ok"]}");
     var result;
     if (res != null && res.result) {
@@ -235,7 +236,7 @@ class UserDao {
   ///检查该班级是否有同名
   static checkSameRealName(classId, realName) async {
     var params = {"classId": classId, "realName": realName};
-    var res = await httpManager.netFetch(Address.checkSameRealName(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkSameRealName(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -251,7 +252,7 @@ class UserDao {
   ///检测是否拥有账号
   static checkHaveAccount(mobile, identity) async {
     var params = {"mobile": mobile, "identity": identity};
-    var res = await httpManager.netFetch(Address.checkParentsUser(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkParentsUser(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == null) {
@@ -267,7 +268,7 @@ class UserDao {
   ///更改家长：136家长改为135家长
   static updateParentMobile(mobile, userId, code) async {
     var params = {"mobile": mobile, "userId": userId,"code":code};
-    var res = await httpManager.netFetch(Address.updateParentMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().updateParentMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == null) {
@@ -285,7 +286,7 @@ class UserDao {
   ///已有学生账号，检测学生账号和密码和家长账号
   static checkStudent(stuMobile, stuPwd, parentsMobile) async {
     var params = {"studentMobile": stuMobile, "studentPassword": stuPwd,"parentsMobile":parentsMobile};
-    var res = await httpManager.netFetch(Address.checkStudent(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkStudent(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
     var result;
     print('已有学生账号，检测学生账号和密码和家长账号');
     print(res.result);
@@ -305,7 +306,7 @@ class UserDao {
   ///判断学生手机账号是否存在
   static checkMobile(mobile, identity) async {
     var params = {"mobile": mobile, "identity":identity};
-    var res = await httpManager.netFetch(Address.checkMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkMobile(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == null) {
@@ -324,7 +325,7 @@ class UserDao {
   static joinClass(classId) async{
     String key = await httpManager.getAuthorization();
     var params = {"key": key, "classId": classId};
-    var res = await httpManager.netFetch(Address.joinClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().joinClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -339,7 +340,7 @@ class UserDao {
   ///检测验证码
   static checkCode(mobile, code) async {
     var params = {"mobile": mobile, "code": code};
-    var res = await httpManager.netFetch(Address.checkCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -354,7 +355,7 @@ class UserDao {
   ///搜索学校
   static searchSchool(index, type, key, from) async {
     var params = {"index": index, "type": type, "key": key, "from": from};
-    var res = await httpManager.netFetch(Address.searchSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().searchSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == null) {
@@ -370,7 +371,7 @@ class UserDao {
   ///选择学校
   static chooseSchool(schoolId, grade) async {
     var params = {"schoolId": schoolId, "grade": grade};
-    var res = await httpManager.netFetch(Address.chooseSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().chooseSchool(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == null) {
@@ -386,7 +387,7 @@ class UserDao {
   ///检测姓名是否合法
   static checkname(name) async{
     var params = {"name": name};
-    var res = await httpManager.netFetch(Address.checkname(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkname(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"]==null) {
@@ -402,7 +403,7 @@ class UserDao {
   ///选择班级
   static chooseClass(classId) async {
     var params = {"classId": classId};
-    var res = await httpManager.netFetch(Address.chooseClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().chooseClass(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"] == null) {
@@ -418,7 +419,7 @@ class UserDao {
   ///检查该班级是否有同名
   static checkSameRealNamePhone(classId,realName,mobile) async{
     var params = { "classId": classId,"name": realName, "mobile": mobile};
-    var res = await httpManager.netFetch(Address.checkSameRealNamePhone(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkSameRealNamePhone(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
 //      var json = jsonDecode(res.data);
@@ -439,7 +440,7 @@ class UserDao {
     if(parentPhone!=null){
       params["parentMobile"] = parentPhone;
     }
-    var res = await httpManager.netFetch(Address.register(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().register(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"]==null) {
@@ -456,7 +457,7 @@ class UserDao {
   static getEyeshiieldTime() async{
     String key = await httpManager.getAuthorization();
     var params = {"key": key};
-    var res = await httpManager.netFetch(Address.getEyeshiieldTime(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getEyeshiieldTime(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     var data;
     if (res != null && res.result) {
@@ -470,7 +471,7 @@ class UserDao {
   static saveEyeshiieldTime(eyeshieldId) async{
     String key = await httpManager.getAuthorization();
     var params = {"key":key,"eyeshieldId": eyeshieldId};
-    var res = await httpManager.netFetch(Address.saveEyeshiieldTime(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().saveEyeshiieldTime(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       var json = res.data;
@@ -486,7 +487,7 @@ class UserDao {
   static resetPassword(oldPassword, newPassword) async {
     String key = await httpManager.getAuthorization();
     var params = {"key":key,"oldPassword": oldPassword, "newPassword": newPassword};
-    var res = await httpManager.netFetch(Address.resetPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().resetPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
       if (res.data["success"]["ok"] != 0) {
@@ -500,7 +501,7 @@ class UserDao {
   ///忘记密码更改密码
   static forgetRePwd(mobile, code ,newPassword) async {
     var params = {"identity":'P',"mobile":mobile,"code": code, "newPassword": newPassword};
-    var res = await httpManager.netFetch(Address.resetPwd(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().resetPwd(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     print(res.data);
     print(res.result);
@@ -518,7 +519,7 @@ class UserDao {
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key":key};
-      var res = await httpManager.netFetch(Address.getHotGoodsList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getHotGoodsList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
       var result;
       if (res != null && res.result) {
         var json = res.data;
@@ -555,7 +556,7 @@ class UserDao {
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key":key};
-      var res = await httpManager.netFetch(Address.getTotalStar(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getTotalStar(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
       var result;
       if (res != null && res.result) {
         var json = res.data;
@@ -582,7 +583,7 @@ class UserDao {
   static getParentHomeWorkDataList(int pageNum)async{
     String key = await httpManager.getAuthorization();
     var params = {"key":key,"pageNum":pageNum,"curVersion":"1.4.300"};
-    var res = await httpManager.netFetch(Address.getParentHomeWorkDataList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getParentHomeWorkDataList(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var data = res.data;
     return data;
   }

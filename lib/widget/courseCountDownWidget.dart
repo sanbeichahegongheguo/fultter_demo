@@ -8,6 +8,7 @@ import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 
 class CourseCountDownWidget extends StatefulWidget {
@@ -173,7 +174,7 @@ class _CourseCountDownWidget extends State<CourseCountDownWidget> {
   _goBroadcastHor(productId,courseallotId){
     ApplicationDao.trafficStatistic(547);
     NavigatorUtil.goWebView(
-        context,Address.goBroadcastHor()+
+        context,AddressUtil.getInstance().goBroadcastHor()+
         "?productId="+productId.toString()+
         "&courseallotId="+courseallotId.toString()+
         "&:ROTATE"

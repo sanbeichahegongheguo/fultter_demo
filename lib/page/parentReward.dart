@@ -9,6 +9,7 @@ import 'package:flutter_start/bloc/BlocBase.dart';
 import 'package:flutter_start/bloc/HomeBloc.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
@@ -134,7 +135,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
             ),
             onTap: (){
               ApplicationDao.trafficStatistic(45);
-              NavigatorUtil.goWebView(context, Address.MillionH5Address()).then((v){
+              NavigatorUtil.goWebView(context, AddressUtil.getInstance().MillionH5Address()).then((v){
                 bloc.parentRewardBloc.getTotalStar();
               });
             },
@@ -147,7 +148,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
             ),
             onTap: (){
               ApplicationDao.trafficStatistic(240);
-              NavigatorUtil.goWebView(context, Address.GameH5Address()).then((v){
+              NavigatorUtil.goWebView(context, AddressUtil.getInstance().GameH5Address()).then((v){
                 bloc.parentRewardBloc.getTotalStar();
               });
             },
@@ -171,7 +172,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
           GestureDetector(
             onTap: (){
               ApplicationDao.trafficStatistic(311);
-              NavigatorUtil.goWebView(context,Address.StarMallAddress(),router:'moreGift').then((v){
+              NavigatorUtil.goWebView(context,AddressUtil.getInstance().StarMallAddress(),router:'moreGift').then((v){
                 bloc.parentRewardBloc.getTotalStar();
               });
             },
@@ -205,7 +206,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                   child: GestureDetector(
                     onTap: (){
                       ApplicationDao.trafficStatistic(308);
-                      NavigatorUtil.goWebView(context,Address.getInfoPage(),router:'starRecord').then((v){
+                      NavigatorUtil.goWebView(context,AddressUtil.getInstance().getInfoPage(),router:'starRecord').then((v){
                         bloc.parentRewardBloc.getTotalStar();
                       });
                     },
@@ -260,7 +261,7 @@ class _ParentReward extends State<ParentReward> with AutomaticKeepAliveClientMix
                       GestureDetector(
                         onTap: (){
                           ApplicationDao.trafficStatistic(309);
-                          NavigatorUtil.goWebView(context,Address.StarMallAddress()).then((v){
+                          NavigatorUtil.goWebView(context,AddressUtil.getInstance().StarMallAddress()).then((v){
                             bloc.parentRewardBloc.getTotalStar();
                           });
                         },

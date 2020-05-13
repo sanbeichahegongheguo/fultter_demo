@@ -8,6 +8,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
@@ -352,15 +353,15 @@ class _UserInfo extends State<UserInfo>{
 
   void _goProtocol(){
     ApplicationDao.trafficStatistic(490);
-    NavigatorUtil.goWebView(context,Address.getPrivacyProtocol());
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getPrivacyProtocol());
   }
   void _goUserProtocol(){
 //    ApplicationDao.trafficStatistic(490);
-    NavigatorUtil.goWebView(context,Address.getUserProtocol());
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().getUserProtocol());
   }
   void _goWxServer(){
 //    ApplicationDao.trafficStatistic(490);
-    NavigatorUtil.goWebView(context,Address.goLogout());
+    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goLogout());
   }
   //更换头像
   void _getHeadSculpture(store){

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 
 class InfoDao{
@@ -7,7 +8,7 @@ class InfoDao{
   static signReward() async {
     String key = await httpManager.getAuthorization();
     var params = {"key": key};
-    var res = await httpManager.netFetch(Address.signReward(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().signReward(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     return res.data;
   }
 
@@ -15,7 +16,7 @@ class InfoDao{
   static getUnReadNotice() async{
     String key = await httpManager.getAuthorization();
     var params = {"key": key};
-    var res = await httpManager.netFetch(Address.getUnReadNotice(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getUnReadNotice(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     return res.data;
   }
 }

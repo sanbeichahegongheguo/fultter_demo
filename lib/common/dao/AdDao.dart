@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/net/address.dart';
+import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/models/Adver.dart';
@@ -15,7 +16,7 @@ class AdDao{
     next() async {
       String key = await httpManager.getAuthorization();
       var params = {"key":key,"type":type};
-      var res = await httpManager.netFetch(Address.getAppRevScreenAdver(), params, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+      var res = await httpManager.netFetch(AddressUtil.getInstance().getAppRevScreenAdver(), params, null, Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
       var result;
       if (res != null && res.result) {
         var json = res.data;
