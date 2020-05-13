@@ -213,4 +213,18 @@ class ApplicationDao{
     return new DataResult(result, result!=null);
   }
 
+  static uploadSign() async {
+    var res = await httpManager.netFetch(AddressUtil.getInstance().uploadSign(), null, null, Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM,noTip:true);
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if (null!=json) {
+        result = json;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, result!=null);
+  }
+
 }

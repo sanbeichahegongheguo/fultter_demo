@@ -11,6 +11,7 @@ import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/CameraChannel.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
@@ -24,6 +25,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:redux/redux.dart';
+import 'package:tencent_cos/tencent_cos.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker_saver/image_picker_saver.dart' as picker;
@@ -31,7 +33,9 @@ import 'package:webview_flutter/X5Sdk.dart';
 import 'package:webview_flutter/flutter_webview_plugin.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:orientation/orientation.dart';
-
+import 'dart:convert';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 
 class WebViewPlugin extends StatefulWidget{
   String  url;
@@ -483,14 +487,55 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
       print('压缩视频后的长度为:'+ compressedVideoInfo.filesize.toString());
       print(compressedVideoInfo.file);
       print(compressedVideoInfo.path);
+
+
 //      data["data"] = compressedVideoInfo.path;
       flutterWebViewPlugin.evalJavascript("window.hideLoading()");
       // 开始上传视频
+      //获取md5
+      var filemd5 = md5.convert(compressedVideoInfo.file.readAsBytesSync());
+      var md5NAme = hex.encode(filemd5.bytes);
+      upload(compressedVideoInfo.path,md5NAme);
     }
-
     print('拍摄视频：' + file.toString());
-
     return data;
+  }
+
+  void upload(path,name) async {
+    var res = await ApplicationDao.uploadSign();
+    if (res!=null &&res.result){
+      var data = res.data;
+     var token =  data["data"]["data"]["credentials"]["sessionToken"];
+     var tmpSecretId =  data["data"]["data"]["credentials"]["tmpSecretId"];
+     var tmpSecretKey =  data["data"]["data"]["credentials"]["tmpSecretKey"];
+     var expiredTime = data["data"]["data"]["expiredTime"];
+      var dateStrByDateTime = DateUtil.getDateStrByDateTime( DateTime.now(),format:DateFormat.YEAR_MONTH);
+      dateStrByDateTime =  dateStrByDateTime.replaceAll("-", "");
+      String cosPath ="video/$dateStrByDateTime/$name.mp4";
+      TencentCos.uploadByFile(
+          "ap-guangzhou",
+          "1253703184",
+          "qlib-1253703184",
+          tmpSecretId,
+          tmpSecretKey,
+          token,
+          expiredTime,
+          cosPath,
+          path);
+      TencentCos.setMethodCallHandler(_handleMessages);
+    }
+  }
+
+  Future<Null> _handleMessages(MethodCall call) async {
+    print(call.method);
+    print(call.arguments);
+    if(call.method == "onProgress"){
+
+    }else if(call.method == "onFailed"){
+
+    }else if(call.method == "onSuccess"){
+
+    }
   }
   /*
   * 唤醒手机软件
