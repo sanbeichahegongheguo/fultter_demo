@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,7 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
+import 'package:flutter_video_compress/flutter_video_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
@@ -30,6 +31,7 @@ import 'package:webview_flutter/X5Sdk.dart';
 import 'package:webview_flutter/flutter_webview_plugin.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:orientation/orientation.dart';
+
 
 class WebViewPlugin extends StatefulWidget{
   String  url;
@@ -296,6 +298,29 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
                   flutterWebViewPlugin.evalJavascript("window.getBackPhoto("+jsonEncode(data)+")");
                 }
               });
+            } else if(state.url.indexOf("webOpenVideo")>-1){
+              print('打开相机-拍摄视频');
+              var _urlMsg = state.url.split(":");
+              // type: 0 : 录制视频 1：打开相册视频
+              var type = 0;
+              if(_urlMsg.length>1){
+                var msg = Uri.decodeComponent(_urlMsg.last);
+                // 打开相册的视频
+                if(msg == 'album'){
+                  type = 1;
+                }
+              }
+              _getVideo(type).then((data){
+                if (ObjectUtil.isEmpty(data) || data["result"] == "fail"){
+                  flutterWebViewPlugin.evalJavascript("window.closeCameraVideo()");
+                }else{
+//                  flutterWebViewPlugin.evalJavascript("window.getBackVideo("+jsonEncode(data["file"])+")");
+//                  data["file"]
+//                  flutterWebViewPlugin.evalJavascript("window.getBackVideo("+jsonEncode(data)+")");
+                }
+              });
+
+
             }else if(state.url.indexOf("share")>-1){
               print("分享");
               var _urlMsg = state.url.split(":?")[1];
@@ -428,6 +453,45 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     return data;
   }
 
+
+  //调用视频或者本机视频
+  Future _getVideo(type) async{
+    Map data = {"result":"success","path":""};
+    Uint8List _image;
+
+    File file = type == 1
+        ? await ImagePicker.pickVideo(source: ImageSource.gallery)
+        : await ImagePicker.pickVideo(source: ImageSource.camera);
+    if (ObjectUtil.isEmpty(file)||ObjectUtil.isEmptyString(file.path)){
+      // 拍摄失败
+      data["result"] = "fail";
+      return data;
+    }
+    // 压缩
+    if(file!=null){
+      // 进行压缩，发送给h5响应压缩的进度
+      flutterWebViewPlugin.evalJavascript("window.showLoading('视频压缩中...')");
+      final _flutterVideoCompress = FlutterVideoCompress();
+      final compressedVideoInfo = await _flutterVideoCompress.compressVideo(
+        file.path,
+        quality: VideoQuality.DefaultQuality,
+        deleteOrigin: false,
+      );
+      int size = (await file.length());
+      print('压缩前的视频长度为：'+ size.toString());
+      print('[Compressing Video] done!' );
+      print('压缩视频后的长度为:'+ compressedVideoInfo.filesize.toString());
+      print(compressedVideoInfo.file);
+      print(compressedVideoInfo.path);
+//      data["data"] = compressedVideoInfo.path;
+      flutterWebViewPlugin.evalJavascript("window.hideLoading()");
+      // 开始上传视频
+    }
+
+    print('拍摄视频：' + file.toString());
+
+    return data;
+  }
   /*
   * 唤醒手机软件
   * @param weixin:// 唤醒微信

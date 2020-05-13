@@ -22,16 +22,16 @@ dependencies:
   dio: ^2.1.13
   connectivity: ^0.4.3+7
   event_bus: ^1.1.0
-  oktoast: ^2.2.0
   package_info: ^0.4.0+6
   permission_handler: ^3.2.1+1
-  imei_plugin: ^1.1.0
+#  imei_plugin: ^1.1.0
   image_picker: ^0.6.1+2
+#  image_picker: ^0.6.5
   flustars: ^0.2.6+1
   flutter_spinkit: ^3.1.0
   cached_network_image: ^1.1.1
   flutter_des: ^1.1.0
-  image_cropper: ^1.1.0
+#  image_cropper: ^1.1.0
   flutter_redux: ^0.5.3
   rxdart: ^0.22.2
   uuid: 2.0.2
@@ -43,8 +43,20 @@ dependencies:
   chewie: ^0.9.7
   video_player: ^0.10.2
   image_picker_saver: ^0.3.0
-  flutter_webview_plugin: ^0.3.8
+  flutter_video_compress:
+    path: ./plugins/flutter_video_compress-0.3.7+8
+#  image_picker:
+#    path: ./plugins/image_picker-0.6.5
+  orientation:
+    path: ./plugins/orientation-1.1.0
+#  flutter_webview_plugin: ^0.3.8
 #  flutter_webview_plugin: ^0.3.9+1
+  image_cropper:
+    path: ./plugins/image_cropper-1.1.0
+  imei_plugin:
+    path: ./plugins/imei_plugin-1.1.0
+  oktoast:
+    path: ./plugins/oktoast-2.2.0
   fluwx:
     path: ./plugins/fluwx
   device_info:
@@ -55,6 +67,7 @@ dependencies:
     sdk: flutter
   flutter_native_image:
     path: ./plugins/flutter_native_image
+
 #  x5_webview: ^0.1.4
 
 dev_dependencies:
@@ -84,6 +97,7 @@ flutter:
    - images/register/
    - images/coach/
    - images/study/
+   - images/eye/
    - images/parent_reward/
    - images/update/ic_up_bg.png
    - images/update/ic_update_bg.png
