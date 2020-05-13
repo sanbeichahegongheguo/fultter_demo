@@ -315,16 +315,8 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
                 }
               }
               _getVideo(type).then((data){
-                if (ObjectUtil.isEmpty(data) || data["result"] == "fail"){
-                  flutterWebViewPlugin.evalJavascript("window.closeCameraVideo()");
-                }else{
-//                  flutterWebViewPlugin.evalJavascript("window.getBackVideo("+jsonEncode(data["file"])+")");
-//                  data["file"]
-//                  flutterWebViewPlugin.evalJavascript("window.getBackVideo("+jsonEncode(data)+")");
-                }
+                print('暂不执行回调');
               });
-
-
             }else if(state.url.indexOf("share")>-1){
               print("分享");
               var _urlMsg = state.url.split(":?")[1];
@@ -487,9 +479,6 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
       print('压缩视频后的长度为:'+ compressedVideoInfo.filesize.toString());
       print(compressedVideoInfo.file);
       print(compressedVideoInfo.path);
-
-
-//      data["data"] = compressedVideoInfo.path;
       flutterWebViewPlugin.evalJavascript("window.hideLoading()");
       // 开始上传视频
       //获取md5
@@ -529,12 +518,12 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   Future<Null> _handleMessages(MethodCall call) async {
     print(call.method);
     print(call.arguments);
+    var result = call.arguments;
+    //call.method == "onSuccess" || call.method == "onFailed"
     if(call.method == "onProgress"){
-
-    }else if(call.method == "onFailed"){
-
-    }else if(call.method == "onSuccess"){
-
+      flutterWebViewPlugin.evalJavascript("window.drawProgress( " + jsonEncode(result) +")");
+    }else{
+      flutterWebViewPlugin.evalJavascript("window.uploadResult( " + jsonEncode(result) +")");
     }
   }
   /*

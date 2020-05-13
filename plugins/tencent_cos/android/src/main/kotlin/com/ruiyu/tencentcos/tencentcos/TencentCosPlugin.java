@@ -94,6 +94,8 @@ public class TencentCosPlugin implements MethodCallHandler {
                         @Override
                         public void run() {
                             result.success(data);
+                            data.put("result","Success");
+                            channel.invokeMethod("onSuccess", data);
                         }
                     });
                 }
@@ -106,6 +108,8 @@ public class TencentCosPlugin implements MethodCallHandler {
                         @Override
                         public void run() {
                             result.error("失败了", "失败了", "失败了");
+                            data.put("result","Failed");
+                            channel.invokeMethod("onFail", data);
                         }
                     });
 
