@@ -491,6 +491,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   }
 
   void upload(path,name) async {
+    flutterWebViewPlugin.evalJavascript("window.showLoading('正在处理上传...')");
     var res = await ApplicationDao.uploadSign();
     if (res!=null &&res.result){
       var data = res.data;
@@ -516,6 +517,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   }
 
   Future<Null> _handleMessages(MethodCall call) async {
+    flutterWebViewPlugin.evalJavascript("window.hideLoading()");
     print(call.method);
     print(call.arguments);
     var result = call.arguments;

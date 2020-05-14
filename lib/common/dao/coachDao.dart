@@ -17,7 +17,6 @@ class CoachDao {
       print(AddressUtil.getInstance().indexNotice());
       var res = await httpManager.netFetch(AddressUtil.getInstance().indexNotice(), params, null, new Options(method: "get"));
       var result;
-      print('嘻嘻嘻');
       print(res.data);
       if (res != null && res.result) {
         var json = res.data;

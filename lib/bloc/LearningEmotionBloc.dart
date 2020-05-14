@@ -31,9 +31,9 @@ class LearningEmotionBloc extends BlocBase{
   Observable<bool> get getStudymsgQuesStream => _getStudymsgQues.stream;
 
   ///所有单元
-  BehaviorSubject<int>  _getHoweNum = BehaviorSubject<int> ();
-  Sink<int> get _getHoweNumSink => _getHoweNum.sink;
-  Observable<int> get getHoweNumStream => _getHoweNum.stream;
+  BehaviorSubject<dynamic>  _getHoweNum = BehaviorSubject<dynamic> ();
+  Sink<dynamic> get _getHoweNumSink => _getHoweNum.sink;
+  Observable<dynamic> get getHoweNumStream => _getHoweNum.stream;
 
 
 
@@ -82,6 +82,8 @@ class LearningEmotionBloc extends BlocBase{
   ///获取本学期未完成作业数量
   void getParentHomeWorkDataTotal() async{
     var res = await WordDao.getParentHomeWorkDataTotal();
+    print('未完成未完成');
+    print(res.data);
     if(null!=res && res.result){
       _getHoweNumSink.add(res.data);
     }

@@ -45,7 +45,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
   /// homeWord 有错题有作业
   var _state = "homeWord";
   List<ParentHomeWork> _parentHomeWorkList  = new List<ParentHomeWork>();//用户作业
-  String _homeWorkNum = "0";
+  dynamic _homeWorkNum;
   StudyData _studyData;
   int _errorNum = 0;
   List<UnitData> unitData = new  List<UnitData>();
@@ -64,8 +64,8 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
               }
               return StreamBuilder(
                 stream: bloc.learningEmotionBloc.getHoweNumStream,
-                builder: (context,AsyncSnapshot<int> snapshot) {
-                  _homeWorkNum = snapshot.data.toString();
+                builder: (context,AsyncSnapshot<dynamic> snapshot) {
+                  _homeWorkNum = snapshot.data;
 
                   return StreamBuilder(
                       stream: bloc.learningEmotionBloc.allUnitStream,
@@ -92,22 +92,34 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
   }
 
   _setState(){
-    print("作业数=====>${_homeWorkNum.toString()}");
       var errorNum = _errorNum;
-      var homeWordNum = _homeWorkNum.toString();
+      var homeWordNum,homeWorkTotal;
+      if(_homeWorkNum != null){
+        homeWordNum = _homeWorkNum["noFinish"].toString();
+        homeWorkTotal = _homeWorkNum["total"].toString();
+      }
       /// noErrorHomeWord 无错题有作业
       /// noErrorNoHomeWord 无错题无作业
       /// noHomeWord 有错题无作业
       /// homeWord 有错题有作业
+      /// noErrorHomeWordTotal 有作业
       if(errorNum == 0){
         if(homeWordNum == "0"){
-          _state = "noErrorNoHomeWord";
+          if(homeWorkTotal == "0"){
+            _state = "noErrorHomeWord";
+          }else{
+            _state = "noErrorHomeWordTotal";
+          }
         }else{
           _state = "noErrorHomeWord";
         }
       }else{
         if(homeWordNum == "0"){
-          _state = "noHomeWord";
+          if(homeWorkTotal == "0"){
+            _state = "noHomeWord";
+          }else{
+            _state = "noErrorHomeWordTotal";
+          }
         }else{
           _state = "homeWord";
         }
@@ -126,7 +138,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
         "text":"您还有作业没有完成哦~",
         "bg":"images/study/icon-homeword.png",
         "isRedDot":true,
-        "redDotNum":_homeWorkNum == null?"0":_homeWorkNum,
+        "redDotNum":_homeWorkNum == null?"0":_homeWorkNum["noFinish"],
         "fn":(){
 
           _goWord();
@@ -149,7 +161,7 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
       "bg":"images/study/icon-homeword.png",
       "btn":"完成作业",
       "isRedDot":true,
-      "redDotNum":_homeWorkNum == null?"0":_homeWorkNum,
+      "redDotNum":_homeWorkNum == null?"0":_homeWorkNum["noFinish"],
       "fn":(){_goWord();}
     };
 
@@ -158,6 +170,11 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
       case "noErrorHomeWord":
         print("无错题有作业");
         _studerMsgList.add(setTopBtn(topBtns));
+        _studerMsgList.add(setTwoNoErrorMsg(errorTextColor));
+        break;
+      case "noErrorHomeWordTotal":
+        print("无错题有已完和未完成的作业");
+        _studerMsgList.add(setTopBtn(topBtns,type:true));
         _studerMsgList.add(setTwoNoErrorMsg(errorTextColor));
         break;
       case "noErrorNoHomeWord":
@@ -508,11 +525,11 @@ class _StudyInfoPage extends State<StudyInfoPage> with AutomaticKeepAliveClientM
   }
 
   ///顶部两个按钮状态
-  Widget setTopBtn(topBtns){
+  Widget setTopBtn(topBtns,{type:false}){
     List<Widget> rowStack = [];
     for(var i = 0; i <topBtns.length;i++){
       Widget redDot = Text("");
-      if(topBtns[i]["isRedDot"]){
+      if(topBtns[i]["isRedDot"] && !type){
         redDot = Positioned(
           top: -10,
           right: 0,

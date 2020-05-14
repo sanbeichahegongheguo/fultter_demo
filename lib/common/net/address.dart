@@ -11,7 +11,6 @@ class Address {
   static const String h5Host = "http://192.168.6.30:30593/";
   static const String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
   static const String sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
-
 //  static const String common_dc_client = "https://www.k12china.com/common_dc_client/";
 //  static const String stu_app = "https://www.k12china.com/stu_app/v1/";
 //  static const String h5Host = "https://www.k12china.com/h5/";
@@ -193,10 +192,18 @@ class Address {
   static getStudymsgQues() {
     return "${stu_app}home/get_studymsg_ques";
   }
-  ///获取本学期未完成作业数量
+
+  ///获取本学期未完成作业数量【剔除】
+//  static getParentHomeWorkDataTotal() {
+//    return "${studentWebHost}getParentHomeWorkDataTotal";
+//  }
+
+  ///获取本学期未完成作业数量【更换接口-有作业就跳去练习本】
   static getParentHomeWorkDataTotal() {
-    return "${studentWebHost}getParentHomeWorkDataTotal";
+    return "${sw_api_}course/getParentHomeWorkDataTotal";
   }
+
+
   ///获取热门兑换礼物
   static getHotGoodsList(){
     return "${studentHost}getHotConvertMallGoodsList";

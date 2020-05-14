@@ -167,13 +167,18 @@ class WordDao{
       var res = await httpManager.netFetch(AddressUtil.getInstance().getParentHomeWorkDataTotal(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
       if (res != null && res.result) {
         var data = res.data;
-        print("获取本学期未完成作业数量===》${data.toString()}");
-        if(data["ok"] == 0){
-          var _homeNum = 0;
+        print("获取本学期未完成作业数量???===》${data.toString()}");
+        if(data["success"]){
+//          var _homeNum = 0;
+          var _homeNum = {};
           if(data["data"] != null){
-            _homeNum =  data["data"];
+//            _homeNum =  data["data"];
+            //2020/5/14更改，有作业就跳作业本
+//            _homeNum =  data["data"]["noFinish"];
+            _homeNum = data["data"];
+            print(_homeNum);
           }
-          SpUtil.putInt(Config.HOME_NUM,_homeNum);
+          SpUtil.putObject(Config.HOME_NUM,_homeNum);
           return DataResult(_homeNum, true);
         }else{
           return DataResult(data["message"], false);
@@ -182,7 +187,7 @@ class WordDao{
         return DataResult(null, false);
       }
     }
-    var homeNum = SpUtil.getInt(Config.HOME_NUM);
+    var homeNum = SpUtil.getObject(Config.HOME_NUM);
     print("object homeNum");
     if(null==homeNum){
       return await next();

@@ -242,11 +242,15 @@ class AddressUtil {
     return "${stu_app}home/get_studymsg_ques";
   }
 
-  ///获取本学期未完成作业数量
-  getParentHomeWorkDataTotal() {
-    return "${studentWebHost}getParentHomeWorkDataTotal";
-  }
+  ///获取本学期未完成作业数量【剔除】
+//  getParentHomeWorkDataTotal() {
+//    return "${studentWebHost}getParentHomeWorkDataTotal";
+//  }
 
+  ///获取本学期未完成作业数量【更换接口-有作业就跳去练习本】
+  getParentHomeWorkDataTotal() {
+    return "${sw_api_}course/getParentHomeWorkDataTotal";
+  }
   ///获取热门兑换礼物
   getHotGoodsList() {
     return "${studentHost}getHotConvertMallGoodsList";
