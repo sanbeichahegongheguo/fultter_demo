@@ -20,7 +20,8 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
-import 'package:flutter_video_compress/flutter_video_compress.dart';
+//import 'package:flutter_video_compress/flutter_video_compress.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
@@ -467,12 +468,17 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     if(file!=null){
       // 进行压缩，发送给h5响应压缩的进度
       flutterWebViewPlugin.evalJavascript("window.showLoading('视频压缩中...')");
-      final _flutterVideoCompress = FlutterVideoCompress();
-      final compressedVideoInfo = await _flutterVideoCompress.compressVideo(
-        file.path,
-        quality: VideoQuality.DefaultQuality,
-        deleteOrigin: false,
-      );
+//      final _flutterVideoCompress = FlutterVideoCompress();
+//      final compressedVideoInfo = await _flutterVideoCompress.compressVideo(
+//        file.path,
+//        quality: VideoQuality.DefaultQuality,
+//        deleteOrigin: false,
+//      );
+        final compressedVideoInfo = await VideoCompress.compressVideo(
+          file.path,
+          quality: VideoQuality.DefaultQuality,
+          deleteOrigin: false,
+        );
       int size = (await file.length());
       print('压缩前的视频长度为：'+ size.toString());
       print('[Compressing Video] done!' );

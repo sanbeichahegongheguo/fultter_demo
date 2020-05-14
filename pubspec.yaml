@@ -43,8 +43,8 @@ dependencies:
   chewie: ^0.9.7
   video_player: ^0.10.2
   image_picker_saver: ^0.3.0
-  flutter_video_compress:
-    path: ./plugins/flutter_video_compress-0.3.7+8
+#  flutter_video_compress: ^0.3.7+8
+  video_compress: ^2.0.0
 #  image_picker:
 #    path: ./plugins/image_picker-0.6.5
   orientation:
@@ -67,7 +67,8 @@ dependencies:
     sdk: flutter
   flutter_native_image:
     path: ./plugins/flutter_native_image
-
+  tencent_cos:
+    path: ./plugins/tencent_cos
 #  x5_webview: ^0.1.4
 
 dev_dependencies:
