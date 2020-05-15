@@ -47,7 +47,6 @@ class EyeDao {
     var forbidTime =  (new DateTime.now().millisecondsSinceEpoch / 1000).round();
     print('禁锢的时间为：' + forbidTime.toString());
     var params = {"key": key , "from": 'parent', "forbidTime": forbidTime};
-    print(Address.saveForbidTime());
     print(params);
     var res = await httpManager.netFetch(AddressUtil.getInstance().saveForbidTime(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var data;
