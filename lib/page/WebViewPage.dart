@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/CameraChannel.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
@@ -25,9 +28,14 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_saver/image_picker_saver.dart' as picker;
 import 'package:oktoast/oktoast.dart';
+import 'package:tencent_cos/tencent_cos.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:redux/redux.dart';
+import 'dart:convert';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
 
 ///**
 /// *WebView
@@ -229,7 +237,22 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
             _webViewController.evaluateJavascript("window.getBackPhoto("+jsonEncode(data)+")");
           }
         });
-      }else if(request.url.indexOf("share")>-1){
+      }else if(request.url.indexOf("webOpenVideo")>-1){
+        print('打开相机-拍摄视频');
+        var _urlMsg = request.url.split(":");
+        // type: 0 : 录制视频 1：打开相册视频
+        var type = 0;
+        if(_urlMsg.length>1){
+          var msg = Uri.decodeComponent(_urlMsg.last);
+          // 打开相册的视频
+          if(msg == 'album'){
+            type = 1;
+          }
+        }
+        _getVideo(type).then((data){
+          print('暂不执行回调');
+        });
+      } else if(request.url.indexOf("share")>-1){
         print("分享");
         var _urlMsg = request.url.split(":?")[1];
         _urlMsg = Uri.decodeComponent(_urlMsg);
@@ -289,6 +312,88 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
       setState(() {
         _status =2;
       });
+    }
+  }
+  Future _getVideo(type) async{
+    Map data = {"result":"success","path":""};
+    Uint8List _image;
+
+    File file = type == 1
+        ? await ImagePicker.pickVideo(source: ImageSource.gallery)
+        : await ImagePicker.pickVideo(source: ImageSource.camera);
+    if (ObjectUtil.isEmpty(file)||ObjectUtil.isEmptyString(file.path)){
+      // 拍摄失败
+      data["result"] = "fail";
+      return data;
+    }
+    // 压缩
+    if(file!=null){
+      // 进行压缩，发送给h5响应压缩的进度
+      _webViewController.evaluateJavascript("window.showLoading('视频压缩中...')");
+//      final _flutterVideoCompress = FlutterVideoCompress();
+//      final compressedVideoInfo = await _flutterVideoCompress.compressVideo(
+//        file.path,
+//        quality: VideoQuality.DefaultQuality,
+//        deleteOrigin: false,
+//      );
+      final compressedVideoInfo = await VideoCompress.compressVideo(
+        file.path,
+        quality: VideoQuality.DefaultQuality,
+        deleteOrigin: false,
+      );
+      int size = (await file.length());
+      print('压缩前的视频长度为：'+ size.toString());
+      print('[Compressing Video] done!' );
+      print('压缩视频后的长度为:'+ compressedVideoInfo.filesize.toString());
+      print(compressedVideoInfo.file);
+      print(compressedVideoInfo.path);
+      _webViewController.evaluateJavascript("window.hideLoading()");
+      // 开始上传视频
+      //获取md5
+      var filemd5 = md5.convert(compressedVideoInfo.file.readAsBytesSync());
+      var md5NAme = hex.encode(filemd5.bytes);
+      upload(compressedVideoInfo.path,md5NAme);
+    }
+    print('拍摄视频：' + file.toString());
+    return data;
+  }
+
+  void upload(path,name) async {
+    _webViewController.evaluateJavascript("window.showLoading('正在处理上传...')");
+    var res = await ApplicationDao.uploadSign();
+    if (res!=null &&res.result){
+      var data = res.data;
+      var token =  data["data"]["data"]["credentials"]["sessionToken"];
+      var tmpSecretId =  data["data"]["data"]["credentials"]["tmpSecretId"];
+      var tmpSecretKey =  data["data"]["data"]["credentials"]["tmpSecretKey"];
+      var expiredTime = data["data"]["data"]["expiredTime"];
+      var dateStrByDateTime = DateUtil.getDateStrByDateTime( DateTime.now(),format:DateFormat.YEAR_MONTH);
+      dateStrByDateTime =  dateStrByDateTime.replaceAll("-", "");
+      String cosPath ="video/$dateStrByDateTime/$name.mp4";
+      TencentCos.uploadByFile(
+          "ap-guangzhou",
+          "1253703184",
+          "qlib-1253703184",
+          tmpSecretId,
+          tmpSecretKey,
+          token,
+          expiredTime,
+          cosPath,
+          path);
+      TencentCos.setMethodCallHandler(_handleMessages);
+    }
+  }
+
+  Future<Null> _handleMessages(MethodCall call) async {
+    _webViewController.evaluateJavascript("window.hideLoading()");
+    print(call.method);
+    print(call.arguments);
+    var result = call.arguments;
+    //call.method == "onSuccess" || call.method == "onFailed"
+    if(call.method == "onProgress"){
+      _webViewController.evaluateJavascript("window.drawProgress( " + jsonEncode(result) +")");
+    }else{
+      _webViewController.evaluateJavascript("window.uploadResult( " + jsonEncode(result) +")");
     }
   }
   /*
@@ -670,6 +775,30 @@ class WebViewPageState extends State<WebViewPage> with SingleTickerProviderState
     textController1.dispose();
     textController2.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+      //前台展示
+//        print('应用程序可见并响应用户输入。');
+        _webViewController.evaluateJavascript("window.resumed()");
+        break;
+      case AppLifecycleState.inactive:
+//        print('应用程序处于非活动状态，并且未接收用户输入');
+        break;
+      case AppLifecycleState.paused:
+      //后台展示
+//        print('用户当前看不到应用程序，没有响应');
+        _webViewController.evaluateJavascript("window.paused()");
+        break;
+      case AppLifecycleState.suspending:
+//        print('应用程序将暂停。');
+        break;
+      default:
+        break;
+    }
   }
 
   void _input(){
