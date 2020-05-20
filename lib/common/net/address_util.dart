@@ -26,14 +26,15 @@ class AddressUtil {
   String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
 
   _domain1() {
-    studentHost = "http://192.168.6.31:30915/student:";
-    k12apiHost = "http://192.168.6.30:31191/k12-api/";
-    studentWebHost = "http://192.168.6.31:31528/studentweb/";
-    stu_app = "http://192.168.6.30:31255/stu_app/v1/";
-    h5Host = "http://192.168.6.30:30593/";
-    common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
-    sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
-    stu_upload = "http://192.168.6.30:31921/stu_upload/";
+    common_dc_client = "https://www.k12china.com/common_dc_client/";
+    stu_app = "https://www.k12china.com/stu_app/v1/";
+    h5Host = "https://www.k12china.com/h5/";
+    studentWebHost = "https://api.k12china.com/studentweb/";
+    studentHost = "https://www.k12china.com/student/student:";
+    k12apiHost = "https://www.k12china.com/k12-api/";
+    sw_api_ = "https://api.k12china.com/sw/api/v1/";
+    stu_upload = "https://www.k12china.com/stu_upload/";
+    getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
   }
 
   _domain2() {
@@ -55,7 +56,7 @@ class AddressUtil {
   }
   static  String CheckIndexKey = "checkList_index";
   List<String> checkList = [
-    "http://www.k12china.com/stu_app/v1/admin/application",
+    "http://www.yondor.cn/stu_app/v1/admin/application",
   ];
   init() async {
     var index = SpUtil.getInt(CheckIndexKey,defValue: 0);
