@@ -43,6 +43,7 @@ dependencies:
   chewie: ^0.9.7
   video_player: ^0.10.2
   image_picker_saver: ^0.3.0
+  imei_plugin: ^1.1.0
 #  flutter_video_compress: ^0.3.7+8
   video_compress: ^2.0.0
 #  image_picker:
@@ -52,9 +53,7 @@ dependencies:
 #  flutter_webview_plugin: ^0.3.8
 #  flutter_webview_plugin: ^0.3.9+1
   image_cropper:
-    path: ./plugins/image_cropper-1.1.0
-  imei_plugin:
-    path: ./plugins/imei_plugin-1.1.0
+      path: ./plugins/image_cropper
   oktoast:
     path: ./plugins/oktoast-2.2.0
   fluwx:

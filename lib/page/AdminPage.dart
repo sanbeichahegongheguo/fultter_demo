@@ -151,6 +151,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                   children: <Widget>[
                     _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo),
                     _getBt("护眼设置", "images/admin/icon_eye_protection.png", _goSetEye),
+                    _getBt("设置监护密码", "images/admin/icon_password.png", _setMonitoringPassword),
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
@@ -164,7 +165,10 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
       );
     });
   }
-
+  _setMonitoringPassword() {
+    ApplicationDao.trafficStatistic(569);
+    NavigatorUtil.goMonitoringPassword(context);
+  }
   //判断用户是否有头像
   isNetwork(imgUrl) {
     if (imgUrl != null) {

@@ -10,6 +10,9 @@ import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/page/EyeProtectionPage.dart';
 import 'package:flutter_start/page/HomePage.dart';
+import 'package:flutter_start/page/MonitoringPassword.dart';
+import 'package:flutter_start/page/ChangeGuardPassword.dart';
+import 'package:flutter_start/page/DelGuardPassword.dart';
 import 'package:flutter_start/page/HomeWorkDuePage.dart';
 import 'package:flutter_start/page/JoinClassPage.dart';
 import 'package:flutter_start/page/LoginPage.dart';
@@ -112,6 +115,19 @@ class NavigatorUtil {
   ///护眼设置
   static goEyeProtectionPage(BuildContext context) {
     NavigatorRouter(context, EyeProtectionPage());
+  }
+  ///去修改监护密码
+  static goChangeGuardPassword(BuildContext context) {
+    return NavigatorRouter(context, ChangeGuardPassword());
+  }
+  ///去设置监护密码
+  static goMonitoringPassword(BuildContext context) {
+    return NavigatorRouter(context, MonitoringPassword());
+  }
+
+  ///去清除监护密码
+  static goDelGuardPassword(BuildContext context) {
+    return NavigatorRouter(context, DelGuardPassword());
   }
   ///更改密码
   static goResetPasswordPage(BuildContext context) {

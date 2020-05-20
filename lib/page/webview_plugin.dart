@@ -18,6 +18,7 @@ import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/ShareWx.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
 //import 'package:flutter_video_compress/flutter_video_compress.dart';
@@ -318,6 +319,28 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
               _getVideo(type).then((data){
                 print('暂不执行回调');
               });
+            }else if(state.url.indexOf("share_TIMELINE")>-1){
+              print("微信朋友圈分享");
+              var _urlMsg = state.url.split(":?")[1];
+              _urlMsg = Uri.decodeComponent(_urlMsg);
+              var _urlList = jsonDecode(_urlMsg);
+              String webPage =  _urlList["webPage"];//分享地址
+              String thumbnail = _urlList["thumbnail"];//缩略图
+              String title =  _urlList["title"];
+              String description =  _urlList["description"];
+              var share = new ShareWx();
+              ShareWx.wxshare(1,webPage,thumbnail,"",title,description);
+            }else if(state.url.indexOf("share_SESSION")>-1){
+              print("微信会话分享");
+              var _urlMsg = state.url.split(":?")[1];
+              _urlMsg = Uri.decodeComponent(_urlMsg);
+              var _urlList = jsonDecode(_urlMsg);
+              String webPage =  _urlList["webPage"];//分享地址
+              String thumbnail = _urlList["thumbnail"];//缩略图
+              String title =  _urlList["title"];
+              String description =  _urlList["description"];
+              var share = new ShareWx();
+              ShareWx.wxshare(0,webPage,thumbnail,"",title,description);
             }else if(state.url.indexOf("share")>-1){
               print("分享");
               var _urlMsg = state.url.split(":?")[1];

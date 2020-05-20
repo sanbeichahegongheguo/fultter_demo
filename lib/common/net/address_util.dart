@@ -464,5 +464,25 @@ class AddressUtil {
     return "${stu_upload}sts";
   }
 
+  ///检查是否设置监护密码
+   getCheckPassword(){
+    return "${studentHost}getCheckPassword";
+  }
+
+  ///检查监护密码是否正确
+   checkPassword(){
+    return "${studentHost}checkPassword";
+  }
+
+  ///修改密码
+   editCheckPassword(){
+    return "${studentHost}editCheckPassword";
+  }
+
+  ///清除密码
+   delCheckPassword(){
+    return "${studentHost}delCheckPassword";
+  }
+
 
 }

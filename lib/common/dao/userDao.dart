@@ -587,4 +587,44 @@ class UserDao {
     var data = res.data;
     return data;
   }
+
+  ///检查是否设置监护密码
+  static getCheckPassword()async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"curVersion":"1.4.300"};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getCheckPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var data = res.data;
+    return data;
+  }
+
+  static checkPassword(String password)async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"password":password,"curVersion":"1.4.300"};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var data = res.data;
+    return data;
+  }
+
+  static editCheckPassword(String password)async{
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"password":password,"curVersion":"1.4.300"};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().editCheckPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var data = res.data;
+    return data;
+  }
+  static delCheckPassword()async {
+    String key = await httpManager.getAuthorization();
+    var params = {"key":key,"curVersion":"1.4.300"};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().delCheckPassword(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var data = res.data;
+    return data;
+  }
+
+  ///检测验证码
+  static mobileCheckCode(mobile, code) async {
+    var params = {"mobile": mobile, "code": code};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().checkCode(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var data = res.data;
+    return data;
+  }
 }
