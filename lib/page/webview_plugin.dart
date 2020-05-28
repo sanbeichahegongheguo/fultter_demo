@@ -330,6 +330,38 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
               String description =  _urlList["description"];
               var share = new ShareWx();
               ShareWx.wxshare(1,webPage,thumbnail,"",title,description);
+            }else if(state.url.indexOf("share_OpenMiniProgramModel")>-1){
+              print("打开微信小程序");
+              var _urlMsg = state.url.split(":?")[1];
+              _urlMsg = Uri.decodeComponent(_urlMsg);
+              var _urlList = jsonDecode(_urlMsg);
+              String username =  _urlList["username"];//小程序原始ID
+              final type =  _urlList["type"];//小程序原始ID
+              String path = _urlList["path"] != null ? _urlList["path"] : "";
+              ///0  [WXMiniProgramType.RELEASE]正式版
+              ///1  [WXMiniProgramType.TEST]测试版
+              ///2  [WXMiniProgramType.PREVIEW]预览版
+              ShareWx.launchMiniProgram(username,type,path);
+            }else if(state.url.indexOf("share_MiniProgramModel")>-1){
+              print("微信小程序分享");
+              var _urlMsg = state.url.split(":?")[1];
+              _urlMsg = Uri.decodeComponent(_urlMsg);
+              var _urlList = jsonDecode(_urlMsg);
+              String webPage =  _urlList["webPage"];//分享地址
+              String thumbnail = _urlList["thumbnail"];//缩略图
+              String title =  _urlList["title"];
+              String description =  _urlList["description"];
+              String userName =  _urlList["userName"];
+              String path =  _urlList["path"];
+
+              String _webPageUrl = webPage;
+              String _thumbnail = thumbnail;
+              String _title = title;
+              String _userName = userName;
+              String _path = path;
+              String _description = description;
+              ShareWx.chatShareMiniProgramModel(_webPageUrl,_thumbnail,_title,_userName,_path,_description);
+
             }else if(state.url.indexOf("share_SESSION")>-1){
               print("微信会话分享");
               var _urlMsg = state.url.split(":?")[1];
@@ -339,7 +371,6 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
               String thumbnail = _urlList["thumbnail"];//缩略图
               String title =  _urlList["title"];
               String description =  _urlList["description"];
-              var share = new ShareWx();
               ShareWx.wxshare(0,webPage,thumbnail,"",title,description);
             }else if(state.url.indexOf("share")>-1){
               print("分享");
