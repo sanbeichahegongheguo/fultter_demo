@@ -18,9 +18,7 @@ import 'package:redux/redux.dart';
 class UserDao {
   ///登录
   static login(userName, password, Store store, {String code}) async {
-    await httpManager.clearAuthorization();
     var deviceId = await DeviceInfo.instance.getYondorDeviceId();
-
     var params = {"mobile": userName, "password": password, "datafrom": Config.DATA_FROM, "deviceId": deviceId};
     if (code != null) {
       params["code"] = code;
@@ -30,11 +28,12 @@ class UserDao {
     if (res != null && res.result) {
       var json = res.data;
       if (json["success"]["ok"] == 0) {
+        await httpManager.clearAuthorization();
         result = User.fromJson(jsonDecode(json["success"]["data"]));
         print("user key  ${result.key}");
         await SpUtil.putObject(Config.LOGIN_USER, result);
-        store.dispatch(UpdateUserAction(result));
         await httpManager.setAuthorization(result.key);
+        store.dispatch(UpdateUserAction(result));
       } else {
         result = json["success"]["message"];
         res.result = false;

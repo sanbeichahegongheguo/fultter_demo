@@ -76,11 +76,13 @@
             NSMutableDictionary *data = [NSMutableDictionary dictionary];
             [data setValue:urlstr forKey:@"localPath" ];
             [data setValue:cosPath forKey:@"cosPath"];
+            [data setValue:@"Success" forKey:@"result"];
             if(error.code == 0){
                 [self.channel invokeMethod:@"onSuccess" arguments:data];
                 result(@"onSuccess");
             }else{
                 [data setValue: error.domain forKey:@"message"];
+                [data setValue:@"Failed" forKey:@"result"];
                 result(FlutterMethodNotImplemented);
                 [self.channel invokeMethod:@"onFailed" arguments:data];
             }

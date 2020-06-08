@@ -97,11 +97,7 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
               StreamBuilder<String>(
               stream: bloc.coachBloc.getCoachNoticeStream,
               builder: (context, AsyncSnapshot<String> snapshot){
-                if(snapshot.data != null){
-                  return  _getCoachNotice(snapshot.data);
-                }else{
-                  return Text("");
-                }
+                return  _getCoachNotice(snapshot.data);
               }),
               //精准学习模块
               Container(
@@ -187,6 +183,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
 
   //头部广告位
   Widget _headerAdvert(List<CoachNotice> data){
+    if(ObjectUtil.isEmptyList(data)){
+      return Container();
+    }
     var headMsg;
     if(null!=data && data.length >0 ){
       headMsg= Swiper(
@@ -319,12 +318,11 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
      print(data);
      print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-     if(data == "null" || data == null){
-       return Text("");
+     if(ObjectUtil.isEmpty(data) ||ObjectUtil.isEmptyString(data) || data=="null"){
+       return Container();
      }
 //     data = '{"productId":159,"productName":"","courseStatus":"O","startDate":"2020-03-23","endDate":"2020-03-23","courseName":"五年级应用题专题-相遇问题","peLiveCourseallotId":569838,"countdown":60,"nextCourseStartTime":"2020-03-23T19:30:00+08:00","nextCourseEndTime":"2020-03-23T20:40:00+08:00"}';
      var dataJson =  jsonDecode(data.toString());
-
      var courseName = dataJson["courseName"];//课时名称
      var startDate = _getStartDate(dataJson["startDate"]);//开始时间
      var timeDate = _getTime(dataJson["nextCourseStartTime"]) +"-"+ _getTime(dataJson["nextCourseEndTime"]);//获取开始结束时间
@@ -536,6 +534,9 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
   }
   //精准学习
   Widget _widgeStudy (List<Module> data){
+    if(ObjectUtil.isEmptyList(data)){
+      return Container();
+    }
     List<Widget> listWidge = [];
     if(null!=data){
       for(var i = 0; i<data.length;i++){

@@ -93,7 +93,19 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   String _helperText = "";
 
   bool _recoverTime = true;
+  ///整个页面dispose时，记得把控制器也dispose掉，释放内存
+  @override
+  void dispose() {
+    print("RegisterState dispose");
+    userPasswordController?.dispose();
+    userNameController?.dispose();
+   userPhoneController?.dispose();
+   schoolController?.dispose();
+   teacherNameController?.dispose();
+   pinEditingController?.dispose();
+    super.dispose();
 
+  }
   @override
   void initState() {
     super.initState();
@@ -131,6 +143,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
         });
       }
       if(pinEditingController.text.length==6&&!_checkCodeTarget){
+        _checkCodeTarget = true;
         if (null!=widget.isLogin && widget.isLogin && widget.registerState==2){
           _login();
           print('我走登录');
@@ -364,6 +377,7 @@ class RegisterState extends State<RegisterPage> with SingleTickerProviderStateMi
   }
 
   void _login() async {
+    _checkCodeTarget = true;
     Store<GSYState> store = StoreProvider.of(context);
     CommonUtils.showLoadingDialog(context, text: "登陆中···");
     DataResult data = await UserDao.login(userPhoneController.text,"", store,code: pinEditingController.text);
