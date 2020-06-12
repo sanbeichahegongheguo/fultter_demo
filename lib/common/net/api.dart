@@ -24,6 +24,9 @@ class HttpManager {
   final TokenInterceptors _tokenInterceptors = new TokenInterceptors();
 
   HttpManager() {
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client){
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    };
     dio.interceptors.add(new HeaderInterceptors());
 
     dio.interceptors.add(_tokenInterceptors);
