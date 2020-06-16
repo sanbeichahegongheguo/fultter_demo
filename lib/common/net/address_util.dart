@@ -350,6 +350,16 @@ class AddressUtil {
     return "${h5Host}xx/wxServer.html";
   }
 
+  ///承诺书h5
+  getCommitment() {
+    return "${h5Host}reg-app/commitment.html";
+  }
+
+  ///教师信息公示
+  teacherInfo() {
+    return "${h5Host}teacherInfo/index.html?fromUrl=haxecallback:teacherInfo#/index";
+  }
+
   ///用户服务协议
   getEducation() {
     return "${h5Host}reg-app/userProtocol.html";

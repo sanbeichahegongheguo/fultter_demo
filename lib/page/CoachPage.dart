@@ -121,7 +121,19 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
                                 color: Color(0xFF5fc589),
                               ),
                             ),
-                            Text("  精准学习",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3) ),)
+                            Text("  精准学习",style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/3) ),),
+                            SizedBox(
+                              width: ScreenUtil.getInstance().getHeightPx(400),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                NavigatorUtil.goWebView(context, AddressUtil.getInstance().teacherInfo());
+                              },
+                              child: Text(
+                                "教师信息公示 >",
+                                style: TextStyle(fontSize:ScreenUtil.getInstance().getSp(54/5),color: Color(0xFF6f6f6f),),
+                              ),
+                            ),
                           ],
                         ),
                       ),

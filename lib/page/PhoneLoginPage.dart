@@ -187,6 +187,18 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                             style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
                           ),
                         ),
+                        SizedBox(
+                          height: ScreenUtil.getInstance().getHeightPx(230),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            linkTo('commitment');
+                          },
+                          child: Text(
+                            "备案内容公开承诺书",
+                            style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(14), decoration: TextDecoration.underline),
+                          ),
+                        ),
                         Expanded(
                           child: Container(
                               padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
@@ -296,6 +308,8 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       NavigatorUtil.goWebView(context, AddressUtil.getInstance().getPrivacy());
     }else if(where == 'wxServer'){
       NavigatorUtil.goWebView(context, AddressUtil.getInstance().getWxServer());
+    }else if(where == 'commitment'){
+      NavigatorUtil.goWebView(context, AddressUtil.getInstance().getCommitment());
     }
   }
   ///getTextField 构建输入框
