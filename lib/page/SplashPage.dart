@@ -1,6 +1,4 @@
-
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flustars/flustars.dart';
@@ -17,13 +15,12 @@ import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
-import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
-import 'package:device_info/device_info.dart';
 import 'package:webview_flutter/X5Sdk.dart';
+
 import 'HomePage.dart';
 import 'PhoneLoginPage.dart';
 
@@ -38,11 +35,11 @@ class SplashPage extends StatefulWidget {
 class SplashPageState extends State<SplashPage> {
   bool hadInit = false;
   int _status = 0;
-  int next=0;
+  int next = 0;
   StreamSubscription _stream;
   MethodChannel _methodChannel;
   String _adStatus = "";
-  String _showAdKey ="SHOW_AD";
+  String _showAdKey = "SHOW_AD";
   //默认启动延迟
   int _milliseconds = 800;
   Widget _ad = Container();
@@ -55,11 +52,11 @@ class SplashPageState extends State<SplashPage> {
     hadInit = true;
     _initProtocol();
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
-
 
   @override
   void dispose() {
@@ -69,7 +66,7 @@ class SplashPageState extends State<SplashPage> {
   }
 
   void _initAsync() async {
-    if(Platform.isAndroid) {
+    if (Platform.isAndroid) {
       X5Sdk.init().then((isOK) {
         print(isOK ? "X5内核成功加载" : "X5内核加载失败");
       });
@@ -77,46 +74,51 @@ class SplashPageState extends State<SplashPage> {
     await SpUtil.getInstance();
     SpUtil.remove(Config.EVENT_287);
     Store<GSYState> store = StoreProvider.of(context);
-    PackageInfo.fromPlatform().then((v){
-      store.dispatch(RefreshApplicationAction(store.state.application.copyWith(version:v.version)));
-      ApplicationDao.getAppApplication().then((res){
-        if (res!=null &&res.result){
-          var data =res.data;
-          SpUtil.putBool(_showAdKey, (data !=null && data["showSplash"]!=null &&data["showSplash"] is num && data["showSplash"]==1 && data["showBanner"]==1));
-          store.dispatch(RefreshApplicationAction(store.state.application.copyWith(showBanner: data["showBanner"],
-              showCoachBanner: data["showCoachBanner"],showRewardBanner: data["showRewardBanner"],showH5Banner: data["showH5Banner"],minAndroidVersion: data["minAndroidVersion"],minIosVersion: data["minIosVersion"],
-              webViewOpenType: data["openType"],detectxySave: data["detectxySave"]
-          )));
+    PackageInfo.fromPlatform().then((v) {
+      store.dispatch(RefreshApplicationAction(store.state.application.copyWith(version: v.version)));
+      ApplicationDao.getAppApplication().then((res) {
+        if (res != null && res.result) {
+          var data = res.data;
+          SpUtil.putBool(_showAdKey, (data != null && data["showSplash"] != null && data["showSplash"] is num && data["showSplash"] == 1 && data["showBanner"] == 1));
+          store.dispatch(RefreshApplicationAction(store.state.application.copyWith(
+              showBanner: data["showBanner"],
+              showCoachBanner: data["showCoachBanner"],
+              showRewardBanner: data["showRewardBanner"],
+              showH5Banner: data["showH5Banner"],
+              minAndroidVersion: data["minAndroidVersion"],
+              minIosVersion: data["minIosVersion"],
+              webViewOpenType: data["openType"],
+              detectxySave: data["detectxySave"])));
         }
       });
     });
-    if (SpUtil.getBool(_showAdKey)){
-      if(Platform.isAndroid){
+    if (SpUtil.getBool(_showAdKey)) {
+      if (Platform.isAndroid) {
         _milliseconds = 2000;
       }
       setState(() {
-        _ad = Platform.isAndroid?AndroidView(
-            viewType: "splash",
-            creationParamsCodec: const StandardMessageCodec(),
-            onPlatformViewCreated:(id){
-              _methodChannel = MethodChannel("splash_$id");
-              _methodChannel.setMethodCallHandler(call);
-            }
-        ):UiKitView(
-            viewType: "splash",
-            creationParamsCodec: const StandardMessageCodec(),
-            onPlatformViewCreated:(id){
-              _methodChannel = MethodChannel("splash_$id");
-              _methodChannel.setMethodCallHandler(call);
-            }
-        );
+        _ad = Platform.isAndroid
+            ? AndroidView(
+                viewType: "splash",
+                creationParamsCodec: const StandardMessageCodec(),
+                onPlatformViewCreated: (id) {
+                  _methodChannel = MethodChannel("splash_$id");
+                  _methodChannel.setMethodCallHandler(call);
+                })
+            : UiKitView(
+                viewType: "splash",
+                creationParamsCodec: const StandardMessageCodec(),
+                onPlatformViewCreated: (id) {
+                  _methodChannel = MethodChannel("splash_$id");
+                  _methodChannel.setMethodCallHandler(call);
+                });
       });
     }
     //登录
-    UserDao.getUser(store: store).then((res){
-      if (res != null){
+    UserDao.getUser(store: store).then((res) {
+      if (res != null) {
         store.dispatch(UpdateUserAction(res));
-        next=1;
+        next = 1;
       }
       Future.delayed(Duration(milliseconds: _milliseconds), () async {
         _next();
@@ -124,76 +126,77 @@ class SplashPageState extends State<SplashPage> {
     });
   }
 
-  Future<void> _initProtocol() async{
-    await SpUtil.getInstance();
-    await AddressUtil.getInstance().init();
+  Future<void> _initProtocol() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await SpUtil.getInstance();
+      await AddressUtil.getInstance().init();
 
-    if (SpUtil.getBool(Config.EVENT_PROTOCOL)){
+      if (SpUtil.getBool(Config.EVENT_PROTOCOL)) {
         _initListener();
         _initAsync();
         _initPermission();
         return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      CommonUtils.showProtocolDialog(context).then((data){
-      SpUtil.putBool(Config.EVENT_PROTOCOL,true);
+      }
+
+      CommonUtils.showProtocolDialog(context).then((data) {
+        SpUtil.putBool(Config.EVENT_PROTOCOL, true);
         _initListener();
         _initAsync();
         _initPermission();
       });
     });
   }
-  _next(){
-    if (_adStatus!="show" || Platform.isIOS){
-      if (next==1){
+
+  _next() {
+    if (_adStatus != "show" || Platform.isIOS) {
+      if (next == 1) {
         //家长启动事件
         ApplicationDao.trafficStatistic(287);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (BuildContext context) => HomePage()),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
-      }else{
+      } else {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (BuildContext context) => PhoneLoginPage()),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return new StoreBuilder<GSYState>(builder: (context, store) {
-      return  WillPopScope(
-        onWillPop: () => Future.value(false),
-        child: Material(
-          child: Stack(
-            children: <Widget>[
-              Offstage(
-                offstage: !(_status == 0),
-                child: _buildSplashBg(),
-              ),
-              Offstage(
-                offstage: !(_status == 1),
-                child: _ad,
-              ),
-            ],
-          ),
-        )
-      );
+      return WillPopScope(
+          onWillPop: () => Future.value(false),
+          child: Material(
+            child: Stack(
+              children: <Widget>[
+                Offstage(
+                  offstage: !(_status == 0),
+                  child: _buildSplashBg(),
+                ),
+                Offstage(
+                  offstage: !(_status == 1),
+                  child: _ad,
+                ),
+              ],
+            ),
+          ));
     });
   }
-
 
   Future<bool> call(MethodCall call) async {
     print(call.method);
     await SpUtil.getInstance();
-    if(SpUtil.getBool(_showAdKey) || _status == 1){
+    if (SpUtil.getBool(_showAdKey) || _status == 1) {
       _adStatus = call.method;
       switch (call.method) {
         case "show":
-          if(Platform.isAndroid){
+          if (Platform.isAndroid) {
             setState(() {
               _status = 1;
             });
@@ -209,6 +212,7 @@ class SplashPageState extends State<SplashPage> {
     }
     return null;
   }
+
   ///背景图
   Widget _buildSplashBg() {
     return Container(
@@ -274,9 +278,9 @@ class SplashPageState extends State<SplashPage> {
   }
 
   Future _initPermission() async {
-    try{
+    try {
       List<PermissionGroup> permissionsList = new List();
-      if (Platform.isAndroid){
+      if (Platform.isAndroid) {
         PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
         if (permission != PermissionStatus.granted) {
           permissionsList.add(PermissionGroup.location);
@@ -290,19 +294,19 @@ class SplashPageState extends State<SplashPage> {
           permissionsList.add(PermissionGroup.storage);
         }
       }
-      if(permissionsList.length>0){
+      if (permissionsList.length > 0) {
         Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions(permissionsList);
-        if (permissions[PermissionGroup.phone] !=null && permissions[PermissionGroup.phone] != PermissionStatus.granted) {
+        if (permissions[PermissionGroup.phone] != null && permissions[PermissionGroup.phone] != PermissionStatus.granted) {
           showToast("请开启手机权限", position: ToastPosition.bottom);
         }
-        if (permissions[PermissionGroup.storage] !=null && permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+        if (permissions[PermissionGroup.storage] != null && permissions[PermissionGroup.storage] != PermissionStatus.granted) {
           showToast("请开启存储权限", position: ToastPosition.bottom);
         }
-        if (permissions[PermissionGroup.location] !=null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
+        if (permissions[PermissionGroup.location] != null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
 //        showToast("请开启位置权限", position: ToastPosition.bottom);
         }
       }
-    }catch(err){
+    } catch (err) {
       print("_initPermission $err");
     }
     ApplicationDao.sendDeviceInfo();
