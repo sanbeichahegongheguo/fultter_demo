@@ -24,9 +24,6 @@ class HttpManager {
   final TokenInterceptors _tokenInterceptors = new TokenInterceptors();
 
   HttpManager() {
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client){
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-    };
     dio.interceptors.add(new HeaderInterceptors());
 
     dio.interceptors.add(_tokenInterceptors);
@@ -48,9 +45,9 @@ class HttpManager {
     if (header != null) {
       headers.addAll(header);
     }
-    if (params is Map){
+    if (params is Map) {
       params["curVersion"] = (await PackageInfo.fromPlatform()).version;
-      params["curPf"] =  Platform.isAndroid ? "android":"ios";
+      params["curPf"] = Platform.isAndroid ? "android" : "ios";
     }
     if (option != null) {
       option.headers = headers;
@@ -62,16 +59,16 @@ class HttpManager {
     option.connectTimeout = 1000;
     Response response;
     try {
-      if (option.method=="get"){
-        response = await dio.get(url,queryParameters:params,options:option);
-      }else{
+      if (option.method == "get") {
+        response = await dio.get(url, queryParameters: params, options: option);
+      } else {
         response = await dio.request(url, data: params, options: option);
       }
       if (response.data.data is String) {
         String str = response.data.data;
         if (str.startsWith("{")) {
           response.data.data = jsonDecode(response.data.data);
-          if(null!=response.data.data["success"] && (response.data.data["success"]["ok"]==201)){
+          if (null != response.data.data["success"] && (response.data.data["success"]["ok"] == 201)) {
             //这个工程的201状态码为登录过期
             return new ResultData(Code.errorHandleFunction(401, "登录过期", noTip), false, 401);
           }
@@ -115,7 +112,7 @@ class HttpManager {
     Response response;
     try {
       response = await dio.request(url, data: params, options: option);
-      if(null!=response.data["success"] && (response.data["success"]["ok"]==201)){
+      if (null != response.data["success"] && (response.data["success"]["ok"] == 201)) {
         //这个工程的201状态码为登录过期
         return new ResultData(Code.errorHandleFunction(401, "登录过期", noTip), false, 401);
       }
