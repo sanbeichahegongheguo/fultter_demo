@@ -87,7 +87,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   /// 不退出
   Future<bool> _dialogExitApp(BuildContext context) async {
     if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
-      showToast('远大小状元家长：再按一次退出',position:ToastPosition.bottom);
+      showToast('${Config.TITLE}：再按一次退出',position:ToastPosition.bottom);
       _exitTime = DateTime.now().millisecondsSinceEpoch;
       return Future.value(false);
     } else {
@@ -187,18 +187,6 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                             style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
                           ),
                         ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(230),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            linkTo('commitment');
-                          },
-                          child: Text(
-                            "备案内容公开承诺书",
-                            style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(14), decoration: TextDecoration.underline),
-                          ),
-                        ),
                         Expanded(
                           child: Container(
                               padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
@@ -208,13 +196,27 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
+                                    InkWell(
+                                      onTap: () {
+                                        linkTo('commitment');
+                                      },
+                                      child: Text(
+                                        "备案内容公开承诺书",
+                                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(14), decoration: TextDecoration.underline),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
                                     Image.asset(
                                       "images/phone_login/bottom.png",
                                       fit: BoxFit.scaleDown,
                                       height: ScreenUtil.getInstance().getHeightPx(77),
                                       width: ScreenUtil.getInstance().getWidthPx(77),
                                     ),
-                                    Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                                    Text("  ${Config.TITLE}", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
                                   ],
                                 ),
                                 SizedBox(

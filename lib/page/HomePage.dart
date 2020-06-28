@@ -13,6 +13,7 @@ import 'CoachPage.dart';
 import 'LearningEmotionPage.dart';
 import 'StudyInfoPage.dart';
 import 'parentReward.dart';
+import 'package:flutter_start/common/config/config.dart';
 
 ///首页
 class HomePage extends StatefulWidget {
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<bool> _exitApp() {
     if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
-      showToast('远大小状元家长：再按一次退出', position: ToastPosition.bottom);
+      showToast('${Config.TITLE}：再按一次退出', position: ToastPosition.bottom);
       _exitTime = DateTime.now().millisecondsSinceEpoch;
       return Future.value(false);
     } else {

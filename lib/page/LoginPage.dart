@@ -11,6 +11,7 @@ import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
+import 'package:flutter_start/common/config/config.dart';
 
 class LoginPage extends StatefulWidget {
   static final String sName = "login";
@@ -208,7 +209,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
                                     height: ScreenUtil.getInstance().getHeightPx(77),
                                     width: ScreenUtil.getInstance().getWidthPx(77),
                                   ),
-                                  Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                                  Text("  ${Config.TITLE}", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
                                 ],
                               ),
                               SizedBox(

@@ -39,7 +39,7 @@ class Config {
   static const IOS_AD_APP_ID = "1106430707";    //IOS  腾讯广告 appid
   static const IOS_BANNER_ID = "1060186030422542";//IOS  腾讯广告 bannerId
   static const LANGUAGE = Locale('zh', 'CH');
-  static const TITLE ='远大小状元家长';
+  static const TITLE ='远大小状元';
   static const CUR_VERSION ='2.0.000';
   static const indexNotice ='index-notice';   //辅导页面顶部公告
   static const countdown = 0;   //倒计时

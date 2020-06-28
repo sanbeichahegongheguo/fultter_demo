@@ -251,7 +251,7 @@ class SplashPageState extends State<SplashPage> {
                           height: ScreenUtil.getInstance().getHeightPx(77),
                           width: ScreenUtil.getInstance().getWidthPx(77),
                         ),
-                        Text("  远大小状元家长", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                        Text("  ${Config.TITLE}", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
                       ],
                     ),
                     SizedBox(

@@ -1,6 +1,7 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/net/address.dart';
@@ -68,7 +69,7 @@ class _EyeProtectionPage extends State<EyeProtectionPage> {
                               text: TextSpan(
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: "该栏目设置的时间，会同时在“远大小状元学生”和“远大小状元家长”app生效。为了孩子的用眼健康着想,我们建议每天连续在线学习时间不要超过"),
+                                        text: "该栏目设置的时间，会同时在“远大小状元学生”和“${Config.TITLE}”app生效。为了孩子的用眼健康着想,我们建议每天连续在线学习时间不要超过"),
                                     TextSpan(text: "1小时",
                                         style: TextStyle(
                                             color: Color(0xFFff9494))),
