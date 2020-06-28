@@ -42,6 +42,9 @@ class SplashPageState extends State<SplashPage> {
   String _showAdKey = "SHOW_AD";
   //默认启动延迟
   int _milliseconds = 800;
+  //默认加载域名延迟
+  int _hostMilliseconds = 2500;
+  bool _isInit = false;
   Widget _ad = Container();
   @override
   void initState() {
@@ -127,24 +130,47 @@ class SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _initProtocol() async {
+    Future.delayed(Duration(milliseconds: _hostMilliseconds), () async {
+      if (!_isInit){
+        await SpUtil.getInstance();
+        if (SpUtil.getBool(Config.EVENT_PROTOCOL)) {
+          _initListener();
+          _initAsync();
+          _initPermission();
+          return;
+        }
+        CommonUtils.showProtocolDialog(context).then((data) {
+          SpUtil.putBool(Config.EVENT_PROTOCOL, true);
+          _initListener();
+          _initAsync();
+          _initPermission();
+        });
+        _isInit = true;
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await SpUtil.getInstance();
       await AddressUtil.getInstance().init();
+      if (!_isInit){
+        _isInit = true;
+        if (SpUtil.getBool(Config.EVENT_PROTOCOL)) {
+          _initListener();
+          _initAsync();
+          _initPermission();
+          return;
+        }
 
-      if (SpUtil.getBool(Config.EVENT_PROTOCOL)) {
-        _initListener();
-        _initAsync();
-        _initPermission();
-        return;
+        CommonUtils.showProtocolDialog(context).then((data) {
+          SpUtil.putBool(Config.EVENT_PROTOCOL, true);
+          _initListener();
+          _initAsync();
+          _initPermission();
+        });
       }
-
-      CommonUtils.showProtocolDialog(context).then((data) {
-        SpUtil.putBool(Config.EVENT_PROTOCOL, true);
-        _initListener();
-        _initAsync();
-        _initPermission();
-      });
     });
+
+
   }
 
   _next() {
