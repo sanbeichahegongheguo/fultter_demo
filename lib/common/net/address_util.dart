@@ -163,7 +163,7 @@ class AddressUtil {
 
   ///通过老师手机查询班级列表
   getTeacherClassList() {
-    return "${studentHost}getTeacherClassList";
+    return "${studentWebHost}getTeacherClassList";
   }
 
   ///检查该班级是否有同名
