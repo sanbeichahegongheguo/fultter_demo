@@ -91,7 +91,6 @@ class _JoinClassPage extends State<JoinClassPage>{
                          margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().getHeightPx(210), 0, 0),
                        ),
                        Container(
-
                          child:CommonUtils.buildBtn(
                            "查找",
                            width:ScreenUtil.getInstance().getWidthPx(846),
@@ -180,7 +179,7 @@ class _JoinClassPage extends State<JoinClassPage>{
           _onTap(1);
           });
         }else{
-          showToast(jsonDecode(res.toString())['success']['message']);
+          showToast(res['success']['message']);
         }
     }
   }
