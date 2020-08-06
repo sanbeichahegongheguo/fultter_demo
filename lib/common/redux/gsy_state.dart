@@ -15,8 +15,8 @@ import 'application_redux.dart';
 
 ///全局Redux store 的对象，保存State数据
 class GSYState {
-  ///用户信息
   User userInfo;
+  ///用户信息
 
   ///当前手机平台默认语言
   Locale platformLocale;
@@ -42,6 +42,6 @@ GSYState appReducer(GSYState state, action) {
 }
 
 final List<Middleware<GSYState>> middleware = [
-  EpicMiddleware<GSYState>(UserInfoEpic()),
+  EpicMiddleware<GSYState>(userInfoEpic),
   UserInfoMiddleware(),
 ];

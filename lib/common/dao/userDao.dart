@@ -12,6 +12,7 @@ import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/net/result_data.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
+import 'package:flutter_start/common/utils/Log.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:redux/redux.dart';
 
@@ -20,6 +21,7 @@ class UserDao {
   static login(userName, password, Store store, {String code}) async {
     var deviceId = await DeviceInfo.instance.getYondorDeviceId();
     var params = {"mobile": userName, "password": password, "datafrom": Config.DATA_FROM, "deviceId": deviceId};
+    Log.d("用户登录===>$userName");
     if (code != null) {
       params["code"] = code;
     }
@@ -111,7 +113,7 @@ class UserDao {
   ///获取图形验证码
   static getImgCode() async {
     ResultData res = await httpManager.netFetch(AddressUtil.getInstance().getImgCode(), null, null, new Options(method: "get"));
-    HttpHeaders headers = res.headers;
+    Headers headers = res.headers;
     String userSign = "";
     String cookieCode = "";
     Map<String, dynamic> result = new Map();

@@ -17,9 +17,10 @@ class TokenInterceptors extends InterceptorsWrapper {
         _token = authorizationCode;
       }
     }
-    if (!ObjectUtil.isEmptyString(_token)) {
+    if (!ObjectUtil.isEmptyString(_token) && (options.path.contains("k12china.com")  || options.path.contains("yondor.cn") || options.path.contains("k12china.com")  || options.path.contains("192.168.6.30"))) {
       options.headers["Authorization"] = "${Config.TOKEN_KEY} $_token";
     }
+
     return options;
   }
 

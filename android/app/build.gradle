@@ -27,6 +27,9 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdkVersion 28
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
     lintOptions {
         disable 'InvalidPackage'
     }
@@ -74,6 +77,9 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    dependencies {
+        compile 'org.tensorflow:tensorflow-lite:+'
+    }
 }
 
 flutter {
@@ -81,7 +87,7 @@ flutter {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -93,8 +99,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-beta01'
     implementation 'com.android.support:multidex:1.0.1'
     implementation 'com.github.GrenderG:Toasty:1.4.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 }
 configurations.all {
     resolutionStrategy.force 'androidx.transition:transition:1.2.0-rc01'
     resolutionStrategy.force 'androidx.exifinterface:exifinterface:1.1.0-beta01'
+    resolutionStrategy.force 'com.android.support:support-v4:27.1.0'
 }

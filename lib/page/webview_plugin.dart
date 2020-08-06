@@ -18,9 +18,11 @@ import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/RoomUtil.dart';
 import 'package:flutter_start/common/utils/ShareWx.dart';
 import 'package:flutter_start/models/index.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 //import 'package:flutter_video_compress/flutter_video_compress.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -31,9 +33,6 @@ import 'package:tencent_cos/tencent_cos.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker_saver/image_picker_saver.dart' as picker;
-import 'package:webview_flutter/X5Sdk.dart';
-import 'package:webview_flutter/flutter_webview_plugin.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:orientation/orientation.dart';
 import 'dart:convert';
 import 'package:convert/convert.dart';
@@ -68,6 +67,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
 
   StreamSubscription<Null> onBackChanged;
   bool _showAd = false;
+  bool _show = true;
   WebviewBloc _webviewBloc  =  WebviewBloc();
   // 插件提供的对象，该对象用于WebView的各种操作
   FlutterWebviewPlugin flutterWebViewPlugin = new FlutterWebviewPlugin();
@@ -88,8 +88,6 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
      onUrlChanged = setOnUrlChanged();
      onBackChanged = setOnBackChanged();
      WidgetsBinding.instance.addObserver(this);
-
-
   }
 
   @override
@@ -108,9 +106,6 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
 //        print('用户当前看不到应用程序，没有响应');
         flutterWebViewPlugin.evalJavascript("window.paused()");
         break;
-      case AppLifecycleState.suspending:
-//        print('应用程序将暂停。');
-        break;
       default:
         break;
     }
@@ -121,6 +116,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     _timer = Timer(_timeoutSeconds,_unload);
     _deviceSize = MediaQuery.of(context).size;
     Store<GSYState> store = StoreProvider.of(context);
+
     return WillPopScope(
         onWillPop: () async {
           bool can = await flutterWebViewPlugin.canGoBack();
@@ -129,22 +125,22 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
             return Future.value(false);
           } else {
             return Future.value(true);
-          }
-    },child: Scaffold(
-        body:SafeArea(
-          child:WebviewScaffold(
-            key: scaffoldKey,
-            javascriptChannels:_jsChannels(store),
-            url:widget.url, // 登录的URL
-            withZoom: true,  // 允许网页缩放
-            withLocalStorage: true, // 允许LocalStorage
-            withJavascript: true, // 允许执行js代码
-            bottomNavigationBar: _getStatusWidget(store),
-            initialChild: Container(),
-            openType: widget.openType,
+          }},
+        child: Scaffold(
+          body:SafeArea(
+            child:WebviewScaffold(
+              key: scaffoldKey,
+              javascriptChannels:_jsChannels(store),
+              url:widget.url, // 登录的URL
+              withZoom: true,  // 允许网页缩放
+              withLocalStorage: true, // 允许LocalStorage
+              withJavascript: true, // 允许执行js代码
+              bottomNavigationBar: _getStatusWidget(store),
+              initialChild: Container(),
+              openType: widget.openType,
+            ),
           ),
-    ),
-    )
+        ),
     );
   }
   Widget _getStatusWidget(store){
@@ -559,7 +555,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
      var tmpSecretId =  data["data"]["data"]["credentials"]["tmpSecretId"];
      var tmpSecretKey =  data["data"]["data"]["credentials"]["tmpSecretKey"];
      var expiredTime = data["data"]["data"]["expiredTime"];
-      var dateStrByDateTime = DateUtil.getDateStrByDateTime( DateTime.now(),format:DateFormat.YEAR_MONTH);
+      var dateStrByDateTime = DateUtil.formatDate( DateTime.now(),format:DateFormats.y_mo);
       dateStrByDateTime =  dateStrByDateTime.replaceAll("-", "");
       String cosPath ="video/$dateStrByDateTime/$name.mp4";
       TencentCos.uploadByFile(
@@ -697,7 +693,22 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
             print(msg["pos"]);
             var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"]??store.state.application.detectxySave==1);
             flutterWebViewPlugin.evalJavascript("window.dx('$result')");
+          }),
+      /// 使用手写功能
+      JavascriptChannel(
+          name: 'OpenCourseware',
+          onMessageReceived: (JavascriptMessage message) async {
+          await flutterWebViewPlugin.hide();
+          var msg = jsonDecode(message.message);
+          Store<GSYState> store = StoreProvider.of(context);
+          _goRoom(store.state.userInfo,msg["catalogZipUrl"],msg["className"],msg["peTeacherPlanId"],msg["peLiveCourseallotId"]);
           })
     ].toSet();
+  }
+
+  Future _goRoom(User userInfo,String url,var roomName, var roomUuid,var peLiveCourseallotId) async {
+    return RoomUtil.goRoomPage(context, url,userInfo.userId, userInfo.realName, roomName, roomUuid,peLiveCourseallotId,callFunc:(){
+           flutterWebViewPlugin.show();
+    });
   }
 }

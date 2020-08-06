@@ -8,6 +8,7 @@ import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/models/Adver.dart';
+import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/page/EyeProtectionPage.dart';
 import 'package:flutter_start/page/HomePage.dart';
 import 'package:flutter_start/page/MonitoringPassword.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_start/page/PhoneLoginPage.dart';
 import 'package:flutter_start/page/RegisterPage.dart';
 import 'package:flutter_start/page/ResetMobilePage.dart';
 import 'package:flutter_start/page/ResetPasswordPage.dart';
+import 'package:flutter_start/page/RoomLandscape.dart';
 import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
@@ -27,6 +29,7 @@ import 'package:flutter_start/page/flutter_webview_plugin.dart';
 import 'package:flutter_start/page/retrievePasswordPage.dart';
 import 'package:flutter_start/page/BuildArchivesPage.dart';
 import 'package:flutter_start/page/webview_plugin.dart';
+import 'package:flutter_start/page/RoomPage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
 import 'DeviceInfo.dart';
@@ -287,6 +290,10 @@ class NavigatorUtil {
     return Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
       return WebViewExample(ad.target,appBar:appBar);
     }));
+  }
+
+  static goRoomPage(BuildContext context, {RoomData data, String userToken,String boardId,String boardToken}) {
+    return NavigatorRouter(context, RoomLandscapePage(roomData: data,token: userToken,boardId:boardId,boardToken:boardToken));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {

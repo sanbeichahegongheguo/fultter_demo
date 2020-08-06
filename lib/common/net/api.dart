@@ -55,8 +55,7 @@ class HttpManager {
       option = new Options(method: "get");
       option.headers = headers;
     }
-    option.contentType = ContentType.parse(contentType);
-    option.connectTimeout = 1000;
+    option.contentType = contentType;
     Response response;
     try {
       if (option.method == "get") {
@@ -107,7 +106,7 @@ class HttpManager {
       option = new Options(method: "get");
       option.headers = headers;
     }
-    option.contentType = ContentType.parse(contentType);
+    option.contentType = contentType;
 
     Response response;
     try {

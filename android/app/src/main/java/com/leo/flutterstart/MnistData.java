@@ -13,6 +13,7 @@ public class MnistData {
             items.add(new Item(data[i], i));
         }
         Collections.sort(items);
+
     }
 
     public String top(int topSize) {

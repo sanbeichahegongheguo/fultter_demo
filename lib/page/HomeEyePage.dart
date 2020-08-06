@@ -274,8 +274,6 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
         });
         print('离开的时间为'+leaveTime.toString());
         break;
-      case AppLifecycleState.suspending: // 申请将暂时暂停
-        break;
     }
   }
 

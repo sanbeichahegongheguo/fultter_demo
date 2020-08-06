@@ -45,7 +45,7 @@ public class WebViewFlutterPlugin implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if ("init".equals(call.method)){
-      final  MethodChannel.Result resp=result;
+      final  MethodChannel.Result resp = result;
       QbSdk.initX5Environment(context, new QbSdk.PreInitCallback() {
         @Override
         public void onCoreInitFinished() {

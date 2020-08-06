@@ -8,22 +8,22 @@ class CoachBloc extends BlocBase{
   ///公告
   BehaviorSubject<List<CoachNotice>> _notice = BehaviorSubject<List<CoachNotice>>();
   Sink<List<CoachNotice>> get _noticSink => _notice.sink;
-  Observable<List<CoachNotice>> get noticeStream => _notice.stream;
+  Stream<List<CoachNotice>> get noticeStream => _notice.stream;
 
   ///获取可查看课程
   BehaviorSubject<String>  _getCoachNotice = BehaviorSubject<String> ();
   Sink<String> get _getCoachNoticeSink => _getCoachNotice.sink;
-  Observable<String> get getCoachNoticeStream => _getCoachNotice.stream;
+  Stream<String> get getCoachNoticeStream => _getCoachNotice.stream;
 
   ///倒计时
   BehaviorSubject<int>  _getCountdown = BehaviorSubject<int> ();
   Sink<int> get _getCountdownSink => _getCountdown.sink;
-  Observable<int> get getCountdownStream => _getCountdown.stream;
+  Stream<int> get getCountdownStream => _getCountdown.stream;
 
   ///教辅专区广告
   BehaviorSubject<bool> _coachShowBanner = BehaviorSubject<bool>();
   Sink<bool> get _coachShowBannerSink => _coachShowBanner.sink;
-  Observable<bool> get coachShowBannerStream => _coachShowBanner.stream;
+  Stream<bool> get coachShowBannerStream => _coachShowBanner.stream;
   static bool _isBanner;
 
   ///获取可查看课程

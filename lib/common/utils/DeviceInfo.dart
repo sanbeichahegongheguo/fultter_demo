@@ -6,7 +6,6 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:uuid/uuid.dart';
-
 class DeviceInfo {
   static DeviceInfo instance = new DeviceInfo();
   DeviceInfoPlugin _deviceInfo = new DeviceInfoPlugin();
@@ -14,6 +13,7 @@ class DeviceInfo {
   Map<String, dynamic> _deviceInfoMap;
   String deviceId = "";
   String _yondorDeviceId = "";
+  String _deviceUUID = "";
   Future<Map<String, dynamic>> getDeviceInfo() async {
     if (null == this._deviceInfoMap) {
       if (Platform.isAndroid) {
@@ -42,8 +42,7 @@ class DeviceInfo {
     }
     //根据平台获取deviceId
     if (Platform.isAndroid) {
-      var imei = await ImeiPlugin.getImei;
-
+      var imei = await ImeiPlugin.getImei();
       if (null != imei && imei == "Permission Denied") {
         this.deviceId = this._deviceInfoMap["androidId"];
       } else {
@@ -62,6 +61,19 @@ class DeviceInfo {
       this.deviceId = uid;
     }
     return this.deviceId;
+  }
+
+  Future<String> getDeviceUUID() async {
+    if (null != _deviceUUID && _deviceUUID != "") {
+      return  _deviceUUID;
+    }
+    var uid = SpUtil.getString(Config.PHONE_UID);
+    if (null == uid || uid == "") {
+        uid = new Uuid().v1();
+        SpUtil.putString(Config.PHONE_UID, uid);
+    }
+    _deviceUUID = uid ;
+    return uid;
   }
   Future<String> getYondorDeviceId() async {
     //直接返回

@@ -14,26 +14,26 @@ class LearningEmotionBloc extends BlocBase{
   ///学习情况
   BehaviorSubject<StudyData> _studyData = BehaviorSubject<StudyData>();
   Sink<StudyData> get _studyDataSink => _studyData.sink;
-  Observable<StudyData> get studyDataStream => _studyData.stream;
+  Stream<StudyData> get studyDataStream => _studyData.stream;
   ///最新作业
   BehaviorSubject<List<ParentHomeWork>> _parentHomeWork = BehaviorSubject<List<ParentHomeWork>>();
   Sink<List<ParentHomeWork>> get _parentHomeWorkSink => _parentHomeWork.sink;
-  Observable<List<ParentHomeWork>> get parentHomeWorkStream => _parentHomeWork.stream;
+  Stream<List<ParentHomeWork>> get parentHomeWorkStream => _parentHomeWork.stream;
 
   ///所有单元
   BehaviorSubject<List<UnitData>> _getSynerrData = BehaviorSubject<List<UnitData>>();
   Sink<List<UnitData>> get _allUnitSink => _getSynerrData.sink;
-  Observable<List<UnitData>> get allUnitStream => _getSynerrData.stream;
+  Stream<List<UnitData>> get allUnitStream => _getSynerrData.stream;
 
   ///所有单元
   BehaviorSubject<bool>  _getStudymsgQues = BehaviorSubject<bool> ();
   Sink<bool> get _getStudymsgQuesSink => _getStudymsgQues.sink;
-  Observable<bool> get getStudymsgQuesStream => _getStudymsgQues.stream;
+  Stream<bool> get getStudymsgQuesStream => _getStudymsgQues.stream;
 
   ///所有单元
   BehaviorSubject<dynamic>  _getHoweNum = BehaviorSubject<dynamic> ();
   Sink<dynamic> get _getHoweNumSink => _getHoweNum.sink;
-  Observable<dynamic> get getHoweNumStream => _getHoweNum.stream;
+  Stream<dynamic> get getHoweNumStream => _getHoweNum.stream;
 
 
 

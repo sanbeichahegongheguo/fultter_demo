@@ -1,32 +1,33 @@
 package com.leo.flutterstart;
+
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.king.app.updater.AppUpdater;
 import com.king.app.updater.callback.UpdateCallback;
-
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
-
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 /** UpdateVersionPlugin */
-public class UpdateVersionPlugin implements EventChannel.StreamHandler {
+public class UpdateVersionPlugin implements FlutterPlugin,EventChannel.StreamHandler {
 
     private static String TAG = "MY_UPDATE";
-    private static Context context;
-
-    public UpdateVersionPlugin(Context context) {
-        this.context = context;
-    }
+    private Context context;
+    private EventChannel channel;
 
     /** Plugin registration. */
     public static void registerWith(Registrar registrar) {
         final EventChannel channel = new EventChannel(registrar.messenger(), "plugins.iwubida.com/update_version");
-        channel.setStreamHandler(new UpdateVersionPlugin(registrar.context()));
+        UpdateVersionPlugin updateVersionPlugin = new UpdateVersionPlugin();
+        updateVersionPlugin.context = registrar.context();
+        channel.setStreamHandler(updateVersionPlugin);
     }
 
 
@@ -102,4 +103,15 @@ public class UpdateVersionPlugin implements EventChannel.StreamHandler {
         Log.i(TAG, "取消下载-集成的第三方下载没有提供取消方法");
     }
 
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        channel = new EventChannel(binding.getBinaryMessenger(), "plugins.iwubida.com/update_version");
+        this.context = binding.getApplicationContext();
+        channel.setStreamHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setStreamHandler(null);
+    }
 }

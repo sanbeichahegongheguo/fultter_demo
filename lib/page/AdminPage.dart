@@ -12,6 +12,9 @@ import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/RoomUtil.dart';
+import 'package:flutter_start/models/index.dart';
+import 'package:flutter_start/widget/StarGif.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
@@ -124,7 +127,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                         ),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(25)),
+                                        margin: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(30)),
                                         padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
@@ -156,6 +159,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
                     _getBt("退出账号", "images/admin/icon_out.png", (){_goOut(store);}),
+                    _getBt("测试直播", "images/admin/icon_out.png", (){_goRoom(store.state.userInfo);}),
                   ],
                 ),
               ],
@@ -260,11 +264,12 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
     ApplicationDao.trafficStatistic(316);
     NavigatorUtil.goEyeProtectionPage(context);
   }
-
+  Future _goRoom(User userInfo) async {
+    RoomUtil.goRoomPage(context,"https://qres.k12china.com/qlib/zip/2020/07/30/16267ccdc0bc3bcb.zip",userInfo.userId, userInfo.realName, "yondor", "yondor",10086);
+  }
   //退出賬號
   Future _goOut(store) async {
     print("退出賬號");
-
     var outMsg= Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[

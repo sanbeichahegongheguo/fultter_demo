@@ -1,6 +1,7 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
+import 'package:fluwx/fluwx.dart';
 class ShareToWeChat extends StatefulWidget{
     const ShareToWeChat({
       Key key,
@@ -36,7 +37,7 @@ class _StatefulWidget extends State<ShareToWeChat>{
   ) : super();
   @override
   initState(){
-    fluwx.register(appId:"wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
+    fluwx.registerWxApi(appId:"wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
     super.initState();
   }
   void _wxshare(int num){
@@ -55,10 +56,9 @@ class _StatefulWidget extends State<ShareToWeChat>{
         print("收藏");
         break;
     }
-    fluwx.share(fluwx.WeChatShareWebPageModel(
-        webPage: _webPage,
-        thumbnail: _thumbnail,
-        transaction: _transaction,
+    fluwx.shareToWeChat(fluwx.WeChatShareWebPageModel(_webPage,
+        thumbnail: WeChatImage.network(_thumbnail),
+//        transaction: _transaction,
         title: _title,
         scene: scene,
         description: _description

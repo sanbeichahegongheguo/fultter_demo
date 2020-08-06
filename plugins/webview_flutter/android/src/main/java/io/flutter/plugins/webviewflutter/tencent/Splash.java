@@ -189,6 +189,12 @@ public class Splash implements PlatformView,SplashADListener {
     public void onADExposure() {
         Log.i("AD_DEMO", "SplashADExposure");
     }
+
+    @Override
+    public void onADLoaded(long l) {
+
+    }
+
     //广告关闭回传
     @Override
     public void onADDismissed() {

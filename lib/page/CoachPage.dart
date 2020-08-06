@@ -327,9 +327,6 @@ class _CoachPage extends State<CoachPage> with AutomaticKeepAliveClientMixin<Coa
    ///获取课程中心布局courseallotId
    Widget _getCoachNotice(data){
 
-     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-     print(data);
-     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
      if(ObjectUtil.isEmpty(data) ||ObjectUtil.isEmptyString(data) || data=="null"){
        return Container();
      }

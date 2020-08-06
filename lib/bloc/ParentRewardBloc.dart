@@ -7,16 +7,16 @@ class ParentRewardBloc extends BlocBase{
   ///星星
   BehaviorSubject<String> _starNum = BehaviorSubject<String>();
   Sink<String> get _starNumSink => _starNum.sink;
-  Observable<String> get starNumStream => _starNum.stream;
+  Stream<String> get starNumStream => _starNum.stream;
   ///热门兑换
   BehaviorSubject<List<ConvertGoods>> _convertGoods = BehaviorSubject<List<ConvertGoods>>();
   Sink<List<ConvertGoods>> get _convertGoodsSink => _convertGoods.sink;
-  Observable<List<ConvertGoods>> get convertGoodsStream => _convertGoods.stream;
+  Stream<List<ConvertGoods>> get convertGoodsStream => _convertGoods.stream;
 
   ///家长专区广告
   BehaviorSubject<bool> _parentShowBanner = BehaviorSubject<bool>();
   Sink<bool> get _parentShowBannerSink => _parentShowBanner.sink;
-  Observable<bool> get parentShowBannerStream => _parentShowBanner.stream;
+  Stream<bool> get parentShowBannerStream => _parentShowBanner.stream;
   static bool _isBanner;
   ///获取星星总数
   void getTotalStar() async{

@@ -11,7 +11,7 @@ class AdBloc extends BlocBase{
   ///Banner
   BehaviorSubject<Adver> _adver = BehaviorSubject<Adver>();
   Sink<Adver> get _adverSink => _adver.sink;
-  Observable<Adver> get adverStream => _adver.stream.asBroadcastStream();
+  Stream<Adver> get adverStream => _adver.stream.asBroadcastStream();
 
   static  final  Map<String,MethodChannel> adChannelMap = new Map();
 

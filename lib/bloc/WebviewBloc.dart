@@ -8,7 +8,7 @@ class WebviewBloc extends BlocBase{
   ///状态
   BehaviorSubject<bool> _showAd = BehaviorSubject<bool>();
   Sink<bool> get _showAdSink => _showAd.sink;
-  Observable<bool> get showAdStream => _showAd.stream;
+  Stream<bool> get showAdStream => _showAd.stream;
 
 
   ///是否展示广告

@@ -9,7 +9,7 @@ class ModuleBloc extends BlocBase{
   ///模块栏目
   BehaviorSubject<List<Module>> _module = BehaviorSubject<List<Module>>();
   Sink<List<Module>> get _moduleSink => _module.sink;
-  Observable<List<Module>> get moduleStream => _module.stream;
+  Stream<List<Module>> get moduleStream => _module.stream;
 
   ///辅导页面小状元模块栏目
   void getCoachXZYModule() async{

@@ -10,8 +10,10 @@ import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
+import 'package:flutter_start/models/LogData.dart';
 import 'package:package_info/package_info.dart';
 import 'daoResult.dart';
+import 'package:flutter_start/common/utils/Log.dart';
 
 class ApplicationDao{
   ///获取升级信息
@@ -98,7 +100,7 @@ class ApplicationDao{
       uid = user["userId"];
       cb = user["userId"];
     }
-    var cd =  DateUtil.formatDate(new DateTime.now(),format:DataFormats.full);
+    var cd =  DateUtil.formatDate(new DateTime.now(),format:DateFormats.full);
     var vn = (await PackageInfo.fromPlatform()).version;
     var df = '';
     if(Platform.isAndroid){
@@ -125,7 +127,7 @@ class ApplicationDao{
       uid = user["userId"];
       cb = user["userId"];
     }
-    var cd =  DateUtil.formatDate(new DateTime.now(),format:DataFormats.full);
+    var cd =  DateUtil.formatDate(new DateTime.now(),format:DateFormats.full);
     var vn = (await PackageInfo.fromPlatform()).version;
     var df = '';
     if(Platform.isAndroid){
@@ -136,7 +138,6 @@ class ApplicationDao{
     var dataJson = {"pf": pf,"did": did, "uid": uid,"cb": cb, "cd": cd,"vn": vn, "df": df, "dj": data,"tid":2};
     var params = {"dataJson": jsonEncode(dataJson)};
     var res = await httpManager.netFetch(AddressUtil.getInstance().sendObj(), params, null, new Options(method: "post"));
-    print(res.data);
   }
 
   ///设备信息统计
@@ -227,4 +228,77 @@ class ApplicationDao{
     return new DataResult(result, result!=null);
   }
 
+
+  ///对象统计
+  static sendLogcat(List<LogData> dataList) async {
+    //{
+    //                "appid":0, # 看后台的定义
+    //                "uid":1,
+    //                "device":"iphone 15",
+    //                "platform":"ios",
+    //                "key":"uuid-xxxx-xxxx-xxxx-xxxx",
+    //                "data":[
+    //                    {"t":timestamp,"l":1,"c":"from_auto_test"},
+    //                    {"t":timestamp,"l":2,"c":"from_auto_test_2"}
+    //                ]
+    //            }
+
+//    Log.d("sendLogcat res ${res?.data}");
+    var user = SpUtil.getObject(Config.LOGIN_USER);
+    var uid,device,res;
+    var flag = true;
+    if (user!=null){
+      uid = user["userId"];
+    }
+    LogConfig logConfig;
+    var obj = SpUtil.getObject("logConfig");
+    if( obj !=null){
+      logConfig  = LogConfig.fromJson(obj);
+      Log.d("logConfig  $logConfig",tag: "sendLogcat");
+      DateTime now = DateTime.now();
+      DateTime quesTimeBy = DateUtil.getDateTimeByMs(logConfig.t);
+      int inMinutes = now.difference(quesTimeBy).inMinutes;
+      Log.d("inMinutes  $inMinutes",tag: "sendLogcat");
+      if (inMinutes < 60){
+        flag= false;
+      }
+    }
+    if (flag){
+      res = await httpManager.netFetch(AddressUtil.getInstance().logcatConfig(Config.LOGCAT_APP_ID,uid??-1), null, null, new Options(method: "get"),contentType:HttpManager.CONTENT_TYPE_JSON);
+      if (res != null && res.result) {
+        var data = res.data;
+        if (data["code"] == 200){
+          logConfig = LogConfig.fromJson(data);
+          logConfig.t = DateUtil.getNowDateMs();
+          SpUtil.putObject("logConfig", logConfig);
+        }
+      }
+    }
+    if (logConfig == null || !logConfig.enable){
+      print("#1 no open logcat");
+      return null;
+    }
+    //过滤等级
+    dataList.removeWhere((element) => element.l<logConfig.level);
+    if (dataList.length ==0 ){
+      print("#2 logcat no level !!");
+      return;
+    }
+    var key = await DeviceInfo.instance.getDeviceUUID();
+    var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
+    var vn = (await PackageInfo.fromPlatform()).version;
+    var df = 'ios';
+
+    if(Platform.isAndroid){
+      df = 'android';
+      device  = deviceInfo["model"];
+    }else{
+      device  = deviceInfo["model"];
+    }
+    var dataJson = {"appid": Config.LOGCAT_APP_ID, "uid": uid,"device": device, "platform": df, "key" : key,"version":vn,"data": dataList};
+    Log.d("dataJson===>$dataJson",tag: "sendLogcat");
+    res = await httpManager.netFetch(AddressUtil.getInstance().logcat(), dataJson, null, new Options(method: "post"),contentType:HttpManager.CONTENT_TYPE_JSON);
+    Log.d("sendLogcat res ${res?.data}",tag: "sendLogcat");
+    return res;
+  }
 }

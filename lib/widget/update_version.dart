@@ -45,11 +45,12 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
 
   // android 下载
   androidDownloadHandle() async {
-    // 权限检查
-    Map<PermissionGroup, PermissionStatus> permissions =
-        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
-    print(permissions);
-    if (permissions[PermissionGroup.storage] == PermissionStatus.granted) {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+    ].request();
+    print(statuses[Permission.phone].isGranted);
+    print(statuses);
+    if (statuses[Permission.phone].isGranted) {
       // 开始下载
       _startDownload();
     } else {
@@ -73,7 +74,7 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
               ),
               new FlatButton(
                 onPressed: () {
-                  PermissionHandler().openAppSettings();
+                  openAppSettings();
                   Navigator.of(context).pop();
                 },
                 child: new Text("确认"),
@@ -120,7 +121,6 @@ class _UpdateVersionDialogState extends State<UpdateVersionDialog> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     var _maxContentHeight = min(screenSize.height - 300, 180.0);
-
     return Material(
         type: MaterialType.transparency,
         child: Column(

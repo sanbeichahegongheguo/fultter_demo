@@ -15,11 +15,11 @@ import 'package:flutter_start/common/redux/application_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:redux/redux.dart';
-import 'package:webview_flutter/X5Sdk.dart';
 
 import 'HomePage.dart';
 import 'PhoneLoginPage.dart';
@@ -305,30 +305,20 @@ class SplashPageState extends State<SplashPage> {
 
   Future _initPermission() async {
     try {
-      List<PermissionGroup> permissionsList = new List();
+
       if (Platform.isAndroid) {
-        PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
-        if (permission != PermissionStatus.granted) {
-          permissionsList.add(PermissionGroup.location);
-        }
-        permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.phone);
-        if (permission != PermissionStatus.granted) {
-          permissionsList.add(PermissionGroup.phone);
-        }
-        permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
-        if (permission != PermissionStatus.granted) {
-          permissionsList.add(PermissionGroup.storage);
-        }
-      }
-      if (permissionsList.length > 0) {
-        Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions(permissionsList);
-        if (permissions[PermissionGroup.phone] != null && permissions[PermissionGroup.phone] != PermissionStatus.granted) {
+        Map<Permission, PermissionStatus> statuses = await [
+          Permission.location,
+          Permission.phone,
+          Permission.storage,
+        ].request();
+        if (statuses[Permission.phone] != PermissionStatus.granted) {
           showToast("请开启手机权限", position: ToastPosition.bottom);
         }
-        if (permissions[PermissionGroup.storage] != null && permissions[PermissionGroup.storage] != PermissionStatus.granted) {
+        if (statuses[Permission.storage]  != PermissionStatus.granted) {
           showToast("请开启存储权限", position: ToastPosition.bottom);
         }
-        if (permissions[PermissionGroup.location] != null && permissions[PermissionGroup.location] != PermissionStatus.granted) {
+        if (statuses[Permission.location] != PermissionStatus.granted) {
 //        showToast("请开启位置权限", position: ToastPosition.bottom);
         }
       }

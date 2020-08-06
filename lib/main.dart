@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/page/SplashPage.dart';
+import 'package:flutter_start/common/utils/Log.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:redux/redux.dart';
 
@@ -15,22 +16,21 @@ import 'models/Application.dart';
 import 'models/user.dart';
 
 main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
-    runZoned(() {
+    runZoned(() async {
       runApp(MyApp());
+      await Log.init(isDebug: Config.DEBUG);
       if (Platform.isAndroid) {
         SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
         SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
       }
     }, onError: (Object obj, StackTrace stack) {
-      print(obj);
-      print(stack);
+      Log.e(obj,tag:"main");
+      Log.e(stack,tag:"main");
     });
   });
-//  if (Platform.isIOS) {
-//    SystemChrome.setEnabledSystemUIOverlays([]);
-//  }
 }
 
 class MyApp extends StatelessWidget {

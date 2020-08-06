@@ -7,7 +7,9 @@ import 'package:flutter_start/common/dao/userDao.dart';
 import 'package:flutter_start/common/local/local_storage.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/Log.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/models/LogData.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:redux/redux.dart';
@@ -25,7 +27,7 @@ class LoginPage extends StatefulWidget {
   }
 }
 
-class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,LogBase{
   TextEditingController userNameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool loginBtn = false;
@@ -374,7 +376,9 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
   }
 
   void _login() async {
+
     if (loginBtn) {
+      print("用户登录==>_login",level: Log.info);
       CommonUtils.showLoadingDialog(context, text: "登陆中···");
       Store<GSYState> store = StoreProvider.of(context);
       DataResult data = await UserDao.login(userNameController.text, passwordController.text, store);
@@ -400,5 +404,14 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin {
         print("密码必须大于6位");
       }
     }
+  }
+
+  @override
+  String tagName() {
+    return LoginPage.sName;
+  }
+
+  void print(msg ,{int level= Log.fine}){
+    super.print(msg,level: level);
   }
 }

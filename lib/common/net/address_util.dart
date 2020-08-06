@@ -13,6 +13,10 @@ class AddressUtil {
   String k12apiHost = "https://www.k12china.com/k12-api/";
   String sw_api_ = "https://api.k12china.com/sw/api/v1/";
   String stu_upload = "https://www.k12china.com/stu_upload/";
+  String agora_base_url = "https://api.agora.io";
+  String ws_url = "wss://www.k12china.com";
+  String apiHost = "https://api.k12china.com/";
+  String qresHost = "https://qres.k12china.com/";
 
 //  String studentHost = "http://192.168.6.31:30915/student:";
 //  String k12apiHost = "http://192.168.6.30:31191/k12-api/";
@@ -22,6 +26,10 @@ class AddressUtil {
 //  String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
 //  String sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
 //  String stu_upload = "http://192.168.6.30:31921/stu_upload/";
+//  String ws_url = "ws://192.168.6.30:30531";
+//  String apiHost = "http://192.168.6.30:31456/";
+//  String qresHost = "https://qres.k12china.com/";
+//  String agora_base_url = "https://api.agora.io";
 
   String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
 
@@ -35,6 +43,10 @@ class AddressUtil {
     sw_api_ = "https://api.k12china.com/sw/api/v1/";
     stu_upload = "https://www.k12china.com/stu_upload/";
     getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
+    ws_url = "wss://www.k12china.com";
+    apiHost = "https://api.k12china.com/";
+    qresHost = "https://qres.k12china.com/";
+
 //     studentHost = "http://192.168.6.31:30915/student:";
 //     k12apiHost = "http://192.168.6.30:31191/k12-api/";
 //     studentWebHost = "http://192.168.6.31:31528/studentweb/";
@@ -43,6 +55,9 @@ class AddressUtil {
 //     common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
 //     sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
 //     stu_upload = "http://192.168.6.30:31921/stu_upload/";
+//     ws_url = "ws://192.168.6.30:30531";
+//     apiHost = "http://192.168.6.30:31456/";
+//     qresHost = "https://qres.k12china.com/";
   }
 
   _domain2() {
@@ -503,5 +518,76 @@ class AddressUtil {
     return "${studentHost}delCheckPassword";
   }
 
+  ///加入房间
+  roomEntry(String appId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/entry";
+  }
 
+  ///获取房间信息
+  room(String appId, String roomId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId";
+  }
+
+  ///退出房间
+  roomExit(String appId, String roomId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/exit";
+  }
+
+  ///获取房间用户信息
+  roomUser(String appId, String roomId, String userId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/user/$userId";
+  }
+  ///聊天
+  roomChat(String appId, String roomId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/chat";
+  }
+  ///获取房间白班信息
+  roomBoard(String appId, String roomId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/board";
+  }
+  ///举手连麦
+  roomCoVideo(String appId, String roomId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/covideo";
+  }
+
+  ///加入房间
+  socketUrl(String key,String roomId) {
+    return "$ws_url/stu_chat/live?key=$key&roomId=$roomId";
+  }
+  ///腾讯云日志
+  logcat() {
+    return "${apiHost}logcat/app";
+  }
+  ///腾讯云日志配置
+  logcatConfig(appid,userId) {
+    return "${apiHost}logcat/config/$appid/$userId";
+  }
+  ///领取红包
+  roomRewardStar() {
+    return "${stu_app}live_broadcast/star";
+  }
+  ///是否提交题目
+  isDoQues() {
+    return "${stu_app}live_broadcast/is_save_ques";
+  }
+  ///题目答题前三
+  roomQuesTop() {
+    return "${stu_app}live_broadcast/ques_top";
+  }
+  ///排行榜
+  roomRankList() {
+    return "${stu_app}home/live/rank/list";
+  }
+  ///排行榜
+  roomRankUser() {
+    return "${stu_app}home/live/rank/user";
+  }
+  ///提交题目
+  roomSaveQues() {
+    return "${stu_app}live_broadcast/save_ques";
+  }
+  ///保存题目到题库
+  saveQuesToQlib() {
+    return "${stu_app}admin/quest";
+  }
 }

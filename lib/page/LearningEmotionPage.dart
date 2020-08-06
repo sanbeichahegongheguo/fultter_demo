@@ -414,8 +414,8 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   ///处理时间格式
   String _setTime(String timeData){
     print(timeData);
-    print("DateTime${DateUtil.getDateStrByMs(36)}");
-    var time  = DateUtil.formatDate(DateTime.parse(timeData),format:DataFormats.zh_y_mo_d);
+//    print("DateTime${DateUtil.getDateStrByMs(36)}");
+    var time  = DateUtil.formatDate(DateTime.parse(timeData),format:DateFormats.zh_y_mo_d);
     return time;
   }
   //学习记录内容
@@ -500,7 +500,7 @@ class _LearningEmotionPage extends State<LearningEmotionPage> with AutomaticKeep
   ///处理时间
   String getTimeStrBySecond(String secondTime) {
     var second = int.parse(secondTime);
-    var time = DateUtil.formatDate(DateTime(0, 0, 0, 0, second, 0),format:DataFormats.h_m);
+    var time = DateUtil.formatDate(DateTime(0, 0, 0, 0, second, 0),format:DateFormats.h_m);
     return time;
   }
 

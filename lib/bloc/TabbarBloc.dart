@@ -7,7 +7,7 @@ class TabbarBloc extends BlocBase{
   ///页面
   BehaviorSubject<int> _tabbarBanner = BehaviorSubject<int>();
   Sink<int> get _tabbarBannerSink => _tabbarBanner.sink;
-  Observable<int> get tabbarBannerStream => _tabbarBanner.stream;
+  Stream<int> get tabbarBannerStream => _tabbarBanner.stream;
 
 
   ///切换页面

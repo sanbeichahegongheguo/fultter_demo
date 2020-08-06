@@ -1,17 +1,20 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/widget/IndexNoticeWidget.dart';
 import 'package:flutter_start/widget/ProtocolDialog.dart';
 import 'package:flutter_start/widget/VideoWidget.dart';
 import 'package:flutter_start/widget/update_version.dart';
+import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'NavigatorUtil.dart';
@@ -249,6 +252,66 @@ class CommonUtils {
         }
         await launch(url, forceSafariVC: false, forceWebView: false);
       }
+    }
+  }
+
+  static urlJoinUser(String url,{String router = ""}) async{
+    if (url.indexOf("#")!=-1 && router ==""){
+      var split = url.split("#/");
+      if(split.length>1){
+        url = split[0];
+        router = split[1];
+      }
+    }
+    String key = await httpManager.getAuthorization();
+    print("@key:  $key ");
+    String from = "study_parent";
+    String toFrom = "study_parent_router";
+    var version =  (await PackageInfo.fromPlatform()).version;
+    var deviceId = await DeviceInfo.instance.getYondorDeviceId();
+    if (null != key && "" != key) {
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
+      if (url.contains("?")) {
+        url = "$url&$param";
+      } else {
+        url = "$url?$param";
+      }
+    }else{
+      String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
+      if (url.contains("?")) {
+        url = "$url&$param";
+      } else {
+        url = "$url?$param";
+      }
+    }
+    if(router != ""){
+      url += "&toFrom=$toFrom#/"+router;
+    }
+    return url;
+  }
+  static getHeaderImg(imgUrl,{width,height}){
+    if (imgUrl != null && imgUrl != "") {
+      return CachedNetworkImage(
+        imageUrl: imgUrl.toString().replaceAll("fs.k12china-local.com", "192.168.6.30:30781"),
+        fit: BoxFit.cover,
+        width: width,
+        height: height,
+        errorWidget: (BuildContext context, String url, dynamic error){
+          return Image(
+            image: AssetImage("images/admin/tx.png"),
+            fit: BoxFit.cover,
+            width: width,
+            height: height,
+          );
+        },
+      );
+    } else {
+      return Image(
+        image: AssetImage("images/admin/tx.png"),
+        fit: BoxFit.cover,
+        width: width,
+        height: height,
+      );
     }
   }
 }
