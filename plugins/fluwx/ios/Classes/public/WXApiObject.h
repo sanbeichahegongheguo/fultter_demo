@@ -138,64 +138,6 @@ typedef void(^WXLogBolock)(NSString *log);
 #pragma mark - WXMediaMessage
 @class WXMediaMessage;
 
-#ifndef BUILD_WITHOUT_PAY
-
-/*! @brief 第三方向微信终端发起支付的消息结构体
- *
- *  第三方向微信终端发起支付的消息结构体，微信终端处理后会向第三方返回处理结果
- * @see PayResp
- */
-@interface PayReq : BaseReq
-
-/** 商家向财付通申请的商家id */
-@property (nonatomic, copy) NSString *partnerId;
-/** 预支付订单 */
-@property (nonatomic, copy) NSString *prepayId;
-/** 随机串，防重发 */
-@property (nonatomic, copy) NSString *nonceStr;
-/** 时间戳，防重发 */
-@property (nonatomic, assign) UInt32 timeStamp;
-/** 商家根据财付通文档填写的数据和签名 */
-@property (nonatomic, copy) NSString *package;
-/** 商家根据微信开放平台文档对数据做的签名 */
-@property (nonatomic, copy) NSString *sign;
-
-@end
-
-
-#pragma mark - PayResp
-/*! @brief 微信终端返回给第三方的关于支付结果的结构体
- *
- *  微信终端返回给第三方的关于支付结果的结构体
- */
-@interface PayResp : BaseResp
-
-/** 财付通返回给商家的信息 */
-@property (nonatomic, copy) NSString *returnKey;
-
-@end
-
-
-#pragma mark - WXOfflinePay
-/*! @brief 第三方向微信终端发起离线支付
- *
- *  第三方向微信终端发起离线支付的消息结构体
- */
-@interface WXOfflinePayReq : BaseReq
-
-@end
-
-/*! @brief 第三方向微信终端发起离线支付返回
- *
- *  第三方向微信终端发起离线支付返回的消息结构体
- */
-@interface WXOfflinePayResp : BaseResp
-
-@end
-
-#endif
-
-
 
 #pragma mark - SendAuthReq
 /*! @brief 第三方程序向微信终端请求认证的消息结构
@@ -645,7 +587,7 @@ typedef void(^WXLogBolock)(NSString *log);
 @end
 
 #pragma mark - WXSubscribeMiniProgramMsg
-/** ! @brief 微信返回第三方请求选择发票结果
+/** ! @brief 第三方请求订阅小程序消息
  *
  */
 @interface WXSubscribeMiniProgramMsgReq : BaseReq
@@ -671,34 +613,6 @@ typedef void(^WXLogBolock)(NSString *log);
 #pragma mark - WXinvoiceAuthInsertResp
 
 @interface WXInvoiceAuthInsertResp : BaseResp
-
-@property (nonatomic, copy) NSString *wxOrderId;
-
-@end
-
-#pragma mark - WXNontaxPayReq
-@interface WXNontaxPayReq:BaseReq
-
-@property (nonatomic, copy) NSString *urlString;
-
-@end
-
-#pragma mark - WXNontaxPayResp
-@interface WXNontaxPayResp : BaseResp
-
-@property (nonatomic, copy) NSString *wxOrderId;
-
-@end
-
-#pragma mark - WXPayInsuranceReq
-@interface WXPayInsuranceReq : BaseReq
-
-@property (nonatomic, copy) NSString *urlString;
-
-@end
-
-#pragma mark - WXPayInsuranceResp
-@interface WXPayInsuranceResp : BaseResp
 
 @property (nonatomic, copy) NSString *wxOrderId;
 
@@ -805,6 +719,15 @@ typedef void(^WXLogBolock)(NSString *log);
  */
 @property (nonatomic, copy) NSString *musicLowBandDataUrl;
 
+/**音乐封面图Url
+ * @note 长度不能超过10K
+ */
+@property (nonatomic, copy) NSString *songAlbumUrl;
+
+/**歌词信息 LRC格式
+ * @note 长度不能超过32K
+ */
+@property (nonatomic, copy, nullable) NSString *songLyric;
 @end
 
 
@@ -1047,6 +970,12 @@ typedef void(^WXLogBolock)(NSString *log);
  * @attention json格式
  */
 @property (nonatomic, copy, nullable) NSString *extMsg;
+
+/** extDic
+ * @attention 字典，可存放图片等比较大的数据
+ */
+@property (nonatomic, copy, nullable) NSDictionary *extDic;
+
 @end
 
 #pragma mark - WXLaunchMiniProgramResp
@@ -1084,6 +1013,10 @@ typedef void(^WXLogBolock)(NSString *log);
  */
 @property (nonatomic, copy, nullable) NSString *extInfo;
 
+/** extData数据
+ * @note
+ */
+@property (nonatomic, strong, nullable) NSData *extData;
 @end
 
 

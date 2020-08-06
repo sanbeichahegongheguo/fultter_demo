@@ -27,32 +27,6 @@ static const NSString *CompanyFirstDomainByWeChatRegister = @"k12china.com";
     NSString     *scheme         = [request.URL scheme];
     NSString     *absoluteString = [navigationAction.request.URL.absoluteString stringByRemovingPercentEncoding];
     NSLog(@"Current URL is %@",absoluteString);
-    static NSString *endPayRedirectURL = nil;
-    if ([absoluteString hasPrefix:@"https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb"] && ![absoluteString hasSuffix:[NSString stringWithFormat:@"redirect_url=www.%@://",CompanyFirstDomainByWeChatRegister]]) {
-        decisionHandler(WKNavigationActionPolicyCancel);
-
-        NSString *redirectUrl = nil;
-        if ([absoluteString containsString:@"redirect_url="]) {
-            NSRange redirectRange = [absoluteString rangeOfString:@"redirect_url"];
-            endPayRedirectURL =  [absoluteString substringFromIndex:redirectRange.location+redirectRange.length+1];
-            redirectUrl = [[absoluteString substringToIndex:redirectRange.location] stringByAppendingString:[NSString stringWithFormat:@"redirect_url=www.%@://",CompanyFirstDomainByWeChatRegister]];
-        }else {
-            redirectUrl = [absoluteString stringByAppendingString:[NSString stringWithFormat:@"&redirect_url=www.%@://",CompanyFirstDomainByWeChatRegister]];
-        }
-
-        NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:redirectUrl] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:XDX_URL_TIMEOUT];
-        newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
-        newRequest.URL = [NSURL URLWithString:redirectUrl];
-        [webView loadRequest:newRequest];
-        return;
-    }
-
-    // Judge is whether to jump to other app.
-    if ([scheme isEqualToString:@"weixin"]) {
-        if (endPayRedirectURL) {
-            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:endPayRedirectURL] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:XDX_URL_TIMEOUT]];
-        }
-  }
   if (!self.hasDartNavigationDelegate) {
     decisionHandler(WKNavigationActionPolicyAllow);
     return;
