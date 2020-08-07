@@ -5,12 +5,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.webkit.WebStorage;
 import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.os.Build;
+
+import com.flutter_webview_plugin.byo.WebviewManagerByo;
+import com.flutter_webview_plugin.tencent.BannerViewFactory;
+import com.flutter_webview_plugin.tencent.SplashFactory;
+import com.tencent.smtt.sdk.QbSdk;
+import com.tencent.smtt.sdk.TbsVideo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +28,27 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.StandardMessageCodec;
 
 /**
  * FlutterWebviewPlugin
  */
 public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
     private Activity activity;
-    private WebviewManager webViewManager;
+    private WebviewManagerInterface webViewManager;
     private Context context;
-    static MethodChannel channel;
+    public static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
-
+    private int openType = 1;
     public static void registerWith(PluginRegistry.Registrar registrar) {
         if (registrar.activity() != null) {
             channel = new MethodChannel(registrar.messenger(), CHANNEL_NAME);
-            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.activeContext());
+            final FlutterWebviewPlugin instance = new FlutterWebviewPlugin(registrar.activity(), registrar.context());
             registrar.addActivityResultListener(instance);
             channel.setMethodCallHandler(instance);
+            registrar.platformViewRegistry().registerViewFactory("banner", new BannerViewFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
+            registrar.platformViewRegistry().registerViewFactory("splash", new SplashFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
         }
     }
 
@@ -94,6 +105,15 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
             case "cleanCache":
                 cleanCache(result);
                 break;
+            case "initX5":
+                initX5(call,result);
+                break;
+            case "canUseTbsPlayer":
+                canUseTbsPlayer(call,result);
+                break;
+            case "openVideo":
+                openVideo(call,result);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -128,19 +148,31 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         boolean geolocationEnabled = call.argument("geolocationEnabled");
         boolean debuggingEnabled = call.argument("debuggingEnabled");
         boolean ignoreSSLErrors = call.argument("ignoreSSLErrors");
+        if (call.hasArgument("openType")){
+            openType = call.argument("openType");
+        }
 
-        if (webViewManager == null || webViewManager.closed == true) {
+        if (webViewManager == null || webViewManager.getClosed() == true) {
             Map<String, Object> arguments = (Map<String, Object>) call.arguments;
             List<String> channelNames = new ArrayList();
             if (arguments.containsKey(JS_CHANNEL_NAMES_FIELD)) {
                 channelNames = (List<String>) arguments.get(JS_CHANNEL_NAMES_FIELD);
             }
-            webViewManager = new WebviewManager(activity, context, channelNames);
+            if (openType ==2){
+                webViewManager = new WebviewManagerByo(activity, context, channelNames);
+            }else{
+                webViewManager = new WebviewManager(activity, context, channelNames);
+            }
         }
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
-
-        activity.addContentView(webViewManager.webView, params);
+        if (this.openType==2){
+            android.webkit.WebView webView = webViewManager.getWebView();
+            activity.addContentView(webView , params);
+        }else{
+            com.tencent.smtt.sdk.WebView webView = webViewManager.getWebView();
+            activity.addContentView(webView , params);
+        }
 
         webViewManager.openUrl(withJavascript,
                 clearCache,
@@ -319,9 +351,48 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     @Override
     public boolean onActivityResult(int i, int i1, Intent intent) {
-        if (webViewManager != null && webViewManager.resultHandler != null) {
-            return webViewManager.resultHandler.handleResult(i, i1, intent);
+        if (webViewManager != null && webViewManager.getResultHandler() != null) {
+            if (this.openType==2){
+                WebviewManagerByo.ResultHandler resultHandler = webViewManager.getResultHandler();
+                return resultHandler.handleResult(i, i1, intent);
+            }else{
+                WebviewManager.ResultHandler resultHandler = webViewManager.getResultHandler();
+                return resultHandler.handleResult(i, i1, intent);
+            }
         }
         return false;
+    }
+
+    void initX5(MethodCall call, MethodChannel.Result result) {
+        final  MethodChannel.Result resp = result;
+        QbSdk.initX5Environment(context, new QbSdk.PreInitCallback() {
+            @Override
+            public void onCoreInitFinished() {
+                Log.i("WebViewFlutterPlugin","onCoreInitFinished");
+            }
+
+            @Override
+            public void onViewInitFinished(boolean b) {
+                //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
+                Log.i("onViewInitFinished","onViewInitFinished" + b);
+                resp.success(b);
+            }
+        });
+    }
+    void canUseTbsPlayer(MethodCall call, MethodChannel.Result result) {
+        //返回是否可以使用tbsPlayer
+        result.success(TbsVideo.canUseTbsPlayer(context));
+    }
+    void openVideo(MethodCall call, MethodChannel.Result result) {
+        //返回是否可以使用tbsPlayer
+        String url = call.argument("url");
+        Integer screenMode = 103 ;
+        if (null!=call.argument("screenMode")){
+            screenMode = Integer.parseInt(call.argument("screenMode").toString());
+        }
+        Bundle bundle = new Bundle();
+        bundle.putInt("screenMode", screenMode);
+        TbsVideo.openVideo(context, url, bundle);
+        result.success(null);
     }
 }

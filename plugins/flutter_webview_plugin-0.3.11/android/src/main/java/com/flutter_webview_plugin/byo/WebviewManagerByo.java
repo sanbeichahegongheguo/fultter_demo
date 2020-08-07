@@ -1,45 +1,42 @@
-package com.flutter_webview_plugin;
+package com.flutter_webview_plugin.byo;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.tencent.smtt.export.external.interfaces.SslError;
-import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
-import com.tencent.smtt.sdk.CookieManager;
-import com.tencent.smtt.sdk.ValueCallback;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebStorage;
-import com.tencent.smtt.sdk.WebView;
-
-import com.tencent.smtt.sdk.WebSettings;
-
+import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.provider.MediaStore;
 
 import androidx.core.content.FileProvider;
 
-import android.database.Cursor;
-import android.provider.OpenableColumns;
+import com.flutter_webview_plugin.FlutterWebviewPlugin;
+import com.flutter_webview_plugin.WebviewManagerInterface;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.io.File;
-import java.util.Date;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -50,7 +47,7 @@ import static android.app.Activity.RESULT_OK;
  * Created by lejard_h on 20/12/2017.
  */
 
-class WebviewManager implements WebviewManagerInterface{
+public class WebviewManagerByo implements WebviewManagerInterface{
 
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageArray;
@@ -66,7 +63,7 @@ class WebviewManager implements WebviewManagerInterface{
     }
 
     @TargetApi(7)
-    class ResultHandler {
+    public class ResultHandler {
         public boolean handleResult(int requestCode, int resultCode, Intent intent) {
             boolean handled = false;
             if (Build.VERSION.SDK_INT >= 21) {
@@ -133,7 +130,7 @@ class WebviewManager implements WebviewManagerInterface{
     Context context;
     private boolean ignoreSSLErrors = false;
 
-    WebviewManager(final Activity activity, final Context context, final List<String> channelNames) {
+    public WebviewManagerByo(final Activity activity, final Context context, final List<String> channelNames) {
         this.webView = new ObservableWebView(activity);
         this.activity = activity;
         this.context = context;
@@ -458,7 +455,7 @@ class WebviewManager implements WebviewManagerInterface{
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webView.getSettings().setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
 
         if (clearCache) {
@@ -595,12 +592,11 @@ class WebviewManager implements WebviewManagerInterface{
             webView.stopLoading();
         }
     }
-
     private void initSetting(WebView webView,Context context){
-        com.tencent.smtt.sdk.WebSettings webSetting = webView.getSettings();
+        WebSettings webSetting = webView.getSettings();
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
         webSetting.setAllowFileAccess(true);
-        webSetting.setLayoutAlgorithm(com.tencent.smtt.sdk.WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setSupportZoom(true);
         webSetting.setBuiltInZoomControls(false);
         webSetting.setUseWideViewPort(true);
@@ -612,19 +608,13 @@ class WebviewManager implements WebviewManagerInterface{
         webSetting.setJavaScriptEnabled(true);
         webSetting.setGeolocationEnabled(true);
         webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
-        webSetting.setMediaPlaybackRequiresUserGesture(false);
+//        webSetting.setMediaPlaybackRequiresUserGesture(false);
         webSetting.setSavePassword(false);
-        webSetting.setPluginState(com.tencent.smtt.sdk.WebSettings.PluginState.ON_DEMAND);
-        webSetting.setCacheMode(com.tencent.smtt.sdk.WebSettings.LOAD_NO_CACHE);
+        webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSetting.setAppCachePath(context.getDir("appcache", 0).getPath());
         webSetting.setDatabasePath(context.getDir("databases", 0).getPath());
         webSetting.setGeolocationDatabasePath(context.getDir("geolocation", 0).getPath());
-        if (webView.getX5WebViewExtension() != null) {
-            Bundle data = new Bundle();
-            data.putBoolean("standardFullScreen", false);// true表示标准全屏，会调起onShowCustomView()，false表示X5全屏；不设置默认false，
-            data.putBoolean("supportLiteWnd", false);// false：关闭小窗；true：开启小窗；不设置默认true，
-            data.putInt("DefaultVideoScreen", 1);// 1：以页面内开始播放，2：以全屏开始播放；不设置默认：1
-            webView.getX5WebViewExtension().invokeMiscMethod("setVideoParams", data);
-        }
+
     }
 }

@@ -1,4 +1,4 @@
-package com.flutter_webview_plugin;
+package com.flutter_webview_plugin.byo;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,10 +7,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
-import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import com.flutter_webview_plugin.FlutterWebviewPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.regex.Pattern;
 public class BrowserClient extends WebViewClient {
     private Pattern invalidUrlPattern = null;
     private Context context;
+
 
     public BrowserClient(Context context) {
         this(context,null);

@@ -168,6 +168,8 @@ class FlutterWebviewPlugin {
     bool geolocationEnabled,
     bool debuggingEnabled,
     bool ignoreSSLErrors,
+    int openType,
+
   }) async {
     final args = <String, dynamic>{
       'url': url,
@@ -193,6 +195,7 @@ class FlutterWebviewPlugin {
       'withOverviewMode': withOverviewMode ?? false,
       'debuggingEnabled': debuggingEnabled ?? false,
       'ignoreSSLErrors': ignoreSSLErrors ?? false,
+      'openType': openType ?? 1,
     };
 
     if (headers != null) {

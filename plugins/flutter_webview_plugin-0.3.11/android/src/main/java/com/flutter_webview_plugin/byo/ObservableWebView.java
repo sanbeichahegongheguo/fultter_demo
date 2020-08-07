@@ -1,8 +1,8 @@
-package com.flutter_webview_plugin;
+package com.flutter_webview_plugin.byo;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import com.tencent.smtt.sdk.WebView;
+import android.webkit.WebView;
 
 public class ObservableWebView extends WebView {
     private OnScrollChangedCallback mOnScrollChangedCallback;
