@@ -72,8 +72,8 @@ dependencies:
   tencent_cos:
     path: ./plugins/tencent_cos
 #直播
-  whiteboard:
-    path: ./plugins/whiteboard
+  yondor_whiteboard:
+    path: ./plugins/yondor_whiteboard
   agora_rtm: ^0.9.12
   provider: ^4.1.3
   agora_rtc_engine: ^1.0.12

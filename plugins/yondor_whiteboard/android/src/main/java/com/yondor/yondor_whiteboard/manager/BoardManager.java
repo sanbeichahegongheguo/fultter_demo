@@ -14,8 +14,8 @@ import com.herewhite.sdk.domain.RoomState;
 import com.herewhite.sdk.domain.SDKError;
 import com.herewhite.sdk.domain.SceneState;
 import com.herewhite.sdk.domain.ViewMode;
-import com.yondor.whiteboard.annotation.Appliance;
-import com.yondor.whiteboard.listener.BoardEventListener;
+import com.yondor.yondor_whiteboard.annotation.Appliance;
+import com.yondor.yondor_whiteboard.listener.BoardEventListener;
 
 
 public class BoardManager extends NetlessManager<Room> implements RoomCallbacks {

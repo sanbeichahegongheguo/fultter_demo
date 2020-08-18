@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:whiteboard/whiteboard.dart';
+import 'package:yondor_whiteboard/whiteboard.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';

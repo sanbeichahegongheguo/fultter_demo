@@ -265,7 +265,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
     NavigatorUtil.goEyeProtectionPage(context);
   }
   Future _goRoom(User userInfo) async {
-    RoomUtil.goRoomPage(context,"https://qres.k12china.com/qlib/zip/2020/07/30/16267ccdc0bc3bcb.zip",userInfo.userId, userInfo.realName, "yondor", "yondor",10086);
+    RoomUtil.goRoomPage(context,"https://qres.k12china.com/qlib/zip/2020/08/14/162afca53a6d8b96.zip",userInfo.userId, userInfo.realName, "领跑班测试-阿宽-一年级", "82398619d2d646d8b1b3f9f196fb50a6",571550);
   }
   //退出賬號
   Future _goOut(store) async {

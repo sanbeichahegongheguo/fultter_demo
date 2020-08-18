@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.lightBlueAccent,
                 indicatorColor: Colors.lightBlueAccent,
               ),
-              HomeEyePage(),
+//              HomeEyePage(),
             ],
           ),
         ));

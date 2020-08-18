@@ -15,9 +15,9 @@ import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RoomPhase;
 import com.herewhite.sdk.domain.SDKError;
 import com.herewhite.sdk.domain.SceneState;
-import com.yondor.whiteboard.listener.BoardEventListener;
-import com.yondor.whiteboard.manager.BoardManager;
-import com.yondor.whiteboard.manager.LogManager;
+import com.yondor.yondor_whiteboard.listener.BoardEventListener;
+import com.yondor.yondor_whiteboard.manager.BoardManager;
+import com.yondor.yondor_whiteboard.manager.LogManager;
 
 import java.util.Map;
 

@@ -19,7 +19,7 @@ import 'package:flutter_start/widget/LiveQuesDialog.dart';
 import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:fradio/fradio.dart';
 import 'package:fsuper/fsuper.dart';
-import 'package:whiteboard/whiteboard.dart';
+import 'package:yondor_whiteboard/whiteboard.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
@@ -405,7 +405,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget _buildCourseware(){
     return Consumer2<CourseStatusProvider,ResProvider>(builder: (context, courseStatusModel,resModel, child) {
       Widget result;
-
       if (courseStatusModel.status==0){
         result = Container(
           child: Stack(
@@ -488,6 +487,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             flickManager = FlickManager(
               videoPlayerController: file.existsSync()?VideoPlayerController.file(file):VideoPlayerController.network(widget.roomData.courseware.domain + resModel.res.data.ps.mp4),
             );
+
             if (_time !=null && _time>0){
               Future.delayed(Duration(seconds: 2), () async {
                 flickManager.flickControlManager?.seekTo(Duration(seconds: _time+2));
@@ -539,7 +539,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget _buildTop(){
     return Consumer<RoomShowTopProvider>(builder: (context, model, child) {
       if ((_hiddenTopTimer == null || !_hiddenTopTimer.isActive) && model.isShow ==true){
-        _hiddenTopTimer = Timer(Duration(seconds: 5),(){
+        _hiddenTopTimer = Timer(Duration(seconds: 4),(){
           model.setIsShow(false);
         });
       }
@@ -600,8 +600,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             ),
           )
       );
-
-
     });
 
   }
@@ -634,8 +632,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       }else if(_others.length>0){
         widget = Container(
             color: Colors.white,
-            height: ScreenUtil.getInstance().getHeightPx(220),
-            width: ScreenUtil.getInstance().getHeightPx(220),
+            height: ScreenUtil.getInstance().getWidthPx(220),
+            width: ScreenUtil.getInstance().getWidthPx(220),
             child: _others[0].coVideo==1 &&  _others[0].enableVideo==1? AgoraRenderWidget( _others[0].uid):Container(
                 color:Colors.white,
                 child: Image.asset(
@@ -680,7 +678,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                   onSubmitted: _handleSubmitted,
                                   decoration:  InputDecoration.collapsed(hintText: model.muteAllChat?"禁言中":'发送消息'),
                                 ),
-                                onTap: (){
+                                onTap: model.muteAllChat?null:(){
                                   Navigator.push(context,
                                       PopRoute(
                                           child:ChangeNotifierProvider<ChatProvider>.value(
