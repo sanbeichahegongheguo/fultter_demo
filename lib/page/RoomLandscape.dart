@@ -581,10 +581,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   ///左上角 星星
   Widget _starWidget() {
     return Consumer2<TeacherProvider, CourseStatusProvider>(builder: (context, teacherModel, courseStatusModel, child) {
-      return courseStatusModel.status == 1
+      return courseStatusModel.status != 1
           ? Positioned(
-              top: 12,
-              left: 20,
+              top: 3,
+              left: 5,
               child: new Container(
                 color: Color(0xFF00000021),
                 child: Row(
@@ -599,7 +599,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                           opacity: 1,
                           child: Image.asset(
                             "images/live/chat/icon_star.png",
-                            width: ScreenUtil.getInstance().getWidth(15),
+                            width: ScreenUtil.getInstance().getWidth(10),
                           ),
                         ),
                         label: Text(
@@ -607,7 +607,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                           style: TextStyle(
                             color: Color(0xFFff8400).withOpacity(1),
                             fontWeight: FontWeight.bold,
-                            fontSize: ScreenUtil.getInstance().getSp(42) / 4,
+                            fontSize: ScreenUtil.getInstance().getSp(36 / 4),
                           ),
                         ),
                       ),
@@ -806,8 +806,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     // Navigator.push(context, PopRoute(child: RedRain()));
     // return;
     /// 测试游戏开始
-    // Navigator.push(context, PopRoute(child: GamePayleWidget()));
-    // return;
+    Navigator.push(context, PopRoute(child: GamePayleWidget()));
+    return;
     if (model.muteAllChat) {
       return;
     }
