@@ -17,14 +17,13 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
   int completedNum = 0;
+  int _num = 0;
   bool iscompleted = false;
   List<Widget> _widgetList = [];
-
   void initState() {
     super.initState();
     setTweenList();
-    controller = new AnimationController(
-        duration: const Duration(milliseconds: 200), vsync: this)
+    controller = new AnimationController(duration: const Duration(milliseconds: 200), vsync: this)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           controller.reverse();
@@ -33,7 +32,7 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
         }
       });
     //图片宽高从0变到300
-    animation = new Tween(begin: 100.0, end: 150.0).animate(controller);
+    animation = new Tween(begin: 100.0, end: 130.0).animate(controller);
     //启动动画
     controller.forward();
   }
@@ -42,11 +41,10 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
   List<AnimationController> setTweenList() {
     List<AnimationController> _controlerList = [];
     List<Animation<Offset>> _animation = [];
-    var pointList = [Offset.zero, Offset(-3, 1.5), Offset(-3, -3)];
+    var pointList = [Offset.zero, Offset(-3, 1.5), Offset(-3, -2.5)];
     int _time = 300;
     for (int i = 0; i < widget.frequency; i++) {
-      AnimationController _controller = AnimationController(
-          duration: Duration(milliseconds: _time), vsync: this);
+      AnimationController _controller = AnimationController(duration: Duration(milliseconds: _time), vsync: this);
       _animation.add(BesselTween(pointList).animate(_controller));
       _controlerList.add(_controller);
     }
@@ -70,10 +68,11 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
             );
           },
         ));
-        Future.delayed(
-            Duration(milliseconds: _widgetList.length > 5 ? 100 * i : 200 * i),
-            () {
+        Future.delayed(Duration(milliseconds: _widgetList.length > 5 ? 100 * i : 200 * i), () {
           controlerList[i].forward();
+          setState(() {
+            _num += 1;
+          });
         });
         controlerList[i].addStatusListener((status) {
           if (status == AnimationStatus.completed) {
@@ -108,6 +107,7 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
       //           ));
       //         },
       //       ));
+
     }
 
     return _widgetList;
@@ -137,7 +137,19 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
         ? Container()
         : Stack(
             alignment: AlignmentDirectional.center,
-            children: getSlideTransition(),
+            children: [
+              ...getSlideTransition(),
+              _num != widget.frequency
+                  ? Text(
+                      "${(widget.frequency - _num).toString()}",
+                      style: TextStyle(
+                        color: Colors.red,
+                        decoration: TextDecoration.none,
+                        fontSize: 36,
+                      ),
+                    )
+                  : Container()
+            ],
           );
   }
 }
