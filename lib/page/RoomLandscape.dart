@@ -9,6 +9,7 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/widget/DIYKeyboard.dart';
+import 'package:flutter_start/widget/GamePayleWidget.dart';
 import 'package:flutter_start/widget/LiveTimerWidget.dart';
 import 'package:flutter_start/widget/InputButtomWidget.dart';
 import 'package:flutter_start/widget/LiveRankWidget.dart';
@@ -801,6 +802,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///弹出键盘
   void _showKeyboard(model) {
+    ///测试星星雨
+    // Navigator.push(context, PopRoute(child: RedRain()));
+    // return;
+    /// 测试游戏开始
+    // Navigator.push(context, PopRoute(child: GamePayleWidget()));
+    // return;
     if (model.muteAllChat) {
       return;
     }
