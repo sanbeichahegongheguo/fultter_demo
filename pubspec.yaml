@@ -35,7 +35,7 @@ dependencies:
 #  image_cropper: ^1.1.0
   flutter_redux: ^0.6.0
   rxdart: ^0.24.1
-  uuid: 2.0.2
+  uuid: 2.2.0
   path_provider: ^1.2.0
   flutter_swiper: ^1.1.6
   flutter_easyrefresh: ^1.2.7
@@ -80,6 +80,9 @@ dependencies:
   agora_rtc_engine: ^1.0.12
   archive: ^2.0.13
   bessel_tween: ^0.1.0
+  simple_animations: ^2.2.1
+  sa_multi_tween: ^1.1.1
+  just_audio: ^0.3.0
   flutter_localizations:
     sdk: flutter
 
@@ -127,6 +130,9 @@ flutter:
    - images/ic_student.png
    - images/ic_teacher.png
    - images/live/chat/
+   - assets/sounds/star.mp3
+   - assets/sounds/ready_go.mp3
+   
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
