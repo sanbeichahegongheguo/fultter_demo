@@ -9,6 +9,7 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/widget/DIYKeyboard.dart';
+import 'package:flutter_start/widget/LiveTimerWidget.dart';
 import 'package:flutter_start/widget/InputButtomWidget.dart';
 import 'package:flutter_start/widget/LiveRankWidget.dart';
 import 'package:flutter_start/widget/LiveTopDialog.dart';
@@ -221,10 +222,22 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                             _buildSel(),
                             _buildTop(),
                             _starWidget(),
+                            _getLiveTimerWidget(),
                           ],
                         )))),
           ),
         ));
+  }
+
+  ///倒计时组件
+  _getLiveTimerWidget() {
+    return Positioned(
+      right: ScreenUtil.getInstance().screenWidth * 0.2,
+      top: 0,
+      child: LiveTimerWidget(
+        time: 100,
+      ),
+    );
   }
 
   _buildRank() {
