@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/Log.dart';
 import 'package:flutter_start/common/utils/PageRouteHelper.dart';
 import 'package:flutter_start/models/Adver.dart';
 import 'package:flutter_start/models/Room.dart';
@@ -31,10 +33,12 @@ import 'package:flutter_start/page/BuildArchivesPage.dart';
 import 'package:flutter_start/page/webview_plugin.dart';
 import 'package:flutter_start/page/RoomPage.dart';
 import 'package:package_info/package_info.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:redux/redux.dart';
 import 'DeviceInfo.dart';
 
-class NavigatorUtil {
+class NavigatorUtil{
+
   ///替换
   static pushReplacementNamed(BuildContext context, String routeName) {
     Navigator.pushReplacementNamed(context, routeName);
@@ -178,8 +182,7 @@ class NavigatorUtil {
       url += "&toFrom=$toFrom#/"+router;
     }
 
-
-    print("NavigatorUtil @跳转链接:$url");
+    Log.i("NavigatorUtil @跳转链接:$url",tag:"NavigatorUtil");
     if (Platform.isAndroid){
       if(openType==null || openType ==0 ){
         //外链默认打开内核 1:X5内核 2:手机自带内核
@@ -191,7 +194,7 @@ class NavigatorUtil {
       }
       return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: openType,)));
     }else{
-     return NavigatorRouter(context, WebViewPage(url));
+     return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: 2,)));
     }
   }
 
@@ -326,4 +329,5 @@ class NavigatorUtil {
               child: new SafeArea(child: builder(context)));
         });
   }
+
 }

@@ -59,4 +59,5 @@ class Config {
   static const APP_ID = '08ca6fe94bcf4513b96020e377193954';
   static const LOGCAT_APP_ID = 1;
   static String AGORA_AUTH = base64Encode("44e9176721dd43c09999197ed05afa35:4af6376d4e044eecb68b5b4041a2a77d".codeUnits);
+  static const IOS_PAY_PARAM_KEY = "IOS_PAY_PARAM";
 }

@@ -4,12 +4,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/models/LogData.dart';
 
-/**
- * @Author: Sky24n
- * @GitHub: https://github.com/Sky24n
- * @Description: Widget Util.
- * @Date: 2018/9/29
- */
+
 
 /// Log Util.
 class Log {
@@ -105,6 +100,8 @@ class Log {
     print(
         '$tag$stag — — — — — — — — — — — — — — — — ed — — — — — — — — — — — — — — — —');
   }
+
+
 }
 abstract class LogBase {
   Map<int,Function> funMap ={
@@ -117,7 +114,8 @@ abstract class LogBase {
 
   String tagName();
 
-  void print(msg ,{int level= Log.fine}){
+  void print(msg,{int level= Log.fine}){
     funMap[level](msg,tag:tagName());
   }
+
 }

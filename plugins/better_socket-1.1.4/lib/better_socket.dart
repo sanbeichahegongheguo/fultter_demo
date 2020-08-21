@@ -24,11 +24,11 @@ class BetterSocket {
       String keyPassword,
       String storePassword,
       String keyStoreType}) {
-    _channel.invokeMethod('connentSocket', {
+    _channel.invokeMethod('connentSocket', <String,dynamic>{
       'path': path,
       "httpHeaders": httpHeaders,
       "keyStorePath": keyStorePath,
-      "trustAllHost": trustAllHost,
+      "trustAllHost": trustAllHost??false,
       "keyPassword": keyPassword,
       "storePassword": storePassword,
       "keyStoreType": keyStoreType

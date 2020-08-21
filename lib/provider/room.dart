@@ -104,7 +104,7 @@ class RoomSelProvider with ChangeNotifier {
   bool _isShow = false;
   bool get isShow => _isShow;
   Res _ques;
-  get ques => _ques;
+  Res get ques => _ques;
 
   var _quesAn;
   get quesAn => _quesAn;

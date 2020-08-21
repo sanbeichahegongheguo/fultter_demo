@@ -4,3 +4,4 @@ export 'src/base.dart';
 export 'src/javascript_channel.dart';
 export 'src/javascript_message.dart';
 export 'src/webview_scaffold.dart';
+export 'src/X5Sdk.dart';

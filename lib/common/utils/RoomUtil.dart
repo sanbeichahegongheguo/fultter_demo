@@ -98,13 +98,17 @@ class RoomUtil {
 
   static Future<bool> _handleCameraAndMic() async {
     var can = true;
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.phone,
+    var list = [
       Permission.camera,
       Permission.microphone,
       Permission.storage,
-    ].request();
+    ];
+    if(Platform.isAndroid){
+      list.add(Permission.phone);
+    }
+    Map<Permission, PermissionStatus> statuses = await list.request();
     statuses.forEach((permission, status) {
+      print("$permission     status $status");
       if (!status.isGranted){
         can = false;
       }

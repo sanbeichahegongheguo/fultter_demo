@@ -6,6 +6,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/bloc/WebviewBloc.dart';
 import 'package:flutter_start/common/channel/CameraChannel.dart';
@@ -17,6 +18,8 @@ import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/InappPurchase.dart';
+import 'package:flutter_start/common/utils/Log.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/RoomUtil.dart';
 import 'package:flutter_start/common/utils/ShareWx.dart';
@@ -51,7 +54,7 @@ class WebViewPlugin extends StatefulWidget{
   State<StatefulWidget> createState()=>new _WebViewPlugin();
 
 }
-class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
+class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver,LogBase{
 
   // 标记是否是加载中
   bool loading = true;
@@ -78,9 +81,14 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   int _status = 0;
   Timer _timer;
   //加载超时时间
-  Duration _timeoutSeconds = const Duration(seconds: 7);
+  Duration _timeoutSeconds = const Duration(seconds: 15);
   //旋转方向
   int orientation;
+
+  InappPurchase _inappPurchase;
+  String _productId  ;
+  String _orderId  ;
+  bool paying = false;
   @override
   void initState() {
      super.initState();
@@ -88,6 +96,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
      onUrlChanged = setOnUrlChanged();
      onBackChanged = setOnBackChanged();
      WidgetsBinding.instance.addObserver(this);
+     _checkIosPay();
   }
 
   @override
@@ -100,6 +109,9 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
         break;
       case AppLifecycleState.inactive:
 //        print('应用程序处于非活动状态，并且未接收用户输入');
+        if(paying){
+          flutterWebViewPlugin.evalJavascript("window.hideLoading()");
+        }
         break;
       case AppLifecycleState.paused:
         //后台展示
@@ -210,7 +222,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   @override
   void dispose() {
 
-    print("_WebViewPlugin  dispose");
+    print("_WebViewPlugin  dispose   !!!!!");
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     // 回收相关资源
@@ -220,6 +232,10 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     onBackChanged?.cancel();
     flutterWebViewPlugin?.dispose();
     _timer?.cancel();
+    if(!paying){
+      _inappPurchase?.close();
+    }
+
   }
 
 
@@ -240,19 +256,21 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   StreamSubscription<WebViewStateChanged> setOnStateChanged(){
     return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state){
       print("加载类型 "  + state.type.toString());
-
-      if(state.url.indexOf(':ROTATE') > - 1){
-        //是否包含横屏，如果包含，则强制横屏
-        print('包含横屏，选择');
-        OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
-        orientation = 1;
-      }else{
-        //当前的旋转状态是横屏才进行矫正
-        print('不包含横屏，选择竖屏');
-        if(orientation == 1){
-          OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+      if(Platform.isAndroid){
+        if(state.url.indexOf(':ROTATE') > - 1){
+          orientation = 1;
+          //是否包含横屏，如果包含，则强制横屏
+          print('包含横屏，选择');
+          OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+        }else{
+          //当前的旋转状态是横屏才进行矫正
+          print('不包含横屏，选择竖屏');
+          if(orientation == 1){
+            OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+          }
         }
       }
+
       // state.type是一个枚举类型，取值有：WebViewState.shouldStart, WebViewState.startLoad, WebViewState.finishLoad
       switch (state.type) {
         case WebViewState.stopLoad:
@@ -379,7 +397,15 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
               String _description =  _urlList["description"];
               var _shareToWeChat =  new ShareToWeChat(webPage:_imagePath,thumbnail:_thumbnail,transaction:"",title: _title,description:_description);
               CommonUtils.showGuide(context, _shareToWeChat);
-            }else if(state.url=="haxecallback:logout"){
+            }else if (state.url.indexOf("ios_pay") > -1) {
+                var params = state.url.split(":?")[1];
+                var split = params.split("&");
+                 _productId  = "com.yondor.${split[0]}";
+                _orderId  = split[1];
+                _iosPay(_productId);
+            }else if (state.url.startsWith("weixin://")){
+              goLaunch(context,state.url);
+            } else if(state.url=="haxecallback:logout"){
               print("登录失效 返回登录页面");
               showToast("登录失效,请重新登录");
               NavigatorUtil.goWelcome(context);
@@ -422,6 +448,22 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
   StreamSubscription<String> setOnUrlChanged() {
     return flutterWebViewPlugin.onUrlChanged.listen((String url) {
       print("跳转连接成功 : "+url);
+      if(Platform.isIOS){
+        if(url.indexOf(':ROTATE') > - 1){
+          orientation = 1;
+          //是否包含横屏，如果包含，则强制横屏
+          print('包含横屏，选择');
+          OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+          OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+        }else{
+          //当前的旋转状态是横屏才进行矫正
+          print('不包含横屏，选择竖屏');
+          if(orientation == 1){
+            OrientationPlugin.setPreferredOrientations([DeviceOrientation.portraitUp]);
+            OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+          }
+        }
+      }
 
       if( _status != 1 ||_showAd != false ){
         setState((){
@@ -446,7 +488,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
     var param = {};
     param["type"] = 0;
     var result;
-    if (Platform.isAndroid){
+    if (true){
       url = Uri.decodeComponent(url);
       List<String> split = url.split(":");
       if (split.length>=5){
@@ -475,11 +517,16 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
         return data;
       }
     }
-    image = await ImageCropper.cropImage(
-      sourcePath: image?.path ?? result["path"],
+    if (Platform.isAndroid){
+      image = await ImageCropper.cropImage(
+        sourcePath: image?.path ?? result["path"],
 //      toolbarTitle: "选择图片",
-      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false,initAspectRatio: CropAspectRatioPreset.original),
-    );
+        androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片",lockAspectRatio:false,initAspectRatio: CropAspectRatioPreset.original),
+      );
+    }else{
+      image = new File(image?.path ?? result["path"]);
+    }
+
     //压缩
     if  (image!=null){
       int size = (await image.length());
@@ -694,16 +741,142 @@ class _WebViewPlugin extends State<WebViewPlugin> with  WidgetsBindingObserver{
             var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"]??store.state.application.detectxySave==1);
             flutterWebViewPlugin.evalJavascript("window.dx('$result')");
           }),
+      JavascriptChannel(
+          name: 'GetPlatform',
+          onMessageReceived: (JavascriptMessage message) async {
+            String platform = "ios";
+            if (Platform.isIOS){
+              platform  = "ios";
+            }else if (Platform.isAndroid){
+              platform = "android";
+            }
+            flutterWebViewPlugin.evalJavascript("window.platformCall('$platform')");
+          }),
       /// 使用手写功能
       JavascriptChannel(
           name: 'OpenCourseware',
           onMessageReceived: (JavascriptMessage message) async {
-          await flutterWebViewPlugin.hide();
           var msg = jsonDecode(message.message);
+          print("OpenCourseware msg $msg");
+            if (ObjectUtil.isEmptyString(msg["catalogZipUrl"]) ||ObjectUtil.isEmptyString(msg["className"])||ObjectUtil.isEmptyString(msg["peTeacherPlanId"])||msg["peLiveCourseallotId"]==null){
+              flutterWebViewPlugin.evalJavascript("window.showMsg('#1 参数错误加入房间失败！')");
+              return;
+            }
+          await flutterWebViewPlugin.hide();
           Store<GSYState> store = StoreProvider.of(context);
           _goRoom(store.state.userInfo,msg["catalogZipUrl"],msg["className"],msg["peTeacherPlanId"],msg["peLiveCourseallotId"]);
           })
     ].toSet();
+  }
+
+  _iosPay(String productId) async {
+    print("开始购买！！",level: Log.info);
+    flutterWebViewPlugin.evalJavascript("window.showLoading('加载中')");
+    //检查是否有漏单
+    await  _checkIosPay();
+    //初始化
+    await _initInappPurchase();
+    //获取是否有商品
+    List<IAPItem> items = await FlutterInappPurchase.instance.getProducts([productId]);
+    if (ObjectUtil.isEmptyList(items)){
+      print("没有找到商品！！",level: Log.info);
+      flutterWebViewPlugin.evalJavascript("window.hideLoading()");
+      return;
+    }
+    paying = true;
+    _inappPurchase.pay(productId);
+  }
+
+  _initInappPurchase() async {
+   if (_inappPurchase == null) {
+      _inappPurchase = new InappPurchase();
+      await _inappPurchase.init();
+
+      // 更新购买订阅消息
+      _inappPurchase.purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
+        paying = false;
+        print("purchaseUpdatedSubscription 订阅成功！！",level: Log.info);
+        flutterWebViewPlugin.evalJavascript("window.hideLoading()");
+        var transactionId = productItem.transactionId;
+        var receipt = productItem.transactionReceipt;
+        Map buyParam = new Map();
+        buyParam["transactionId"]= transactionId;
+        buyParam["receipt"]= receipt;
+        buyParam["orderId"]= _orderId;
+        SpUtil.putObject(Config.IOS_PAY_PARAM_KEY, buyParam);
+        _validateApplePay(receipt,_orderId,transactionId);
+        print("transactionId:$transactionId   receipt:$receipt");
+        print('purchase-updated: $productItem');
+      });
+      // 购买报错订阅消息
+      _inappPurchase.purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((purchaseError) {
+        paying = false;
+        print('purchase-error: $purchaseError',level: Log.error);
+        flutterWebViewPlugin.evalJavascript("window.hideLoading()");
+        String msg = "#3 ${purchaseError.code}  ${purchaseError.message}";
+        if(purchaseError.code == "E_UNKNOWN"){
+          msg  =  "#4 网络异常，请重试！";
+        }
+        if(purchaseError.code == "E_USER_CANCELLED"){
+          msg  =  "您已取消！";
+        }
+        flutterWebViewPlugin.evalJavascript("window.showMsg('$msg')");
+      });
+      _inappPurchase.conectionSubscription = FlutterInappPurchase.connectionUpdated.listen((connected) {
+        //开始支付
+        print('connected: $connected',level: Log.info);
+        flutterWebViewPlugin.evalJavascript("window.hideLoading()");
+        flutterWebViewPlugin.evalJavascript("window.showLoading('正在处理')");
+      });
+    }
+  }
+
+
+  _validateApplePay(String receiptData,String orderId,String transactionId) async {
+    var res = await ApplicationDao.iosPay(receiptData, orderId, transactionId);
+    if (res!=null && !res.result){
+      //检验失败或者超时,重试
+      _validateApplePay(receiptData, orderId, transactionId);
+      return;
+    }
+    print("res====>$res");
+    if (res!=null && res.result){
+      var data  = res.data;
+      if (data["code"] == 200){
+        print("11111   ${jsonEncode(data["data"])}");
+        flutterWebViewPlugin.evalJavascript("window.iosPayCall('${jsonEncode(data["data"])}')");
+        if (data["data"]["status"] == 1 ||  data["data"]["status"] == 3){
+          //1 充值成功 3 已经充值
+          print("data==>${data["data"]}");
+          await SpUtil.remove(Config.IOS_PAY_PARAM_KEY);
+        }else{
+          flutterWebViewPlugin.evalJavascript("window.showMsg('#1 处理异常，如已付款请联系客服！')");
+        }
+      }else{
+        flutterWebViewPlugin.evalJavascript("window.showMsg('#2 处理异常，如已付款请联系客服！')");
+      }
+    }
+  }
+  _checkIosPay() async {
+    print("检查是否 漏单 ！！！！",level: Log.info);
+    var param = await  SpUtil.getObject(Config.IOS_PAY_PARAM_KEY);
+    if (ObjectUtil.isNotEmpty(param)){
+      print(" 漏单了 ！！！！！orderId ${param["orderId"]}" ,level: Log.error);
+      var transactionId = param["transactionId"];
+      var receipt = param["receipt"];
+      var orderId = param["orderId"];
+      await _validateApplePay(receipt,orderId,transactionId);
+    }
+  }
+
+  @override
+  String tagName() {
+    return "webview_plugin";
+  }
+
+ @override
+  void print(msg, {int level = Log.fine}) {
+    super.print(msg, level:Log.fine);
   }
 
   Future _goRoom(User userInfo,String url,var roomName, var roomUuid,var peLiveCourseallotId) async {

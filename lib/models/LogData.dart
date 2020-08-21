@@ -3,6 +3,7 @@ import 'dart:convert' show json;
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+
 class LogData {
   int id;
   int t;

@@ -19,6 +19,7 @@ main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
     runZoned(() async {
+
       runApp(MyApp());
       await Log.init(isDebug: Config.DEBUG);
       if (Platform.isAndroid) {

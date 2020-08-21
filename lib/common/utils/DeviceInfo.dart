@@ -43,6 +43,7 @@ class DeviceInfo {
     //根据平台获取deviceId
     if (Platform.isAndroid) {
       var imei = await ImeiPlugin.getImei();
+
       if (null != imei && imei == "Permission Denied") {
         this.deviceId = this._deviceInfoMap["androidId"];
       } else {

@@ -1,5 +1,5 @@
 #import "BetterSocketPlugin.h"
-#import <SRWebSocket.h>
+#import "SRWebSocket.h"
 
 
 @interface BetterSocketPlugin()<SRWebSocketDelegate,FlutterStreamHandler>
@@ -26,15 +26,16 @@
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
     } else if ([@"connentSocket" isEqualToString:call.method]) {
         NSDictionary *dict = call.arguments;
+        NSLog(@"dict is %@",dict);
         self.webSocket.delegate = nil;
         [self.webSocket close];
-        NSDictionary *hedaer = dict[@"httpHeaders"];
-        NSString *keyStorePath = dict[@"keyStorePath"];
-        NSString *keyPassword = dict[@"keyPassword"];
-        NSString *storePassword = dict[@"storePassword"];
-        NSString *keyStoreType = dict[@"keyStoreType"];
+//        NSDictionary *hedaer = dict[@"httpHeaders"];
+//        NSString *keyStorePath = dict[@"keyStorePath"];
+//        NSString *keyPassword = dict[@"keyPassword"];
+//        NSString *storePassword = dict[@"storePassword"];
+//        NSString *keyStoreType = dict[@"keyStoreType"];
         NSMutableURLRequest *request =[NSMutableURLRequest requestWithURL:[NSURL URLWithString:dict[@"path"]]];
-        request.allHTTPHeaderFields = hedaer;
+//        request.allHTTPHeaderFields = hedaer;
         self.webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:@[] allowsUntrustedSSLCertificates:[dict[@"trustAllHost"] boolValue]];
         
         self.webSocket.delegate = self;

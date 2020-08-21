@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'dart:io';
 class Whiteboard extends StatefulWidget {
   final String uuid;
   final String roomToken;
@@ -22,7 +24,7 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return AndroidView(
+    return Platform.isAndroid?AndroidView(
           viewType: "whiteboard_view",
           creationParams: {"appIdentifier":widget.appIdentifier,"uuid":widget.uuid,"roomToken":widget.roomToken},
           creationParamsCodec: const StandardMessageCodec(),
@@ -30,11 +32,19 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
             MethodChannel  _channel =  MethodChannel('com.yondor.live/whiteboard_$id');
             widget.controller.setChannel(_channel);
           }
-      );
+      ):UiKitView(
+        viewType: "whiteboard_view",
+        creationParams: {"appIdentifier":widget.appIdentifier,"uuid":widget.uuid,"roomToken":widget.roomToken},
+        creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated:(id){
+          MethodChannel  _channel =  MethodChannel('com.yondor.live/whiteboard_$id');
+          widget.controller.setChannel(_channel);
+        },
+    );
   }
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => Platform.isAndroid;
 }
 class WhiteboardController {
   MethodChannel _channel;

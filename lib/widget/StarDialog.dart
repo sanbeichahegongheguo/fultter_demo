@@ -24,7 +24,7 @@ class _StarDialogState extends State<StarDialog> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    var _maxContentHeight = screenSize.height *0.8;
+    var _maxContentHeight = ( ScreenUtil.getInstance().screenWidth * 0.8 ) - MediaQuery.of(context).padding.left;
     return Container(
       height: screenSize.height,
       width: screenSize.width,
@@ -87,6 +87,7 @@ class _StarDialogState extends State<StarDialog> with TickerProviderStateMixin {
       ),
     );
   }
+
   @override
   void dispose() {
     super.dispose();

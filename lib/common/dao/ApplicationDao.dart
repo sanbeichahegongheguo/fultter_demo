@@ -228,6 +228,21 @@ class ApplicationDao{
     return new DataResult(result, result!=null);
   }
 
+  static iosPay(String receiptData,String orderId,String transactionId) async{
+    var params = {"receiptData": receiptData, "orderId": orderId, "transactionId": transactionId};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().validateApplePay(), params, null, Options(method: "post"));
+    var result;
+    if (res != null && res.result) {
+      var json = res.data;
+      if (null!=json) {
+        result = json;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, result!=null);
+  }
+
 
   ///对象统计
   static sendLogcat(List<LogData> dataList) async {
@@ -282,7 +297,7 @@ class ApplicationDao{
     dataList.removeWhere((element) => element.l<logConfig.level);
     if (dataList.length ==0 ){
       print("#2 logcat no level !!");
-      return;
+      return null;
     }
     var key = await DeviceInfo.instance.getDeviceUUID();
     var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
@@ -295,7 +310,7 @@ class ApplicationDao{
     }else{
       device  = deviceInfo["model"];
     }
-    var dataJson = {"appid": Config.LOGCAT_APP_ID, "uid": uid,"device": device, "platform": df, "key" : key,"version":vn,"data": dataList};
+    var dataJson = {"appid": 1, "uid": uid,"device": device, "platform": df, "key" : key,"version":vn,"data": dataList};
     Log.d("dataJson===>$dataJson",tag: "sendLogcat");
     res = await httpManager.netFetch(AddressUtil.getInstance().logcat(), dataJson, null, new Options(method: "post"),contentType:HttpManager.CONTENT_TYPE_JSON);
     Log.d("sendLogcat res ${res?.data}",tag: "sendLogcat");

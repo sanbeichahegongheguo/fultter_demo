@@ -43,6 +43,7 @@ class AddressUtil {
     sw_api_ = "https://api.k12china.com/sw/api/v1/";
     stu_upload = "https://www.k12china.com/stu_upload/";
     getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
+
     ws_url = "wss://www.k12china.com";
     apiHost = "https://api.k12china.com/";
     qresHost = "https://qres.k12china.com/";
@@ -516,6 +517,11 @@ class AddressUtil {
   ///清除密码
    delCheckPassword(){
     return "${studentHost}delCheckPassword";
+  }
+
+  ///IOS支付检验
+  validateApplePay() {
+    return "${stu_app}home/validate_apple_pay";
   }
 
   ///加入房间

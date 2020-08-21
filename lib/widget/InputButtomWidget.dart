@@ -13,6 +13,9 @@ class InputButtomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final padding = MediaQuery.of(context).padding;
+
     return new Scaffold(
       backgroundColor: Colors.transparent,
       body: new Column(
@@ -29,7 +32,7 @@ class InputButtomWidget extends StatelessWidget {
           ),
           new Container(
               color: Color(0xFFF4F4F4),
-              padding: EdgeInsets.only(left: 16,top: 8,bottom: 8,right: 16),
+              padding: EdgeInsets.only(left: 16 + padding.left,top: 8,bottom: 8,right: 16),
               child:  Container(
                 decoration: BoxDecoration(
                     color: Colors.white
