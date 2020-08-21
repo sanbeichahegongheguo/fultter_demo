@@ -14,11 +14,9 @@ import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/common/utils/RoomUtil.dart';
 import 'package:flutter_start/models/index.dart';
-import 'package:flutter_start/widget/StarGif.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:oktoast/oktoast.dart';
-
 
 ///管理页面
 class Admin extends StatefulWidget {
@@ -30,11 +28,12 @@ class Admin extends StatefulWidget {
   }
 }
 
-class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, SingleTickerProviderStateMixin{
+class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, SingleTickerProviderStateMixin {
   @override
   initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -44,7 +43,6 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
       return Container(
         decoration: BoxDecoration(
           color: Color(0xFFf0f4f7),
-
         ),
         child: ListView(
           children: <Widget>[
@@ -52,13 +50,10 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
               children: <Widget>[
                 Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(13) ),
+                    margin: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(13)),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      image: new DecorationImage(
-                        image: new AssetImage("images/admin/userInfo_bg.png"),
-                          alignment:Alignment.bottomRight
-                      ),
+                      image: new DecorationImage(image: new AssetImage("images/admin/userInfo_bg.png"), alignment: Alignment.bottomRight),
                     ),
                     child: Column(
                       children: <Widget>[
@@ -86,7 +81,9 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                             width: ScreenUtil.getInstance().getWidthPx(200),
                                             height: ScreenUtil.getInstance().getHeightPx(50),
                                             child: Align(
-                                              child: Text("更换头像", style: TextStyle(color: Color(0xFFffffff), fontSize: ScreenUtil.getInstance().getSp(24 / 3)), textAlign: TextAlign.center),
+                                              child: Text("更换头像",
+                                                  style: TextStyle(color: Color(0xFFffffff), fontSize: ScreenUtil.getInstance().getSp(24 / 3)),
+                                                  textAlign: TextAlign.center),
                                               alignment: Alignment.center,
                                             ),
                                           )),
@@ -99,13 +96,13 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                               ),
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment:CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Container(
-                                    padding:EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(52) ),
+                                    padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(52)),
                                     child: Text(
                                       store.state.userInfo.realName,
-                                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(64 / 3),fontWeight:FontWeight.w800 ),
+                                      style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(64 / 3), fontWeight: FontWeight.w800),
                                     ),
                                   ),
                                   SizedBox(
@@ -115,11 +112,11 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
                                       Container(
-                                        padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
-                                          borderRadius: new BorderRadius.all(
-                                              Radius.circular((10.0))),
+                                          borderRadius: new BorderRadius.all(Radius.circular((10.0))),
                                         ),
                                         child: Text(
                                           store.state.userInfo.schoolName,
@@ -128,11 +125,11 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                       ),
                                       Container(
                                         margin: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(30)),
-                                        padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
-                                          borderRadius: new BorderRadius.all(
-                                              Radius.circular((10.0))),
+                                          borderRadius: new BorderRadius.all(Radius.circular((10.0))),
                                         ),
                                         child: Text(
                                           store.state.userInfo.className,
@@ -146,10 +143,8 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                             ],
                           ),
                         ),
-
                       ],
-                    )
-                ),
+                    )),
                 Column(
                   children: <Widget>[
                     _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo),
@@ -158,8 +153,12 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
-                    _getBt("退出账号", "images/admin/icon_out.png", (){_goOut(store);}),
-                    _getBt("测试直播", "images/admin/icon_out.png", (){_goRoom(store.state.userInfo);}),
+                    _getBt("退出账号", "images/admin/icon_out.png", () {
+                      _goOut(store);
+                    }),
+                    _getBt("测试直播", "images/admin/icon_out.png", () {
+                      _goRoom(store.state.userInfo);
+                    }),
                   ],
                 ),
               ],
@@ -169,10 +168,12 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
       );
     });
   }
+
   _setMonitoringPassword() {
     ApplicationDao.trafficStatistic(569);
     NavigatorUtil.goMonitoringPassword(context);
   }
+
   //判断用户是否有头像
   isNetwork(imgUrl) {
     if (imgUrl != null) {
@@ -197,8 +198,8 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
     File image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera);
     image = await ImageCropper.cropImage(
       sourcePath: image.path,
-      androidUiSettings:  AndroidUiSettings(toolbarTitle:"选择图片"),
-      aspectRatio:CropAspectRatio(ratioX:1.0,ratioY:1.0),
+      androidUiSettings: AndroidUiSettings(toolbarTitle: "选择图片"),
+      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
       maxHeight: 350,
       maxWidth: 350,
     );
@@ -264,47 +265,67 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
     ApplicationDao.trafficStatistic(316);
     NavigatorUtil.goEyeProtectionPage(context);
   }
+
   Future _goRoom(User userInfo) async {
-    RoomUtil.goRoomPage(context,"https://qres.k12china.com/qlib/zip/2020/08/14/162afca53a6d8b96.zip",userInfo.userId, userInfo.realName, "领跑班测试-阿宽-一年级", "82398619d2d646d8b1b3f9f196fb50a6",571550);
+    RoomUtil.goRoomPage(context, "https://qres.k12china.com/qlib/zip/2020/08/19/162ca8cc2364de1a.zip", userInfo.userId, userInfo.realName, "领跑班测试-阿宽-一年级",
+        "1bd4b733ae584407bf0267fa4c1841b6", 571552);
   }
+
   //退出賬號
   Future _goOut(store) async {
     print("退出賬號");
-    var outMsg= Column(
+    var outMsg = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        Text("是否退出当前账号",style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3)),),
+        Text(
+          "是否退出当前账号",
+          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3)),
+        ),
         Row(
-          mainAxisAlignment:MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CommonUtils.buildBtn("确定",width:ScreenUtil.getInstance().getWidthPx(300),height:ScreenUtil.getInstance().getHeightPx(114), decorationColor:  Colors.blueAccent,textColor: Colors.white,onTap: (){_sureOnTap(store);}),
+            CommonUtils.buildBtn("确定",
+                width: ScreenUtil.getInstance().getWidthPx(300),
+                height: ScreenUtil.getInstance().getHeightPx(114),
+                decorationColor: Colors.blueAccent,
+                textColor: Colors.white, onTap: () {
+              _sureOnTap(store);
+            }),
             SizedBox(
               width: ScreenUtil.getInstance().getWidthPx(36),
             ),
-            CommonUtils.buildBtn("取消",width:ScreenUtil.getInstance().getWidthPx(300),height:ScreenUtil.getInstance().getHeightPx(114),onTap: _cancelOnTap, ),
+            CommonUtils.buildBtn(
+              "取消",
+              width: ScreenUtil.getInstance().getWidthPx(300),
+              height: ScreenUtil.getInstance().getHeightPx(114),
+              onTap: _cancelOnTap,
+            ),
           ],
         )
       ],
     );
-    var isOut = await CommonUtils.showEditDialog(context,outMsg,height: ScreenUtil.getInstance().getHeightPx(400),width: ScreenUtil.getInstance().getWidthPx(906));
-    if (isOut!=null&&isOut){
+    var isOut =
+        await CommonUtils.showEditDialog(context, outMsg, height: ScreenUtil.getInstance().getHeightPx(400), width: ScreenUtil.getInstance().getWidthPx(906));
+    if (isOut != null && isOut) {
       NavigatorUtil.goWelcome(context);
       showToast("退出成功");
-      Future.delayed(Duration(milliseconds:500)).then((_){
-        UserDao.logout(store,context);
+      Future.delayed(Duration(milliseconds: 500)).then((_) {
+        UserDao.logout(store, context);
       });
     }
   }
+
   //确定
-   _sureOnTap(store) async{
-     ApplicationDao.trafficStatistic(90);
-     Navigator.pop(context,true);
+  _sureOnTap(store) async {
+    ApplicationDao.trafficStatistic(90);
+    Navigator.pop(context, true);
   }
 
   //取消选择
-  void _cancelOnTap(){
-    Navigator.pop(context,false);
+  void _cancelOnTap() {
+    Navigator.pop(context, false);
   }
+
   _getBt(btName, btImg, btPressed) {
     return MaterialButton(
       elevation: 0,

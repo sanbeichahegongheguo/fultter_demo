@@ -75,20 +75,21 @@ class AddressUtil {
 
   static AddressUtil _singleton = AddressUtil();
 
-  static AddressUtil getInstance()  {
+  static AddressUtil getInstance() {
     return _singleton;
   }
-  static  String CheckIndexKey = "checkList_index";
+
+  static String CheckIndexKey = "checkList_index";
   List<String> checkList = [
     "https://www.yondor.cn/stu_app/v1/admin/application",
   ];
   init() async {
-    var index = SpUtil.getInt(CheckIndexKey,defValue: 0);
+    var index = SpUtil.getInt(CheckIndexKey, defValue: 0);
     for (var i = 0; i < checkList.length; i++) {
       var res = await ApplicationDao.appCheck(checkList[i]);
-      if (res!=null &&res.result){
-        var data =res.data;
-        index =  data["hostType"];
+      if (res != null && res.result) {
+        var data = res.data;
+        index = data["hostType"];
         SpUtil.putInt(CheckIndexKey, i);
       }
     }
@@ -104,9 +105,6 @@ class AddressUtil {
         break;
     }
   }
-
-
-
 
   login() {
     return "${studentHost}login";
@@ -276,6 +274,7 @@ class AddressUtil {
   getParentHomeWorkDataTotal() {
     return "${sw_api_}course/getParentHomeWorkDataTotal";
   }
+
   ///获取热门兑换礼物
   getHotGoodsList() {
     return "${studentHost}getHotConvertMallGoodsList";
@@ -474,48 +473,49 @@ class AddressUtil {
   goAgreement() {
     return "${h5Host}app-reg/privacyProtocol.html";
   }
+
   // 获取用户学习的时间
-   getStudyTime(){
+  getStudyTime() {
     return "${stu_app}home/get_study_time";
   }
 
   // 每一分钟存储用户学习的时间
-   saveStudyTotalTime(){
+  saveStudyTotalTime() {
     return "${stu_app}home/save_study_totaltime";
   }
 
   // 设置用户延时的时间
-   saveDelayTime(){
+  saveDelayTime() {
     return "${stu_app}home/save_delay_time";
   }
 
   // 传送用户禁止的时间
-   saveForbidTime(){
+  saveForbidTime() {
     return "${stu_app}home/save_forbid_time";
   }
 
   // 获取上传密钥
-   uploadSign(){
+  uploadSign() {
     return "${stu_upload}sts";
   }
 
   ///检查是否设置监护密码
-   getCheckPassword(){
+  getCheckPassword() {
     return "${studentHost}getCheckPassword";
   }
 
   ///检查监护密码是否正确
-   checkPassword(){
+  checkPassword() {
     return "${studentHost}checkPassword";
   }
 
   ///修改密码
-   editCheckPassword(){
+  editCheckPassword() {
     return "${studentHost}editCheckPassword";
   }
 
   ///清除密码
-   delCheckPassword(){
+  delCheckPassword() {
     return "${studentHost}delCheckPassword";
   }
 
@@ -543,55 +543,82 @@ class AddressUtil {
   roomUser(String appId, String roomId, String userId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/user/$userId";
   }
+
   ///聊天
   roomChat(String appId, String roomId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/chat";
   }
+
   ///获取房间白班信息
   roomBoard(String appId, String roomId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/board";
   }
+
   ///举手连麦
   roomCoVideo(String appId, String roomId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/covideo";
   }
 
   ///加入房间
-  socketUrl(String key,String roomId) {
+  socketUrl(String key, String roomId) {
     return "$ws_url/stu_chat/live?key=$key&roomId=$roomId";
   }
+
   ///腾讯云日志
   logcat() {
     return "${apiHost}logcat/app";
   }
+
   ///腾讯云日志配置
-  logcatConfig(appid,userId) {
+  logcatConfig(appid, userId) {
     return "${apiHost}logcat/config/$appid/$userId";
   }
+
   ///领取红包
   roomRewardStar() {
     return "${stu_app}live_broadcast/star";
   }
+
+  ///获取用户星星
+  getUserStar() {
+    return "${stu_app}live_broadcast/star/user";
+  }
+
   ///是否提交题目
   isDoQues() {
     return "${stu_app}live_broadcast/is_save_ques";
   }
+
   ///题目答题前三
   roomQuesTop() {
     return "${stu_app}live_broadcast/ques_top";
   }
+
   ///排行榜
   roomRankList() {
     return "${stu_app}home/live/rank/list";
   }
+
+  ///排行榜
+  roomStarRankList() {
+    return "${stu_app}live_broadcast/star/rank/list";
+  }
+
   ///排行榜
   roomRankUser() {
     return "${stu_app}home/live/rank/user";
   }
+
+  ///排行榜
+  roomStarRankUser() {
+    return "${stu_app}live_broadcast/star/rank/user";
+  }
+
   ///提交题目
   roomSaveQues() {
     return "${stu_app}live_broadcast/save_ques";
   }
+
   ///保存题目到题库
   saveQuesToQlib() {
     return "${stu_app}admin/quest";

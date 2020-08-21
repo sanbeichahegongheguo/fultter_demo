@@ -87,7 +87,7 @@ dependencies:
   bessel_tween: ^0.1.0
   simple_animations: ^2.2.1
   sa_multi_tween: ^1.1.1
-  just_audio: ^0.3.0
+  just_audio: ^0.3.3
   flutter_localizations:
     sdk: flutter
 

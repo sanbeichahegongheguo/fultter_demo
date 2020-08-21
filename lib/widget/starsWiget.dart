@@ -1,5 +1,7 @@
 import 'package:bessel_tween/bessel_tween.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/provider/room.dart';
+import 'package:provider/provider.dart';
 
 enum AniProps { offset }
 
@@ -41,7 +43,7 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
   List<AnimationController> setTweenList() {
     List<AnimationController> _controlerList = [];
     List<Animation<Offset>> _animation = [];
-    var pointList = [Offset.zero, Offset(-3, 1.5), Offset(-3, -2.5)];
+    var pointList = [Offset.zero, Offset(-2.5, 1.5), Offset(-2.1, -1.6)];
     int _time = 300;
     for (int i = 0; i < widget.frequency; i++) {
       AnimationController _controller = AnimationController(duration: Duration(milliseconds: _time), vsync: this);
@@ -76,7 +78,9 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
         });
         controlerList[i].addStatusListener((status) {
           if (status == AnimationStatus.completed) {
+            final starWidgetProvider = Provider.of<StarWidgetProvider>(context, listen: false);
             completedNum += 1;
+            starWidgetProvider.increment();
             if (completedNum == widget.frequency - 3) {
               setState(() {});
             }
@@ -111,15 +115,6 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
     }
 
     return _widgetList;
-  }
-
-  getImage() {
-    var image;
-    if (completedNum != widget.frequency) {
-    } else {
-      image = Center();
-    }
-    return image;
   }
 
   @override

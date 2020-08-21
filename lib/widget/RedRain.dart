@@ -116,7 +116,7 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
               completed.add(index);
               if (completed.length == _starNum) {
                 //播放完毕
-                print("123123");
+                print("播放完毕");
                 Navigator.pop(context, _starMap.length);
               }
             }
@@ -264,7 +264,7 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
   @override
   void dispose() {
     super.dispose();
-    player.dispose();
+    player?.dispose();
     _controllerList?.forEach((element) {
       element?.dispose();
     });

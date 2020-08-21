@@ -1,53 +1,52 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_start/common/net/address_util.dart';
-import 'package:flutter_start/common/redux/gsy_state.dart';
-import 'package:flutter_start/common/utils/CommonUtils.dart';
-import 'package:flutter_start/common/utils/NavigatorUtil.dart';
-import 'package:flutter_start/models/Courseware.dart';
-import 'package:flutter_start/widget/DIYKeyboard.dart';
-import 'package:flutter_start/widget/GamePayleWidget.dart';
-import 'package:flutter_start/widget/LiveTimerWidget.dart';
-import 'package:flutter_start/widget/InputButtomWidget.dart';
-import 'package:flutter_start/widget/LiveRankWidget.dart';
-import 'package:flutter_start/widget/LiveTopDialog.dart';
-import 'package:flutter_start/widget/StarGif.dart';
-import 'package:flutter_start/widget/RedPacket.dart';
-import 'package:flutter_start/widget/RedRain.dart';
-import 'package:flutter_start/widget/StarDialog.dart';
-import 'package:flutter_start/widget/LiveQuesDialog.dart';
-import 'package:flutter_start/widget/courseware_video.dart';
-import 'package:flutter_start/widget/starsWiget.dart';
-import 'package:fradio/fradio.dart';
-import 'package:fsuper/fsuper.dart';
-import 'package:yondor_whiteboard/whiteboard.dart';
 import 'package:agora_rtm/agora_rtm.dart';
+import 'package:better_socket/better_socket.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
+import 'package:flutter_start/common/net/address_util.dart';
+import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/common/redux/gsy_state.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/Log.dart';
+import 'package:flutter_start/common/utils/NavigatorUtil.dart';
 import 'package:flutter_start/models/ChatMessage.dart';
+import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/models/RoomUser.dart';
 import 'package:flutter_start/provider/provider.dart';
-import 'package:flutter_start/widget/bubble.dart';
+import 'package:flutter_start/widget/DIYKeyboard.dart';
+import 'package:flutter_start/widget/GamePayleWidget.dart';
+import 'package:flutter_start/widget/InputButtomWidget.dart';
+import 'package:flutter_start/widget/LiveQuesDialog.dart';
+import 'package:flutter_start/widget/LiveRankWidget.dart';
+import 'package:flutter_start/widget/LiveTimerWidget.dart';
+import 'package:flutter_start/widget/LiveTopDialog.dart';
+import 'package:flutter_start/widget/RedPacket.dart';
+import 'package:flutter_start/widget/RedRain.dart';
+import 'package:flutter_start/widget/StarGif.dart';
+import 'package:flutter_start/widget/UserStarWidget.dart';
+import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_start/widget/starsWiget.dart';
+import 'package:fradio/fradio.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
-import 'package:webview_flutter_plus/webview_flutter_plus.dart';
-import 'package:flick_video_player/flick_video_player.dart';
-import 'package:video_player/video_player.dart';
-import 'package:flutter_start/common/net/api.dart';
-import 'package:flutter_start/common/utils/Log.dart';
-import 'package:better_socket/better_socket.dart';
+import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
-import 'dart:math';
+import 'package:video_player/video_player.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+import 'package:yondor_whiteboard/whiteboard.dart';
 
 class RoomLandscapePage extends StatefulWidget {
   static final String sName = "RoomLandscape";
@@ -59,22 +58,25 @@ class RoomLandscapePage extends StatefulWidget {
   const RoomLandscapePage({Key key, this.roomData, this.token, this.boardId, this.boardToken}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return RoomLandscapePageState(courseState: roomData.room.courseState);
+    return RoomLandscapePageState(roomData);
   }
 }
 
 class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerProviderStateMixin {
-  final int courseState;
   static const String mp4 = "MP4";
   static const String ppt = "PIC";
   static const String h5 = "HTM";
   static const String SEL = "SEL"; //1:SEL 选择题
+  static const String MULSEL = "MULSEL"; //2:SEL 多选择题
+  static const String JUD = "JUD"; //4:JUD 判断题
   static const String RANRED = "RANRED"; //80:RANRED 随机红包
   static const String REDRAIN = "REDRAIN"; //81:REDRAIN 红包雨
+  static const String TIMER = "timer"; //timer  定时器
+  static const String BREAK = "BREAK"; //timer  定时器
 
-  CourseStatusProvider _courseStatusProvider;
-  RoomLandscapePageState({this.courseState = 0}) {
-    _courseStatusProvider = CourseStatusProvider(courseState);
+  CourseProvider _courseProvider;
+  RoomLandscapePageState(RoomData roomData) {
+    _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData);
   }
 
   @override
@@ -109,7 +111,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   BoardProvider _boardProvider = BoardProvider();
   ChatProvider _chatProvider = ChatProvider();
   RoomSelProvider _roomSelProvider = RoomSelProvider();
-
+  HandProvider _handProvider = HandProvider();
+  LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
+  StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
   int _isPlay;
   int _time;
   final TextEditingController _textController = new TextEditingController();
@@ -123,6 +127,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          ChangeNotifierProvider<CourseProvider>.value(
+            value: _courseProvider,
+          ),
           ChangeNotifierProvider<TeacherProvider>.value(
             value: _teacherProvider,
           ),
@@ -147,8 +154,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           ChangeNotifierProvider<RoomSelProvider>.value(
             value: _roomSelProvider,
           ),
-          ChangeNotifierProvider<CourseStatusProvider>.value(
-            value: _courseStatusProvider,
+          ChangeNotifierProvider<HandProvider>.value(
+            value: _handProvider,
+          ),
+          ChangeNotifierProvider<LiveTimerProvider>.value(
+            value: _liveTimerProvider,
+          ),
+          ChangeNotifierProvider<StarWidgetProvider>.value(
+            value: _starWidgetProvider,
           ),
         ],
         child: WillPopScope(
@@ -219,11 +232,19 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                 ),
                               )
                             ]),
-                            _buildRank(),
-                            _buildSel(),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1 ? UserStarWidget() : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1 ? _getLiveTimerWidget() : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1 ? _buildRank() : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1 ? _buildSel() : Container();
+                            }),
                             _buildTop(),
-                            _starWidget(),
-                            _getLiveTimerWidget(),
                           ],
                         )))),
           ),
@@ -232,13 +253,21 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///倒计时组件
   _getLiveTimerWidget() {
-    return Positioned(
-      right: ScreenUtil.getInstance().screenWidth * 0.2,
-      top: 0,
-      child: LiveTimerWidget(
-        time: 100,
-      ),
-    );
+    return Consumer<LiveTimerProvider>(builder: (context, model, child) {
+      print("model.time ${model.time}");
+      return model.isShow
+          ? Positioned(
+              right: ScreenUtil.getInstance().screenWidth * 0.2,
+              top: 0,
+              child: LiveTimerWidget(
+                time: model.time,
+                callback: () {
+                  model.show(false, 0);
+                },
+              ),
+            )
+          : Container();
+    });
   }
 
   _buildRank() {
@@ -251,6 +280,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///构建选择题
   Widget _buildSel() {
+    List groupValueList = List.generate(6, (index) => 0);
     return Consumer<RoomSelProvider>(builder: (context, model, child) {
       return model.isShow
           ? Align(
@@ -298,9 +328,18 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                         width: ScreenUtil.getInstance().getWidthPx(75),
                                         height: ScreenUtil.getInstance().getWidthPx(75),
                                         value: index + 1,
-                                        groupValue: model.val,
+                                        groupValue: model.ques.type == MULSEL ? groupValueList[index] : model.val,
                                         onChanged: (value) {
-                                          model.switchVal(value);
+                                          if (model.ques.type == MULSEL) {
+                                            if (groupValueList[index] == value) {
+                                              groupValueList[index] = 0;
+                                            } else {
+                                              groupValueList[index] = value;
+                                            }
+                                            model.notify();
+                                          } else {
+                                            model.switchVal(value);
+                                          }
                                         },
                                         gradient: LinearGradient(
                                           colors: [
@@ -318,14 +357,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                         border: 1.5,
                                         child: Text(
                                           "${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
-                                          style: TextStyle(color: Color(0xFF3cc969), fontSize: 13),
+                                          style: TextStyle(color: Color(0xFF3cc969), fontSize: 16),
                                         ),
                                         hoverChild: Text(
                                           "${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
-                                          style: TextStyle(color: Colors.white, fontSize: 13),
+                                          style: TextStyle(color: Colors.white, fontSize: 16),
                                         ),
                                         selectedChild: Text("${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
-                                            style: TextStyle(color: Colors.white, fontSize: 13)),
+                                            style: TextStyle(color: Colors.white, fontSize: 16)),
                                       ),
                                     );
                                   }),
@@ -339,7 +378,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                 return;
                               }
                               var isRight = "F";
-                              if (model.quesAn == (model.val - 1)) {
+                              print("model.quesAn  ${model.quesAn} (model.val - 1) ${(model.val - 1)} ${model.quesAn == (model.val - 1)}");
+                              if (model.quesAn.toString() == (model.val - 1).toString()) {
                                 isRight = "T";
                               }
                               final val = model.val;
@@ -357,7 +397,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                               };
                               param["answerJson"] = answer;
                               param["useTime"] = useTime;
-
                               var qlibParam = {
                                 "lessonId": model.ques.ctatlogid,
                                 "quesId": model.ques.qid,
@@ -436,7 +475,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   Widget _buildCourseware() {
-    return Consumer2<CourseStatusProvider, ResProvider>(builder: (context, courseStatusModel, resModel, child) {
+    return Consumer2<CourseProvider, ResProvider>(builder: (context, courseStatusModel, resModel, child) {
       Widget result;
       if (courseStatusModel.status == 0) {
         result = Container(
@@ -479,33 +518,56 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         );
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
-          result = Container(
-            width: ScreenUtil.getInstance().screenWidth * 0.8,
-            child: WebViewPlus(
-              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-              javascriptMode: JavascriptMode.unrestricted,
-              javascriptChannels: <JavascriptChannel>[
-                JavascriptChannel(
-                    name: 'Courseware',
-                    onMessageReceived: (JavascriptMessage message) async {
-                      var msg = jsonDecode(message.message);
-                      Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
-                      Store<GSYState> store = StoreProvider.of(context);
-                      BetterSocket.sendMsg(jsonEncode({
-                        "Event": {
-                          "event": "event-doCourseware",
-                          "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
-                        }
-                      }));
-                    })
-              ].toSet(),
-              onWebViewCreated: (controller) async {
-                print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-                controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
-              },
-            ),
+          result = Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              Container(
+                width: ScreenUtil.getInstance().screenWidth * 0.8,
+                child: WebViewPlus(
+                  initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+                  javascriptMode: JavascriptMode.unrestricted,
+                  javascriptChannels: <JavascriptChannel>[
+                    JavascriptChannel(
+                        name: 'Courseware',
+                        onMessageReceived: (JavascriptMessage message) async {
+                          var msg = jsonDecode(message.message);
+                          Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
+                          Store<GSYState> store = StoreProvider.of(context);
+                          BetterSocket.sendMsg(jsonEncode({
+                            "Event": {
+                              "event": "event-doCourseware",
+                              "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
+                            }
+                          }));
+                        })
+                  ].toSet(),
+                  onWebViewCreated: (controller) async {
+                    print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+                    controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+                  },
+                ),
+              ),
+              resModel.isShow == null || !resModel.isShow
+                  ? Container(
+                      color: Colors.transparent,
+                      width: ScreenUtil.getInstance().screenWidth * 0.8,
+                      height: ScreenUtil.getInstance().screenHeight,
+                      child: GestureDetector(
+                        onTap: () {
+                          showToast("等待老师开始游戏");
+                        },
+                      ),
+                    )
+                  : Container()
+            ],
           );
-        } else if (resModel.res.type == ppt) {
+        } else if (resModel.res.type == ppt ||
+            resModel.res.type == BREAK ||
+            resModel.res.type == JUD ||
+            resModel.res.type == SEL ||
+            resModel.res.type == MULSEL ||
+            resModel.res.type == RANRED ||
+            resModel.res.type == REDRAIN) {
           result = GestureDetector(
             child: Container(
                 width: ScreenUtil.getInstance().screenWidth * 0.8,
@@ -519,6 +581,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           if (flickManager == null) {
             File file = File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.mp4);
             flickManager = FlickManager(
+              autoPlay: false,
               videoPlayerController: file.existsSync()
                   ? VideoPlayerController.file(file)
                   : VideoPlayerController.network(widget.roomData.courseware.domain + resModel.res.data.ps.mp4),
@@ -526,7 +589,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
             if (_time != null && _time > 0) {
               Future.delayed(Duration(seconds: 2), () async {
-                flickManager.flickControlManager?.seekTo(Duration(seconds: _time + 2));
+                if (_isPlay != null && _isPlay == 1) {
+                  flickManager.flickControlManager?.seekTo(Duration(seconds: _time + 2));
+                  flickManager?.flickControlManager?.play();
+                } else {
+                  flickManager.flickControlManager?.seekTo(Duration(seconds: _time));
+                }
               });
             }
           }
@@ -554,17 +622,43 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                     : Container(),
               ),
               Consumer<BoardProvider>(builder: (context, model, child) {
+                print("resModel.isShow  ${resModel.isShow}");
                 return Offstage(
-                  offstage: !(courseStatusModel.status == 1 && model.enableBoard == 1),
-                  child: Stack(
-                    alignment: AlignmentDirectional(0.9, -0.9),
-                    children: <Widget>[
-                      _buildWhiteboard(),
-                      _buildStudentVideo(),
-                    ],
+                    offstage: !(courseStatusModel.status == 1 && model.enableBoard == 1 && (resModel.isShow == null || !resModel.isShow)),
+                    child: _buildWhiteboard());
+              }),
+              //举手按钮
+              Consumer<HandProvider>(builder: (context, model, child) {
+                return Offstage(
+                  offstage: !(courseStatusModel.status == 1 && model.enableHand),
+                  child: Align(
+                    alignment: AlignmentDirectional(0.9, 0.9),
+                    child: Consumer<HandTypeProvider>(builder: (context, model, child) {
+                      return GestureDetector(
+                        child: Card(
+                          elevation: 1,
+                          color: Colors.white,
+                          child: Image.asset(
+                            model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
+                            width: ScreenUtil.getInstance().getHeightPx(225),
+                          ),
+                        ),
+                        onTap: () {
+                          _hand();
+                        },
+                      );
+                    }),
                   ),
                 );
-              })
+              }),
+              //学生视频
+              Offstage(
+                offstage: !(courseStatusModel.status == 1),
+                child: Align(
+                  alignment: AlignmentDirectional(0.9, -0.9),
+                  child: _buildStudentVideo(),
+                ),
+              )
             ],
           ),
         );
@@ -580,44 +674,57 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///左上角 星星
   Widget _starWidget() {
-    return Consumer2<TeacherProvider, CourseStatusProvider>(builder: (context, teacherModel, courseStatusModel, child) {
-      return courseStatusModel.status != 1
-          ? Positioned(
-              top: 3,
-              left: 5,
-              child: new Container(
-                color: Color(0xFF00000021),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Opacity(
-                      opacity: 0.9,
-                      child: new Chip(
-                        backgroundColor: Color(0xFF000000).withOpacity(0.7),
-                        avatar: Opacity(
-                          opacity: 1,
-                          child: Image.asset(
-                            "images/live/chat/icon_star.png",
-                            width: ScreenUtil.getInstance().getWidth(10),
-                          ),
-                        ),
-                        label: Text(
-                          "2050",
-                          style: TextStyle(
-                            color: Color(0xFFff8400).withOpacity(1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: ScreenUtil.getInstance().getSp(36 / 4),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+    return Consumer<StarWidgetProvider>(builder: (context, model, child) {
+      return Positioned(
+        top: 12,
+        left: 20,
+        child: new Container(
+          color: Color(0xFF00000021),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Opacity(
+                opacity: 0.9,
+                child: new Chip(
+                  backgroundColor: Color(0xFF000000).withOpacity(0.7),
+                  avatar: Opacity(
+                    opacity: 1,
+                    child: Image.asset(
+                      "images/live/chat/icon_star.png",
+                      width: ScreenUtil.getInstance().getWidth(15),
+                    ),
+                  ),
+                  label: Text(
+                    "${model.star}",
+                    style: TextStyle(
+                      color: Color(0xFFff8400).withOpacity(1),
+                      fontWeight: FontWeight.bold,
+                      fontSize: ScreenUtil.getInstance().getSp(42) / 4,
+                    ),
+                  ),
                 ),
-              ),
-            )
-          : Container();
+              )
+            ],
+          ),
+        ),
+      );
     });
+  }
+
+  gameStart() async {
+//    return NavigatorUtil.showGSYDialog(
+//        context: context,
+//        builder: (BuildContext context) {
+//          return GamePayleWidget();
+//        });
+    print("gameStart gameStart");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      return Navigator.push(context, PopRoute(child: GamePayleWidget()));
+    });
+//    Future.delayed(Duration(milliseconds: 500), () {
+//
+//    });
   }
 
   Widget _buildTop() {
@@ -667,7 +774,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///视频区域
   Widget _buildVideo() {
-    return Consumer2<TeacherProvider, CourseStatusProvider>(builder: (context, teacherModel, courseStatusModel, child) {
+    return Consumer2<TeacherProvider, CourseProvider>(builder: (context, teacherModel, courseStatusModel, child) {
       final flag = courseStatusModel.status == 1 && teacherModel.user != null && teacherModel.user.coVideo == 1 && teacherModel.user.enableVideo == 1;
       return Container(
 //              alignment:Alignment.center,
@@ -802,12 +909,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///弹出键盘
   void _showKeyboard(model) {
-    ///测试星星雨
-    // Navigator.push(context, PopRoute(child: RedRain()));
-    // return;
-    /// 测试游戏开始
-    Navigator.push(context, PopRoute(child: GamePayleWidget()));
-    return;
     if (model.muteAllChat) {
       return;
     }
@@ -938,8 +1039,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case 3: //room attributes updated msg
         _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
         _chatProvider.setMuteAllChat(msgJson["data"]["muteAllChat"] == 1);
-        if (msgJson["data"]["courseState"] != _courseStatusProvider.status) {
-          _courseStatusProvider.setStatus(msgJson["data"]["courseState"]);
+        if (msgJson["data"]["courseState"] != _courseProvider.status) {
+          _courseProvider.setStatus(msgJson["data"]["courseState"]);
         }
         break;
       case 4: //user attributes updated msg
@@ -963,7 +1064,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _addAgoraEventHandlers();
     await AgoraRtcEngine.enableWebSdkInteroperability(true);
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
-    configuration.dimensions = Size(1920, 1080);
+    configuration.dimensions = Size(480, 360);
     await AgoraRtcEngine.setVideoEncoderConfiguration(configuration);
     await AgoraRtcEngine.joinChannel(widget.roomData.user.rtcToken, widget.roomData.room.channelName, widget.roomData.user.userName, widget.roomData.user.uid);
     if (_teacher != null) {
@@ -1064,24 +1165,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _whiteboard = Whiteboard(
           appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg", uuid: widget.boardId, roomToken: widget.boardToken, controller: _whiteboardController);
     }
-    return Stack(alignment: AlignmentDirectional(0.9, 0.9), children: <Widget>[
-      _whiteboard,
-      Consumer<HandTypeProvider>(builder: (context, model, child) {
-        return GestureDetector(
-          child: Card(
-            elevation: 1,
-            color: Colors.white,
-            child: Image.asset(
-              model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
-              width: ScreenUtil.getInstance().getHeightPx(225),
-            ),
-          ),
-          onTap: () {
-            _hand();
-          },
-        );
-      }),
-    ]);
+    return _whiteboard;
   }
 
   _hand() async {
@@ -1090,10 +1174,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, CoVideoType.APPLY);
     } else {
       //取消连麦
-      var res = await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, _local.coVideo == 1 ? CoVideoType.EXIT : CoVideoType.CANCEL);
-      if (res.data["msg"] == "Success") {
-        _handTypeProvider.switchType(1);
-      }
+//      var res = await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, _local.coVideo == 1 ? CoVideoType.EXIT : CoVideoType.CANCEL);
+//      if (res.data["msg"] == "Success") {
+//        _handTypeProvider.switchType(1);
+//      }
     }
   }
 
@@ -1247,6 +1331,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case ppt:
       case h5:
       case mp4:
+      case BREAK:
       case "event-current":
         if (socketMsg.text == "") {
           _resProvider.setRes(null);
@@ -1255,9 +1340,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         //处理课件内容
         var msg = jsonDecode(socketMsg.text);
         var qid = msg["qid"];
+        var isShow = msg["isShow"];
         Res ques = courseware.findQues(qid);
         if (ques == null) {
           showToast("出错了!!!");
+          return;
+        }
+        if (ques.type == JUD || ques.type == SEL || ques.type == MULSEL) {
           return;
         }
         if (ques.type == mp4 && msg["time"] == null) {
@@ -1286,22 +1375,43 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               } else if (flickManager.flickVideoManager.isPlaying && isPlay == 1) {
                 if (time != null && time > 0) {
                   flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+                  flickManager?.flickControlManager?.play();
                 }
               } else if (flickManager.flickVideoManager.isVideoEnded && isPlay == 1) {
                 if (time != null && time > 0) {
                   flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+                  flickManager?.flickControlManager?.play();
                 }
                 flickManager?.flickControlManager?.play();
               } else if (!flickManager.flickVideoManager.isPlaying && isPlay == 1) {
                 flickManager?.flickControlManager?.autoResume();
                 if (time != null && time > 0) {
                   flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+                  flickManager?.flickControlManager?.play();
+                } else {
+                  flickManager?.flickControlManager?.play();
                 }
               }
             }
+          } else {
+            var _resShow;
+            if (isShow != null) {
+              _resShow = isShow == 1;
+            }
+            if (ques.type == h5 && isShow != null && isShow == 1) {
+              gameStart();
+            }
+            _resProvider.setRes(ques, isShow: _resShow);
           }
         } else {
-          _resProvider.setRes(ques);
+          var _resShow;
+          if (isShow != null) {
+            _resShow = isShow == 1;
+          }
+          if (ques.type == h5 && isShow != null && isShow == 1) {
+            gameStart();
+          }
+          _resProvider.setRes(ques, isShow: _resShow);
         }
         _currentRes = ques;
         break;
@@ -1311,6 +1421,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         break;
       case "event-board":
         _boardProvider.setEnableBoard(socketMsg.text == "1" ? 1 : 0);
+        break;
+      case "event-hand":
+        _handProvider.setEnableHand(socketMsg.text != null && socketMsg.text == "1" ? true : false);
         break;
       case "event-join-success":
         if (socketMsg.text == "") {
@@ -1325,7 +1438,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           if (e["type"] == null) {
             return;
           }
-          if (e["type"] == SEL) {
+          if (e["type"] == SEL || e["type"] == JUD || e["type"] == MULSEL) {
             _handleSEL(e["text"], isCheck: true);
           } else if (e["type"] == RANRED) {
             _handleRANRED(e["text"], isCheck: true);
@@ -1335,6 +1448,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         }
         break;
       case SEL:
+      case JUD:
+      case JUD:
         _handleSEL(socketMsg.text);
         break;
       case RANRED:
@@ -1343,7 +1458,17 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case REDRAIN:
         _handleREDRAIN(socketMsg.text);
         break;
+      case TIMER:
+        _handleTIMER(socketMsg.text);
+        break;
     }
+  }
+
+  //处理定时器
+  _handleTIMER(text) async {
+    var msg = jsonDecode(text);
+    var t = msg["t"];
+    _liveTimerProvider.show(t != 0 ? true : false, t);
   }
 
   _handleREDRAIN(text, {isCheck = false}) async {
@@ -1462,6 +1587,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       showToast("出错了!!!");
       return;
     }
+    _resProvider.setRes(ques);
+    if (isShow == null) {
+      //只展示图片
+      return;
+    }
     var flag = false;
     if (isCheck && isShow == 1) {
       //检查是否已经领奖
@@ -1481,6 +1611,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         showToast("检查失败请稍后重试!!!");
       }
     }
+
     if (!isCheck || flag) {
       var an = ques.data.an as Map;
       var as = an["as"];
@@ -1593,7 +1724,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return new Start(frequency: num);
+          return ChangeNotifierProvider<StarWidgetProvider>.value(value: _starWidgetProvider, child: Start(frequency: num));
         });
   }
 
