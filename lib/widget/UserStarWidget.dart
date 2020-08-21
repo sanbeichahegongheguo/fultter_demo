@@ -41,8 +41,8 @@ class _UserStarWidgetState extends State<UserStarWidget> {
   Widget build(BuildContext context) {
     return Consumer<StarWidgetProvider>(builder: (context, model, child) {
       return Positioned(
-        top: 12,
-        left: 20,
+        top: 3,
+        left: 5,
         child: new Container(
           color: Color(0xFF00000021),
           child: Row(
@@ -57,7 +57,7 @@ class _UserStarWidgetState extends State<UserStarWidget> {
                     opacity: 1,
                     child: Image.asset(
                       "images/live/chat/icon_star.png",
-                      width: ScreenUtil.getInstance().getWidth(15),
+                      width: ScreenUtil.getInstance().getWidth(10),
                     ),
                   ),
                   label: Text(
@@ -65,7 +65,7 @@ class _UserStarWidgetState extends State<UserStarWidget> {
                     style: TextStyle(
                       color: Color(0xFFff8400).withOpacity(1),
                       fontWeight: FontWeight.bold,
-                      fontSize: ScreenUtil.getInstance().getSp(42) / 4,
+                      fontSize: ScreenUtil.getInstance().getSp(36) / 4,
                     ),
                   ),
                 ),

@@ -356,14 +356,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                         hasSpace: false,
                                         border: 1.5,
                                         child: Text(
-                                          "${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
+                                          "${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
                                           style: TextStyle(color: Color(0xFF3cc969), fontSize: 16),
                                         ),
                                         hoverChild: Text(
-                                          "${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
+                                          "${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
                                           style: TextStyle(color: Colors.white, fontSize: 16),
                                         ),
-                                        selectedChild: Text("${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
+                                        selectedChild: Text("${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
                                             style: TextStyle(color: Colors.white, fontSize: 16)),
                                       ),
                                     );
@@ -417,9 +417,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                         return LiveQuesDialog(
                                           ir: isRight,
                                           star: res.data["data"]["star"],
-                                          an: "${(op != null && op.length == 2) ? op[val - 1] : _selBtnName[val - 1]}",
+                                          an: "${(op != null && op.length == 1) ? op[val - 1] : _selBtnName[val - 1]}",
                                         );
-                                      });
+                                      }).then((_) {
+                                    if (res.data["data"]["star"] > 0) {
+                                      showStarDialog(res.data["data"]["star"]);
+                                    }
+                                  });
                                 } else {
                                   showToast("提交失败请稍后重试!!!");
                                 }
