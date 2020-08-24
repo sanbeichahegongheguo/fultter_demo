@@ -43,7 +43,7 @@ dependencies:
   url_launcher: ^5.2.5
   chewie: ^0.9.10
   video_player: ^0.10.2
-  image_picker_saver: ^0.3.0
+  image_gallery_saver: ^1.5.0
   imei_plugin: ^1.1.0
 #  flutter_video_compress: ^0.3.7+8
   video_compress: ^2.0.0

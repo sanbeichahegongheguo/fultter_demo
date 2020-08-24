@@ -10,13 +10,14 @@ import Flutter
         GeneratedPluginRegistrant.register(with: self)
         //Banner需要使用到controller
         let controller = window?.rootViewController
+       UIApplication.shared.isIdleTimerDisabled = true
         Yondor.register(self.registrar(forPlugin: "yondorChannel"))
         if !hasPlugin("BannerPlugin") && controller != nil {
-            print("registar BannerPlugin")
+            print("registar Banne+rPlugin")
             //注册插件
-            BannerPlugin.registerWithRegistrar(registar: registrar(forPlugin: "BannerPlugin"), controller: controller!)
+            BannerPlugin.registerWithRegistrar(registar: registrar(forPlugin: "BannerPlugin") as! FlutterPluginRegistrar, controller: controller!)
         }
-        FLTCameraPlugin.register(with: self.registrar(forPlugin: "FLTCameraPlugin"))
+        FLTCameraPlugin.register(with: self.registrar(forPlugin: "FLTCameraPlugin") as! FlutterPluginRegistrar)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }

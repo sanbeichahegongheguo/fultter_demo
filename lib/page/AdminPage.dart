@@ -267,7 +267,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
 
   Future _goRoom(User userInfo) async {
-    RoomUtil.goRoomPage(context, "https://qres.k12china.com/qlib/zip/2020/08/19/162ca8cc2364de1a.zip", userInfo.userId, userInfo.realName, "领跑班测试-阿宽-一年级",
+    RoomUtil.goRoomPage(context, "https://qres.k12china.com/qlib/zip/2020/08/21/162d2d9d2e57d608.zip", userInfo.userId, userInfo.realName, "领跑班测试-阿宽-一年级",
         "1bd4b733ae584407bf0267fa4c1841b6", 571552);
   }
 

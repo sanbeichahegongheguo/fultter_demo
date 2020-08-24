@@ -48,9 +48,9 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        ndk {
-            abiFilters "armeabi-v7a"
-        }
+//        ndk {
+//            abiFilters "armeabi-v7a"
+//        }
     }
     signingConfigs {
         debug {
@@ -76,9 +76,6 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
         }
-    }
-    dependencies {
-        compile 'org.tensorflow:tensorflow-lite:+'
     }
 }
 

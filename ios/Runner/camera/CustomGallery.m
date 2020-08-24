@@ -1,5 +1,4 @@
 #import "CustomGallery.h"
-
 @implementation CustomGallery
 
 -(void) dealloc

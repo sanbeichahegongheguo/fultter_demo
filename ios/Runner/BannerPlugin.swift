@@ -12,5 +12,6 @@ class BannerPlugin {
     static func registerWithRegistrar(registar: FlutterPluginRegistrar, controller: UIViewController){
         registar.register(BannerViewFactory(controller: controller,messenger:registar.messenger()), withId: "banner");
         registar.register(SplashViewFactory(controller: controller,messenger:registar.messenger()), withId: "splash");
+       registar.register(YondorWhiteboardFactory(controller: controller,messenger:registar.messenger()), withId: "whiteboard_view")
     }
 }

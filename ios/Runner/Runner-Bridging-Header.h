@@ -10,3 +10,4 @@
 #import "GDTUnifiedBannerView.h"
 #import "Yondor.h"
 #import "CameraPlugin.h"
+#import "Whiteboard/Whiteboard.h"

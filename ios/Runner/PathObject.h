@@ -14,14 +14,22 @@
 @property float maxY;
 @property float minX;
 @property float minY;
+@property float startPointX;
+@property float startPointY;
+@property float endPointX;
+@property float endPointY;
 @property float thickness;
+
+@property BOOL checked8;
+@property BOOL checked5;
+
 @property (retain)NSMutableArray * paths;
 
 
 -(BOOL)addPaths:(PathObject *)obj;
--(BOOL)mustAddPaths:(PathObject*)obj;
 -(BOOL)checkConnect:(PathObject *)obj;
 -(BOOL)check5:(PathObject *)obj;
+-(BOOL)checkCHN8:(PathObject *)obj;
 -(BOOL)checkCross:(PathObject*)obj;
 -(UIImage *)drawPathToSize:(float)psize;
 +(PathObject *)getPathFromAxis:(NSArray *)points withThickness:(float)thickness;

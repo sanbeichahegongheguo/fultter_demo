@@ -27,7 +27,7 @@ import 'package:flutter_start/models/user.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_saver/image_picker_saver.dart' as picker;
+//import 'package:image_picker_saver/image_picker_saver.dart' as picker;
 import 'package:oktoast/oktoast.dart';
 import 'package:tencent_cos/tencent_cos.dart';
 import 'package:url_launcher/url_launcher.dart';

@@ -40,6 +40,7 @@ import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
 import 'package:flutter_start/widget/starsWiget.dart';
 import 'package:fradio/fradio.dart';
+import 'package:home_indicator/home_indicator.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
@@ -82,11 +83,17 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   @override
   void initState() {
     super.initState();
+    if (Platform.isIOS) {
+      OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+    }
     OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
     orientation = 1;
     _initWebsocketManager();
     initializeRtm();
     initializeRtc();
+    if (Platform.isIOS) {
+      HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
+    }
     _local = widget.roomData.user;
     _updateUsers(widget.roomData.room.coVideoUsers);
     Future.delayed(Duration(milliseconds: 1000)).then((e) {
@@ -166,13 +173,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         ],
         child: WillPopScope(
           onWillPop: () {
-            if (orientation == 1) {
-              OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
-              orientation = 0;
-              Future.delayed(Duration(milliseconds: 500), () async {
-                Navigator.pop(context);
-              });
-            }
+            _back();
             return Future.value(false);
           },
           child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -626,9 +627,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                     : Container(),
               ),
               Consumer<BoardProvider>(builder: (context, model, child) {
-                print("resModel.isShow  ${resModel.isShow}");
                 return Offstage(
-                    offstage: !(courseStatusModel.status == 1 && model.enableBoard == 1 && (resModel.isShow == null || !resModel.isShow)),
+                    offstage: !(courseStatusModel.status == 1 &&
+                        model.enableBoard == 1 &&
+                        ((resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type != h5) ||
+                            (resModel.isShow == null || !resModel.isShow))),
                     child: _buildWhiteboard());
               }),
               //举手按钮
@@ -758,12 +761,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                               size: ScreenUtil.getInstance().getSp(12),
                             ),
                             onPressed: () {
-                              if (orientation == 1) {
-                                OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
-                              }
-                              Future.delayed(Duration(milliseconds: 500), () async {
-                                Navigator.pop(context);
-                              });
+                              _back();
                             }),
                         SizedBox(
                           width: ScreenUtil.getInstance().getWidthPx(15),
@@ -1591,7 +1589,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       showToast("出错了!!!");
       return;
     }
-    _resProvider.setRes(ques);
+    if (_currentRes == null || _currentRes.qid != ques.qid) {
+      _resProvider.setRes(ques);
+      _currentRes = ques;
+    }
     if (isShow == null) {
       //只展示图片
       return;
@@ -1756,6 +1757,22 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     flickManager = null;
     _isPlay = null;
     _time = null;
+  }
+
+  _back() {
+    if (orientation == 1) {
+      if (Platform.isIOS) {
+        OrientationPlugin.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      }
+      orientation = 0;
+      OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+    }
+    if (Platform.isIOS) {
+      HomeIndicator.deferScreenEdges([]);
+    }
+    Future.delayed(Duration(milliseconds: 500), () async {
+      Navigator.pop(context);
+    });
   }
 }
 

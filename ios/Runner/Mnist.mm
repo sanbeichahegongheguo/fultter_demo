@@ -16,6 +16,8 @@
 namespace mnistext{
 
     NSString * modelPath = @"Frameworks/App.framework/flutter_assets/assets/model.tflite";
+    
+
 	int drawSize = 28;
 	BOOL isUpload = NO;
 	
@@ -88,8 +90,8 @@ namespace mnistext{
 		}
 		
 		float* output = interpreter->typed_output_tensor<float>(0);
-		
-		const int output_size = 10;
+		NSString * labels = @" 0123456789+-×÷=≈≠><.()%[]ABCDEF√个百千万亿三四五六七八九零①②③④mπ";
+		const int output_size = labels.length;
 		const int kNumResults = 5;
 		const float kThreshold = 0.1f;
 		std::vector<std::pair<float, int> > top_results;
@@ -102,8 +104,8 @@ namespace mnistext{
 				NSLog(@"index=%i;confidence=%f", index,confidence);
 			}
 		}
-		
-		return [NSString stringWithFormat:@"%i",top_results.at(0).second];
+		return [labels substringWithRange:NSMakeRange(top_results.at(0).second, 1)];
+		// return [NSString stringWithFormat:@"%i",top_results.at(0).second];
 	}
 	
 	
@@ -140,63 +142,145 @@ namespace mnistext{
 	}
 	
 	NSString * detectxy(NSString * jsonstr, float thickness, bool isSave){					
-		NSLog(@"mnist plugin v20190829");		
+		NSLog(@"mnist plugin v20200226");		
 		NSMutableDictionary *dictionary = [[NSMutableDictionary alloc]init];  			
 				
 		NSData * jsonData = [jsonstr dataUsingEncoding:NSUTF8StringEncoding];
 		NSArray * pos = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:nil];
 		
-		PathObject* allPObj = [[PathObject alloc] init];
+		// PathObject* allPObj = [[PathObject alloc] init];
 		
-		NSMutableArray* pObjs = [PathObject getPathObjects:pos];
+		NSMutableArray* tmpPObjs = [PathObject getPathObjects:pos];
+		NSMutableArray* pObjs = [NSMutableArray array];
 		NSMutableArray* uploadDatas = [NSMutableArray array];
 		NSString * mnistResult = @"";
-		BOOL skip = NO;
+		//BOOL skip = NO;
 			
 		//开始识别图片	
-		for(int i=0; i<[pObjs count]; i++){
-			[allPObj mustAddPaths:pObjs[i]];
-			if(skip){
-				skip = NO;
-				continue;
-			}
-			PathObject * tmpP = pObjs[i];
-			if(i < [pObjs count]-1){
-				PathObject* tmpP2 = pObjs[i+1];
-				if([tmpP2 check5:tmpP]){
-					[tmpP2 addPaths:tmpP];
-					pObjs[i+1] = tmpP2;
-					continue;
+		for(int i=0; i<[tmpPObjs count]; i++){			
+			PathObject * tmpObj = tmpPObjs[i];
+
+			BOOL isAdded = NO;
+			for(long j=[pObjs count]-1; j>=0; j--){
+				PathObject * tmpObj2 = pObjs[j];
+				// 合笔
+				if([tmpObj2 checkConnect:tmpObj]){
+					// 5
+					if([tmpObj2 check5:tmpObj]){
+						if(i<[pObjs count]-1){
+							PathObject* tmpObj3 = pObjs[i+1];
+							if([tmpObj checkCross:tmpObj3]){
+								break;
+							}
+						}
+
+						PathObject * tmpObj3 = [[PathObject alloc] init];
+						[tmpObj3 addPaths:tmpObj];
+						[tmpObj3 addPaths:tmpObj2];
+						UIImage* tmpBmp = [tmpObj3 drawPathToSize:28];
+						NSString* mnistResult = predict(tmpBmp);
+						if([mnistResult isEqualToString:@"5"]){
+							tmpObj3.checked5 = YES;
+							pObjs[j] = tmpObj3;
+							isAdded=YES;
+							break;
+						}
+					}
+					[tmpObj2 addPaths:tmpObj];
+					pObjs[j] = tmpObj2;
+					isAdded = true;
+					break;
+				}	
+				//八
+				if([tmpObj2 checkCHN8:tmpObj] && (j==i+1||j==i-1))	{
+					UIImage* tmpBmp = [tmpObj drawPathToSize:28];
+					NSString* mnistResult = predict(tmpBmp);
+					if(![mnistResult isEqualToString:@"√"] && [mnistResult isEqualToString:@"1"]){
+						continue;
+					}
+					PathObject * tmpObj3 = [[PathObject alloc] init];
+					[tmpObj3 addPaths:tmpObj];
+					[tmpObj3 addPaths:tmpObj2];
+					tmpBmp = [tmpObj3 drawPathToSize:28];
+					mnistResult = predict(tmpBmp);
+					if([mnistResult isEqualToString:@"八"]){
+						tmpObj3.checked8 = YES;
+						pObjs[j] = tmpObj3;
+						isAdded = true;
+						break;
+					}
 				}
 			}
-			
-			UIImage* img = [pObjs[i] drawPathToSize:28];
-			NSString* charresult =  predict(img);
-			//NSLog(@"charresult=%@",charresult);
-			if([charresult isEqualToString:@"9"] && [tmpP.paths count] >= 2){
-				charresult = @"4";
-			}			
-			if(([charresult isEqualToString:@"1"] || [charresult isEqualToString:@"6"]) && i<[pObjs count]-1){
-				PathObject* tmpP2 = pObjs[i+1];
-				if([tmpP2 checkCross:tmpP]){
-					PathObject* tmpP3 = [[PathObject alloc] init];
-					[tmpP3 addPaths:tmpP];
-					[tmpP3 addPaths:tmpP2];					
-					UIImage* img2 = [tmpP3 drawPathToSize:28];
-					NSString* charresult2 = predict(img2);
-					//NSLog(@"charresult2=%@",charresult2);
-					if([charresult2 isEqualToString:@"4"] || [charresult2 isEqualToString:@"9"]){
-						img = img2;
-						//charresult = charresult2;
-						charresult = @"4";
-						skip = YES;
-					}					
-				}
+			if(!isAdded){
+				[pObjs addObject: tmpObj];
 			}		
-			
-			
-			//识别
-			if ([charresult containsString:@"Failed"]) {		
+		}
+
+		PathObject * mP = nil;
+		for(int i=0;i<[pObjs count]; i++){
+			PathObject * tmpP = pObjs[i];
+			UIImage * img = [tmpP drawPathToSize:28];
+			// [allPObj addPaths:pObjs[i]];
+			NSString* str0 = @"";
+			if(tmpP.checked8){
+				str0 = @"八";				
+			}
+			if(tmpP.checked5){
+				str0 = @"5";
+			}
+			if(str0.length == 0 && [tmpP.paths count] == 1 && i>=1){
+				PathObject * lastObj = pObjs[i-1];
+				//float lastW = lastObj.maxX - lastObj.minX;
+				float lastH = lastObj.maxY - lastObj.minY;
+				float size1 = MAX(lastObj.maxX-lastObj.minX, lastObj.maxY-lastObj.minY);
+				float size2 = tmpP.maxX - tmpP.minX;
+				if(size2 < size1*0.3 && tmpP.minY > lastObj.minY+lastH/2){
+					str0 = @".";
+				}
+			}
+			if(str0.length == 0){				
+				str0 = predict(img);
+				if([str0 isEqualToString:@"÷"] && [tmpP.paths count]==4){
+					str0 = @"六";
+				}
+				if([str0 isEqualToString:@"<"] && [tmpP.paths count]==2){
+					str0 = @"七";
+				}else if([str0 isEqualToString:@"m"]){
+					mP = tmpP;
+					continue;
+				}else if(mP!=nil){
+					BOOL ism23 = NO;
+					if([str0 isEqualToString:@"2"]){
+						str0 = @"㎡";
+						ism23 = YES;
+					}else if([str0 isEqualToString:@"2"]){
+						str0 = @"m³";
+						ism23 = YES;
+					}else{
+						mnistResult = [NSString stringWithFormat:@"%@%@",mnistResult,"m"];
+						if(isSave==YES){
+							UIImage * mimg = [mP drawPathToSize:28];
+							NSMutableDictionary* uploadObj = [[NSMutableDictionary alloc] init];        
+							NSString* b64 = ImageToBase64(mimg);
+							//NSLog(@"img b64 = %@", b64);
+							[uploadObj setValue:b64 forKey:@"b64"];
+							[uploadObj setValue:@"m" forKey:@"mnist"];        
+							[uploadDatas addObject:uploadObj];	
+						}
+					}
+					if(ism23==YES && isSave==YES){
+						PathObject * tmpObj3 = [[PathObject alloc] init];
+						[tmpObj3 addPaths:mP];
+						[tmpObj3 addPaths:tmpP];
+						img = [tmpObj3 drawPathToSize:28];
+						tmpP = tmpObj3;
+					}
+					mP = nil;
+				}				
+			}
+
+
+			if ([str0 containsString:@"Failed"]) {		
 				[dictionary setValue:[NSNumber numberWithFloat:500]  forKey:@"code"];  
 				[dictionary setValue:@"识别失败"  forKey:@"message"];  
 				NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:0];
@@ -204,26 +288,28 @@ namespace mnistext{
 				NSLog(@"dataStr = %@", dataStr);				
 				return dataStr;				
 			}
-			
-			mnistResult = [NSString stringWithFormat:@"%@%@",charresult,mnistResult];
-						
-			NSMutableDictionary* uploadObj = [[NSMutableDictionary alloc] init];        
-			NSString* b64 = ImageToBase64(img);
-			//NSLog(@"img b64 = %@", b64);
-			[uploadObj setValue:b64 forKey:@"b64"];
-			[uploadObj setValue:mnistResult forKey:@"mnist"];        
-			[uploadDatas addObject:uploadObj];
-		}
-		
-		if(isSave){
-			if([mnistResult length] > 1){
-				NSMutableDictionary* uploadObj = [[NSMutableDictionary alloc] init];
-				UIImage* img = [allPObj drawPathToSize:224];
+
+			mnistResult = [NSString stringWithFormat:@"%@%@",mnistResult,str0];
+
+			if(isSave == YES){
+				NSMutableDictionary* uploadObj = [[NSMutableDictionary alloc] init];        
 				NSString* b64 = ImageToBase64(img);
+				//NSLog(@"img b64 = %@", b64);
 				[uploadObj setValue:b64 forKey:@"b64"];
-				[uploadObj setValue:mnistResult forKey:@"mnist"];
+				[uploadObj setValue:mnistResult forKey:@"mnist"];        
 				[uploadDatas addObject:uploadObj];	
 			}			
+		}
+
+		if(isSave == YES){
+//            if([mnistResult length] > 1){
+//                NSMutableDictionary* uploadObj = [[NSMutableDictionary alloc] init];
+//                UIImage* img = [allPObj drawPathToSize:224];
+//                NSString* b64 = ImageToBase64(img);
+//                [uploadObj setValue:b64 forKey:@"b64"];
+//                [uploadObj setValue:mnistResult forKey:@"mnist"];
+//                [uploadDatas addObject:uploadObj];
+//            }            
 			NSString *ver = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 			ver = [ver stringByReplacingOccurrencesOfString:@"." withString:@""];
 			mnistext::upload(uploadDatas, jsonstr, ver);			

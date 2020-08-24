@@ -30,16 +30,20 @@ class HttpErrorEvent {
         showToast("网络异常,请稍后重试");
         break;
       case 401:
-        showToast("登录失效,请重新登录");
-        NavigatorUtil.goWelcome(context);
-        try{
-          SpUtil.remove(Config.LOGIN_USER);
-          httpManager.clearAuthorization();
-          Store<GSYState> store = StoreProvider.of(context);
-          store.dispatch(UpdateUserAction(User()));
-        }catch(e){
-          print(e);
+        var user = SpUtil.getObject(Config.LOGIN_USER);
+        if (user == null) {
+          showToast("登录失效,请重新登录");
+          NavigatorUtil.goWelcome(context);
+          try {
+            SpUtil.remove(Config.LOGIN_USER);
+            httpManager.clearAuthorization();
+            Store<GSYState> store = StoreProvider.of(context);
+            store.dispatch(UpdateUserAction(User()));
+          } catch (e) {
+            print(e);
+          }
         }
+
         break;
       case 403:
         showToast("权限不足");

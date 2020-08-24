@@ -31,13 +31,16 @@ import 'package:flutter_start/models/index.dart';
 import 'package:flutter_start/widget/ShareToWeChat.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_saver/image_picker_saver.dart' as picker;
+//import 'package:image_picker_saver/image_picker_saver.dart' as picker;
 import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:redux/redux.dart';
 import 'package:tencent_cos/tencent_cos.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_compress/video_compress.dart';
 
 class WebViewPlugin extends StatefulWidget {
@@ -679,16 +682,19 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
       ///保存图片
       JavascriptChannel(
           name: 'SaveImage',
-          onMessageReceived: (JavascriptMessage message) {
+          onMessageReceived: (JavascriptMessage message) async {
             if (ObjectUtil.isEmptyString(message.message)) {
               return;
             }
-            picker.ImagePickerSaver.saveFile(fileData: base64Decode(message.message)).then((data) {
-              if (!ObjectUtil.isEmptyString(data)) {
-                print(data);
-                showToast("保存成功");
-              }
-            });
+            final result = await ImageGallerySaver.saveImage(
+                Uint8List.fromList(base64Decode(message.message)),
+                quality: 60,
+                name:Uuid().v4());
+            print(result);
+            if (!ObjectUtil.isEmptyString(result)) {
+              print(result);
+              showToast("保存成功");
+            }
           }),
 
       ///新建WebView

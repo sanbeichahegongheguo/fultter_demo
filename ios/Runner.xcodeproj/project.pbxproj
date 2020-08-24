@@ -8,15 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		394A96A4FC20F8B6153A021C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 215DDC25ADCD1E1754046B1B /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
-		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
-		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		AE5496CB2477DC320057ACDE /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE5496CA2477DC320057ACDE /* Photos.framework */; };
 		AE7311502302BB77001AB5F6 /* Yondor.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE73114F2302BB77001AB5F6 /* Yondor.mm */; };
 		AE7A1E312318FF1300B76925 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7A1E302318FF1200B76925 /* SplashView.swift */; };
 		AE7A1E332319066500B76925 /* SplashViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7A1E322319066400B76925 /* SplashViewFactory.swift */; };
@@ -42,7 +38,6 @@
 		AED481F722F819D6005E93AB /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F622F819D6005E93AB /* SystemConfiguration.framework */; };
 		AED481F922F819DD005E93AB /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481F822F819DD005E93AB /* libz.tbd */; };
 		AED481FB22F819E4005E93AB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481FA22F819E4005E93AB /* Security.framework */; };
-		AED481FD22F819EB005E93AB /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481FC22F819EB005E93AB /* StoreKit.framework */; };
 		AED481FF22F819F2005E93AB /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AED481FE22F819F1005E93AB /* libxml2.tbd */; };
 		AED4820122F819F7005E93AB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED4820022F819F7005E93AB /* AVFoundation.framework */; };
 		AED4820322F819FE005E93AB /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED4820222F819FE005E93AB /* WebKit.framework */; };
@@ -54,6 +49,9 @@
 		AEF43F2B22EEA37400765808 /* PathObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2522EEA37300765808 /* PathObject.mm */; };
 		AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2722EEA37400765808 /* ImageData.mm */; };
 		AEF43F2D22EEA37400765808 /* Mnist.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2922EEA37400765808 /* Mnist.mm */; };
+		B44BE35724E4EC8100482769 /* YondorWhiteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44BE35624E4EC8100482769 /* YondorWhiteboard.swift */; };
+		B49C639924DCEBDF0037462B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B49C639824DCEBDF0037462B /* StoreKit.framework */; };
+		D5AC550C610483AA74C2FC9A /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 703282FEB9B72281A2657B4F /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,8 +61,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */,
-				9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,19 +71,18 @@
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		182B48D6CFADA2DC8AF42C3B /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
-		215DDC25ADCD1E1754046B1B /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
-		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
+		703282FEB9B72281A2657B4F /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
-		9740EEBA1CF902C7004384FC /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C146FB1CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A7EE431142770A20AA31BCD9 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
+		AE5496CA2477DC320057ACDE /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		AE73114E2302BB76001AB5F6 /* Yondor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Yondor.h; sourceTree = "<group>"; };
 		AE73114F2302BB77001AB5F6 /* Yondor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Yondor.mm; sourceTree = "<group>"; };
 		AE7A1E302318FF1200B76925 /* SplashView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
@@ -114,6 +109,8 @@
 		AEC4097823B2EBC5000F8FDC /* bd_ocr_gallery1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_gallery1.png; path = Resources/bd_ocr_gallery1.png; sourceTree = "<group>"; };
 		AEC4097923B2EBC5000F8FDC /* gallery_xxhdpi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = gallery_xxhdpi.png; path = Resources/gallery_xxhdpi.png; sourceTree = "<group>"; };
 		AEC4097A23B2EBC5000F8FDC /* bd_ocr_light_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bd_ocr_light_off.png; path = Resources/bd_ocr_light_off.png; sourceTree = "<group>"; };
+		AEC4E3EF249C52F4000241F9 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
+		AEC4E405249CD81F000241F9 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		AED481EE22F8194E005E93AB /* libGDTMobSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGDTMobSDK.a; path = lib/libGDTMobSDK.a; sourceTree = "<group>"; };
 		AED481F022F819BD005E93AB /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		AED481F222F819C6005E93AB /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -121,7 +118,6 @@
 		AED481F622F819D6005E93AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		AED481F822F819DD005E93AB /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		AED481FA22F819E4005E93AB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		AED481FC22F819EB005E93AB /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		AED481FE22F819F1005E93AB /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		AED4820022F819F7005E93AB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		AED4820222F819FE005E93AB /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -156,6 +152,8 @@
 		AEF43F2822EEA37400765808 /* mnist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mnist.h; sourceTree = "<group>"; };
 		AEF43F2922EEA37400765808 /* Mnist.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Mnist.mm; sourceTree = "<group>"; };
 		AEF43F2A22EEA37400765808 /* PathObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathObject.h; sourceTree = "<group>"; };
+		B44BE35624E4EC8100482769 /* YondorWhiteboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YondorWhiteboard.swift; sourceTree = "<group>"; };
+		B49C639824DCEBDF0037462B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		C1D536F4DEB8EFD859C25C45 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -164,10 +162,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE5496CB2477DC320057ACDE /* Photos.framework in Frameworks */,
 				AED4820322F819FE005E93AB /* WebKit.framework in Frameworks */,
 				AED4820122F819F7005E93AB /* AVFoundation.framework in Frameworks */,
 				AED481FF22F819F2005E93AB /* libxml2.tbd in Frameworks */,
-				AED481FD22F819EB005E93AB /* StoreKit.framework in Frameworks */,
 				AED481FB22F819E4005E93AB /* Security.framework in Frameworks */,
 				AED481F922F819DD005E93AB /* libz.tbd in Frameworks */,
 				AED481F722F819D6005E93AB /* SystemConfiguration.framework in Frameworks */,
@@ -175,9 +173,8 @@
 				AED4826022F82BDF005E93AB /* libGDTMobSDK.a in Frameworks */,
 				AED481F322F819C6005E93AB /* CoreLocation.framework in Frameworks */,
 				AED481F122F819BD005E93AB /* AdSupport.framework in Frameworks */,
-				9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */,
-				3B80C3941E831B6300D905FE /* App.framework in Frameworks */,
-				394A96A4FC20F8B6153A021C /* Pods_Runner.framework in Frameworks */,
+				B49C639924DCEBDF0037462B /* StoreKit.framework in Frameworks */,
+				D5AC550C610483AA74C2FC9A /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,10 +184,11 @@
 		6FFA71103388989C439FC8D8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B49C639824DCEBDF0037462B /* StoreKit.framework */,
+				AE5496CA2477DC320057ACDE /* Photos.framework */,
 				AED4820222F819FE005E93AB /* WebKit.framework */,
 				AED4820022F819F7005E93AB /* AVFoundation.framework */,
 				AED481FE22F819F1005E93AB /* libxml2.tbd */,
-				AED481FC22F819EB005E93AB /* StoreKit.framework */,
 				AED481FA22F819E4005E93AB /* Security.framework */,
 				AED481F822F819DD005E93AB /* libz.tbd */,
 				AED481F622F819D6005E93AB /* SystemConfiguration.framework */,
@@ -198,7 +196,7 @@
 				AED481F222F819C6005E93AB /* CoreLocation.framework */,
 				AED481F022F819BD005E93AB /* AdSupport.framework */,
 				AED481EE22F8194E005E93AB /* libGDTMobSDK.a */,
-				215DDC25ADCD1E1754046B1B /* Pods_Runner.framework */,
+				703282FEB9B72281A2657B4F /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -206,9 +204,7 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
-				3B80C3931E831B6300D905FE /* App.framework */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
-				9740EEBA1CF902C7004384FC /* Flutter.framework */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
 				9740EEB31CF90195004384FC /* Generated.xcconfig */,
@@ -239,6 +235,9 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				B44BE35624E4EC8100482769 /* YondorWhiteboard.swift */,
+				AEC4E405249CD81F000241F9 /* Runner.entitlements */,
+				AEC4E3EF249C52F4000241F9 /* RunnerDebug.entitlements */,
 				AEC4096F23B21C77000F8FDC /* Resources */,
 				AEC4092A23B1EF88000F8FDC /* BJImageCropper.h */,
 				AEC4092923B1EF88000F8FDC /* BJImageCropper.m */,
@@ -375,7 +374,7 @@
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 4Y8238M4Y4;
+						DevelopmentTeam = US9G9C67S4;
 						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 					};
@@ -386,6 +385,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -430,14 +430,75 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/FMDB/FMDB.framework",
+				"${PODS_ROOT}/../Flutter/Flutter.framework",
+				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
+				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/TOCropViewController/TOCropViewController.framework",
+				"${BUILT_PRODUCTS_DIR}/Whiteboard/Whiteboard.framework",
+				"${BUILT_PRODUCTS_DIR}/YYModel/YYModel.framework",
+				"${BUILT_PRODUCTS_DIR}/better_socket/better_socket.framework",
+				"${BUILT_PRODUCTS_DIR}/connectivity/connectivity.framework",
+				"${BUILT_PRODUCTS_DIR}/device_info/device_info.framework",
+				"${BUILT_PRODUCTS_DIR}/dsBridge/dsBridge.framework",
+				"${BUILT_PRODUCTS_DIR}/flutter_des/flutter_des.framework",
+				"${BUILT_PRODUCTS_DIR}/flutter_inapp_purchase/flutter_inapp_purchase.framework",
+				"${BUILT_PRODUCTS_DIR}/flutter_native_image/flutter_native_image.framework",
+				"${BUILT_PRODUCTS_DIR}/flutter_webview_plugin/flutter_webview_plugin.framework",
+				"${BUILT_PRODUCTS_DIR}/home_indicator/home_indicator.framework",
+				"${BUILT_PRODUCTS_DIR}/image_cropper/image_cropper.framework",
+				"${BUILT_PRODUCTS_DIR}/image_picker/image_picker.framework",
+				"${BUILT_PRODUCTS_DIR}/image_picker_saver/image_picker_saver.framework",
+				"${BUILT_PRODUCTS_DIR}/imei_plugin/imei_plugin.framework",
+				"${BUILT_PRODUCTS_DIR}/just_audio/just_audio.framework",
+				"${BUILT_PRODUCTS_DIR}/orientation/orientation.framework",
+				"${BUILT_PRODUCTS_DIR}/package_info/package_info.framework",
+				"${BUILT_PRODUCTS_DIR}/path_provider/path_provider.framework",
+				"${BUILT_PRODUCTS_DIR}/shared_preferences/shared_preferences.framework",
+				"${BUILT_PRODUCTS_DIR}/sqflite/sqflite.framework",
+				"${BUILT_PRODUCTS_DIR}/url_launcher/url_launcher.framework",
+				"${BUILT_PRODUCTS_DIR}/video_compress/video_compress.framework",
+				"${BUILT_PRODUCTS_DIR}/video_player/video_player.framework",
+				"${BUILT_PRODUCTS_DIR}/wakelock/wakelock.framework",
+				"${BUILT_PRODUCTS_DIR}/webview_flutter/webview_flutter.framework",
+				"${BUILT_PRODUCTS_DIR}/yondor_whiteboard/yondor_whiteboard.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FMDB.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flutter.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TOCropViewController.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Whiteboard.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYModel.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/better_socket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/connectivity.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/device_info.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/dsBridge.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_des.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_inapp_purchase.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_native_image.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_webview_plugin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/home_indicator.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_cropper.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_picker.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_picker_saver.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/imei_plugin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/just_audio.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/orientation.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/package_info.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/path_provider.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/shared_preferences.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/sqflite.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/url_launcher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/video_compress.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/video_player.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/wakelock.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/webview_flutter.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/yondor_whiteboard.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -456,7 +517,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" thin\n";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" thin\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -503,6 +564,7 @@
 			files = (
 				AEF43F2B22EEA37400765808 /* PathObject.mm in Sources */,
 				AED4820A22F8264B005E93AB /* Banner.swift in Sources */,
+				B44BE35724E4EC8100482769 /* YondorWhiteboard.swift in Sources */,
 				AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */,
 				AEC4093023B1EF88000F8FDC /* BJImageCropper.m in Sources */,
 				AEC4092F23B1EF88000F8FDC /* CameraPlugin.m in Sources */,
@@ -544,7 +606,6 @@
 /* Begin XCBuildConfiguration section */
 		249021D3217E4FDB00AE95B9 /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -600,12 +661,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				CURRENT_PROJECT_VERSION = 34940;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 4Y8238M4Y4;
+				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -646,11 +708,95 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.studentIPA;
+				MARKETING_VERSION = 2.0.692;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-L",
+					"${SRCROOT}/Pods/TensorFlowLite/Frameworks/tensorflow_lite.framework",
+					"-ObjC",
+					"-l\"WeChatSDK\"",
+					"-l\"c++\"",
+					"-l\"mtasdk\"",
+					"-l\"sqlite3\"",
+					"-l\"sqlite3.0\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreTelephony\"",
+					"-framework",
+					"\"FMDB\"",
+					"-framework",
+					"\"Flutter\"",
+					"-framework",
+					"\"QCloudCOSXML\"",
+					"-framework",
+					"\"QCloudCore\"",
+					"-framework",
+					"\"Reachability\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"TOCropViewController\"",
+					"-framework",
+					"\"connectivity\"",
+					"-framework",
+					"\"device_info\"",
+					"-framework",
+					"\"flutter_des\"",
+					"-framework",
+					"\"flutter_native_image\"",
+					"-framework",
+					"\"flutter_webview_plugin\"",
+					"-framework",
+					"\"fluwx\"",
+					"-framework",
+					"\"image_cropper\"",
+					"-framework",
+					"\"image_picker\"",
+					"-framework",
+					"\"image_picker_saver\"",
+					"-framework",
+					"\"imei_plugin\"",
+					"-framework",
+					"\"orientation\"",
+					"-framework",
+					"\"package_info\"",
+					"-framework",
+					"\"path_provider\"",
+					"-framework",
+					"\"permission_handler\"",
+					"-framework",
+					"\"shared_preferences\"",
+					"-framework",
+					"\"sqflite\"",
+					"-framework",
+					"\"tencent_cos\"",
+					"-framework",
+					"\"tensorflow_lite\"",
+					"-framework",
+					"\"tflite\"",
+					"-framework",
+					"\"url_launcher\"",
+					"-framework",
+					"\"video_player\"",
+					"-framework",
+					"\"webview_flutter\"",
+					"-force_load",
+					"${SRCROOT}/Pods/TensorFlowLite/Frameworks/tensorflow_lite.framework/tensorflow_lite",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.student;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_INCLUDE_PATHS = "$(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) \"${PODS_ROOT}/Headers/Private\" \"${PODS_ROOT}/Headers/Private/tflite\" \"${PODS_ROOT}/Headers/Public\" \"${PODS_ROOT}/Headers/Public/Flutter\" \"${PODS_ROOT}/Headers/Public/TensorFlowLite/tensorflow_lite\" \"${PODS_ROOT}/Headers/Public/tflite\" \"${PODS_ROOT}/TensorFlowLite/Frameworks/tensorflow_lite.framework/Headers\"";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -658,7 +804,6 @@
 		};
 		97C147031CF9000F007C117D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -715,7 +860,6 @@
 		};
 		97C147041CF9000F007C117D /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
@@ -772,12 +916,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				CURRENT_PROJECT_VERSION = 34940;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 4Y8238M4Y4;
+				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -818,12 +963,96 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.studentIPA;
+				MARKETING_VERSION = 2.0.692;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-L",
+					"${SRCROOT}/Pods/TensorFlowLite/Frameworks/tensorflow_lite.framework",
+					"-ObjC",
+					"-l\"WeChatSDK\"",
+					"-l\"c++\"",
+					"-l\"mtasdk\"",
+					"-l\"sqlite3\"",
+					"-l\"sqlite3.0\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreTelephony\"",
+					"-framework",
+					"\"FMDB\"",
+					"-framework",
+					"\"Flutter\"",
+					"-framework",
+					"\"QCloudCOSXML\"",
+					"-framework",
+					"\"QCloudCore\"",
+					"-framework",
+					"\"Reachability\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"TOCropViewController\"",
+					"-framework",
+					"\"connectivity\"",
+					"-framework",
+					"\"device_info\"",
+					"-framework",
+					"\"flutter_des\"",
+					"-framework",
+					"\"flutter_native_image\"",
+					"-framework",
+					"\"flutter_webview_plugin\"",
+					"-framework",
+					"\"fluwx\"",
+					"-framework",
+					"\"image_cropper\"",
+					"-framework",
+					"\"image_picker\"",
+					"-framework",
+					"\"image_picker_saver\"",
+					"-framework",
+					"\"imei_plugin\"",
+					"-framework",
+					"\"orientation\"",
+					"-framework",
+					"\"package_info\"",
+					"-framework",
+					"\"path_provider\"",
+					"-framework",
+					"\"permission_handler\"",
+					"-framework",
+					"\"shared_preferences\"",
+					"-framework",
+					"\"sqflite\"",
+					"-framework",
+					"\"tencent_cos\"",
+					"-framework",
+					"\"tensorflow_lite\"",
+					"-framework",
+					"\"tflite\"",
+					"-framework",
+					"\"url_launcher\"",
+					"-framework",
+					"\"video_player\"",
+					"-framework",
+					"\"webview_flutter\"",
+					"-force_load",
+					"${SRCROOT}/Pods/TensorFlowLite/Frameworks/tensorflow_lite.framework/tensorflow_lite",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.student;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_INCLUDE_PATHS = "$(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) \"${PODS_ROOT}/Headers/Private\" \"${PODS_ROOT}/Headers/Private/tflite\" \"${PODS_ROOT}/Headers/Public\" \"${PODS_ROOT}/Headers/Public/Flutter\" \"${PODS_ROOT}/Headers/Public/TensorFlowLite/tensorflow_lite\" \"${PODS_ROOT}/Headers/Public/tflite\" \"${PODS_ROOT}/TensorFlowLite/Frameworks/tensorflow_lite.framework/Headers\"";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -836,12 +1065,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				CURRENT_PROJECT_VERSION = 34940;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 4Y8238M4Y4;
+				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -882,11 +1112,95 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.studentIPA;
+				MARKETING_VERSION = 2.0.692;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-L",
+					"${SRCROOT}/Pods/TensorFlowLite/Frameworks/tensorflow_lite.framework",
+					"-ObjC",
+					"-l\"WeChatSDK\"",
+					"-l\"c++\"",
+					"-l\"mtasdk\"",
+					"-l\"sqlite3\"",
+					"-l\"sqlite3.0\"",
+					"-l\"z\"",
+					"-framework",
+					"\"Accelerate\"",
+					"-framework",
+					"\"CoreMedia\"",
+					"-framework",
+					"\"CoreTelephony\"",
+					"-framework",
+					"\"FMDB\"",
+					"-framework",
+					"\"Flutter\"",
+					"-framework",
+					"\"QCloudCOSXML\"",
+					"-framework",
+					"\"QCloudCore\"",
+					"-framework",
+					"\"Reachability\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"TOCropViewController\"",
+					"-framework",
+					"\"connectivity\"",
+					"-framework",
+					"\"device_info\"",
+					"-framework",
+					"\"flutter_des\"",
+					"-framework",
+					"\"flutter_native_image\"",
+					"-framework",
+					"\"flutter_webview_plugin\"",
+					"-framework",
+					"\"fluwx\"",
+					"-framework",
+					"\"image_cropper\"",
+					"-framework",
+					"\"image_picker\"",
+					"-framework",
+					"\"image_picker_saver\"",
+					"-framework",
+					"\"imei_plugin\"",
+					"-framework",
+					"\"orientation\"",
+					"-framework",
+					"\"package_info\"",
+					"-framework",
+					"\"path_provider\"",
+					"-framework",
+					"\"permission_handler\"",
+					"-framework",
+					"\"shared_preferences\"",
+					"-framework",
+					"\"sqflite\"",
+					"-framework",
+					"\"tencent_cos\"",
+					"-framework",
+					"\"tensorflow_lite\"",
+					"-framework",
+					"\"tflite\"",
+					"-framework",
+					"\"url_launcher\"",
+					"-framework",
+					"\"video_player\"",
+					"-framework",
+					"\"webview_flutter\"",
+					"-force_load",
+					"${SRCROOT}/Pods/TensorFlowLite/Frameworks/tensorflow_lite.framework/tensorflow_lite",
+					"-all_load",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.yondor.student;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_INCLUDE_PATHS = "$(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) \"${PODS_ROOT}/Headers/Private\" \"${PODS_ROOT}/Headers/Private/tflite\" \"${PODS_ROOT}/Headers/Public\" \"${PODS_ROOT}/Headers/Public/Flutter\" \"${PODS_ROOT}/Headers/Public/TensorFlowLite/tensorflow_lite\" \"${PODS_ROOT}/Headers/Public/tflite\" \"${PODS_ROOT}/TensorFlowLite/Frameworks/tensorflow_lite.framework/Headers\"";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
