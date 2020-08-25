@@ -426,6 +426,8 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         break;
       case Admin.sName:
         print("切换管理页面");
+        bloc.adminBloc.getTotalStar();
+        bloc.adminBloc.getVipPackage();
         break;
       case StudyInfoPage.sName:
         print("切换新版学情页面");

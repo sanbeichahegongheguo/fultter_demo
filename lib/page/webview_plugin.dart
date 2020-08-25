@@ -20,6 +20,7 @@ import 'package:flutter_start/common/dao/ApplicationDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
+import 'package:flutter_start/common/utils/AudioRecorderUtils.dart';
 import 'package:flutter_start/common/utils/BannerUtil.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/InappPurchase.dart';
@@ -89,6 +90,9 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
   String _productId;
   String _orderId;
   bool paying = false;
+
+  /// 录音插件
+  AudioRecorderUtils _audioRecorderUtils = new AudioRecorderUtils();
   @override
   void initState() {
     super.initState();
@@ -240,6 +244,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
     // 回收相关资源
     // Every listener should be canceled, the same should be done with this stream.
     onUrlChanged?.cancel();
+    _audioRecorderUtils?.dispose();
     onStateChanged?.cancel();
     onBackChanged?.cancel();
     flutterWebViewPlugin?.dispose();
@@ -686,10 +691,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
             if (ObjectUtil.isEmptyString(message.message)) {
               return;
             }
-            final result = await ImageGallerySaver.saveImage(
-                Uint8List.fromList(base64Decode(message.message)),
-                quality: 60,
-                name:Uuid().v4());
+            final result = await ImageGallerySaver.saveImage(Uint8List.fromList(base64Decode(message.message)), quality: 60, name: Uuid().v4());
             print(result);
             if (!ObjectUtil.isEmptyString(result)) {
               print(result);
@@ -773,7 +775,23 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
             await flutterWebViewPlugin.hide();
             Store<GSYState> store = StoreProvider.of(context);
             _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"]);
-          })
+          }),
+
+      ///结束录音 baizhenfneg2020/8/25
+      JavascriptChannel(
+          name: "StopAudio",
+          onMessageReceived: (JavascriptMessage message) async {
+            String audioBase64 = await _audioRecorderUtils.stop();
+            print("====================结束录音");
+            flutterWebViewPlugin.evalJavascript("window.stopAudio('${audioBase64}')");
+          }),
+      //开始录音
+      JavascriptChannel(
+          name: "StartAudio",
+          onMessageReceived: (JavascriptMessage message) {
+            _audioRecorderUtils.start(message);
+            flutterWebViewPlugin.evalJavascript("window.StartRecording()");
+          }),
     ].toSet();
   }
 

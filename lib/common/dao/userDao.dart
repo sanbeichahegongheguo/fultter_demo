@@ -628,4 +628,19 @@ class UserDao {
     var data = res.data;
     return data;
   }
+  ///获取用户分享金可提现金额金额
+  static totalGainedMoney(userId) async {
+    var params = {"userid": userId};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().totalGainedMoney(), params, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    var data = res.data;
+    return data["data"]["total_money"];
+  }
+
+  /// 判断是否订阅产品
+  static permission(productKey) async {
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getPermissionUrl(), {"productKey":productKey}, null, new Options(method: "get"), contentType: HttpManager.CONTENT_TYPE_FORM);
+    print("判断是否订阅产品${res}");
+    var data = res.data;
+    return data;
+  }
 }

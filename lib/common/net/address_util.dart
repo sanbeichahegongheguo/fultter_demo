@@ -17,7 +17,7 @@ class AddressUtil {
   String ws_url = "wss://www.k12china.com";
   String apiHost = "https://api.k12china.com/";
   String qresHost = "https://qres.k12china.com/";
-
+  String stu_h5 = "http://www.k12china.com/stu_h5/web/";
 //  String studentHost = "http://192.168.6.31:30915/student:";
 //  String k12apiHost = "http://192.168.6.30:31191/k12-api/";
 //  String studentWebHost = "http://192.168.6.31:31528/studentweb/";
@@ -30,6 +30,7 @@ class AddressUtil {
 //  String apiHost = "http://192.168.6.30:31456/";
 //  String qresHost = "https://qres.k12china.com/";
 //  String agora_base_url = "https://api.agora.io";
+//  String stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
 
   String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
 
@@ -47,7 +48,8 @@ class AddressUtil {
     ws_url = "wss://www.k12china.com";
     apiHost = "https://api.k12china.com/";
     qresHost = "https://qres.k12china.com/";
-
+    stu_h5 = "http://www.k12china.com/stu_h5/web/";
+     stu_h5 = "http://www.k12china.com/stu_h5/web/";
 //     studentHost = "http://192.168.6.31:30915/student:";
 //     k12apiHost = "http://192.168.6.30:31191/k12-api/";
 //     studentWebHost = "http://192.168.6.31:31528/studentweb/";
@@ -59,6 +61,7 @@ class AddressUtil {
 //     ws_url = "ws://192.168.6.30:30531";
 //     apiHost = "http://192.168.6.30:31456/";
 //     qresHost = "https://qres.k12china.com/";
+//     stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
   }
 
   _domain2() {
@@ -71,6 +74,7 @@ class AddressUtil {
     sw_api_ = "https://api.yondor.cn/sw/api/v1/";
     getSchoolUrl = "https://www.yondor.cn/k12-api/search/getSchool";
     stu_upload = "https://www.yondor.cn/stu_upload/";
+    stu_h5 = "http://www.yondor.cn/stu_h5/web/";
   }
 
   static AddressUtil _singleton = AddressUtil();
@@ -622,5 +626,25 @@ class AddressUtil {
   ///保存题目到题库
   saveQuesToQlib() {
     return "${stu_app}admin/quest";
+  }
+
+  ///获取用户分享金可提现金额金额url
+  totalGainedMoney(){
+    return "${sw_api_}share_money/total_gained_money";
+  }
+
+  //跳转到分享金
+  goShareMoney() {
+    return "${h5Host}share_money/index.html";
+  }
+
+  ///判断是否订阅产品
+  getPermissionUrl(){
+    return "${sw_api_}pay/permission";
+  }
+
+  //跳转到会员包
+  goVipPackage() {
+    return "${stu_h5}july_package/";
   }
 }

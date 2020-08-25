@@ -1,4 +1,5 @@
 import 'AdBloc.dart';
+import 'AdminBloc.dart';
 import 'BlocBase.dart';
 import 'CoachBloc.dart';
 import 'LearningEmotionBloc.dart';
@@ -25,6 +26,7 @@ class HomeBloc extends BlocBase {
   ///新版学情
 
   final TabbarBloc tabbarBloc = TabbarBloc();
+  final AdminBloc adminBloc = new AdminBloc();
   @override
   void dispose() {
     moduleBloc?.dispose();
