@@ -32,6 +32,7 @@ import 'package:flutter_start/widget/LiveQuesDialog.dart';
 import 'package:flutter_start/widget/LiveRankWidget.dart';
 import 'package:flutter_start/widget/LiveTimerWidget.dart';
 import 'package:flutter_start/widget/LiveTopDialog.dart';
+import 'package:flutter_start/widget/LivesQuesWidget.dart';
 import 'package:flutter_start/widget/RedPacket.dart';
 import 'package:flutter_start/widget/RedRain.dart';
 import 'package:flutter_start/widget/StarGif.dart';
@@ -77,7 +78,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   CourseProvider _courseProvider;
   RoomLandscapePageState(RoomData roomData) {
-    _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData);
+    _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
   }
 
   @override
@@ -98,6 +99,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _updateUsers(widget.roomData.room.coVideoUsers);
     Future.delayed(Duration(milliseconds: 1000)).then((e) {
       rewardFirstStar();
+    });
+    _textController.addListener(() {
+      _chatProvider.setIsComposing(_textController.text.length > 0);
     });
   }
 
@@ -130,6 +134,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   WhiteboardController _whiteboardController = WhiteboardController();
   Timer _hiddenTopTimer;
   FlickManager flickManager;
+  Timer _socketPingTimer;
+  Duration _socketPingDuration = Duration(seconds: 60);
+  bool isShowDialog = false;
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -276,207 +283,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         alignment: Alignment.topLeft, child: LiveRankWidget(liveCourseallotId: widget.roomData.liveCourseallotId, roomId: widget.roomData.room.roomUuid));
   }
 
-  ///选择题
-  var _selBtnName = ["A", "B", "C", "D", "E", "F"];
+  closeDialog() {
+    if (!ModalRoute.of(context).isCurrent) {
+      Navigator.of(context).pop();
+    }
+  }
 
   ///构建选择题
   Widget _buildSel() {
-    List groupValueList = List.generate(6, (index) => 0);
-    return Consumer<RoomSelProvider>(builder: (context, model, child) {
-      return model.isShow
-          ? Align(
-              alignment: Alignment(0.11, 0.9),
-              child: Stack(
-                alignment: Alignment(0.0, -2.1),
-                children: <Widget>[
-                  Container(
-                      width: model.op != null && model.op.length == 2 ? ScreenUtil.getInstance().getWidthPx(400) : ScreenUtil.getInstance().getWidthPx(580),
-                      height: ScreenUtil.getInstance().getWidthPx(100),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: new BorderRadius.all(Radius.circular(50.0)),
-                        border: new Border.all(
-                          //添加边框
-                          width: 1, //边框宽度
-                          color: Color(0xFFececec), //边框颜色
-                        ),
-                        boxShadow: <BoxShadow>[
-                          new BoxShadow(
-                            color: Colors.black, //阴影颜色
-                            blurRadius: 1, //阴影大小
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          SizedBox(
-                            width: ScreenUtil.getInstance().getWidthPx(20),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: model.op != null ? model.op.length : 4,
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(right: index == 4 ? 0 : 10),
-                                      child: FRadio(
-                                        corner: FRadioCorner.all(30),
-                                        normalColor: Color(0XFFb1dab7),
-                                        width: ScreenUtil.getInstance().getWidthPx(75),
-                                        height: ScreenUtil.getInstance().getWidthPx(75),
-                                        value: index + 1,
-                                        groupValue: model.ques.type == MULSEL ? groupValueList[index] : model.val,
-                                        onChanged: (value) {
-                                          if (model.ques.type == MULSEL) {
-                                            if (groupValueList[index] == value) {
-                                              groupValueList[index] = 0;
-                                            } else {
-                                              groupValueList[index] = value;
-                                            }
-                                            model.notify();
-                                          } else {
-                                            model.switchVal(value);
-                                          }
-                                        },
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Color(0xff3cc969),
-                                            Color(0xff43cf70),
-                                            Color(0xff3eb765),
-                                            Color(0xff3daa60),
-                                          ],
-                                          begin: Alignment(-0.1, -0.9),
-                                          end: Alignment(1.0, 1.0),
-                                          stops: [0.0, 0.2, 0.7, 1.0],
-                                        ),
-                                        selectedColor: Color(0xff3cc969),
-                                        hasSpace: false,
-                                        border: 1.5,
-                                        child: Text(
-                                          "${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
-                                          style: TextStyle(color: Color(0xFF3cc969), fontSize: 16),
-                                        ),
-                                        hoverChild: Text(
-                                          "${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
-                                          style: TextStyle(color: Colors.white, fontSize: 16),
-                                        ),
-                                        selectedChild: Text("${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
-                                            style: TextStyle(color: Colors.white, fontSize: 16)),
-                                      ),
-                                    );
-                                  }),
-                            ],
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            child: CommonUtils.buildBtn("提交",
-                                width: ScreenUtil.getInstance().getWidthPx(130), height: ScreenUtil.getInstance().getHeightPx(250), onTap: () {
-                              if (model.val < 1) {
-                                return;
-                              }
-                              var isRight = "F";
-                              print("model.quesAn  ${model.quesAn} (model.val - 1) ${(model.val - 1)} ${model.quesAn == (model.val - 1)}");
-                              if (model.quesAn.toString() == (model.val - 1).toString()) {
-                                isRight = "T";
-                              }
-                              final val = model.val;
-                              final op = model.op;
-                              var answer =
-                                  '{"answer":"${model.val - 1}","isRight":"$isRight","quesId":${model.ques.qid},"userAnswer":{"qid":${model.ques.qid},"uan":[{"an":"${model.val - 1}","r":"$isRight"}]}}';
-                              var useTime = DateTime.now().difference(model.dateTime).inMilliseconds;
-                              var param = {
-                                "catalogId": model.ques.ctatlogid,
-                                "liveCourseallotId": widget.roomData.liveCourseallotId,
-                                "liveEventId": 1,
-                                "quesId": model.ques.qid,
-                                "isRight": isRight,
-                                "roomId": widget.roomData.room.roomUuid
-                              };
-                              param["answerJson"] = answer;
-                              param["useTime"] = useTime;
-                              var qlibParam = {
-                                "lessonId": model.ques.ctatlogid,
-                                "quesId": model.ques.qid,
-                                "isRight": isRight,
-                                "batchNo": widget.roomData.room.roomUuid,
-                                "ctkDatafrommapId": 49
-                              };
-                              qlibParam["costTime"] = useTime;
-                              qlibParam["userAnswer"] = answer;
-                              RoomDao.saveQuesToQlib(qlibParam);
-                              RoomDao.saveQues(param).then((res) {
-                                Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
-                                if (res.result != null && res.data != null && res.data["code"] == 200) {
-                                  NavigatorUtil.showGSYDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        print("  op     $op");
-                                        return LiveQuesDialog(
-                                          ir: isRight,
-                                          star: res.data["data"]["star"],
-                                          an: "${(op != null && op.length == 1) ? op[val - 1] : _selBtnName[val - 1]}",
-                                        );
-                                      }).then((_) {
-                                    if (res.data["data"]["star"] > 0) {
-                                      showStarDialog(res.data["data"]["star"]);
-                                    }
-                                  });
-                                } else {
-                                  showToast("提交失败请稍后重试!!!");
-                                }
-                              });
-                              model.setIsShow(false);
-                            },
-                                splashColor: Colors.amber,
-                                decorationColor: Color(0xFF3cc969),
-                                textColor: Colors.white,
-                                textSize: ScreenUtil.getInstance().getSp(8),
-                                elevation: 2),
-                          ),
-                          SizedBox(
-                            width: ScreenUtil.getInstance().getWidthPx(20),
-                          ),
-                        ],
-                      )),
-                  Stack(
-                    alignment: AlignmentDirectional(0.0, 1.2),
-                    children: <Widget>[
-                      Container(
-                          alignment: Alignment.topCenter,
-                          height: ScreenUtil.getInstance().getWidthPx(40),
-                          width: ScreenUtil.getInstance().getWidthPx(150),
-                          child: Text("单选题"),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: new BorderRadius.all(Radius.circular(50.0)),
-                            border: new Border.all(
-                              //添加边框
-                              width: 1, //边框宽度
-                              color: Color(0xFFececec), //边框颜色
-                            ),
-                            boxShadow: <BoxShadow>[
-                              new BoxShadow(
-                                color: Colors.black, //阴影颜色
-                                blurRadius: 1, //阴影大小
-                              ),
-                            ],
-                          )),
-                      Container(
-                        color: Colors.white,
-                        height: ScreenUtil.getInstance().getWidthPx(10),
-                        width: ScreenUtil.getInstance().getWidthPx(150),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            )
-          : Container();
-    });
+    return LiveQuesWidget();
   }
 
   Widget _buildCourseware() {
@@ -527,6 +342,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             fit: StackFit.expand,
             children: <Widget>[
               Container(
+                color: Colors.black,
                 width: ScreenUtil.getInstance().screenWidth * 0.8,
                 child: WebViewPlus(
                   initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
@@ -613,6 +429,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
       if (!(resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0)) {
         result = Container(
+          color: Colors.black,
           width: ScreenUtil.getInstance().screenWidth * 0.8,
           child: Stack(
             fit: StackFit.expand,
@@ -867,7 +684,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                               readOnly: true,
                               controller: _textController,
                               onChanged: (String text) {
-                                _chatProvider.setIsComposing(text.length > 0);
+                                model.setIsComposing(_textController.text.length > 0);
                               },
                               onTap: () {
                                 _showKeyboard(model);
@@ -875,26 +692,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                               onSubmitted: _handleSubmitted,
                               decoration: InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息'),
                             ),
-                            // onTap: model.muteAllChat
-                            //     ? null
-                            //     : () {
-                            //         Navigator.push(
-                            //             context,
-                            //             PopRoute(
-                            //                 child: ChangeNotifierProvider<
-                            //                         ChatProvider>.value(
-                            //                     value: _chatProvider,
-                            //                     child: InputButtomWidget(
-                            //                       onChanged: (String text) {
-                            //                         _chatProvider
-                            //                             .setIsComposing(
-                            //                                 text.length > 0);
-                            //                       },
-                            //                       controller: _textController,
-                            //                       onSubmitted: _handleSubmitted,
-                            //                     ))));
-                            //         print("#1 123123");
-                            //       },
                           )),
                           !model.muteAllChat
                               ? Container(
@@ -914,6 +711,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     if (model.muteAllChat) {
       return;
     }
+    closeDialog();
     NavigatorUtil.showGSYDialog(
         context: context,
         barrierDismissible: true,
@@ -1183,7 +981,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
   }
 
-  double fontSize = ScreenUtil.getInstance().getSp(12);
+  double fontSize = ScreenUtil.getInstance().getSp(12 / 2);
 
   ///聊天区域
   Widget _buildChat() {
@@ -1292,6 +1090,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     //设置监听
     BetterSocket.addListener(onOpen: (httpStatus, httpStatusMessage) {
       Log.i("onOpen---httpStatus:$httpStatus  httpStatusMessage:$httpStatusMessage", tag: RoomLandscapePage.sName);
+      _socketPingTimer?.cancel();
+      _socketPingTimer = Timer.periodic(_socketPingDuration, (timer) {
+        BetterSocket.sendMsg('{"Ping":{}}');
+      });
     }, onMessage: (message) {
       Log.d('newMsg : $message', tag: RoomLandscapePage.sName);
       try {
@@ -1349,6 +1151,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           return;
         }
         if (ques.type == JUD || ques.type == SEL || ques.type == MULSEL) {
+          _handleSEL(socketMsg.text);
           return;
         }
         if (ques.type == mp4 && msg["time"] == null) {
@@ -1413,7 +1216,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           if (ques.type == h5 && isShow != null && isShow == 1) {
             gameStart();
           }
-          _resProvider.setRes(ques, isShow: _resShow);
+          //只展示图片不操作
+          if (_currentRes == null || isShow == null) {
+            _resProvider.setRes(ques, isShow: _resShow);
+          }
         }
         _currentRes = ques;
         break;
@@ -1451,7 +1257,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         break;
       case SEL:
       case JUD:
-      case JUD:
+      case MULSEL:
         _handleSEL(socketMsg.text);
         break;
       case RANRED:
@@ -1589,7 +1395,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       showToast("出错了!!!");
       return;
     }
-    if (_currentRes == null || _currentRes.qid != ques.qid) {
+
+    if (_currentRes == null || (_currentRes.qid != ques.qid && isShow == null)) {
       _resProvider.setRes(ques);
       _currentRes = ques;
     }
@@ -1644,6 +1451,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   Future showLiveTopDialog(data) {
+    closeDialog();
     return showDialog(
         context: context,
         builder: (context) {
@@ -1685,6 +1493,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
         if (res.result != null && res.data != null && res.data["code"] == 200) {
           if (res.data["data"]["status"] == 1) {
+            closeDialog();
             showDialog(
                 context: context,
                 builder: (context) {
@@ -1716,6 +1525,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   Future showRedPacketDialog() {
+    closeDialog();
     return NavigatorUtil.showGSYDialog(
         context: context,
         builder: (BuildContext context) {
@@ -1725,6 +1535,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///启动获取星星动画
   _startForward(num) {
+    closeDialog();
     return NavigatorUtil.showGSYDialog(
         context: context,
         barrierDismissible: false,
@@ -1745,6 +1556,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _rtmChannel?.leave();
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
+    _socketPingTimer?.cancel();
     socket?.close();
     BetterSocket.close();
     socket = null;

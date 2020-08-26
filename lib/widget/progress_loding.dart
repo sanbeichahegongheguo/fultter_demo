@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter_start/provider/room.dart';
+import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
+
 class ProgressLoading extends StatefulWidget {
   @override
   _ProgressLoadingState createState() => _ProgressLoadingState();
@@ -9,10 +14,19 @@ class ProgressLoading extends StatefulWidget {
 
 class _ProgressLoadingState extends State<ProgressLoading> {
   @override
+  void initState() {
+    super.initState();
+    if (Platform.isIOS) {
+      OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+    }
+    OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<ProgressProvider>(builder: (context, model, child) {
       return Material(
-          color: Colors.transparent,
+          color: Colors.white,
           child: WillPopScope(
             onWillPop: () => new Future.value(false),
             child: Center(
@@ -36,7 +50,7 @@ class _ProgressLoadingState extends State<ProgressLoading> {
                       valueColor: AlwaysStoppedAnimation(Colors.blue),
                       borderRadius: 12.0,
                       center: Text(
-                        model.percentage>=100?"正在加入房间":model.percentage==0?"":"${model.percentage.toStringAsFixed(0)}%",
+                        model.percentage >= 100 ? "正在加入房间" : model.percentage == 0 ? "" : "${model.percentage.toStringAsFixed(0)}%",
                         style: TextStyle(
                           color: Colors.lightBlueAccent,
                           fontSize: 20.0,
@@ -49,6 +63,6 @@ class _ProgressLoadingState extends State<ProgressLoading> {
               ),
             ),
           ));
-        });
+    });
   }
 }

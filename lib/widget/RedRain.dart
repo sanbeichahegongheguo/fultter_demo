@@ -263,7 +263,6 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
     player?.dispose();
     _controllerList?.forEach((element) {
       element?.dispose();
@@ -271,6 +270,7 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
     _rotatecontrollerList?.forEach((element) {
       element?.dispose();
     });
+    super.dispose();
 //    _prociderList.forEach((element) {
 //      element?.dispose();
 //    });

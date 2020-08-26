@@ -239,9 +239,15 @@ class CourseProvider with ChangeNotifier {
   int _status = 0;
   int get status => _status;
   RoomData get roomData => _roomData;
-  CourseProvider(int status, {RoomData roomData}) {
+  Function _closeDialog;
+  Function get closeDialog => _closeDialog;
+  Function _showStarDialog;
+  Function get showStarDialog => _showStarDialog;
+  CourseProvider(int status, {RoomData roomData, Function closeDialog, Function showStarDialog}) {
     _status = status;
     this._roomData = roomData;
+    this._closeDialog = closeDialog;
+    this._showStarDialog = showStarDialog;
   }
   setStatus(int status) {
     _status = status;

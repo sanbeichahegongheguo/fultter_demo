@@ -31,7 +31,7 @@ class HttpErrorEvent {
         break;
       case 401:
         var user = SpUtil.getObject(Config.LOGIN_USER);
-        if (user == null) {
+        if (user != null) {
           showToast("登录失效,请重新登录");
           NavigatorUtil.goWelcome(context);
           try {

@@ -102,14 +102,14 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
                                         hasSpace: false,
                                         border: 1.5,
                                         child: Text(
-                                          "${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
+                                          "${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
                                           style: TextStyle(color: Color(0xFF3cc969), fontSize: 16),
                                         ),
                                         hoverChild: Text(
-                                          "${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
+                                          "${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
                                           style: TextStyle(color: Colors.white, fontSize: 16),
                                         ),
-                                        selectedChild: Text("${(model.op != null && model.op.length == 2) ? model.op[index] : _selBtnName[index]}",
+                                        selectedChild: Text("${(model.op != null && model.op.length == 1) ? model.op[index] : _selBtnName[index]}",
                                             style: TextStyle(color: Colors.white, fontSize: 16)),
                                       ),
                                     );
@@ -154,8 +154,9 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
                               qlibParam["userAnswer"] = answer;
                               RoomDao.saveQuesToQlib(qlibParam);
                               RoomDao.saveQues(param).then((res) {
-                                Log.f("rewardStar  ${res.toString()}", tag: tag);
+                                Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
                                 if (res.result != null && res.data != null && res.data["code"] == 200) {
+                                  courseProvider.closeDialog();
                                   NavigatorUtil.showGSYDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -163,9 +164,18 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
                                         return LiveQuesDialog(
                                           ir: isRight,
                                           star: res.data["data"]["star"],
-                                          an: "${(op != null && op.length == 2) ? op[val - 1] : _selBtnName[val - 1]}",
+                                          an: "${(op != null && op.length == 1) ? op[val - 1] : _selBtnName[val - 1]}",
                                         );
-                                      });
+                                      }).then((_) {
+                                    print("LiveQuesDialog back");
+                                    try {
+                                      if (res.data["data"]["star"] > 0) {
+                                        courseProvider.showStarDialog(res.data["data"]["star"]);
+                                      }
+                                    } catch (e) {
+                                      print(e);
+                                    }
+                                  });
                                 } else {
                                   showToast("提交失败请稍后重试!!!");
                                 }
@@ -218,6 +228,5 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
             )
           : Container();
     });
-    ;
   }
 }
