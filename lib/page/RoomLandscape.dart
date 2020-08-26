@@ -250,7 +250,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                               return model.status == 1 ? _buildRank() : Container();
                             }),
                             Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1 ? _buildSel() : Container();
+                              return model.status == 1
+                                  ? Positioned(
+                                      bottom: 0,
+                                      left: 0,
+                                      child: _buildSel(),
+                                    )
+                                  : Container();
                             }),
                             _buildTop(),
                           ],
