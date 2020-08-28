@@ -243,6 +243,10 @@ class CourseProvider with ChangeNotifier {
   Function get closeDialog => _closeDialog;
   Function _showStarDialog;
   Function get showStarDialog => _showStarDialog;
+  double _coursewareWidth;
+  double get coursewareWidth => _coursewareWidth;
+  bool _isInitBoardView = false;
+  bool get isInitBoardView => _isInitBoardView;
   CourseProvider(int status, {RoomData roomData, Function closeDialog, Function showStarDialog}) {
     _status = status;
     this._roomData = roomData;
@@ -252,5 +256,14 @@ class CourseProvider with ChangeNotifier {
   setStatus(int status) {
     _status = status;
     notifyListeners();
+  }
+
+  setInitBoardView(bool isInit) {
+    _isInitBoardView = isInit;
+    notifyListeners();
+  }
+
+  setCoursewareWidth(double coursewareWidth) {
+    _coursewareWidth = coursewareWidth;
   }
 }

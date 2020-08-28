@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/models/Courseware.dart';
+import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/provider/room.dart';
 import 'package:flutter_start/widget/progress_loding.dart';
 import 'package:oktoast/oktoast.dart';
@@ -22,7 +23,7 @@ class RoomUtil {
   static String tag = "RoomUtil";
 
   static goRoomPage(BuildContext context, String url, var userId, var userName, var roomName, var roomUuid, var peLiveCourseallotId,
-      {Function callFunc}) async {
+      {Function callFunc, String recordId}) async {
     var bool = await _handleCameraAndMic();
     if (!bool) {
       showToast("权限不足无法进入房间!");
@@ -69,16 +70,22 @@ class RoomUtil {
         Navigator.pop(context);
         return;
       }
-      var roomData = res.data;
+      RoomData roomData = res.data;
       roomData.courseware = courseware;
       roomData.liveCourseallotId = peLiveCourseallotId;
+      //判断是否回放
+      if (recordId != null && recordId != "") {
+        //获取回放信息
+        var courseRecorReuslt = await RoomDao.getCourseRecordBy(recordId, roomId, userToken);
+        roomData.courseRecordData = courseRecorReuslt.data;
+      }
       //获取房间白板信息
       var roomBoard = await RoomDao.roomBoard(roomId, userToken);
+      roomData.boardId = roomBoard.data["data"]["boardId"];
+      roomData.boardToken = roomBoard.data["data"]["boardToken"];
       Navigator.pop(context);
       print("roomboard $roomBoard");
-      NavigatorUtil.goRoomPage(context,
-              data: roomData, userToken: userToken, boardId: roomBoard.data["data"]["boardId"], boardToken: roomBoard.data["data"]["boardToken"])
-          .then((_) {
+      NavigatorUtil.goRoomPage(context, data: roomData, userToken: userToken, isReplay: roomData.courseRecordData != null).then((_) {
         if (callFunc != null) {
           callFunc();
         }
@@ -120,8 +127,6 @@ class RoomUtil {
     var name = url.substring(url.lastIndexOf("/") + 1, url.length);
     Log.f("name=$name", tag: tag);
     var path = "";
-    var testpath = "qlib/zip/2020/07/30/16267ccdc0bc3bcb.zip".substring(0, "qlib/zip/2020/07/30/16267ccdc0bc3bcb.zip".lastIndexOf("/"));
-    Log.f("testpath=$testpath", tag: tag);
     if (url.contains(".com/")) {
       path = url.substring(url.indexOf(".com/") + 5, url.lastIndexOf("/"));
     } else if (url.contains(".cn/")) {

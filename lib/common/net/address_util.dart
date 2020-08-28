@@ -49,19 +49,19 @@ class AddressUtil {
     apiHost = "https://api.k12china.com/";
     qresHost = "https://qres.k12china.com/";
     stu_h5 = "http://www.k12china.com/stu_h5/web/";
-     stu_h5 = "http://www.k12china.com/stu_h5/web/";
-//     studentHost = "http://192.168.6.31:30915/student:";
-//     k12apiHost = "http://192.168.6.30:31191/k12-api/";
-//     studentWebHost = "http://192.168.6.31:31528/studentweb/";
-//     stu_app = "http://192.168.6.30:31255/stu_app/v1/";
-//     h5Host = "http://192.168.6.30:30593/";
-//     common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
-//     sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
-//     stu_upload = "http://192.168.6.30:31921/stu_upload/";
-//     ws_url = "ws://192.168.6.30:30531";
-//     apiHost = "http://192.168.6.30:31456/";
-//     qresHost = "https://qres.k12china.com/";
-//     stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
+    stu_h5 = "http://www.k12china.com/stu_h5/web/";
+//    studentHost = "http://192.168.6.31:30915/student:";
+//    k12apiHost = "http://192.168.6.30:31191/k12-api/";
+//    studentWebHost = "http://192.168.6.31:31528/studentweb/";
+//    stu_app = "http://192.168.6.30:31255/stu_app/v1/";
+//    h5Host = "http://192.168.6.30:30593/";
+//    common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
+//    sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
+//    stu_upload = "http://192.168.6.30:31921/stu_upload/";
+//    ws_url = "ws://192.168.6.30:30531";
+//    apiHost = "http://192.168.6.30:31456/";
+//    qresHost = "https://qres.k12china.com/";
+//    stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
   }
 
   _domain2() {
@@ -558,6 +558,11 @@ class AddressUtil {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/board";
   }
 
+  ///获取回放信息
+  getCourseRecordBy(String appId, String recordId, String roomId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/record/$recordId";
+  }
+
   ///举手连麦
   roomCoVideo(String appId, String roomId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/covideo";
@@ -629,7 +634,7 @@ class AddressUtil {
   }
 
   ///获取用户分享金可提现金额金额url
-  totalGainedMoney(){
+  totalGainedMoney() {
     return "${sw_api_}share_money/total_gained_money";
   }
 
@@ -639,7 +644,7 @@ class AddressUtil {
   }
 
   ///判断是否订阅产品
-  getPermissionUrl(){
+  getPermissionUrl() {
     return "${sw_api_}pay/permission";
   }
 

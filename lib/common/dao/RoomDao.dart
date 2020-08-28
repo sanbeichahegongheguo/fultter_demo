@@ -45,6 +45,35 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
+  static getCourseRecordBy(String recordId, String roomId, String token) async {
+    Map<String, dynamic> header = {"Authorization": "Basic ${Config.AGORA_AUTH}", "token": token};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getCourseRecordBy(Config.APP_ID, recordId, roomId), null, header, Options(method: "GET"));
+    var result;
+    if (res != null && res.result) {
+      if (res.data["msg"] == "Success") {
+        result = res.data;
+        var recordStatus = ['recording', 'finished', 'finished_recording_to_be_download', 'finished_download_to_be_convert', 'finished_convert_to_be_upload'];
+        var teacherRecord;
+        if (res.data["data"]["recordDetails"] != null) {
+          teacherRecord = (res.data["data"]["recordDetails"] as List).firstWhere((element) {
+            return element["role"] == 1;
+          });
+        }
+        CourseRecordData courseRecordData = CourseRecordData(
+          startTime: res.data["data"]["startTime"],
+          endTime: res.data["data"]["endTime"],
+          url: teacherRecord != null ? teacherRecord["url"] : "",
+          status: res.data["data"]["status"],
+          statusText: recordStatus[res.data["data"]["status"]],
+        );
+        result = courseRecordData;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
   static roomChat(String roomId, String token, String msg) async {
     var params = {
       "message": msg,

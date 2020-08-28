@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class YondorWhiteboard : NSObject, FlutterPlatformView{
+class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelegate{
     let viewId:Int64
     let args: NSDictionary
     let uuid:String
@@ -50,12 +50,16 @@ class YondorWhiteboard : NSObject, FlutterPlatformView{
     
     private func initSdk(){
         let conifg = WhiteSdkConfiguration.init(app:self.appIdentifier)
-        self.sdk = WhiteSDK.init(whiteBoardView: self.boardView, config: conifg, commonCallbackDelegate: nil)
+        
+        self.sdk = WhiteSDK.init(whiteBoardView: self.boardView, config: conifg, commonCallbackDelegate: self)
         let roomConfig =  WhiteRoomConfig.init(uuid: self.uuid, roomToken: self.roomToken)
         roomConfig.isWritable = false
         self.sdk.joinRoom(with: roomConfig, callbacks: nil) { (success:Bool, whiteRoom:WhiteRoom?, e:Error?) in
             print("joinRoom success @@" )
             print(success);
+            var result = [String : Any]()
+            result["created"] = success
+            self.channel.invokeMethod("onCreated", arguments: result)
             if (success){
                 self.room = whiteRoom!
                 self.disableCameraTransform(disabled:true);
@@ -102,6 +106,18 @@ class YondorWhiteboard : NSObject, FlutterPlatformView{
         self.isDisableDeviceInputs = disabled;
     }
 
+    public func throwError(error:NSError!)->Void{
+        print("#3 throwError ",error)
+        print("#3 throwError ",error?.localizedDescription)
+    }
+    
+  
+    public func sdkSetupFail(error:NSError?)->Void {
+        print("#4 sdkSetupFail ",error)
+           print("#4 sdkSetupFail ",error?.localizedDescription)
+    }
+    
+  
 }
 
 

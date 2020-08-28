@@ -394,6 +394,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
               var _urlMsg = state.url.split(":?")[1];
               _urlMsg = Uri.decodeComponent(_urlMsg);
               var _urlList = jsonDecode(_urlMsg);
+              print("微信会话分享 msg: $_urlList");
               String webPage = _urlList["webPage"]; //分享地址
               String thumbnail = _urlList["thumbnail"]; //缩略图
               String title = _urlList["title"];

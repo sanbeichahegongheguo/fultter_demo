@@ -6,11 +6,18 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.herewhite.sdk.AbstractPlayerEventListener;
+import com.herewhite.sdk.Logger;
+import com.herewhite.sdk.Player;
 import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
 import com.herewhite.sdk.WhiteSdkConfiguration;
 import com.herewhite.sdk.WhiteboardView;
 import com.herewhite.sdk.domain.MemberState;
+import com.herewhite.sdk.domain.PlayerConfiguration;
+import com.herewhite.sdk.domain.PlayerPhase;
+import com.herewhite.sdk.domain.PlayerState;
 import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RoomPhase;
 import com.herewhite.sdk.domain.SDKError;
@@ -19,6 +26,7 @@ import com.yondor.yondor_whiteboard.listener.BoardEventListener;
 import com.yondor.yondor_whiteboard.manager.BoardManager;
 import com.yondor.yondor_whiteboard.manager.LogManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.plugin.common.BinaryMessenger;
@@ -40,7 +48,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     private String roomToken;
     private String appIdentifier;
     private final MethodChannel methodChannel;
-
+    private Gson gson = new Gson();
+    private int isReplay = 0;
+    private Player player;
     MyWhiteboardView(Context context, BinaryMessenger messenger, long uid, Map<String, Object> params) {
         methodChannel = new MethodChannel(messenger, "com.yondor.live/whiteboard_" + uid);
         methodChannel.setMethodCallHandler(this);
@@ -54,11 +64,21 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         if(params.containsKey("appIdentifier")){
             appIdentifier = (String)params.get("appIdentifier");
         }
+        if(params.containsKey("isReplay")){
+            isReplay = (int)params.get("isReplay");
+        }
         this.context = context;
         whiteboardView = new WhiteboardView(context);
         whiteboardView.setBackgroundColor(0x00000000);
         init();
-        initView();
+        if (isReplay ==1){
+            Map<String, Object> map = new HashMap<>();
+            map.put("created", true);
+            methodChannel.invokeMethod("onCreated",map);
+        }else{
+            initView();
+        }
+
     }
 
     @Override
@@ -74,11 +94,11 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         WhiteSdkConfiguration configuration = new WhiteSdkConfiguration(appIdentifier);
         whiteSdk = new WhiteSdk(whiteboardView, context, configuration);
         boardManager.setListener(this);
-    }
-    private void initView(){
         whiteboardView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             boardManager.refreshViewSize();
         });
+    }
+    private void initView(){
         initBoardWithRoomToken(uuid,roomToken);
 //        boardManager.setViewMode(ViewMode.Follower);
         disableDeviceInputs(true);
@@ -92,7 +112,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             @Override
             public void then(RoomPhase phase) {
                 if (phase != RoomPhase.connected) {
-//                    pb_loading.setVisibility(View.VISIBLE);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("created", true);
+                    methodChannel.invokeMethod("onCreated",map);
                     RoomParams params = new RoomParams(uuid, roomToken);
                     boardManager.init(whiteSdk, params);
                 }
@@ -154,6 +176,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             case "updateRoom":
                 updateRoom(call,result);
                 break;
+            case "replay":
+                replay(call,result);
+                break;
             default:
                 result.notImplemented();
         }
@@ -165,5 +190,74 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             disableCameraTransform(isBoardLock==1);
         }
         result.success("");
+    }
+
+    private void replay( MethodCall call,  MethodChannel.Result result){
+        Map<String, Object> request = (Map<String, Object>) call.arguments;
+
+        Long beginTimestamp = Long.parseLong((String) request.get("beginTimestamp"));
+        Long  duration = Long.parseLong((String) request.get("duration"));
+        String mediaUrl = (String)request.get("mediaURL");
+        PlayerConfiguration playerConfiguration = new PlayerConfiguration(uuid, roomToken);
+        playerConfiguration.setBeginTimestamp(beginTimestamp);
+        playerConfiguration.setMediaURL(mediaUrl);
+        playerConfiguration.setDuration(duration);
+        whiteSdk.createPlayer(playerConfiguration, new AbstractPlayerEventListener() {
+            // 以下为房间状态回调，可以查看 [状态管理] 文档
+
+            //播放状态切换回调
+            @Override
+            public void onPhaseChanged(PlayerPhase phase) {
+                log.i("onPhaseChanged %s",gson.toJson(phase));
+
+            }
+            //首帧加载回调
+            @Override
+            public void onLoadFirstFrame() {
+                log.i("onLoadFirstFrame");
+            }
+            // 分片切换回调，需要了解分片机制。目前无实际用途
+            @Override
+            public void onSliceChanged(String slice) {
+                log.i("slice %s",slice);
+            }
+            //播放中，状态出现变化的回调
+            @Override
+            public void onPlayerStateChanged(PlayerState modifyState) {
+                log.i("onPlayerStateChanged %s",gson.toJson(modifyState));
+            }
+            //出错暂停
+            @Override
+            public void onStoppedWithError(SDKError error) {
+                log.i("onStoppedWithError %s",error.getJsStack());
+            }
+            //进度时间变化
+            @Override
+            public void onScheduleTimeChanged(long time) {
+                log.i("onScheduleTimeChanged %d",time);
+            }
+            //添加帧出错
+            @Override
+            public void onCatchErrorWhenAppendFrame(SDKError error) {
+                log.i("onCatchErrorWhenAppendFrame %s",error.getJsStack());
+            }
+            //渲染时，出错
+            @Override
+            public void onCatchErrorWhenRender(SDKError error) {
+                log.i("onCatchErrorWhenRender %s",error.getJsStack());
+            }
+        }, new Promise<Player>() {
+            @Override
+            public void then(Player p) {
+                log.i("then player");
+                player = p;
+                player.play();
+            }
+
+            @Override
+            public void catchEx(SDKError t) {
+                log.e("create player error, ", t);
+            }
+        });
     }
 }

@@ -49,7 +49,6 @@
 		AEF43F2B22EEA37400765808 /* PathObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2522EEA37300765808 /* PathObject.mm */; };
 		AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2722EEA37400765808 /* ImageData.mm */; };
 		AEF43F2D22EEA37400765808 /* Mnist.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2922EEA37400765808 /* Mnist.mm */; };
-		B44BE35724E4EC8100482769 /* YondorWhiteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44BE35624E4EC8100482769 /* YondorWhiteboard.swift */; };
 		B49C639924DCEBDF0037462B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B49C639824DCEBDF0037462B /* StoreKit.framework */; };
 		D5AC550C610483AA74C2FC9A /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 703282FEB9B72281A2657B4F /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
@@ -152,7 +151,6 @@
 		AEF43F2822EEA37400765808 /* mnist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mnist.h; sourceTree = "<group>"; };
 		AEF43F2922EEA37400765808 /* Mnist.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Mnist.mm; sourceTree = "<group>"; };
 		AEF43F2A22EEA37400765808 /* PathObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathObject.h; sourceTree = "<group>"; };
-		B44BE35624E4EC8100482769 /* YondorWhiteboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YondorWhiteboard.swift; sourceTree = "<group>"; };
 		B49C639824DCEBDF0037462B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		C1D536F4DEB8EFD859C25C45 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -235,7 +233,6 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				B44BE35624E4EC8100482769 /* YondorWhiteboard.swift */,
 				AEC4E405249CD81F000241F9 /* Runner.entitlements */,
 				AEC4E3EF249C52F4000241F9 /* RunnerDebug.entitlements */,
 				AEC4096F23B21C77000F8FDC /* Resources */,
@@ -443,14 +440,15 @@
 				"${BUILT_PRODUCTS_DIR}/connectivity/connectivity.framework",
 				"${BUILT_PRODUCTS_DIR}/device_info/device_info.framework",
 				"${BUILT_PRODUCTS_DIR}/dsBridge/dsBridge.framework",
+				"${BUILT_PRODUCTS_DIR}/flutter_audio_recorder/flutter_audio_recorder.framework",
 				"${BUILT_PRODUCTS_DIR}/flutter_des/flutter_des.framework",
 				"${BUILT_PRODUCTS_DIR}/flutter_inapp_purchase/flutter_inapp_purchase.framework",
 				"${BUILT_PRODUCTS_DIR}/flutter_native_image/flutter_native_image.framework",
 				"${BUILT_PRODUCTS_DIR}/flutter_webview_plugin/flutter_webview_plugin.framework",
 				"${BUILT_PRODUCTS_DIR}/home_indicator/home_indicator.framework",
 				"${BUILT_PRODUCTS_DIR}/image_cropper/image_cropper.framework",
+				"${BUILT_PRODUCTS_DIR}/image_gallery_saver/image_gallery_saver.framework",
 				"${BUILT_PRODUCTS_DIR}/image_picker/image_picker.framework",
-				"${BUILT_PRODUCTS_DIR}/image_picker_saver/image_picker_saver.framework",
 				"${BUILT_PRODUCTS_DIR}/imei_plugin/imei_plugin.framework",
 				"${BUILT_PRODUCTS_DIR}/just_audio/just_audio.framework",
 				"${BUILT_PRODUCTS_DIR}/orientation/orientation.framework",
@@ -478,14 +476,15 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/connectivity.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/device_info.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/dsBridge.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_audio_recorder.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_des.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_inapp_purchase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_native_image.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_webview_plugin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/home_indicator.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_cropper.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_gallery_saver.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_picker.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/image_picker_saver.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/imei_plugin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/just_audio.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/orientation.framework",
@@ -564,7 +563,6 @@
 			files = (
 				AEF43F2B22EEA37400765808 /* PathObject.mm in Sources */,
 				AED4820A22F8264B005E93AB /* Banner.swift in Sources */,
-				B44BE35724E4EC8100482769 /* YondorWhiteboard.swift in Sources */,
 				AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */,
 				AEC4093023B1EF88000F8FDC /* BJImageCropper.m in Sources */,
 				AEC4092F23B1EF88000F8FDC /* CameraPlugin.m in Sources */,
@@ -665,7 +663,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34940;
+				CURRENT_PROJECT_VERSION = 34942;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -708,7 +706,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.692;
+				MARKETING_VERSION = 2.0.693;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -758,8 +756,6 @@
 					"\"image_cropper\"",
 					"-framework",
 					"\"image_picker\"",
-					"-framework",
-					"\"image_picker_saver\"",
 					"-framework",
 					"\"imei_plugin\"",
 					"-framework",
@@ -920,7 +916,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34940;
+				CURRENT_PROJECT_VERSION = 34942;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -963,7 +959,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.692;
+				MARKETING_VERSION = 2.0.693;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1013,8 +1009,6 @@
 					"\"image_cropper\"",
 					"-framework",
 					"\"image_picker\"",
-					"-framework",
-					"\"image_picker_saver\"",
 					"-framework",
 					"\"imei_plugin\"",
 					"-framework",
@@ -1069,7 +1063,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34940;
+				CURRENT_PROJECT_VERSION = 34942;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -1112,7 +1106,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.692;
+				MARKETING_VERSION = 2.0.693;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1162,8 +1156,6 @@
 					"\"image_cropper\"",
 					"-framework",
 					"\"image_picker\"",
-					"-framework",
-					"\"image_picker_saver\"",
 					"-framework",
 					"\"imei_plugin\"",
 					"-framework",

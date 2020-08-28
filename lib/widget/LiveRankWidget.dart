@@ -6,6 +6,7 @@ import 'package:flutter_start/common/dao/RoomDao.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/Log.dart';
+import 'package:flutter_start/provider/room.dart';
 import 'package:frefresh/frefresh.dart';
 import 'package:fsuper/fsuper.dart';
 import 'package:oktoast/oktoast.dart';
@@ -41,10 +42,11 @@ class _LiveRankWidgetState extends State<LiveRankWidget> {
   @override
   Widget build(BuildContext context) {
     store = StoreProvider.of(context);
-    xPosition = ScreenUtil.getInstance().screenWidth - ScreenUtil.getInstance().getWidthPx(55);
+    final screenSize = MediaQuery.of(context).size;
+    xPosition = ScreenUtil.getInstance().screenWidth - MediaQuery.of(context).padding.right - ScreenUtil.getInstance().getWidthPx(55);
     yPosition = ScreenUtil.getInstance().screenHeight * 0.5;
     _xyProvider.setPosition(x: xPosition, y: yPosition);
-    final screenSize = MediaQuery.of(context).size;
+    final courseProvider = Provider.of<CourseProvider>(context, listen: false);
     return Stack(
       children: <Widget>[
         ChangeNotifierProvider.value(
@@ -64,7 +66,7 @@ class _LiveRankWidgetState extends State<LiveRankWidget> {
                           left: ScreenUtil.getInstance().getWidthPx(80),
                           right: ScreenUtil.getInstance().getWidthPx(80),
                           top: ScreenUtil.getInstance().getWidthPx(20)),
-                      width: screenSize.width * 0.8,
+                      width: courseProvider.coursewareWidth,
                       child: ChangeNotifierProvider.value(
                           value: _typeProvider,
                           child: Consumer<_TypeProvider>(builder: (context, model, child) {

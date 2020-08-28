@@ -24,6 +24,7 @@ import 'package:flutter_start/page/RegisterPage.dart';
 import 'package:flutter_start/page/ResetMobilePage.dart';
 import 'package:flutter_start/page/ResetPasswordPage.dart';
 import 'package:flutter_start/page/RoomLandscape.dart';
+import 'package:flutter_start/page/RoomReplayPage.dart';
 import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
 import 'package:flutter_start/page/WebViewPage.dart';
@@ -37,8 +38,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:redux/redux.dart';
 import 'DeviceInfo.dart';
 
-class NavigatorUtil{
-
+class NavigatorUtil {
   ///替换
   static pushReplacementNamed(BuildContext context, String routeName) {
     Navigator.pushReplacementNamed(context, routeName);
@@ -79,18 +79,30 @@ class NavigatorUtil{
   }
 
   ///注册
-  static goRegester(BuildContext context,{String from,bool isLogin = false,int index = 0,String userPhone,int registerState, String head,String name, int userId, String stuPhone}) {
-    NavigatorRouter(context, RegisterPage(from:from,index: index, userPhone:userPhone, isLogin:isLogin, registerState: registerState, head: head, name: name, userId: userId, stuPhone:stuPhone));
+  static goRegester(BuildContext context,
+      {String from, bool isLogin = false, int index = 0, String userPhone, int registerState, String head, String name, int userId, String stuPhone}) {
+    NavigatorRouter(
+        context,
+        RegisterPage(
+            from: from,
+            index: index,
+            userPhone: userPhone,
+            isLogin: isLogin,
+            registerState: registerState,
+            head: head,
+            name: name,
+            userId: userId,
+            stuPhone: stuPhone));
   }
 
   ///注册前夕-建立学习档案
-  static goBuildArchives(BuildContext context,{int registerState,int index = 0, String userPhone, String head, String name, int userId}) {
-    NavigatorRouter(context, BuildArchivesPage(registerState: registerState, index: index, userPhone: userPhone, head: head, name: name,userId: userId));
+  static goBuildArchives(BuildContext context, {int registerState, int index = 0, String userPhone, String head, String name, int userId}) {
+    NavigatorRouter(context, BuildArchivesPage(registerState: registerState, index: index, userPhone: userPhone, head: head, name: name, userId: userId));
   }
 
   ///找回密码
   static goRePassword(BuildContext context) {
-    NavigatorRouter(context,retrievePasswordPage());
+    NavigatorRouter(context, retrievePasswordPage());
   }
 
   ///去个人资料
@@ -111,22 +123,27 @@ class NavigatorUtil{
       (Route<dynamic> route) => false,
     );
   }
+
   ///去手机号登陆
   static goPhoneLoginPage(BuildContext context) {
     NavigatorRouter(context, PhoneLoginPage());
   }
+
   ///更换班级
   static goJoinClassPage(BuildContext context) {
     NavigatorRouter(context, JoinClassPage());
   }
+
   ///护眼设置
   static goEyeProtectionPage(BuildContext context) {
     NavigatorRouter(context, EyeProtectionPage());
   }
+
   ///去修改监护密码
   static goChangeGuardPassword(BuildContext context) {
     return NavigatorRouter(context, ChangeGuardPassword());
   }
+
   ///去设置监护密码
   static goMonitoringPassword(BuildContext context) {
     return NavigatorRouter(context, MonitoringPassword());
@@ -136,32 +153,36 @@ class NavigatorUtil{
   static goDelGuardPassword(BuildContext context) {
     return NavigatorRouter(context, DelGuardPassword());
   }
+
   ///更改密码
   static goResetPasswordPage(BuildContext context) {
     NavigatorRouter(context, ResetPasswordPage());
   }
+
   ///远大小状元学生
   static goStudentAppPage(BuildContext context) {
     NavigatorRouter(context, StudentAppPage());
   }
+
   ///去往期作业
   static goHomeWorkDuePage(BuildContext context) {
     NavigatorRouter(context, HomeWorkDuePage());
   }
+
   ///去往webview
-  static goWebView(BuildContext context, String url,{String router = "",int openType}) async {
-     if (url.indexOf("#")!=-1 && router ==""){
-       var split = url.split("#/");
-       if(split.length>1){
-         url = split[0];
-         router = split[1];
-       }
-     }
+  static goWebView(BuildContext context, String url, {String router = "", int openType}) async {
+    if (url.indexOf("#") != -1 && router == "") {
+      var split = url.split("#/");
+      if (split.length > 1) {
+        url = split[0];
+        router = split[1];
+      }
+    }
     String key = await httpManager.getAuthorization();
     print("@key:  $key ");
     String from = "study_parent";
     String toFrom = "study_parent_router";
-    var version =  (await PackageInfo.fromPlatform()).version;
+    var version = (await PackageInfo.fromPlatform()).version;
     var deviceId = await DeviceInfo.instance.getYondorDeviceId();
     if (null != key && "" != key) {
       String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
@@ -170,7 +191,7 @@ class NavigatorUtil{
       } else {
         url = "$url?$param";
       }
-    }else{
+    } else {
       String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {
         url = "$url&$param";
@@ -178,39 +199,55 @@ class NavigatorUtil{
         url = "$url?$param";
       }
     }
-    if(router != ""){
-      url += "&toFrom=$toFrom#/"+router;
+    if (router != "") {
+      url += "&toFrom=$toFrom#/" + router;
     }
 
-    Log.i("NavigatorUtil @跳转链接:$url",tag:"NavigatorUtil");
-    if (Platform.isAndroid){
-      if(openType==null || openType ==0 ){
+    Log.i("NavigatorUtil @跳转链接:$url", tag: "NavigatorUtil");
+    if (Platform.isAndroid) {
+      if (openType == null || openType == 0) {
         //外链默认打开内核 1:X5内核 2:手机自带内核
         openType = 1;
         Store<GSYState> store = StoreProvider.of(context);
-        if (store!=null &&  store.state !=null && store.state.application !=null&& store.state.application.webViewOpenType !=null && store.state.application.webViewOpenType >0){
-          openType  = store.state.application.webViewOpenType;
+        if (store != null &&
+            store.state != null &&
+            store.state.application != null &&
+            store.state.application.webViewOpenType != null &&
+            store.state.application.webViewOpenType > 0) {
+          openType = store.state.application.webViewOpenType;
         }
       }
-      return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: openType,)));
-    }else{
-     return Navigator.push(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: 2,)));
+      return Navigator.push(
+          context,
+          new PageRouteBuilderHelper(
+              builder: (context) => WebViewPlugin(
+                    url,
+                    openType: openType,
+                  )));
+    } else {
+      return Navigator.push(
+          context,
+          new PageRouteBuilderHelper(
+              builder: (context) => WebViewPlugin(
+                    url,
+                    openType: 2,
+                  )));
     }
   }
 
-  static h5GoWebView(BuildContext context, String url,{String router = "",int openType}) async {
-     if (url.indexOf("#")!=-1 && router ==""){
-       var split = url.split("#/");
-       if(split.length>1){
-         url = split[0];
-         router = split[1];
-       }
-     }
+  static h5GoWebView(BuildContext context, String url, {String router = "", int openType}) async {
+    if (url.indexOf("#") != -1 && router == "") {
+      var split = url.split("#/");
+      if (split.length > 1) {
+        url = split[0];
+        router = split[1];
+      }
+    }
     String key = await httpManager.getAuthorization();
     print("@key:  $key ");
     String from = "study_parent";
     String toFrom = "study_parent_router";
-    var version =  (await PackageInfo.fromPlatform()).version;
+    var version = (await PackageInfo.fromPlatform()).version;
     var deviceId = await DeviceInfo.instance.getYondorDeviceId();
     if (null != key && "" != key) {
       String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
@@ -219,7 +256,7 @@ class NavigatorUtil{
       } else {
         url = "$url?$param";
       }
-    }else{
+    } else {
       String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {
         url = "$url&$param";
@@ -227,24 +264,33 @@ class NavigatorUtil{
         url = "$url?$param";
       }
     }
-    if(router != ""){
-      url += "&toFrom=$toFrom#/"+router;
+    if (router != "") {
+      url += "&toFrom=$toFrom#/" + router;
     }
 
-
     print("NavigatorUtil @跳转链接:$url");
-    if (Platform.isAndroid){
-      if(openType==null || openType ==0 ){
+    if (Platform.isAndroid) {
+      if (openType == null || openType == 0) {
         //外链默认打开内核 1:X5内核 2:手机自带内核
         openType = 1;
         Store<GSYState> store = StoreProvider.of(context);
-        if (store!=null &&  store.state !=null && store.state.application !=null&& store.state.application.webViewOpenType !=null && store.state.application.webViewOpenType >0){
-          openType  = store.state.application.webViewOpenType;
+        if (store != null &&
+            store.state != null &&
+            store.state.application != null &&
+            store.state.application.webViewOpenType != null &&
+            store.state.application.webViewOpenType > 0) {
+          openType = store.state.application.webViewOpenType;
         }
       }
-      return Navigator.pushReplacement(context, new PageRouteBuilderHelper(builder: (context) => WebViewPlugin(url,openType: openType,)));
-    }else{
-     return NavigatorRouter(context, WebViewPage(url));
+      return Navigator.pushReplacement(
+          context,
+          new PageRouteBuilderHelper(
+              builder: (context) => WebViewPlugin(
+                    url,
+                    openType: openType,
+                  )));
+    } else {
+      return NavigatorRouter(context, WebViewPage(url));
     }
   }
 
@@ -262,14 +308,11 @@ class NavigatorUtil{
             ),
             onPressed: () {
               Navigator.of(context).pop();
-            }
-        ),
-        title: Text(
-          ad.adverName,
-          style: TextStyle(color: Color(0xFF333333)))
-    );
-    return NavigatorRouter(context, WebViewPage(ad.target,appBar:appBar));
+            }),
+        title: Text(ad.adverName, style: TextStyle(color: Color(0xFF333333))));
+    return NavigatorRouter(context, WebViewPage(ad.target, appBar: appBar));
   }
+
   ///去往webview
   static goAdWebViewExample(BuildContext context, Adver ad) async {
     AppBar appBar = AppBar(
@@ -284,19 +327,18 @@ class NavigatorUtil{
             ),
             onPressed: () {
               Navigator.of(context).pop();
-            }
-        ),
-        title: Text(
-            ad.adverName,
-            style: TextStyle(color: Color(0xFF333333)))
-    );
-    return Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
-      return WebViewExample(ad.target,appBar:appBar);
+            }),
+        title: Text(ad.adverName, style: TextStyle(color: Color(0xFF333333))));
+    return Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) {
+      return WebViewExample(ad.target, appBar: appBar);
     }));
   }
 
-  static goRoomPage(BuildContext context, {RoomData data, String userToken,String boardId,String boardToken}) {
-    return NavigatorRouter(context, RoomLandscapePage(roomData: data,token: userToken,boardId:boardId,boardToken:boardToken));
+  static goRoomPage(BuildContext context, {RoomData data, String userToken, bool isReplay}) {
+    if (isReplay) {
+      return NavigatorRouter(context, RoomReplayPage(roomData: data, token: userToken));
+    }
+    return NavigatorRouter(context, RoomLandscapePage(roomData: data, token: userToken));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {
@@ -324,10 +366,10 @@ class NavigatorUtil{
         barrierDismissible: barrierDismissible,
         builder: (context) {
           return MediaQuery(
+
               ///不受系统字体缩放影响
               data: MediaQueryData.fromWindow(WidgetsBinding.instance.window).copyWith(textScaleFactor: 1),
               child: new SafeArea(child: builder(context)));
         });
   }
-
 }

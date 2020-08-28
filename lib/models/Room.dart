@@ -8,11 +8,19 @@ class RoomData {
   RoomUser user;
   Courseware courseware;
   int liveCourseallotId;
+  String boardId;
+  String boardToken;
+  String recordId;
+  CourseRecordData courseRecordData;
   RoomData({
     this.room,
     this.user,
     this.courseware,
     this.liveCourseallotId,
+    this.boardId,
+    this.boardToken,
+    this.recordId,
+    this.courseRecordData,
   });
 
   factory RoomData.fromJson(jsonRes) => jsonRes == null
@@ -20,6 +28,10 @@ class RoomData {
       : RoomData(
           room: Room.fromJson(jsonRes['room']),
           user: RoomUser.fromJson(jsonRes['user']),
+          boardId: jsonRes['boardId'],
+          boardToken: jsonRes['boardToken'],
+          recordId: jsonRes['recordId'],
+          courseRecordData: CourseRecordData.fromJson(jsonRes['courseRecordData']),
         );
 
   Map<String, dynamic> toJson() => {
@@ -27,6 +39,10 @@ class RoomData {
         'user': user,
         'courseware': courseware,
         'liveCourseallotId': liveCourseallotId,
+        'boardId': boardId,
+        'boardToken': boardToken,
+        'recordId': recordId,
+        'courseRecordData': courseRecordData,
       };
   @override
   String toString() {
@@ -126,10 +142,7 @@ class Room {
   }
 }
 
-
-
 class SocketMsg {
-
   String type;
   MsgUser user;
   int timestamp;
@@ -144,28 +157,30 @@ class SocketMsg {
     this.userCount,
   });
 
-  factory SocketMsg.fromJson(jsonRes)=>jsonRes == null? null:SocketMsg(
-    type : jsonRes['type'],
-    user : MsgUser.fromJson(jsonRes['user']),
-    timestamp : jsonRes['timestamp'],
-    text : jsonRes['text'],
-    userCount : jsonRes['userCount'],);
+  factory SocketMsg.fromJson(jsonRes) => jsonRes == null
+      ? null
+      : SocketMsg(
+          type: jsonRes['type'],
+          user: MsgUser.fromJson(jsonRes['user']),
+          timestamp: jsonRes['timestamp'],
+          text: jsonRes['text'],
+          userCount: jsonRes['userCount'],
+        );
 
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'user': user,
-    'timestamp': timestamp,
-    'text': text,
-    'userCount': userCount,
-  };
+        'type': type,
+        'user': user,
+        'timestamp': timestamp,
+        'text': text,
+        'userCount': userCount,
+      };
   @override
-  String  toString() {
+  String toString() {
     return json.encode(this);
   }
 }
 
 class MsgUser {
-
   int uid;
   String username;
   String account;
@@ -178,20 +193,59 @@ class MsgUser {
     this.type,
   });
 
-  factory MsgUser.fromJson(jsonRes)=>jsonRes == null? null:MsgUser(
-    uid : jsonRes['uid'],
-    username : jsonRes['username'],
-    account : jsonRes['account'],
-    type : jsonRes['type'],);
+  factory MsgUser.fromJson(jsonRes) => jsonRes == null
+      ? null
+      : MsgUser(
+          uid: jsonRes['uid'],
+          username: jsonRes['username'],
+          account: jsonRes['account'],
+          type: jsonRes['type'],
+        );
 
   Map<String, dynamic> toJson() => {
-    'uid': uid,
-    'username': username,
-    'account': account,
-    'type': type,
-  };
+        'uid': uid,
+        'username': username,
+        'account': account,
+        'type': type,
+      };
   @override
-  String  toString() {
+  String toString() {
+    return json.encode(this);
+  }
+}
+
+class CourseRecordData {
+  int startTime;
+  int endTime;
+  String url;
+  int status;
+  String statusText;
+  CourseRecordData({
+    this.startTime,
+    this.endTime,
+    this.url,
+    this.status,
+    this.statusText,
+  });
+  factory CourseRecordData.fromJson(jsonRes) => jsonRes == null
+      ? null
+      : CourseRecordData(
+          startTime: jsonRes['startTime'],
+          endTime: jsonRes['endTime'],
+          url: jsonRes['url'],
+          status: jsonRes['status'],
+          statusText: jsonRes['statusText'],
+        );
+
+  Map<String, dynamic> toJson() => {
+        'startTime': startTime,
+        'endTime': endTime,
+        'url': url,
+        'status': status,
+        'statusText': statusText,
+      };
+  @override
+  String toString() {
     return json.encode(this);
   }
 }

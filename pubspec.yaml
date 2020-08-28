@@ -59,7 +59,9 @@ dependencies:
   webview_flutter_plus: ^0.1.1+9
   image_cropper: ^1.2.3
   oktoast: ^2.2.0
-  fluwx: ^2.2.0
+#  fluwx: ^2.2.0
+  fluwx:
+    path: ./plugins/fluwx
   flick_video_player: ^0.1.1
   liquid_progress_indicator: ^0.3.2
  # websocket_manager: ^0.2.2

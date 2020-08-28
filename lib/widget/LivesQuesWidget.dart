@@ -30,7 +30,7 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
       final courseProvider = Provider.of<CourseProvider>(context, listen: false);
       return model.isShow
           ? Container(
-              width: ScreenUtil.getInstance().screenWidth * 0.8,
+              width: courseProvider.coursewareWidth,
               height: ScreenUtil.getInstance().getWidthPx(75),
               decoration: BoxDecoration(
                 color: Colors.black54,
@@ -89,15 +89,17 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
                         Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
                         if (res.result != null && res.data != null && res.data["code"] == 200) {
                           courseProvider.closeDialog();
-                          NavigatorUtil.showGSYDialog(
+                          showDialog(
                               context: context,
                               builder: (BuildContext context) {
                                 print("  op     $op");
-                                return LiveQuesDialog(
-                                  ir: isRight,
-                                  star: res.data["data"]["star"],
-                                  an: "${(op != null && op.length == 1) ? op[val - 1] : _selBtnName[val - 1]}",
-                                );
+                                return ChangeNotifierProvider<CourseProvider>.value(
+                                    value: courseProvider,
+                                    child: LiveQuesDialog(
+                                      ir: isRight,
+                                      star: res.data["data"]["star"],
+                                      an: "${(op != null && op.length == 1) ? op[val - 1] : _selBtnName[val - 1]}",
+                                    ));
                               }).then((_) {
                             print("LiveQuesDialog back");
                             try {

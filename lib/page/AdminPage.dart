@@ -35,10 +35,11 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   @override
   initState() {
     super.initState();
-    bloc =  BlocProvider.of<HomeBloc>(context);
+    bloc = BlocProvider.of<HomeBloc>(context);
     bloc.adminBloc.getTotalStar();
     bloc.adminBloc.getVipPackage();
   }
+
   HomeBloc bloc;
   @override
   Widget build(BuildContext context) {
@@ -56,19 +57,17 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
               children: <Widget>[
                 Container(
                     width: double.infinity,
-                    margin: EdgeInsets.only(bottom:ScreenUtil.getInstance().getHeightPx(13) ),
+                    margin: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(13)),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      image: new DecorationImage(
-                          image: new AssetImage("images/admin/userInfo_bg.png"),
-                          alignment:Alignment.bottomRight
-                      ),
+                      image: new DecorationImage(image: new AssetImage("images/admin/userInfo_bg.png"), alignment: Alignment.bottomRight),
                     ),
                     child: Column(
                       children: <Widget>[
                         Container(
                           width: widthSrcreen,
-                          padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(81),vertical: ScreenUtil.getInstance().getHeightPx(45)),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(81), vertical: ScreenUtil.getInstance().getHeightPx(45)),
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
@@ -89,7 +88,9 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                             width: ScreenUtil.getInstance().getWidthPx(200),
                                             height: ScreenUtil.getInstance().getHeightPx(50),
                                             child: Align(
-                                              child: Text("更换头像", style: TextStyle(color: Color(0xFFffffff), fontSize: ScreenUtil.getInstance().getSp(24 / 3)), textAlign: TextAlign.center),
+                                              child: Text("更换头像",
+                                                  style: TextStyle(color: Color(0xFFffffff), fontSize: ScreenUtil.getInstance().getSp(24 / 3)),
+                                                  textAlign: TextAlign.center),
                                               alignment: Alignment.center,
                                             ),
                                           )),
@@ -102,34 +103,34 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                               ),
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment:CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Row(
                                     children: <Widget>[
                                       Container(
-                                        padding:EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(52) ),
+                                        padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(52)),
                                         child: Text(
                                           store.state.userInfo.realName,
-                                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(64 / 3),fontWeight:FontWeight.w800 ),
+                                          style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(64 / 3), fontWeight: FontWeight.w800),
                                         ),
                                       ),
                                       StreamBuilder<bool>(
                                           stream: bloc.adminBloc.vipPackageStream,
-                                          builder: (context, AsyncSnapshot<bool> snapshot){
+                                          builder: (context, AsyncSnapshot<bool> snapshot) {
                                             var memberLevelId = snapshot.data;
-                                            try{
-                                              if(memberLevelId){
+                                            try {
+                                              if (memberLevelId) {
                                                 return GestureDetector(
                                                   onTap: _goVIPPacker,
                                                   child: new Container(
-                                                    margin: new EdgeInsets.only(left:ScreenUtil.getInstance().getWidthPx(30) ),
+                                                    margin: new EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(30)),
                                                     child: Image.asset("images/admin/icon-vip.png", width: ScreenUtil.getInstance().getWidthPx(207)),
                                                   ),
                                                 );
-                                              }else{
+                                              } else {
                                                 return new Container();
                                               }
-                                            }catch(e){
+                                            } catch (e) {
                                               return new Container();
                                             }
                                           })
@@ -142,11 +143,11 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
                                       Container(
-                                        padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
-                                          borderRadius: new BorderRadius.all(
-                                              Radius.circular((10.0))),
+                                          borderRadius: new BorderRadius.all(Radius.circular((10.0))),
                                         ),
                                         child: Text(
                                           store.state.userInfo.schoolName,
@@ -157,12 +158,12 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                       ),
                                       Container(
                                         margin: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(25)),
-                                        padding: EdgeInsets.symmetric(horizontal:ScreenUtil.getInstance().getWidthPx(31),vertical:ScreenUtil.getInstance().getHeightPx(14)  ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
                                         width: ScreenUtil.getInstance().getWidthPx(400),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
-                                          borderRadius: new BorderRadius.all(
-                                              Radius.circular((10.0))),
+                                          borderRadius: new BorderRadius.all(Radius.circular((10.0))),
                                         ),
                                         child: Text(
                                           store.state.userInfo.className,
@@ -178,42 +179,31 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                             ],
                           ),
                         ),
-
                       ],
-                    )
-                ),
+                    )),
                 Column(
                   children: <Widget>[
-                    _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo,new Text("")),
-                    _getBt("护眼设置", "images/admin/icon_eye_protection.png", _goSetEye,new Text("")),
-                    _getBt("设置监护密码", "images/admin/icon_password.png", _setMonitoringPassword,new Text("")),
+                    _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo, new Text("")),
+                    _getBt("护眼设置", "images/admin/icon_eye_protection.png", _goSetEye, new Text("")),
+                    _getBt("设置监护密码", "images/admin/icon_password.png", _setMonitoringPassword, new Text("")),
                     StreamBuilder<String>(
                       stream: bloc.adminBloc.shareNumStream,
-                      builder: (context, AsyncSnapshot<String> snapshot){
+                      builder: (context, AsyncSnapshot<String> snapshot) {
                         String model = snapshot.data;
-                        if(model == null){
+                        if (model == null) {
                           model = "0";
                         }
                         return _getBt(
                             "分享金提现",
                             "images/admin/icon_share.png",
                             _setshareMoney,
-                            new Text.rich(TextSpan(
-                                children: [
-                                  TextSpan(
-                                      text: "可提现金额：",
-                                      style: TextStyle(
-                                          color: Color(0XFFb0b7bf)
-                                      )
-                                  ),
-                                  TextSpan(
-                                    text: model+"元",
-                                    style: TextStyle(
-                                        color:Color(0XFFf64545)
-                                    ),
-                                  )
-                                ]
-                            )));
+                            new Text.rich(TextSpan(children: [
+                              TextSpan(text: "可提现金额：", style: TextStyle(color: Color(0XFFb0b7bf))),
+                              TextSpan(
+                                text: model + "元",
+                                style: TextStyle(color: Color(0XFFf64545)),
+                              )
+                            ])));
                       },
                     ),
                     SizedBox(
@@ -221,10 +211,10 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                     ),
                     _getBt("退出账号", "images/admin/icon_out.png", () {
                       _goOut(store);
-                    },new Text("")),
+                    }, new Text("")),
                     _getBt("测试直播", "images/admin/icon_out.png", () {
                       _goRoom(store.state.userInfo);
-                    },new Text("")),
+                    }, new Text("")),
                   ],
                 ),
               ],
@@ -333,8 +323,16 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
 
   Future _goRoom(User userInfo) async {
-    RoomUtil.goRoomPage(context, "https://qres.k12china.com/qlib/zip/2020/08/21/162d2d9d2e57d608.zip", userInfo.userId, userInfo.realName, "领跑班测试-阿宽-一年级",
-        "1bd4b733ae584407bf0267fa4c1841b6", 571552);
+    RoomUtil.goRoomPage(
+      context,
+      "https://qres.k12china.com/qlib/zip/2020/08/27/162f0463a4b9c1db.zip",
+      userInfo.userId,
+      userInfo.realName,
+      "领跑班测试-阿宽-一年级",
+      "1bd4b733ae584407bf0267fa4c1841b6",
+      571552,
+      recordId: "86046371609575424",
+    );
   }
 
   //退出賬號
@@ -391,23 +389,24 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   void _cancelOnTap() {
     Navigator.pop(context, false);
   }
+
   ///去分享金
-  _setshareMoney(){
+  _setshareMoney() {
     ApplicationDao.trafficStatistic(590);
-    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goShareMoney()).then((v){
+    NavigatorUtil.goWebView(context, AddressUtil.getInstance().goShareMoney()).then((v) {
       bloc.adminBloc.getTotalStar();
     });
   }
 
   ///去会员包
-  _goVIPPacker(){
+  _goVIPPacker() {
     ApplicationDao.trafficStatistic(550);
-    NavigatorUtil.goWebView(context,AddressUtil.getInstance().goVipPackage()).then((v){
+    NavigatorUtil.goWebView(context, AddressUtil.getInstance().goVipPackage()).then((v) {
       bloc.adminBloc.getVipPackage();
     });
   }
 
-  _getBt(btName, btImg, btPressed,Text text) {
+  _getBt(btName, btImg, btPressed, Text text) {
     return MaterialButton(
       elevation: 0,
       child: Row(
@@ -431,7 +430,6 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
               ],
             ),
           ),
-
           Container(
             child: Row(
               children: <Widget>[
