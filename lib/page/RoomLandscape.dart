@@ -141,6 +141,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Timer _socketPingTimer;
   Duration _socketPingDuration = Duration(seconds: 45);
   bool isShowDialog = false;
+
+  FocusNode _textFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     var coursewareWidth = (ScreenUtil.getInstance().screenWidth * 0.8) - MediaQuery.of(context).padding.left;
@@ -699,28 +701,63 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                   data: IconThemeData(color: Theme.of(context).accentColor),
                   child: Consumer<ChatProvider>(builder: (context, model, child) {
                     return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(children: <Widget>[
+                        margin: const EdgeInsets.symmetric(horizontal: 0.0),
+                        child: Row(
+                            mainAxisAlignment:MainAxisAlignment.start,
+                            children: <Widget>[
+//                          Container(
+//                              margin: EdgeInsets.symmetric(horizontal: 0),
+//                            child: IconButton(icon: Icon(Icons.sentiment_satisfied), onPressed:(){_showKeyboard(model);} ),
+//                          ),
+                          InkWell(
+                            onTap: ()=>{_showKeyboard(model)},
+                            child: Padding(padding: EdgeInsets.symmetric(horizontal: 4.0,vertical: 10.0),child:Icon(Icons.sentiment_satisfied,color: Colors.black26,)),
+                          ),
                           Flexible(
                               child: InkWell(
                             child: TextField(
-                              readOnly: true,
+                              readOnly: false,
                               controller: _textController,
+                              focusNode:_textFocusNode,
                               onChanged: (String text) {
                                 model.setIsComposing(_textController.text.length > 0);
                               },
                               onTap: () {
-                                _showKeyboard(model);
+//                                _showKeyboard(model);
+
+                                Navigator.push(context,
+                                    PopRoute(
+                                        child:ChangeNotifierProvider<ChatProvider>.value(
+                                            value: _chatProvider,
+                                            child: InputButtomWidget(
+                                              onChanged: (String text) {
+                                                _chatProvider.setIsComposing(text.length > 0);
+                                              },
+                                              controller: _textController,
+                                              onSubmitted: _handleSubmitted,
+                                            )
+                                        )
+                                    )
+                                ).then((_){
+                                  FocusScope.of(context).requestFocus(_textFocusNode);
+                                  _textFocusNode.unfocus();
+                                  print("122");
+                                });
+                                print("#1 123123");
                               },
                               onSubmitted: _handleSubmitted,
                               decoration: InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息'),
                             ),
                           )),
                           !model.muteAllChat
-                              ? Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 1.0),
-                                  child: IconButton(icon: Icon(Icons.send), onPressed: model.isComposing ? () => _handleSubmitted(_textController.text) : null),
-                                )
+                              ? InkWell(
+                            onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
+                            child: Padding(padding: EdgeInsets.symmetric(horizontal: 4.0,vertical: 10.0),child: Icon(Icons.send,color: Colors.black26,),),
+                          )
+//                          Container(
+//                                  margin: EdgeInsets.symmetric(horizontal: 0),
+//                                  child: IconButton(icon: Icon(Icons.send), onPressed: model.isComposing ? () => _handleSubmitted(_textController.text) : null),
+//                                )
                               : Container()
                         ]));
                   }))),
