@@ -189,9 +189,16 @@ class ProgressProvider with ChangeNotifier {
 class BoardProvider with ChangeNotifier {
   int _enableBoard = 1;
   int get enableBoard => _enableBoard;
+  int _testBoard = 1;
+  int get testBoard => _testBoard;
 
   setEnableBoard(int enableBoard) {
     _enableBoard = enableBoard;
+    notifyListeners();
+  }
+
+  setTestBoard(int testBoard) {
+    _testBoard = testBoard;
     notifyListeners();
   }
 }
@@ -245,6 +252,8 @@ class CourseProvider with ChangeNotifier {
   Function get showStarDialog => _showStarDialog;
   double _coursewareWidth;
   double get coursewareWidth => _coursewareWidth;
+  double _maxWidth;
+  double get maxWidth => _maxWidth;
   bool _isInitBoardView = false;
   bool get isInitBoardView => _isInitBoardView;
   CourseProvider(int status, {RoomData roomData, Function closeDialog, Function showStarDialog}) {
@@ -263,7 +272,8 @@ class CourseProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  setCoursewareWidth(double coursewareWidth) {
+  setCoursewareWidth(double coursewareWidth, double maxWidth) {
     _coursewareWidth = coursewareWidth;
+    _maxWidth = maxWidth;
   }
 }

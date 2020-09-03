@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'WhiteboardController.dart';
 
 class Whiteboard extends StatefulWidget {
   final String uuid;
@@ -51,40 +52,4 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => Platform.isAndroid;
-}
-
-class WhiteboardController {
-  Function(bool result) onCreated;
-  MethodChannel _channel;
-
-  setChannel(MethodChannel c) {
-    _channel = c;
-    _channel.setMethodCallHandler(_onMethodCall);
-  }
-
-  Future updateRoom({int isBoardLock}) {
-    var param = {};
-    if (null != isBoardLock) {
-      param["isBoardLock"] = isBoardLock;
-    }
-    return _channel.invokeMethod("updateRoom", param);
-  }
-
-  Future replay({int beginTimestamp, int duration, String mediaURL}) {
-    return _channel.invokeMethod("replay", {"beginTimestamp": beginTimestamp.toString(), "duration": duration.toString(), "mediaURL": mediaURL});
-  }
-
-  Future<bool> _onMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'onCreated':
-        if (onCreated != null) {
-          print("_onMethodCall onCreated ${call.arguments}");
-          onCreated(call.arguments["created"]);
-        }
-        return true;
-    }
-    throw MissingPluginException(
-      '${call.method} was invoked but has no handler',
-    );
-  }
 }

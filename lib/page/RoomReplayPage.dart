@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/widget/ReplayProgress.dart';
 import 'package:flutter_start/widget/seekbar/flutter_seekbar.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
@@ -74,6 +75,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   static const String BREAK = "BREAK"; //timer  定时器
 
   CourseProvider _courseProvider;
+  ReplayProgressProvider _replayProgressProvider = ReplayProgressProvider();
   RoomReplayPageState(RoomData roomData) {
     _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
   }
@@ -92,13 +94,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     if (Platform.isIOS) {
       HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
     }
-    _whiteboardController.onCreated = (result) {
-      print("_whiteboardController  $result");
-      final courseRecordData = widget.roomData.courseRecordData;
-      final beginTimestamp = courseRecordData.startTime;
-      final duration = (courseRecordData.endTime - courseRecordData.startTime).abs();
-      _whiteboardController.replay(beginTimestamp: beginTimestamp, duration: duration, mediaURL: courseRecordData.url);
-    };
+    _initWhiteboardController();
   }
 
   int orientation = 0;
@@ -121,6 +117,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   HandProvider _handProvider = HandProvider();
   LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
+
   int _isPlay;
   int _time;
   final TextEditingController _textController = new TextEditingController();
@@ -137,9 +134,10 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     var coursewareWidth = (ScreenUtil.getInstance().screenWidth * 0.8) - MediaQuery.of(context).padding.left;
+    var maxWidth = ScreenUtil.getInstance().screenHeight * 1.5;
     print(
         "top ${MediaQuery.of(context).padding.top} bottom ${MediaQuery.of(context).padding.bottom} left ${MediaQuery.of(context).padding.left} right ${MediaQuery.of(context).padding.right}");
-    _courseProvider.setCoursewareWidth(coursewareWidth);
+    _courseProvider.setCoursewareWidth(coursewareWidth, maxWidth);
     return MultiProvider(
         providers: [
           ChangeNotifierProvider<CourseProvider>.value(
@@ -177,6 +175,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           ),
           ChangeNotifierProvider<StarWidgetProvider>.value(
             value: _starWidgetProvider,
+          ),
+          ChangeNotifierProvider<ReplayProgressProvider>.value(
+            value: _replayProgressProvider,
           ),
         ],
         child: WillPopScope(
@@ -234,7 +235,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                                         onTap: () {
                                           //  点击顶部空白处触摸收起键盘
                                           FocusScope.of(context).requestFocus(FocusNode());
-                                          _roomShowTopProvider.setIsShow(true);
+                                          showTopAndBottom();
                                         },
                                         child: _buildChat(),
                                       ),
@@ -263,20 +264,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                                   : Container();
                             }),
                             _buildTop(),
-                            Positioned(
-                              bottom: 20,
-                              child: Container(
-                                  color: Colors.transparent,
-                                  height: 30,
-                                  width: ScreenUtil.getInstance().screenWidth,
-                                  child: SeekBar(
-                                      progresseight: 10,
-                                      indicatorRadius: 0.0,
-                                      value: 50,
-                                      progressColor: Colors.red,
-                                      onValueChanged: (val) {
-                                        print("onValueChanged $val");
-                                      })),
+                            ReplayProgress(
+                              whiteboardController: _whiteboardController,
+                              flickManager: flickManager,
                             ),
                           ],
                         )))),
@@ -328,7 +318,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
             alignment: Alignment(-0.9, -0.9),
             children: <Widget>[
               GestureDetector(
-                  onTap: () => _roomShowTopProvider.setIsShow(true),
+                  onTap: () => showTopAndBottom,
                   child: Container(
                       alignment: Alignment.center,
                       color: Colors.black,
@@ -359,7 +349,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         result = GestureDetector(
           key: ValueKey("screen"),
           child: Container(width: courseStatusModel.coursewareWidth, child: AgoraRenderWidget(resModel.res.screenId)),
-          onTap: () => _roomShowTopProvider.setIsShow(true),
+          onTap: () => showTopAndBottom,
         );
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
@@ -368,7 +358,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
             children: <Widget>[
               Container(
                 color: Colors.black,
-                width: courseStatusModel.coursewareWidth,
+                width: courseStatusModel.maxWidth,
                 child: WebViewPlus(
                   initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
                   javascriptMode: JavascriptMode.unrestricted,
@@ -421,7 +411,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                   File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
                   fit: BoxFit.contain,
                 )),
-            onTap: () => _roomShowTopProvider.setIsShow(true),
+            onTap: () => showTopAndBottom,
           );
         } else if (resModel.res.type == mp4) {
           if (flickManager == null) {
@@ -446,8 +436,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           }
           result = Container(
             width: courseStatusModel.coursewareWidth,
-            child: CoursewareVideo(flickManager,
-                pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: () => _roomShowTopProvider.setIsShow(true)),
+            child: CoursewareVideo(flickManager, pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: showTopAndBottom),
           );
         }
       }
@@ -473,7 +462,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
               }),
               //举手按钮
               Consumer<HandProvider>(builder: (context, model, child) {
-                if (courseStatusModel.status == 0) {
+                if (courseStatusModel.status == 0 && model.enableHand) {
                   model.setEnableHand(false);
                 }
                 return Offstage(
@@ -576,12 +565,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 
   Widget _buildTop() {
     return Consumer<RoomShowTopProvider>(builder: (context, model, child) {
-      if ((_hiddenTopTimer == null || !_hiddenTopTimer.isActive) && model.isShow == true) {
-        _hiddenTopTimer = Timer(Duration(seconds: 4), () {
-          model.setIsShow(false);
-        });
-      }
-
       return Positioned(
           top: 0,
           child: AnimatedOpacity(
@@ -618,7 +601,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   Widget _buildVideo() {
     if (flickManager == null) {
       flickManager = FlickManager(
-        autoPlay: true,
+        autoPlay: false,
         videoPlayerController: VideoPlayerController.network(widget.roomData.courseRecordData.url),
       );
     }
@@ -627,7 +610,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       height: ScreenUtil.getInstance().getHeightPx(550),
       child: CoursewareVideo(
         flickManager,
-        soundAction: () => _roomShowTopProvider.setIsShow(true),
+        soundAction: showTopAndBottom,
         isHiddenControls: true,
       ),
     );
@@ -1126,6 +1109,19 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         )
       ],
     );
+  }
+
+  _initWhiteboardController() {
+    final courseRecordData = widget.roomData.courseRecordData;
+    //开始时间
+    final beginTimestamp = courseRecordData.startTime;
+    //时长
+    final duration = (courseRecordData.endTime - courseRecordData.startTime).abs();
+    _replayProgressProvider.init(duration: Duration(milliseconds: duration));
+    _whiteboardController.onCreated = (result) {
+      print("_whiteboardController  $result");
+      _whiteboardController.startReplay(beginTimestamp: beginTimestamp, duration: duration, mediaURL: courseRecordData.url);
+    };
   }
 
   _initWebsocketManager() async {
@@ -1639,6 +1635,23 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 
   void print(msg, {int level = Log.fine}) {
     funMap[level](msg, tag: tagName());
+  }
+
+  showTopAndBottom({bool isShow = true}) {
+    if (_roomShowTopProvider.isShow && _replayProgressProvider.isShow) {
+      _roomShowTopProvider.setIsShow(false);
+      _replayProgressProvider.setIsShow(false);
+    } else {
+      _roomShowTopProvider.setIsShow(true);
+      _replayProgressProvider.setIsShow(true);
+    }
+
+//    if (_roomShowTopProvider.isShow && _replayProgressProvider.isShow) {
+//      _hiddenTopTimer.cancel();
+//      _hiddenTopTimer = Timer(Duration(seconds: 6), () {
+//        showTopAndBottom(isShow: false);
+//      });
+//    }
   }
 }
 

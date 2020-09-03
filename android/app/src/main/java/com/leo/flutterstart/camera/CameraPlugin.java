@@ -1,39 +1,43 @@
 package com.leo.flutterstart.camera;
 
+import android.app.Activity;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
-public class CameraPlugin implements MethodChannel.MethodCallHandler {
+public class CameraPlugin implements MethodChannel.MethodCallHandler, ActivityAware, FlutterPlugin {
     static
     {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
     private static final String CHANNEL = "plugins.yondor/camera";
-//
-    private final PluginRegistry.Registrar registrar;
-    private final CameraDelegate delegate;
-
+    private  Activity activity;
+    private  CameraDelegate delegate;
+    MethodChannel channel;
 
     /** Plugin registration. */
     public static void registerWith(PluginRegistry.Registrar registrar) {
-        
         final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL);
         final CameraDelegate delegate = new CameraDelegate(registrar.activity());
         registrar.addActivityResultListener(delegate);
-        channel.setMethodCallHandler(new CameraPlugin(registrar, delegate));
+        channel.setMethodCallHandler(new CameraPlugin(registrar.activity(), delegate));
     }
 
     @Override
     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-        if (registrar.activity() == null) {
+        if (activity == null) {
             result.error("no_activity", "image_cropper plugin requires a foreground activity.", null);
             return;
         }
@@ -56,8 +60,44 @@ public class CameraPlugin implements MethodChannel.MethodCallHandler {
         }
     }
 
-    CameraPlugin(PluginRegistry.Registrar registrar, CameraDelegate delegate) {
-        this.registrar = registrar;
+    CameraPlugin(Activity activity, CameraDelegate delegate) {
+        this.activity = activity;
         this.delegate = delegate;
+    }
+    public CameraPlugin(){
+
+    }
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        Log.i("CameraPlugin","onAttachedToActivity");
+        activity = binding.getActivity();
+        delegate = new CameraDelegate(activity);
+        binding.addActivityResultListener(delegate);
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+
+    }
+
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        channel = new MethodChannel(binding.getBinaryMessenger(), CHANNEL);
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
     }
 }

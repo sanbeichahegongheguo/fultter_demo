@@ -1,14 +1,14 @@
 package com.yondor.yondor_whiteboard;
 
 import android.content.Context;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
-
+import android.os.Handler;
 import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.herewhite.sdk.AbstractPlayerEventListener;
-import com.herewhite.sdk.Logger;
 import com.herewhite.sdk.Player;
 import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
@@ -47,13 +47,16 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     private String uuid;
     private String roomToken;
     private String appIdentifier;
-    private final MethodChannel methodChannel;
+    private MethodChannel methodChannel;
     private Gson gson = new Gson();
     private int isReplay = 0;
     private Player player;
+    private Handler handler;
     MyWhiteboardView(Context context, BinaryMessenger messenger, long uid, Map<String, Object> params) {
+        handler = new Handler(Looper.getMainLooper());
         methodChannel = new MethodChannel(messenger, "com.yondor.live/whiteboard_" + uid);
         methodChannel.setMethodCallHandler(this);
+
         this.uid = uid;
         if(params.containsKey("uuid")){
             uuid = (String)params.get("uuid");
@@ -176,8 +179,27 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             case "updateRoom":
                 updateRoom(call,result);
                 break;
+            case "start":
+                startReplay(call,result);
+                result.success(null);
+                break;
+            case "pause":
+                pause();
+                result.success(null);
+                break;
+            case "play":
+                play();
+                result.success(null);
+                break;
             case "replay":
-                replay(call,result);
+                replay();
+                result.success(null);
+                break;
+            case "seekToScheduleTime":
+                Map<String, Object> request = (Map<String, Object>) call.arguments;
+                Long time = Long.parseLong((String) request.get("data"));
+                seekToScheduleTime(time);
+                result.success(null);
                 break;
             default:
                 result.notImplemented();
@@ -192,7 +214,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         result.success("");
     }
 
-    private void replay( MethodCall call,  MethodChannel.Result result){
+    private void startReplay(MethodCall call,  MethodChannel.Result result){
         Map<String, Object> request = (Map<String, Object>) call.arguments;
 
         Long beginTimestamp = Long.parseLong((String) request.get("beginTimestamp"));
@@ -209,7 +231,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             @Override
             public void onPhaseChanged(PlayerPhase phase) {
                 log.i("onPhaseChanged %s",gson.toJson(phase));
-
+                replayOnPhaseChanged(phase);
             }
             //首帧加载回调
             @Override
@@ -235,6 +257,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             @Override
             public void onScheduleTimeChanged(long time) {
                 log.i("onScheduleTimeChanged %d",time);
+                replayOnScheduleTimeChanged(time);
             }
             //添加帧出错
             @Override
@@ -251,12 +274,88 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             public void then(Player p) {
                 log.i("then player");
                 player = p;
-                player.play();
+                play();
             }
 
             @Override
             public void catchEx(SDKError t) {
                 log.e("create player error, ", t);
+            }
+        });
+    }
+
+
+    //开始播放
+    private void play(){
+        if (this.player==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", "player is null");
+            postMsg("error",map);
+            return;
+        }
+
+        this.player.play();
+    }
+
+    private void pause(){
+        if (this.player==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", "player is null");
+            postMsg("error",map);
+            return;
+        }
+        this.player.pause();
+    }
+    //重新播放
+    private void replay(){
+        if (this.player==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", "player is null");
+            postMsg("error",map);
+            return;
+        }
+        this.player.seekToScheduleTime(0);
+        this.player.play();
+    }
+
+    //状态变化
+    private void replayOnPhaseChanged(PlayerPhase phase){
+        if (this.player==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", "player is null");
+            postMsg("error",map);
+            return;
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", phase.name().toString());
+        postMsg("onPhaseChanged",map);
+    }
+    //时间变化
+    private void replayOnScheduleTimeChanged(long time){
+        if (this.player==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", "player is null");
+            postMsg("error",map);
+            return;
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", time);
+        postMsg("onScheduleTimeChanged",map);
+    }
+    private void seekToScheduleTime(long seekTime){
+        if (this.player==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", "player is null");
+            postMsg("error",map);
+            return;
+        }
+        this.player.seekToScheduleTime(seekTime);
+    }
+    private void postMsg(String method,Map<String, Object> map){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                methodChannel.invokeMethod(method,map);
             }
         });
     }

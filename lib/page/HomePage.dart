@@ -45,7 +45,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -66,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.lightBlueAccent,
                 indicatorColor: Colors.lightBlueAccent,
               ),
-//              HomeEyePage(),
+              HomeEyePage(),
             ],
           ),
         ));

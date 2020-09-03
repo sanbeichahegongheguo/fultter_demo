@@ -763,19 +763,37 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
       JavascriptChannel(
           name: 'OpenCourseware',
           onMessageReceived: (JavascriptMessage message) async {
-            var msg = jsonDecode(message.message);
-            print("OpenCourseware msg $msg");
-            if (ObjectUtil.isEmptyString(msg["catalogZipUrl"]) ||
-                ObjectUtil.isEmptyString(msg["className"]) ||
-                ObjectUtil.isEmptyString(msg["peTeacherPlanId"]) ||
-                msg["peLiveCourseallotId"] == null) {
-              print("window.showMsg('#1 参数错误加入房间失败！')", level: Log.info);
-              flutterWebViewPlugin.evalJavascript("window.showMsg('#1 参数错误加入房间失败！')");
-              return;
+            try {
+              var msg = jsonDecode(message.message);
+              print("OpenCourseware msg $msg");
+
+              var startTime = msg["nextCourseStartTime"];
+              print("startTime msg $startTime");
+              var endTime = msg["nextCourseEndTime"];
+              print("endTime msg $endTime");
+              if (startTime == null || endTime == null) {
+                startTime = msg["startTime"];
+                endTime = msg["endTime"];
+              }
+              if (ObjectUtil.isEmptyString(msg["catalogZipUrl"]) ||
+                  ObjectUtil.isEmptyString(msg["className"]) ||
+                  ObjectUtil.isEmptyString(msg["peTeacherPlanId"]) ||
+                  msg["peLiveCourseallotId"] == null ||
+                  startTime == null ||
+                  endTime == null) {
+                print("window.showMsg('#1 参数错误加入房间失败！')", level: Log.info);
+                flutterWebViewPlugin.evalJavascript("window.showMsg('#1 参数错误加入房间失败！')");
+                return;
+              }
+              await flutterWebViewPlugin.hide();
+              Store<GSYState> store = StoreProvider.of(context);
+              DateTime start = DateTime.parse(startTime).toLocal();
+              DateTime end = DateTime.parse(endTime).toLocal();
+              print("start ${start.toString()} end ${end.toString()}");
+              _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"], start, end);
+            } catch (e) {
+              flutterWebViewPlugin.evalJavascript("window.showMsg('#2 $e')");
             }
-            await flutterWebViewPlugin.hide();
-            Store<GSYState> store = StoreProvider.of(context);
-            _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"]);
           }),
 
       ///结束录音 baizhenfneg2020/8/25
@@ -906,9 +924,15 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
     super.print(msg, level: Log.fine);
   }
 
-  Future _goRoom(User userInfo, String url, var roomName, var roomUuid, var peLiveCourseallotId) async {
-    return RoomUtil.goRoomPage(context, url, userInfo.userId, userInfo.realName, roomName, roomUuid, peLiveCourseallotId, callFunc: () {
+  Future _goRoom(User userInfo, String url, var roomName, var roomUuid, var peLiveCourseallotId, var startTime, var endTime) async {
+    return RoomUtil.goRoomPage(context,
+        url: url,
+        userId: userInfo.userId,
+        userName: userInfo.realName,
+        roomName: roomName,
+        roomUuid: roomUuid,
+        peLiveCourseallotId: peLiveCourseallotId, callFunc: () {
       flutterWebViewPlugin.show();
-    });
+    }, startTime: startTime, endTime: endTime);
   }
 }

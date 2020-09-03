@@ -7,6 +7,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 
+import com.leo.flutterstart.camera.CameraDelegate;
 import com.leo.flutterstart.camera.CameraPlugin;
 
 import org.json.JSONArray;
@@ -19,6 +20,7 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
@@ -36,13 +38,8 @@ public class MainActivity extends FlutterActivity {
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
-        System.out.println("configureFlutterEngine==>11111111");
         flutterEngine.getPlugins().add(new UpdateVersionPlugin());
-//        System.out.println("configureFlutterEngine==>22222222222");
-//        ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
-//        System.out.println("configureFlutterEngine==>33333333333");
-//        CameraPlugin.registerWith(shimPluginRegistry.registrarFor("yondor/camera"));
-//        System.out.println("configureFlutterEngine==>444444444");
+        flutterEngine.getPlugins().add(new CameraPlugin());
         final MainActivity content = this;
         //屏幕常亮
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

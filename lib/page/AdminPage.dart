@@ -36,7 +36,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   initState() {
     super.initState();
     bloc = BlocProvider.of<HomeBloc>(context);
-    bloc.adminBloc.getTotalStar();
+//    bloc.adminBloc.getTotalStar();
     bloc.adminBloc.getVipPackage();
   }
 
@@ -186,35 +186,35 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                     _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo, new Text("")),
                     _getBt("护眼设置", "images/admin/icon_eye_protection.png", _goSetEye, new Text("")),
                     _getBt("设置监护密码", "images/admin/icon_password.png", _setMonitoringPassword, new Text("")),
-                    StreamBuilder<String>(
-                      stream: bloc.adminBloc.shareNumStream,
-                      builder: (context, AsyncSnapshot<String> snapshot) {
-                        String model = snapshot.data;
-                        if (model == null) {
-                          model = "0";
-                        }
-                        return _getBt(
-                            "分享金提现",
-                            "images/admin/icon_share.png",
-                            _setshareMoney,
-                            new Text.rich(TextSpan(children: [
-                              TextSpan(text: "可提现金额：", style: TextStyle(color: Color(0XFFb0b7bf))),
-                              TextSpan(
-                                text: model + "元",
-                                style: TextStyle(color: Color(0XFFf64545)),
-                              )
-                            ])));
-                      },
-                    ),
+//                    StreamBuilder<String>(
+//                      stream: bloc.adminBloc.shareNumStream,
+//                      builder: (context, AsyncSnapshot<String> snapshot) {
+//                        String model = snapshot.data;
+//                        if (model == null) {
+//                          model = "0";
+//                        }
+//                        return _getBt(
+//                            "分享金提现",
+//                            "images/admin/icon_share.png",
+//                            _setshareMoney,
+//                            new Text.rich(TextSpan(children: [
+//                              TextSpan(text: "可提现金额：", style: TextStyle(color: Color(0XFFb0b7bf))),
+//                              TextSpan(
+//                                text: model + "元",
+//                                style: TextStyle(color: Color(0XFFf64545)),
+//                              )
+//                            ])));
+//                      },
+//                    ),
                     SizedBox(
                       height: ScreenUtil.getInstance().getHeightPx(20),
                     ),
                     _getBt("退出账号", "images/admin/icon_out.png", () {
                       _goOut(store);
                     }, new Text("")),
-                    _getBt("测试直播", "images/admin/icon_out.png", () {
-                      _goRoom(store.state.userInfo);
-                    }, new Text("")),
+//                    _getBt("测试直播", "images/admin/icon_out.png", () {
+//                      _goRoom(store.state.userInfo);
+//                    }, new Text("")),
                   ],
                 ),
               ],
@@ -325,13 +325,15 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   Future _goRoom(User userInfo) async {
     RoomUtil.goRoomPage(
       context,
-      "https://qres.k12china.com/qlib/zip/2020/08/27/162f0463a4b9c1db.zip",
-      userInfo.userId,
-      userInfo.realName,
-      "领跑班测试-阿宽-一年级",
-      "1bd4b733ae584407bf0267fa4c1841b6",
-      571552,
-      recordId: "86046371609575424",
+      url: "https://qres.k12china.com/qlib/zip/2020/08/20/162cdb26f8aa73a5.zip",
+      userId: userInfo.userId,
+      userName: userInfo.realName,
+      roomName: "领跑班测试-阿宽-一年级",
+      roomUuid: "82398619d2d646d8b1b3f9f196fb50a6",
+      peLiveCourseallotId: 571550,
+      startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
+      endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
+//      recordId: "89621437299564544",
     );
   }
 

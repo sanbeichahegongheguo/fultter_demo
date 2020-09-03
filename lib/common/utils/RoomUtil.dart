@@ -22,8 +22,17 @@ import 'package:provider/provider.dart';
 class RoomUtil {
   static String tag = "RoomUtil";
 
-  static goRoomPage(BuildContext context, String url, var userId, var userName, var roomName, var roomUuid, var peLiveCourseallotId,
-      {Function callFunc, String recordId}) async {
+  static goRoomPage(BuildContext context,
+      {String url,
+      int userId,
+      String userName,
+      String roomName,
+      String roomUuid,
+      int peLiveCourseallotId,
+      Function callFunc,
+      String recordId,
+      DateTime startTime,
+      DateTime endTime}) async {
     var bool = await _handleCameraAndMic();
     if (!bool) {
       showToast("权限不足无法进入房间!");
@@ -35,10 +44,10 @@ class RoomUtil {
         builder: (BuildContext context) {
           return ChangeNotifierProvider<ProgressProvider>.value(value: progressProvider, child: ProgressLoading());
         });
-//    CommonUtils.showLoadingDialog(context, text: "正在加入房间···");
     loadCoursePack(url, (Courseware courseware) async {
       print("room_page@initState loadCoursePack finsh load course");
       LogUtil.v("courseware data == ${courseware.toString()}");
+
       var params = {
         "roomName": roomName,
         "roomUuid": roomUuid,
@@ -71,6 +80,8 @@ class RoomUtil {
         return;
       }
       RoomData roomData = res.data;
+      roomData.startTime = startTime;
+      roomData.endTime = endTime;
       roomData.courseware = courseware;
       roomData.liveCourseallotId = peLiveCourseallotId;
       //判断是否回放

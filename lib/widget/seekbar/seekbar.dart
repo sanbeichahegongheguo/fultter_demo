@@ -122,6 +122,9 @@ abstract class BasicSeekbar extends StatefulWidget {
 
   ///进度改变的回调
   final ValueChanged<ProgressValue> onValueChanged;
+
+  ///进度改变的回调最终回调
+  final ValueChanged<ProgressValue> upValueChanged;
   // final void Function(double) onValueChanged;
 
   ///进度条是否是圆角的，还是方形的，默认是圆角的
@@ -152,7 +155,8 @@ abstract class BasicSeekbar extends StatefulWidget {
       this.indicatorRadius,
       this.indicatorColor,
       this.onValueChanged,
-      this.isRound})
+      this.isRound,
+      this.upValueChanged})
       : super(key: key);
 
   Color _getBackgroundColor(BuildContext context) => backgroundColor ?? Theme.of(context).backgroundColor;
@@ -527,6 +531,7 @@ class SeekBar extends BasicSeekbar {
   SeekBar({
     Key key,
     ValueChanged<ProgressValue> onValueChanged,
+    ValueChanged<ProgressValue> upValueChanged,
     double min = 0.0,
     double max = 100.0,
     double progresseight,
@@ -578,6 +583,7 @@ class SeekBar extends BasicSeekbar {
         this.bubbleRadius = bubbleRadius ?? 20,
         super(
           key: key,
+          upValueChanged: upValueChanged,
           onValueChanged: onValueChanged,
           min: min,
           max: max,
@@ -727,7 +733,7 @@ class _SeekBarState extends State<SeekBar> {
     setState(() {
       touchPoint = new Offset(renderBox.globalToLocal(tapDetails.globalPosition).dx, 0.0);
       _value = touchPoint.dx / context.size.width;
-      _setValue();
+      _setValue("onTapUp");
       if (widget.alwaysShowBubble != null && widget.alwaysShowBubble ? false : true) {
         _alwaysShowBubble = false;
       }
@@ -738,6 +744,7 @@ class _SeekBarState extends State<SeekBar> {
   }
 
   void _onPanDown(DragDownDetails details) {
+    print("_onPanDown");
     RenderBox box = context.findRenderObject();
     touchPoint = box.globalToLocal(details.globalPosition);
     //防止绘画越界
@@ -755,7 +762,7 @@ class _SeekBarState extends State<SeekBar> {
     }
     setState(() {
       _value = touchPoint.dx / context.size.width;
-      _setValue();
+      _setValue("onPanDown");
       if (widget.alwaysShowBubble != null && widget.alwaysShowBubble ? false : true) {
         this._alwaysShowBubble = true;
       }
@@ -767,6 +774,7 @@ class _SeekBarState extends State<SeekBar> {
 
   // Updates height and value when user drags the SeekBar.
   void _onPanUpdate(DragUpdateDetails dragDetails) {
+    print("_onPanUpdate");
     RenderBox box = context.findRenderObject();
     touchPoint = box.globalToLocal(dragDetails.globalPosition);
     //防止绘画越界
@@ -785,12 +793,13 @@ class _SeekBarState extends State<SeekBar> {
     setState(() {
       _value = touchPoint.dx / context.size.width;
 
-      _setValue();
+      _setValue("onPanUpdate");
     });
   }
 
   void _onPanEnd(DragEndDetails dragDetails) {
     setState(() {
+      _setValue("onPanEnd");
       if (widget.alwaysShowBubble != null && widget.alwaysShowBubble ? false : true) {
         this._alwaysShowBubble = false;
       }
@@ -800,7 +809,7 @@ class _SeekBarState extends State<SeekBar> {
     });
   }
 
-  void _setValue() {
+  void _setValue(String where) {
     //这个是当前的进度 从0-1
     //这个�����值��能在这个地方获取，如果没有指定，就是容器的��度
     if (sectionCount > 1) {
@@ -826,6 +835,11 @@ class _SeekBarState extends State<SeekBar> {
     if (widget.onValueChanged != null) {
       ProgressValue v = ProgressValue(progress: _value, value: realValue);
       widget.onValueChanged(v);
+      if (widget.upValueChanged != null) {
+        if (where == "onPanEnd" || where == "onTapUp") {
+          widget.upValueChanged(v);
+        }
+      }
     }
   }
 

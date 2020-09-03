@@ -9,6 +9,8 @@ import 'package:better_socket/better_socket.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -46,6 +48,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
+import 'package:screen/screen.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:yondor_whiteboard/whiteboard.dart';
@@ -88,13 +91,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
     orientation = 1;
     _initWebsocketManager();
+    _local = widget.roomData.user;
     initializeRtm();
-    initializeRtc();
+    initializeRtc().then((value) {
+      this._updateUsers(widget.roomData.room.coVideoUsers);
+    });
+
     if (Platform.isIOS) {
       HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
     }
-    _local = widget.roomData.user;
-    _updateUsers(widget.roomData.room.coVideoUsers);
     Future.delayed(Duration(milliseconds: 1000)).then((e) {
       rewardFirstStar();
     });
@@ -141,14 +146,16 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Timer _socketPingTimer;
   Duration _socketPingDuration = Duration(seconds: 45);
   bool isShowDialog = false;
-
+  bool isShowTip = true;
+  Timer isShowTipTimer;
   FocusNode _textFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     var coursewareWidth = (ScreenUtil.getInstance().screenWidth * 0.8) - MediaQuery.of(context).padding.left;
+    var maxWidth = coursewareWidth > ScreenUtil.getInstance().screenHeight * 1.5 ? ScreenUtil.getInstance().screenHeight * 1.5 : coursewareWidth;
     print(
         "top ${MediaQuery.of(context).padding.top} bottom ${MediaQuery.of(context).padding.bottom} left ${MediaQuery.of(context).padding.left} right ${MediaQuery.of(context).padding.right}");
-    _courseProvider.setCoursewareWidth(coursewareWidth);
+    _courseProvider.setCoursewareWidth(coursewareWidth, maxWidth);
     return MultiProvider(
         providers: [
           ChangeNotifierProvider<CourseProvider>.value(
@@ -219,7 +226,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                     ),
                     preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.07)),
                 body: SafeArea(
-                    left: Platform.isAndroid,
+                    left: false,
                     right: Platform.isAndroid,
                     bottom: Platform.isAndroid,
                     child: Padding(
@@ -316,6 +323,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget _buildCourseware() {
     return Consumer2<CourseProvider, ResProvider>(builder: (context, courseStatusModel, resModel, child) {
       Widget result;
+      print("left with:${courseStatusModel.coursewareWidth} height:${ScreenUtil.getInstance().screenHeight}");
       if (courseStatusModel.status == 0) {
         result = Container(
           child: Stack(
@@ -326,7 +334,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                   child: Container(
                       alignment: Alignment.center,
                       color: Colors.black,
-                      width: courseStatusModel.coursewareWidth,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -336,7 +343,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                             fit: BoxFit.contain,
                           ),
                           Text(
-                            "老师正赶过来，请准备好纸笔耐心等待~",
+                            DateTime.now().isAfter(courseStatusModel.roomData.endTime) ? "下课啦~" : "请准备好纸笔耐心等待~",
                             style: TextStyle(color: Colors.orange),
                           )
                         ],
@@ -352,54 +359,52 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       } else if (resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0) {
         result = GestureDetector(
           key: ValueKey("screen"),
-          child: Container(width: courseStatusModel.coursewareWidth, child: AgoraRenderWidget(resModel.res.screenId)),
+          child: Container(child: AgoraRenderWidget(resModel.res.screenId)),
           onTap: () => _roomShowTopProvider.setIsShow(true),
         );
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
-          result = Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              Container(
-                color: Colors.black,
-                width: courseStatusModel.coursewareWidth,
-                child: WebViewPlus(
-                  initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  javascriptChannels: <JavascriptChannel>[
-                    JavascriptChannel(
-                        name: 'Courseware',
-                        onMessageReceived: (JavascriptMessage message) async {
-                          var msg = jsonDecode(message.message);
-                          Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
-                          Store<GSYState> store = StoreProvider.of(context);
-                          BetterSocket.sendMsg(jsonEncode({
-                            "Event": {
-                              "event": "event-doCourseware",
-                              "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
-                            }
-                          }));
-                        })
-                  ].toSet(),
-                  onWebViewCreated: (controller) async {
-                    print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-                    controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
-                  },
+          if (Platform.isIOS) {
+            if (resModel.isShow == null || !resModel.isShow) {
+              Future.delayed(Duration(milliseconds: 500), () {
+                _boardProvider.setTestBoard(0);
+                Future.delayed(Duration(milliseconds: 500), () {
+                  _boardProvider.setTestBoard(1);
+                });
+              });
+            }
+          }
+          print("${resModel.isShow == null || !resModel.isShow}resModel.isShow == null || !resModel.isShow");
+          result = Container(
+            color: Colors.black,
+            child: WebViewPlus(
+              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+              javascriptMode: JavascriptMode.unrestricted,
+              javascriptChannels: <JavascriptChannel>[
+                JavascriptChannel(
+                    name: 'Courseware',
+                    onMessageReceived: (JavascriptMessage message) async {
+                      var msg = jsonDecode(message.message);
+                      Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
+                      Store<GSYState> store = StoreProvider.of(context);
+                      BetterSocket.sendMsg(jsonEncode({
+                        "Event": {
+                          "event": "event-doCourseware",
+                          "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
+                        }
+                      }));
+                    })
+              ].toSet(),
+              onWebViewCreated: (controller) async {
+                print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+                controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+              },
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                new Factory<OneSequenceGestureRecognizer>(
+                  () => new EagerGestureRecognizer(),
                 ),
-              ),
-              resModel.isShow == null || !resModel.isShow
-                  ? Container(
-                      color: Colors.transparent,
-                      width: courseStatusModel.coursewareWidth,
-                      height: ScreenUtil.getInstance().screenHeight,
-                      child: GestureDetector(
-                        onTap: () {
-                          showToast("等待老师开始游戏");
-                        },
-                      ),
-                    )
-                  : Container()
-            ],
+              ].toSet(),
+            ),
           );
         } else if (resModel.res.type == ppt ||
             resModel.res.type == BREAK ||
@@ -410,11 +415,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             resModel.res.type == REDRAIN) {
           result = GestureDetector(
             child: Container(
-                width: courseStatusModel.coursewareWidth,
                 child: Image.file(
-                  File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
-                  fit: BoxFit.contain,
-                )),
+              File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
+              fit: BoxFit.contain,
+            )),
             onTap: () => _roomShowTopProvider.setIsShow(true),
           );
         } else if (resModel.res.type == mp4) {
@@ -438,7 +442,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             }
           }
           result = Container(
-            width: courseStatusModel.coursewareWidth,
             child: CoursewareVideo(flickManager,
                 pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: () => _roomShowTopProvider.setIsShow(true)),
           );
@@ -449,74 +452,109 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         result = Container(
           color: Colors.black,
           width: courseStatusModel.coursewareWidth,
-          child: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              AnimatedSwitcher(
-                duration: Duration(milliseconds: 800),
-                child: result != null
-                    ? Container(
-                        key: ValueKey("${resModel?.res?.qid ?? 0}"),
-                        child: result,
-                      )
-                    : Container(),
-              ),
-              Consumer<BoardProvider>(builder: (context, model, child) {
-                print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
-                var show = true;
-                if (courseStatusModel.isInitBoardView) {
-                  show = (courseStatusModel.status == 1 &&
-                      model.enableBoard == 1 &&
-                      ((resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type != h5) ||
-                          (resModel.isShow == null || !resModel.isShow)));
-                }
-                return Offstage(offstage: !(show), child: _buildWhiteboard());
-              }),
-              //举手按钮
-              Consumer<HandProvider>(builder: (context, model, child) {
-                if (courseStatusModel.status == 1 && !model.enableHand && _handTypeProvider.type != 1) {
-                  _handTypeProvider.switchType(1);
-                }
-                if (courseStatusModel.status == 0) {
-                  model.setEnableHand(false);
-                }
-                return Offstage(
-                  offstage: !(courseStatusModel.status == 1 && model.enableHand),
-                  child: Align(
-                    alignment: AlignmentDirectional(0.9, 0.9),
-                    child: Consumer<HandTypeProvider>(builder: (context, model, child) {
-                      return GestureDetector(
-                        child: Container(
-                          child: Image.asset(
-                            model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
-                            width: ScreenUtil.getInstance().getHeightPx(225),
-                          ),
-                        ),
-                        onTap: () {
-                          _hand();
-                        },
-                      );
-                    }),
+          child: Center(
+            child: Container(
+              width: courseStatusModel.maxWidth,
+              child: Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  AnimatedSwitcher(
+                    duration: Duration(milliseconds: 800),
+                    child: result != null
+                        ? Container(
+                            key: ValueKey("${resModel?.res?.qid ?? 0}"),
+                            child: result,
+                          )
+                        : Container(),
                   ),
-                );
-              }),
-              //学生视频
-              Offstage(
-                offstage: !(courseStatusModel.status == 1),
-                child: Align(
-                  alignment: AlignmentDirectional(0.98, -0.98),
-                  child: _buildStudentVideo(),
-                ),
-              )
-            ],
+                  Consumer<BoardProvider>(builder: (context, model, child) {
+                    print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
+                    var show = true;
+                    if (courseStatusModel.isInitBoardView) {
+                      show = (courseStatusModel.status == 1 && model.enableBoard == 1);
+                      if (show) {
+                        if (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5 && model.testBoard == 0) {
+                          show = false;
+                        } else if (resModel != null &&
+                            resModel.res != null &&
+                            resModel.res.type != null &&
+                            resModel.res.type == h5 &&
+                            resModel.isShow != null &&
+                            resModel.isShow) {
+                          show = false;
+                        }
+                      }
+                    }
+                    return Offstage(offstage: !(show), child: _buildWhiteboard());
+                  }),
+                  (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
+                          (resModel.isShow == null || !resModel.isShow)
+                      ? Container(
+                          color: Colors.transparent,
+                          width: courseStatusModel.maxWidth,
+                          height: ScreenUtil.getInstance().screenHeight,
+                          child: GestureDetector(
+                            onTap: () {
+                              if (isShowTip) {
+                                isShowTip = false;
+                                showToast("等待老师开始游戏");
+                                if (isShowTipTimer == null || !isShowTipTimer.isActive) {
+                                  isShowTipTimer = Timer(Duration(milliseconds: 3000), () {
+                                    isShowTip = true;
+                                  });
+                                }
+                              }
+                            },
+                          ),
+                        )
+                      : Container(
+                          height: 0,
+                          width: 0,
+                        ),
+                  //举手按钮
+                  Consumer<HandProvider>(builder: (context, model, child) {
+                    if (courseStatusModel.status == 1 && !model.enableHand && _handTypeProvider.type != 1) {
+                      Future.microtask(() => _handTypeProvider.switchType(1));
+                    }
+                    if (courseStatusModel.status == 0 && model.enableHand) {
+                      Future.microtask(() => model.setEnableHand(false));
+                    }
+                    return Offstage(
+                      offstage: !(courseStatusModel.status == 1 && model.enableHand),
+                      child: Align(
+                        alignment: AlignmentDirectional(0.9, 0.9),
+                        child: Consumer<HandTypeProvider>(builder: (context, model, child) {
+                          return GestureDetector(
+                            child: Container(
+                              child: Image.asset(
+                                model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
+                                width: ScreenUtil.getInstance().getHeightPx(225),
+                              ),
+                            ),
+                            onTap: () {
+                              _hand();
+                            },
+                          );
+                        }),
+                      ),
+                    );
+                  }),
+                  //学生视频
+
+                  Offstage(
+                    offstage: !(courseStatusModel.status == 1),
+                    child: Align(
+                      alignment: AlignmentDirectional(0.98, -0.98),
+                      child: _buildStudentVideo(),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         );
       }
 
-      if ((resModel.res == null || resModel.res.type != mp4) && _isPlay != null) {
-        print("MP4 close111");
-        _closeVideo();
-      }
       return result;
     });
   }
@@ -638,47 +676,45 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   Widget _buildStudentVideo() {
     return Consumer<StudentProvider>(builder: (context, model, child) {
-      AgoraRtcEngine.setClientRole(model.user.coVideo == 1 ? ClientRole.Broadcaster : ClientRole.Audience);
-      if (_teacher != null && _teacher.coVideo == 1 && model.user.coVideo == 1) {
-        AgoraRtcEngine.muteLocalAudioStream(model.user.enableVideo != 1);
-        AgoraRtcEngine.muteLocalVideoStream(model.user.enableAudio != 1);
-        if (model.user.enableVideo == 1) {
-          AgoraRtcEngine.enableLocalVideo(true);
-        }
-        if (model.user.enableAudio == 1) {
-          AgoraRtcEngine.enableLocalAudio(true);
+      Widget widget = Container();
+
+      if (model.user != null) {
+        if (model.user.coVideo == 1) {
+          widget = Container(
+              color: Colors.white,
+              width: ScreenUtil.getInstance().screenWidth * 0.15,
+              height: ScreenUtil.getInstance().getHeightPx(350),
+              child: model.user.coVideo == 1 && model.user.enableVideo == 1
+                  ? AgoraRenderWidget(model.user.uid, local: true)
+                  : Container(
+                      color: Colors.white,
+                      child: Image.asset(
+                        'images/ic_student.png',
+                      )));
+        } else if (_others.length > 0) {
+          widget = Container(
+              color: Colors.white,
+              width: ScreenUtil.getInstance().screenWidth * 0.15,
+              height: ScreenUtil.getInstance().getHeightPx(350),
+              child: _others[0].coVideo == 1 && _others[0].enableVideo == 1
+                  ? AgoraRenderWidget(_others[0].uid)
+                  : Container(
+                      color: Colors.white,
+                      child: Image.asset(
+                        'images/ic_student.png',
+                        width: ScreenUtil.getInstance().screenWidth,
+                        height: ScreenUtil.getInstance().getWidthPx(550),
+                      )));
         }
       }
 
-      Widget widget = Container();
-      if (model.user.coVideo == 1) {
-        widget = Container(
-            color: Colors.white,
-            width: ScreenUtil.getInstance().screenWidth * 0.15,
-            height: ScreenUtil.getInstance().getHeightPx(350),
-            child: model.user.coVideo == 1 && model.user.enableVideo == 1
-                ? AgoraRenderWidget(model.user.uid, local: true)
-                : Container(
-                    color: Colors.white,
-                    child: Image.asset(
-                      'images/ic_student.png',
-                    )));
-      } else if (_others.length > 0) {
-        widget = Container(
-            color: Colors.white,
-            width: ScreenUtil.getInstance().screenWidth * 0.15,
-            height: ScreenUtil.getInstance().getHeightPx(350),
-            child: _others[0].coVideo == 1 && _others[0].enableVideo == 1
-                ? AgoraRenderWidget(_others[0].uid)
-                : Container(
-                    color: Colors.white,
-                    child: Image.asset(
-                      'images/ic_student.png',
-                      width: ScreenUtil.getInstance().screenWidth,
-                      height: ScreenUtil.getInstance().getWidthPx(550),
-                    )));
-      }
-      return widget;
+      return Offstage(
+        offstage: !(_courseProvider.status == 1),
+        child: Align(
+          alignment: AlignmentDirectional(0.98, -0.98),
+          child: widget,
+        ),
+      );
     });
   }
 
@@ -702,32 +738,36 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                   child: Consumer<ChatProvider>(builder: (context, model, child) {
                     return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 0.0),
-                        child: Row(
-                            mainAxisAlignment:MainAxisAlignment.start,
-                            children: <Widget>[
+                        child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
 //                          Container(
 //                              margin: EdgeInsets.symmetric(horizontal: 0),
 //                            child: IconButton(icon: Icon(Icons.sentiment_satisfied), onPressed:(){_showKeyboard(model);} ),
 //                          ),
                           InkWell(
-                            onTap: ()=>{_showKeyboard(model)},
-                            child: Padding(padding: EdgeInsets.symmetric(horizontal: 4.0,vertical: 10.0),child:Icon(Icons.sentiment_satisfied,color: Colors.black26,)),
+                            onTap: () => {_showKeyboard(model)},
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
+                                child: Icon(
+                                  Icons.sentiment_satisfied,
+                                  color: Colors.black26,
+                                )),
                           ),
                           Flexible(
                               child: InkWell(
                             child: TextField(
                               readOnly: false,
                               controller: _textController,
-                              focusNode:_textFocusNode,
+                              focusNode: _textFocusNode,
                               onChanged: (String text) {
                                 model.setIsComposing(_textController.text.length > 0);
                               },
                               onTap: () {
 //                                _showKeyboard(model);
 
-                                Navigator.push(context,
+                                Navigator.push(
+                                    context,
                                     PopRoute(
-                                        child:ChangeNotifierProvider<ChatProvider>.value(
+                                        child: ChangeNotifierProvider<ChatProvider>.value(
                                             value: _chatProvider,
                                             child: InputButtomWidget(
                                               onChanged: (String text) {
@@ -735,10 +775,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                               },
                                               controller: _textController,
                                               onSubmitted: _handleSubmitted,
-                                            )
-                                        )
-                                    )
-                                ).then((_){
+                                            )))).then((_) {
                                   FocusScope.of(context).requestFocus(_textFocusNode);
                                   _textFocusNode.unfocus();
                                   print("122");
@@ -751,9 +788,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                           )),
                           !model.muteAllChat
                               ? InkWell(
-                            onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
-                            child: Padding(padding: EdgeInsets.symmetric(horizontal: 4.0,vertical: 10.0),child: Icon(Icons.send,color: Colors.black26,),),
-                          )
+                                  onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
+                                    child: Icon(
+                                      Icons.send,
+                                      color: model.isComposing ? Colors.blueAccent : Colors.grey,
+                                    ),
+                                  ),
+                                )
 //                          Container(
 //                                  margin: EdgeInsets.symmetric(horizontal: 0),
 //                                  child: IconButton(icon: Icon(Icons.send), onPressed: model.isComposing ? () => _handleSubmitted(_textController.text) : null),
@@ -851,10 +894,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         if (msgJson["data"]["type"] == (CoVideoType.REJECT.index + 1)) {
           showToast("老师拒绝了你的连麦申请！");
         } else if (msgJson["data"]["type"] == (CoVideoType.ACCEPT.index + 1)) {
-          _handTypeProvider.switchType(0);
+          Future.microtask(() => _handTypeProvider.switchType(0));
           showToast("老师接受了你的连麦申请！");
         } else if (msgJson["data"]["type"] == (CoVideoType.ABORT.index + 1)) {
-          _handTypeProvider.switchType(1);
+          Future.microtask(() => _handTypeProvider.switchType(1));
           showToast("连麦结束！");
         }
         break;
@@ -897,7 +940,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case 2: // user join or leave msg
         break;
       case 3: //room attributes updated msg
-        _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
+        if (_courseProvider.isInitBoardView) {
+          _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
+        }
         _chatProvider.setMuteAllChat(msgJson["data"]["muteAllChat"] == 1);
         if (msgJson["data"]["courseState"] != _courseProvider.status) {
           _courseProvider.setStatus(msgJson["data"]["courseState"]);
@@ -916,6 +961,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   Future<void> initializeRtc() async {
     await AgoraRtcEngine.create(Config.APP_ID);
+
     await AgoraRtcEngine.enableVideo();
     await AgoraRtcEngine.setChannelProfile(ChannelProfile.LiveBroadcasting);
     await AgoraRtcEngine.setClientRole(ClientRole.Audience);
@@ -927,13 +973,32 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     configuration.dimensions = Size(480, 360);
     await AgoraRtcEngine.setVideoEncoderConfiguration(configuration);
     await AgoraRtcEngine.joinChannel(widget.roomData.user.rtcToken, widget.roomData.room.channelName, widget.roomData.user.userName, widget.roomData.user.uid);
-    if (_teacher != null) {
-      _teacherProvider.notifier(_teacher);
-    }
   }
 
-  _startVideo() async {
+  bool _enableLocalVideo = false;
+  bool _enableLocalAudio = false;
+  _startVideo(RoomUser user) async {
     print("_startVideo ::_local $_local");
+    AgoraRtcEngine.setClientRole(user.coVideo == 1 ? ClientRole.Broadcaster : ClientRole.Audience);
+    if (_teacher != null && _teacher.coVideo == 1 && user.coVideo == 1) {
+      if (!_enableLocalVideo) {
+        _enableLocalVideo = true;
+        AgoraRtcEngine.enableLocalVideo(true);
+      }
+      if (!_enableLocalAudio) {
+        _enableLocalVideo = true;
+        AgoraRtcEngine.enableLocalAudio(true);
+      }
+      AgoraRtcEngine.muteLocalAudioStream(user.enableAudio == 0);
+      AgoraRtcEngine.muteLocalVideoStream(user.enableVideo == 0);
+    } else if (user.coVideo == 0) {
+      _enableLocalVideo = false;
+      _enableLocalAudio = false;
+      AgoraRtcEngine.muteLocalAudioStream(true);
+      AgoraRtcEngine.muteLocalVideoStream(true);
+      AgoraRtcEngine.enableLocalVideo(false);
+      AgoraRtcEngine.enableLocalAudio(false);
+    }
   }
 
   /// Add agora event handlers
@@ -1010,10 +1075,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
     if (ObjectUtil.isNotEmpty(local)) {
       _local = local;
-      _startVideo();
     } else {
       _local?.coVideo = 0;
     }
+    _startVideo(_local);
     _others.clear();
     _others.addAll(others);
     _studentProvider.notifier(_local);
@@ -1127,7 +1192,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         break;
       default:
         _box = Padding(
-          padding: const EdgeInsets.only(top: 3),
+          padding: const EdgeInsets.only(top: 2),
           child: Text(
             msg,
             style: TextStyle(fontSize: fontSize, color: Colors.black87),
@@ -1329,6 +1394,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       }
     } else {
       //切换新页面
+      if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
+        _closeVideo();
+      }
       if (ques.type == mp4 && _currentRes != null && _currentRes.type == mp4) {
         if (flickManager.flickVideoManager.videoPlayerController.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}") {
           File file = File(widget.roomData.courseware.localPath + "/" + ques.data.ps.mp4);
@@ -1634,6 +1702,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
     AgoraRtcEngine?.leaveChannel();
     AgoraRtcEngine?.destroy();
+
     _rtmChannel?.leave();
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
@@ -1645,7 +1714,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     super.dispose();
   }
 
-  _closeVideo() {
+  _closeVideo() async {
+    print("_closeVideo isKeptOn ${(await Screen.isKeptOn)}");
     flickManager?.dispose();
     flickManager = null;
     _isPlay = null;

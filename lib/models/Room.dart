@@ -11,6 +11,8 @@ class RoomData {
   String boardId;
   String boardToken;
   String recordId;
+  DateTime startTime;
+  DateTime endTime;
   CourseRecordData courseRecordData;
   RoomData({
     this.room,
