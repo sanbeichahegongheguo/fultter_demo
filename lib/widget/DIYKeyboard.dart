@@ -4,20 +4,18 @@ class Keyboard extends StatefulWidget {
   final sendExpression;
   final submit;
   TextEditingController controller;
-  Keyboard({Key key, this.controller, this.sendExpression, this.submit})
-      : super(key: key);
+  Keyboard({Key key, this.controller, this.sendExpression, this.submit}) : super(key: key);
 
   @override
   _KeyboardState createState() => _KeyboardState();
 }
 
-class _KeyboardState extends State<Keyboard>
-    with SingleTickerProviderStateMixin {
+class _KeyboardState extends State<Keyboard> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> animation;
 
   ///键盘宽度 高度自适应
-  double _width = 300;
+  double _width = 260;
 
   ///间距
   double _spacing = 1;
@@ -26,53 +24,45 @@ class _KeyboardState extends State<Keyboard>
   bool _start = true;
 
   ///字体大小
-  double _fontSize = 24;
+  double _fontSize = 22;
 
   ///键盘内容
   List<String> _keyNames = [
-    "A",
-    "B",
-    "C",
-    "D",
+    "icon1",
+    "icon2",
+    "ok",
+    "666",
+    "zan",
+    "＋",
     "1",
     "4",
     "7",
     ".",
+    "－",
     "2",
     "5",
     "8",
     "0",
+    "×",
     "3",
     "6",
     "9",
-    "@",
     "^",
+    "÷",
+    "＝",
+    // "@",//替换键盘
     "~",
     "确定"
   ];
 
   ///键盘内容
-  List<String> _sentimentNames = [
-    "icon1",
-    "icon2",
-    "ok",
-    "666",
-    "flower",
-    "gift",
-    "zan",
-    "heartIcon",
-    "^",
-    "*",
-    "确定"
-  ];
+  List<String> _sentimentNames = ["icon1", "icon2", "ok", "666", "flower", "gift", "zan", "heartIcon", "^", "*", "确定"];
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
-    animation =
-        Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
+    _controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+    animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
     _controller.forward();
   }
 
@@ -187,10 +177,7 @@ class _KeyboardState extends State<Keyboard>
         _box = _getImageWidgt("okIcon");
         break;
       default:
-        _box = new Text(element,
-            textDirection: TextDirection.rtl,
-            maxLines: 2,
-            style: TextStyle(color: Color(0xFF707070), fontSize: _fontSize));
+        _box = new Text(element, textDirection: TextDirection.rtl, maxLines: 2, style: TextStyle(color: Color(0xFF707070), fontSize: _fontSize));
         break;
     }
     return _box;
@@ -217,8 +204,7 @@ class _KeyboardState extends State<Keyboard>
       case "~":
         print("widget.controller.text===>${widget.controller.text != null}");
         if (widget.controller.text.length > 0) {
-          widget.controller.text = widget.controller.text
-              .substring(0, widget.controller.text.length - 1);
+          widget.controller.text = widget.controller.text.substring(0, widget.controller.text.length - 1);
         }
         break;
       case "^":
@@ -289,7 +275,7 @@ class _KeyboardState extends State<Keyboard>
                 //将要执行动画的子view
                 child: Container(
                   color: Color(0xFFeeeeee),
-                  height: _width / 5 * 4 + _spacing * 3,
+                  height: _width / 5 * 5 + _spacing * 4,
                   child: new Wrap(
                     direction: Axis.vertical,
                     spacing: _spacing, // 主轴(水平)方向间距
