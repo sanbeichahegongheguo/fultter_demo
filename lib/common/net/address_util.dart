@@ -652,4 +652,9 @@ class AddressUtil {
   goVipPackage() {
     return "${stu_h5}july_package/";
   }
+
+  //获取回放信息
+  getReplayInfo() {
+    return "${stu_app}live_broadcast/replay";
+  }
 }

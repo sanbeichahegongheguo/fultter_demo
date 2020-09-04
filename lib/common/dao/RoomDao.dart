@@ -4,6 +4,7 @@ import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/models/Room.dart';
+import 'package:flutter_start/models/replayData.dart';
 
 class RoomDao {
   static roomEntry(params) async {
@@ -253,6 +254,23 @@ class RoomDao {
     var result;
     if (res != null && res.result) {
       result = res.data;
+    }
+    return new DataResult(result, res.result);
+  }
+
+  ///保存题目
+  static getReplayInfo(params) async {
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getReplayInfo(), params, null, new Options(method: "get"),
+        contentType: HttpManager.CONTENT_TYPE_FORM);
+    print("res==>$res");
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
+        if (res.data["data"] != null) {
+          ReplayData replayData = ReplayData.fromJson(res.data["data"]);
+          result = replayData;
+        }
+      }
     }
     return new DataResult(result, res.result);
   }

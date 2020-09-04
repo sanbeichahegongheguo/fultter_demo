@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_start/models/replayData.dart';
 import 'package:flutter_start/widget/ReplayProgress.dart';
 import 'package:flutter_start/widget/seekbar/flutter_seekbar.dart';
 import 'package:flutter_start/common/config/config.dart';
@@ -211,7 +212,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                     ),
                     preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.07)),
                 body: SafeArea(
-                    left: Platform.isAndroid,
                     right: Platform.isAndroid,
                     bottom: Platform.isAndroid,
                     child: Padding(
@@ -636,45 +636,45 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   Widget _buildStudentVideo() {
     return Consumer<StudentProvider>(builder: (context, model, child) {
 //      AgoraRtcEngine.setClientRole(model.user.coVideo == 1 ? ClientRole.Broadcaster : ClientRole.Audience);
-      if (_teacher != null && _teacher.coVideo == 1 && model.user.coVideo == 1) {
-        AgoraRtcEngine.muteLocalAudioStream(model.user.enableVideo != 1);
-        AgoraRtcEngine.muteLocalVideoStream(model.user.enableAudio != 1);
-        if (model.user.enableVideo == 1) {
-          AgoraRtcEngine.enableLocalVideo(true);
-        }
-        if (model.user.enableAudio == 1) {
-          AgoraRtcEngine.enableLocalAudio(true);
-        }
-      }
+//      if (_teacher != null && _teacher.coVideo == 1 && model.user.coVideo == 1) {
+//        AgoraRtcEngine.muteLocalAudioStream(model.user.enableVideo != 1);
+//        AgoraRtcEngine.muteLocalVideoStream(model.user.enableAudio != 1);
+//        if (model.user.enableVideo == 1) {
+//          AgoraRtcEngine.enableLocalVideo(true);
+//        }
+//        if (model.user.enableAudio == 1) {
+//          AgoraRtcEngine.enableLocalAudio(true);
+//        }
+//      }
 
       Widget widget = Container();
-      if (model.user.coVideo == 1) {
-        widget = Container(
-            color: Colors.white,
-            width: ScreenUtil.getInstance().screenWidth * 0.15,
-            height: ScreenUtil.getInstance().getHeightPx(500),
-            child: model.user.coVideo == 1 && model.user.enableVideo == 1
-                ? AgoraRenderWidget(model.user.uid, local: true)
-                : Container(
-                    color: Colors.white,
-                    child: Image.asset(
-                      'images/ic_student.png',
-                    )));
-      } else if (_others.length > 0) {
-        widget = Container(
-            color: Colors.white,
-            width: ScreenUtil.getInstance().screenWidth * 0.15,
-            height: ScreenUtil.getInstance().getHeightPx(500),
-            child: _others[0].coVideo == 1 && _others[0].enableVideo == 1
-                ? AgoraRenderWidget(_others[0].uid)
-                : Container(
-                    color: Colors.white,
-                    child: Image.asset(
-                      'images/ic_student.png',
-                      width: ScreenUtil.getInstance().screenWidth,
-                      height: ScreenUtil.getInstance().getWidthPx(550),
-                    )));
-      }
+//      if (model.user.coVideo == 1) {
+//        widget = Container(
+//            color: Colors.white,
+//            width: ScreenUtil.getInstance().screenWidth * 0.15,
+//            height: ScreenUtil.getInstance().getHeightPx(500),
+//            child: model.user.coVideo == 1 && model.user.enableVideo == 1
+//                ? AgoraRenderWidget(model.user.uid, local: true)
+//                : Container(
+//                    color: Colors.white,
+//                    child: Image.asset(
+//                      'images/ic_student.png',
+//                    )));
+//      } else if (_others.length > 0) {
+//        widget = Container(
+//            color: Colors.white,
+//            width: ScreenUtil.getInstance().screenWidth * 0.15,
+//            height: ScreenUtil.getInstance().getHeightPx(500),
+//            child: _others[0].coVideo == 1 && _others[0].enableVideo == 1
+//                ? AgoraRenderWidget(_others[0].uid)
+//                : Container(
+//                    color: Colors.white,
+//                    child: Image.asset(
+//                      'images/ic_student.png',
+//                      width: ScreenUtil.getInstance().screenWidth,
+//                      height: ScreenUtil.getInstance().getWidthPx(550),
+//                    )));
+//      }
       return widget;
     });
   }
@@ -1111,7 +1111,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     );
   }
 
-  _initWhiteboardController() {
+  _initWhiteboardController() async {
     final courseRecordData = widget.roomData.courseRecordData;
     //开始时间
     final beginTimestamp = courseRecordData.startTime;
@@ -1122,6 +1122,23 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       print("_whiteboardController  $result");
       _whiteboardController.startReplay(beginTimestamp: beginTimestamp, duration: duration, mediaURL: courseRecordData.url);
     };
+    var params = {
+      "liveCourseallotId": _courseProvider.roomData.liveCourseallotId,
+      "roomId": _courseProvider.roomData.room.roomUuid,
+      "startTime": courseRecordData.startTime,
+      "endTime": courseRecordData.endTime
+    };
+    final res = await RoomDao.getReplayInfo(params);
+    if (!res.result) {
+      showToast("#1出错啦！！");
+      return;
+    }
+    ReplayData data = res.data;
+    data.list.forEach((ReplayItem element) {
+      element.playTime = element.t - courseRecordData.startTime;
+    });
+    _courseProvider.roomData.courseRecordData.coursewareOp = data;
+    print("_courseProvider.roomData.courseRecordData.coursewareOp ${_courseProvider.roomData.courseRecordData.coursewareOp}");
   }
 
   _initWebsocketManager() async {

@@ -1,5 +1,7 @@
 import 'dart:convert' show json;
 
+import 'package:flutter_start/models/replayData.dart';
+
 import 'Courseware.dart';
 import 'RoomUser.dart';
 
@@ -222,12 +224,14 @@ class CourseRecordData {
   String url;
   int status;
   String statusText;
+  ReplayData coursewareOp;
   CourseRecordData({
     this.startTime,
     this.endTime,
     this.url,
     this.status,
     this.statusText,
+    this.coursewareOp,
   });
   factory CourseRecordData.fromJson(jsonRes) => jsonRes == null
       ? null
@@ -237,6 +241,7 @@ class CourseRecordData {
           url: jsonRes['url'],
           status: jsonRes['status'],
           statusText: jsonRes['statusText'],
+          coursewareOp: ReplayData.fromJson(jsonRes['coursewareOp']),
         );
 
   Map<String, dynamic> toJson() => {
@@ -245,6 +250,7 @@ class CourseRecordData {
         'url': url,
         'status': status,
         'statusText': statusText,
+        'coursewareOp': coursewareOp,
       };
   @override
   String toString() {
