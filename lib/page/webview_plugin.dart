@@ -790,7 +790,8 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
               DateTime start = DateTime.parse(startTime).toLocal();
               DateTime end = DateTime.parse(endTime).toLocal();
               print("start ${start.toString()} end ${end.toString()}");
-              _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"], start, end);
+              _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"], start, end,
+                  recordId: msg["recordId"]);
             } catch (e) {
               flutterWebViewPlugin.evalJavascript("window.showMsg('#2 $e')");
             }
@@ -924,13 +925,14 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
     super.print(msg, level: Log.fine);
   }
 
-  Future _goRoom(User userInfo, String url, var roomName, var roomUuid, var peLiveCourseallotId, var startTime, var endTime) async {
+  Future _goRoom(User userInfo, String url, var roomName, var roomUuid, var peLiveCourseallotId, var startTime, var endTime, {String recordId}) async {
     return RoomUtil.goRoomPage(context,
         url: url,
         userId: userInfo.userId,
         userName: userInfo.realName,
         roomName: roomName,
         roomUuid: roomUuid,
+        recordId: recordId,
         peLiveCourseallotId: peLiveCourseallotId, callFunc: () {
       flutterWebViewPlugin.show();
     }, startTime: startTime, endTime: endTime);

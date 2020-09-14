@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/config/config.dart';
+import 'package:flutter_start/common/const/LiveRoom.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
 import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
@@ -66,16 +67,21 @@ class RoomLandscapePage extends StatefulWidget {
 }
 
 class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerProviderStateMixin, LogBase {
-  static const String mp4 = "MP4";
-  static const String ppt = "PIC";
-  static const String h5 = "HTM";
-  static const String SEL = "SEL"; //1:SEL 选择题
-  static const String MULSEL = "MULSEL"; //2:SEL 多选择题
-  static const String JUD = "JUD"; //4:JUD 判断题
-  static const String RANRED = "RANRED"; //80:RANRED 随机红包
-  static const String REDRAIN = "REDRAIN"; //81:REDRAIN 红包雨
-  static const String TIMER = "timer"; //timer  定时器
-  static const String BREAK = "BREAK"; //timer  定时器
+  static const String mp4 = LiveRoomConst.mp4;
+  static const String ppt = LiveRoomConst.ppt;
+  static const String h5 = LiveRoomConst.h5;
+  static const String SEL = LiveRoomConst.SEL; //1:SEL 选择题
+  static const String MULSEL = LiveRoomConst.MULSEL; //2:SEL 多选择题
+  static const String JUD = LiveRoomConst.JUD; //4:JUD 判断题
+  static const String RANRED = LiveRoomConst.RANRED; //80:RANRED 随机红包
+  static const String REDRAIN = LiveRoomConst.REDRAIN; //81:REDRAIN 红包雨
+  static const String TIMER = LiveRoomConst.TIMER; //timer  定时器
+  static const String BREAK = LiveRoomConst.BREAK;
+  static const String EVENT_HAND = LiveRoomConst.EVENT_HAND; //是否举手事件
+  static const String BOARD = LiveRoomConst.BOARD; //白板切换事件
+  static const String EVENT_BOARD = LiveRoomConst.EVENT_BOARD; //白板切换事件
+  static const String EVENT_JOIN_SUCCESS = LiveRoomConst.EVENT_JOIN_SUCCESS; //加入房间返回成功事件
+  static const String EVENT_CURRENT = LiveRoomConst.EVENT_CURRENT; //加入房间成功返回当前事件
 
   CourseProvider _courseProvider;
   RoomLandscapePageState(RoomData roomData) {
@@ -1715,7 +1721,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   _closeVideo() async {
-    print("_closeVideo isKeptOn ${(await Screen.isKeptOn)}");
     flickManager?.dispose();
     flickManager = null;
     _isPlay = null;

@@ -7,7 +7,7 @@ class ReplayProgressProvider with ChangeNotifier {
   bool get isShow => _isShow;
   Duration _duration;
   Duration get duration => _duration;
-  String _playerPhase;
+  String _playerPhase = "buffering";
   String get playerPhase => _playerPhase;
 
   init({double val, bool isShow, Duration duration}) {

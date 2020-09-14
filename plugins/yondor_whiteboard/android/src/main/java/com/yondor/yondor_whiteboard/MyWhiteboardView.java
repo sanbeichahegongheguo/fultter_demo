@@ -222,7 +222,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         String mediaUrl = (String)request.get("mediaURL");
         PlayerConfiguration playerConfiguration = new PlayerConfiguration(uuid, roomToken);
         playerConfiguration.setBeginTimestamp(beginTimestamp);
-        playerConfiguration.setMediaURL(mediaUrl);
+//        playerConfiguration.setMediaURL(mediaUrl);
         playerConfiguration.setDuration(duration);
         whiteSdk.createPlayer(playerConfiguration, new AbstractPlayerEventListener() {
             // 以下为房间状态回调，可以查看 [状态管理] 文档

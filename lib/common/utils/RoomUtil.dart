@@ -87,6 +87,7 @@ class RoomUtil {
       //判断是否回放
       if (recordId != null && recordId != "") {
         //获取回放信息
+        print("getCourseRecordBy param $recordId $roomId $userToken");
         var courseRecorReuslt = await RoomDao.getCourseRecordBy(recordId, roomId, userToken);
         roomData.courseRecordData = courseRecorReuslt.data;
       }

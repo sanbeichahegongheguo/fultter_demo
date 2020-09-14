@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 
 enum PlayerPhase {
@@ -30,6 +32,10 @@ class WhiteboardController {
   }
 
   Future startReplay({int beginTimestamp, int duration, String mediaURL}) {
+    if (Platform.isIOS) {
+      beginTimestamp = (beginTimestamp.toDouble() / 1000).round();
+      duration = (duration.toDouble() / 1000.0).round();
+    }
     return _channel.invokeMethod("start", {"beginTimestamp": beginTimestamp.toString(), "duration": duration.toString(), "mediaURL": mediaURL});
   }
 
@@ -46,6 +52,9 @@ class WhiteboardController {
   }
 
   Future seekToScheduleTime(int time) {
+    if (Platform.isIOS) {
+      time = (time.toDouble() / 1000.0).round();
+    }
     return _channel.invokeMethod("seekToScheduleTime", {"data": time.toString()});
   }
 
@@ -71,8 +80,12 @@ class WhiteboardController {
         return true;
       case 'onScheduleTimeChanged':
         if (onScheduleTimeChanged != null) {
-          print("_onMethodCall onScheduleTimeChanged ${call.arguments}");
-          onScheduleTimeChanged(call.arguments["data"]);
+          var data = call.arguments["data"];
+          if (Platform.isIOS) {
+            data = data.toDouble() * 1000;
+          }
+          print("_onMethodCall onScheduleTimeChanged ${call.arguments}  data $data round ${data.round()}");
+          onScheduleTimeChanged(data.round());
         }
         return true;
     }

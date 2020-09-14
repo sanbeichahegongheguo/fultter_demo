@@ -60,6 +60,8 @@ class ReplayItem {
     this.op,
     this.t,
     this.playTime,
+    this.pt,
+    this.isDo = false,
   });
 
   factory ReplayItem.fromJson(Map<String, dynamic> jsonRes) => jsonRes == null
@@ -68,18 +70,24 @@ class ReplayItem {
           ty: asT<String>(jsonRes['ty']),
           op: asT<String>(jsonRes['op']),
           t: asT<int>(jsonRes['t']),
+          pt: asT<int>(jsonRes['pt']),
           playTime: asT<int>(jsonRes['playTime']),
+//          isDo: asT<bool>(jsonRes['isDo']),
         );
 
   String ty;
   String op;
   int t;
+  int pt;
   int playTime;
+  bool isDo;
   Map<String, dynamic> toJson() => <String, dynamic>{
         'ty': ty,
         'op': op,
         't': t,
+        'pt': pt,
         'playTime': playTime,
+        'isDo': isDo,
       };
   @override
   String toString() {

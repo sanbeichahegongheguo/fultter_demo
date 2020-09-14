@@ -1,6 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/const/LiveRoom.dart';
+import 'package:flutter_start/models/Room.dart';
+import 'package:flutter_start/models/replayData.dart';
+import 'package:flutter_start/page/RoomReplayPage.dart';
 import 'package:flutter_start/provider/provider.dart';
 import 'package:flutter_start/widget/seekbar/progress_value.dart';
 import 'package:flutter_start/widget/seekbar/seekbar.dart';
@@ -9,10 +17,12 @@ import 'package:yondor_whiteboard/whiteboard.dart';
 
 class ReplayProgress extends StatefulWidget {
   final WhiteboardController whiteboardController;
-  final FlickManager flickManager;
-  const ReplayProgress({Key key, this.whiteboardController, this.flickManager}) : super(key: key);
+  final FijkPlayer teacherPlayer;
+  final Function handleSocketMsg;
+  final Function showTopAndBottom;
+  const ReplayProgress({Key key, this.whiteboardController, this.teacherPlayer, this.handleSocketMsg, this.showTopAndBottom}) : super(key: key);
   @override
-  _ReplayProgressState createState() => _ReplayProgressState(whiteboardController, flickManager);
+  _ReplayProgressState createState() => _ReplayProgressState(whiteboardController, teacherPlayer);
 }
 
 class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProviderStateMixin {
@@ -35,11 +45,11 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   ReplayProgressProvider _replayProgressProvider;
   WhiteboardController _whiteboardController;
   CourseProvider _courseProvider;
-  FlickManager _flickManager;
+  FijkPlayer _teacherPlayer;
   String _textDuration = "";
-  _ReplayProgressState(WhiteboardController whiteboardController, FlickManager flickManager) {
+  _ReplayProgressState(WhiteboardController whiteboardController, FijkPlayer flickManager) {
     _whiteboardController = whiteboardController;
-    _flickManager = flickManager;
+    _teacherPlayer = flickManager;
   }
 
   @override
@@ -49,14 +59,15 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
     _controller.forward();
     _initWhiteboardController();
-    _flickManager.flickVideoManager.addListener(() {
-      print("videoPlayerController ${_flickManager.flickVideoManager.isPlaying}");
-    });
+//    _flickManager.flickVideoManager.addListener(() {
+//      print("videoPlayerController ${_flickManager.flickVideoManager.isPlaying}");
+//    });
   }
 
   _initWhiteboardController() {
     _courseProvider = Provider.of<CourseProvider>(context, listen: false);
     _replayProgressProvider = Provider.of<ReplayProgressProvider>(context, listen: false);
+
     final courseRecordData = _courseProvider.roomData.courseRecordData;
     //开始时间
     final beginTimestamp = courseRecordData.startTime;
@@ -67,7 +78,6 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     String durationInSeconds = duration != null ? (duration - Duration(minutes: duration.inMinutes)).inSeconds.toString().padLeft(2, '0') : null;
 
     _textDuration = duration != null ? '${duration.inMinutes}:$durationInSeconds' : '0:00';
-
     _whiteboardController.onPhaseChanged = (String data) {
       print("_whiteboardController 111111 onPhaseChanged $data");
       final playerPhase = PlayerPhase.values.firstWhere((PlayerPhase element) {
@@ -78,11 +88,10 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         case PlayerPhase.waitingFirstFrame:
           break;
         case PlayerPhase.playing:
-          _flickManager?.flickControlManager?.play();
+          _teacherPlayer?.start();
           currentIconWidget = pauseWidget;
           break;
         case PlayerPhase.pause:
-          _flickManager?.flickControlManager?.pause();
           currentIconWidget = playWidget;
           break;
         case PlayerPhase.stopped:
@@ -92,17 +101,60 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
           break;
         case PlayerPhase.buffering:
           currentIconWidget = pauseWidget;
-          _flickManager?.flickControlManager?.pause();
+          _teacherPlayer?.pause();
           print("正在缓冲！！！！");
           break;
       }
       _replayProgressProvider.setPlayerPhase(data);
     };
-    _whiteboardController.onScheduleTimeChanged = (data) {
+    _whiteboardController.onScheduleTimeChanged = (int data) {
       _replayProgressProvider.setVal(data.toDouble());
+//      print("1111111111111111111w");
+//      print("l  ${_courseProvider.roomData.courseRecordData}");
+
+//      List<ReplayItem> l = _courseProvider.roomData.courseRecordData.coursewareOp.list;
+      _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
+//        print("$data > ${element.playTime} && !${element.isDo}");
+        if (data > element.playTime && !element.isDo) {
+          element.isDo = true;
+          print("do elemet $element");
+          SocketMsg socketMsg = SocketMsg(type: element.ty, timestamp: element.t, text: element.op);
+          widget.handleSocketMsg(socketMsg);
+        } else if (element.playTime > data) {
+          return;
+        }
+      });
+//      findBeforeAndAfter(l, data);
       print("_whiteboardController  onScheduleTimeChanged $data");
     };
     currentIconWidget = playWidget;
+  }
+
+  ReplayItem findBefore(List<ReplayItem> l, int time) {
+    ReplayItem before = l.lastWhere((ReplayItem element) => element.playTime < time, orElse: () {
+      return null;
+    });
+    return before;
+  }
+
+  ReplayItem findBeforeShow(List<ReplayItem> l, int time) {
+    ReplayItem before = l.lastWhere((ReplayItem element) => element.playTime < time && showMap.containsKey(element.ty), orElse: () {
+      return null;
+    });
+    return before;
+  }
+
+  findBeforeAndAfter(List<ReplayItem> l, int time) {
+    List<ReplayItem> where = l.where((ReplayItem element) => element.playTime < time);
+//    ReplayItem after = l.firstWhere((ReplayItem element) => element.playTime > time, orElse: () {
+//      return null;
+//    });
+//
+//    ReplayItem before = l.lastWhere((ReplayItem element) => element.playTime < time, orElse: () {
+//      return null;
+//    });
+
+//    print(" before : $before  now : $time  after : $after");
   }
 
   @override
@@ -120,74 +172,203 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         }
       }
 
-      return Positioned(
-          bottom: 0,
-          child: SlideTransition(
-            position: animation,
-            child: Container(
-                color: Colors.black.withAlpha(80),
-                height: 50,
-                width: ScreenUtil.getInstance().screenWidth,
-                child: Row(
-                  children: [
-                    AnimatedSwitcher(
-                      transitionBuilder: (child, anim) {
-                        return ScaleTransition(child: child, scale: anim);
-                      },
-                      duration: Duration(milliseconds: 500),
-                      child: IconButton(
-                        key: ValueKey(model.playerPhase),
-                        padding: EdgeInsets.only(left: 8, right: 8),
-                        icon: currentIconWidget,
-                        onPressed: _iconFun,
+      return Stack(
+        children: [
+          "$PlayerPhase.${model.playerPhase}" == PlayerPhase.buffering.toString()
+              ? GestureDetector(
+                  onTap: () {
+                    widget.showTopAndBottom();
+                  },
+                  child: Container(
+                    width: ScreenUtil.getInstance().screenWidth,
+                    child: Center(
+                      child: Image.asset(
+                        "images/live/loading_gif.gif",
+                        width: 200,
+                        height: 200,
                       ),
                     ),
-                    Padding(
-                        padding: EdgeInsets.only(left: 8, right: 10),
-                        child: Text(
-                          _nowDuration,
-                          style: TextStyle(color: Colors.white),
-                        )),
-                    Expanded(
-                      child: SeekBar(
-                        backgroundColor: Colors.grey,
-                        max: model.duration.inMilliseconds.toDouble(),
-                        progresseight: 7,
-                        indicatorColor: Colors.green,
-                        indicatorRadius: 6,
-                        value: model.val,
-                        progressColor: Colors.greenAccent,
-                        onValueChanged: (ProgressValue progressValue) {
-                          model.setVal(progressValue.value);
-                        },
-                        upValueChanged: (ProgressValue progressValue) {
-                          _whiteboardController.seekToScheduleTime(progressValue.value.round());
-                          _flickManager?.flickControlManager?.seekTo(Duration(milliseconds: progressValue.value.round()));
-                        },
-                      ),
-                    ),
-                    Padding(
-                        padding: EdgeInsets.only(left: 10, right: 8),
-                        child: Text(
-                          _textDuration,
-                          style: TextStyle(color: Colors.white),
-                        )),
-                  ],
-                )),
-          ));
+                  ),
+                )
+              : Container(),
+          Positioned(
+              bottom: 0,
+              child: SlideTransition(
+                position: animation,
+                child: Container(
+                    color: Colors.black.withAlpha(80),
+                    height: 50,
+                    width: ScreenUtil.getInstance().screenWidth,
+                    child: Row(
+                      children: [
+                        AnimatedSwitcher(
+                          transitionBuilder: (child, anim) {
+                            return ScaleTransition(child: child, scale: anim);
+                          },
+                          duration: Duration(milliseconds: 500),
+                          child: IconButton(
+                            key: ValueKey(model.playerPhase),
+                            padding: EdgeInsets.only(left: 8, right: 8),
+                            icon: currentIconWidget,
+                            onPressed: _iconFun,
+                          ),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(left: 8, right: 10),
+                            child: Text(
+                              _nowDuration,
+                              style: TextStyle(color: Colors.white),
+                            )),
+                        Expanded(
+                          child: SeekBar(
+                            backgroundColor: Colors.grey,
+                            max: model.duration.inMilliseconds.toDouble(),
+                            progresseight: 7,
+                            indicatorColor: Colors.green,
+                            indicatorRadius: 7,
+                            value: model.val,
+                            progressColor: Colors.greenAccent,
+                            onValueChanged: (ProgressValue progressValue) {
+                              model.setVal(progressValue.value);
+                            },
+                            upValueChanged: (ProgressValue progressValue) {
+                              _seekTo(progressValue.value.round());
+                            },
+                          ),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(left: 10, right: 8),
+                            child: Text(
+                              _textDuration,
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      ],
+                    )),
+              )),
+        ],
+      );
     });
   }
 
   _iconFun() {
-//    _controller.reverse();
-//    _controller.forward();
     if (currentIconWidget == playWidget) {
-      _whiteboardController.play();
+      _play();
     } else if (currentIconWidget == pauseWidget) {
-      _whiteboardController.pause();
+      _pause();
     } else if (currentIconWidget == replayWidget) {
-      _whiteboardController.replay();
-      _flickManager?.flickControlManager?.seekTo(Duration(milliseconds: 0));
+      _replay();
     }
+  }
+
+  _play() {
+    _whiteboardController.play();
+  }
+
+  _pause() {
+    _whiteboardController.pause();
+    _teacherPlayer?.pause();
+  }
+
+  _replay() {
+    _replayProgressProvider.setVal(0);
+    _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
+      element.isDo = false;
+    });
+    _firstCourseware();
+    _whiteboardController.replay();
+    _teacherPlayer.seekTo(0);
+    _teacherPlayer.start();
+  }
+
+  Map noShowMap = {
+    LiveRoomConst.EVENT_HAND: Object(),
+    LiveRoomConst.BOARD: Object(),
+    LiveRoomConst.EVENT_BOARD: Object(),
+  };
+  Map showMap = {
+    LiveRoomConst.mp4: Object(),
+    LiveRoomConst.ppt: Object(),
+    LiveRoomConst.h5: Object(),
+    LiveRoomConst.SEL: Object(),
+    LiveRoomConst.MULSEL: Object(),
+    LiveRoomConst.JUD: Object(),
+    LiveRoomConst.RANRED: Object(),
+    LiveRoomConst.REDRAIN: Object(),
+    LiveRoomConst.TIMER: Object(),
+    LiveRoomConst.EVENT_JOIN_SUCCESS: Object(),
+    LiveRoomConst.EVENT_CURRENT: Object(),
+  };
+
+  _firstCourseware() {
+    final first = _courseProvider.roomData.courseware.findFirst();
+    print("_courseProvider.roomData.courseware.findFirst(); $first");
+    SocketMsg socketMsg = SocketMsg(type: first.type, timestamp: 0, text: '{"qid":${first.qid}}');
+    widget.handleSocketMsg(socketMsg);
+  }
+
+  _seekTo(int value) {
+    ReplayItem before;
+    ReplayItem beforeShow;
+    if (_courseProvider.roomData.courseRecordData.coursewareOp.list != null) {
+      _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
+//        print("$value > ${element.playTime} && !${element.isDo}");
+        if (element.playTime < value) {
+          before = element;
+        }
+        if (element.playTime < value && showMap.containsKey(element.ty)) {
+          beforeShow = element;
+        }
+        if (element.playTime > value) {
+          element.isDo = false;
+        } else if (element.playTime < value) {
+          element.isDo = true;
+        }
+      });
+
+//      final before = findBefore(_courseProvider.roomData.courseRecordData.coursewareOp.list, value);
+      if (before != null) {
+        if (noShowMap.containsKey(before.ty)) {
+//          final beforeShow = findBeforeShow(_courseProvider.roomData.courseRecordData.coursewareOp.list, value);
+          if (beforeShow != null) {
+            SocketMsg socketMsg = SocketMsg(type: beforeShow.ty, timestamp: beforeShow.t, text: beforeShow.op);
+            widget.handleSocketMsg(socketMsg);
+          } else {
+            _firstCourseware();
+          }
+        }
+
+        ReplayItem newBefore = ReplayItem.fromJson(before.toJson());
+        print("do elemet before $newBefore");
+        if (newBefore.ty == LiveRoomConst.mp4) {
+          var decode = json.decode(newBefore.op);
+          if (decode["time"] == null) {
+            decode["time"] = 0;
+          }
+          double beforeTime = double.parse(decode["time"].toString());
+          beforeTime = beforeTime + Duration(milliseconds: (value - newBefore.playTime).abs()).inSeconds;
+          decode["time"] = beforeTime.toInt();
+          newBefore.op = jsonEncode(decode);
+        } else if (newBefore.ty == LiveRoomConst.SEL) {
+          var decode = json.decode(newBefore.op);
+          decode.remove('isShow');
+          newBefore.op = jsonEncode(decode);
+        } else if (newBefore.ty == LiveRoomConst.RANRED || newBefore.ty == LiveRoomConst.REDRAIN) {
+          var decode = json.decode(newBefore.op);
+          decode["ty"] = LiveRoomConst.ppt;
+          newBefore.op = jsonEncode(decode);
+        }
+        print("do elemet after before $newBefore");
+        SocketMsg socketMsg = SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op);
+        widget.handleSocketMsg(socketMsg);
+      } else {
+        _firstCourseware();
+      }
+    }
+    _teacherPlayer.pause();
+    _whiteboardController.pause();
+    _teacherPlayer?.seekTo(value);
+    _whiteboardController.seekToScheduleTime(value);
+    _teacherPlayer.start();
+    _whiteboardController.play();
   }
 }
