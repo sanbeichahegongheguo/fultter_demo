@@ -87,7 +87,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   CourseProvider _courseProvider;
   ReplayProgressProvider _replayProgressProvider = ReplayProgressProvider();
   RoomReplayPageState(RoomData roomData) {
-    _courseProvider = CourseProvider(1, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
+    _courseProvider = CourseProvider(0, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
   }
 
   @override
@@ -330,7 +330,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     return Consumer2<CourseProvider, ResProvider>(builder: (context, courseStatusModel, resModel, child) {
       Widget result;
       print("left with:${courseStatusModel.coursewareWidth} height:${ScreenUtil.getInstance().screenHeight}");
-      if (resModel.res == null) {
+      if (courseStatusModel.status == 0) {
         result = Container(
           child: Stack(
             alignment: Alignment(-0.9, -0.9),
@@ -340,25 +340,10 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                   child: Container(
                       alignment: Alignment.center,
                       color: Colors.black,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            "images/live/awaitIcon.png",
-                            width: ScreenUtil.getInstance().getWidthPx(200),
-                            fit: BoxFit.contain,
-                          ),
-                          Text(
-                            DateTime.now().isAfter(courseStatusModel.roomData.endTime) ? "下课啦~" : "请准备好纸笔耐心等待~",
-                            style: TextStyle(color: Colors.orange),
-                          )
-                        ],
+                      child: Image.file(
+                        File("${widget.roomData.courseware.localPath}/${widget.roomData.courseware.findFirst().data.ps.pic}"),
+                        fit: BoxFit.contain,
                       ))),
-              Image.file(
-                File("${widget.roomData.courseware.localPath}/${widget.roomData.courseware.findFirst().data.ps.pic}"),
-//                    width:ScreenUtil.getInstance().getWidthPx(200),
-                fit: BoxFit.contain,
-              ),
             ],
           ),
         );

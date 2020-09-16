@@ -86,6 +86,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   CourseProvider _courseProvider;
   RoomLandscapePageState(RoomData roomData) {
     _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
+    _chatProvider.setMuteAllChat(roomData.room.muteAllChat == 1);
   }
 
   @override
@@ -140,6 +141,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   HandProvider _handProvider = HandProvider();
   LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
+  WebViewPlusController _webViewPlusController;
   int _isPlay;
   int _time;
   final TextEditingController _textController = new TextEditingController();
@@ -402,8 +404,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                     })
               ].toSet(),
               onWebViewCreated: (controller) async {
+                _webViewPlusController = controller;
                 print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+
                 controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+//                controller.loadUrl(await CommonUtils.urlJoinUser("http://192.168.20.63:8080/2020/09/5f6061b68386/1058/index.html"));
               },
               gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
                 new Factory<OneSequenceGestureRecognizer>(
@@ -456,7 +461,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
       if (!(resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0)) {
         result = Container(
-          color: Colors.black,
+          color: (resModel.res == null && courseStatusModel.status != 0) ? Colors.white : Colors.black,
           width: courseStatusModel.coursewareWidth,
           child: Center(
             child: Container(
@@ -491,7 +496,24 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                         }
                       }
                     }
-                    return Offstage(offstage: !(show), child: _buildWhiteboard());
+                    return Offstage(
+                        offstage: !(show),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            _buildWhiteboard(),
+                            GestureDetector(
+                              onTap: () {
+                                _roomShowTopProvider.setIsShow(true);
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                width: courseStatusModel.maxWidth,
+                                height: ScreenUtil.getInstance().screenHeight,
+                              ),
+                            )
+                          ],
+                        ));
                   }),
                   (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
                           (resModel.isShow == null || !resModel.isShow)
@@ -620,6 +642,51 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 //    });
   }
 
+  gameOver({Res ques}) async {
+    _webViewPlusController.evaluateJavascript('window.gameOver();');
+    if (ques == null) {
+      return null;
+    }
+    var flag = false;
+    //检查是否已经领奖
+    var param = {
+      "catalogId": ques.ctatlogid,
+      "liveCourseallotId": widget.roomData.liveCourseallotId,
+      "liveEventId": 7,
+      "quesId": ques.qid,
+      "roomId": widget.roomData.room.roomUuid
+    };
+    final res = await RoomDao.isRewardStar(param);
+    if (res.result != null && res.data != null && res.data["code"] == 200) {
+      if (!res.data["data"]["is"]) {
+        flag = true;
+      }
+    } else {
+      showToast("检查失败请稍后重试!!!");
+    }
+    if (flag) {
+      var star = 10;
+      var param = {
+        "catalogId": ques.ctatlogid,
+        "liveCourseallotId": widget.roomData.liveCourseallotId,
+        "liveEventId": 7,
+        "quesId": ques.qid,
+        "star": star,
+        "roomId": widget.roomData.room.roomUuid
+      };
+      RoomDao.rewardStar(param).then((res) {
+        Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
+        if (res.result != null && res.data != null && res.data["code"] == 200) {
+          if (res.data["data"]["status"] == 1) {
+            showStarDialog(star);
+          }
+        } else {
+          showToast("领取失败请稍后重试!!!");
+        }
+      });
+    }
+  }
+
   Widget _buildTop() {
     return Consumer<RoomShowTopProvider>(builder: (context, model, child) {
       if ((_hiddenTopTimer == null || !_hiddenTopTimer.isActive) && model.isShow == true) {
@@ -644,15 +711,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                             icon: new Icon(
                               Icons.arrow_back_ios,
                               color: Colors.white,
-                              size: ScreenUtil.getInstance().getSp(12),
+                              size: ScreenUtil.getInstance().getSp(10),
                             ),
                             onPressed: () {
                               _back();
                             }),
                         SizedBox(
-                          width: ScreenUtil.getInstance().getWidthPx(15),
+                          width: ScreenUtil.getInstance().getWidthPx(12),
                         ),
-                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(12)))
+                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(10)))
                       ],
                     ))
                 : Container(),
@@ -761,33 +828,36 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                           Flexible(
                               child: InkWell(
                             child: TextField(
-                              readOnly: false,
+                              readOnly: model.muteAllChat,
                               controller: _textController,
                               focusNode: _textFocusNode,
                               onChanged: (String text) {
                                 model.setIsComposing(_textController.text.length > 0);
                               },
-                              onTap: () {
+                              onTap: model.muteAllChat
+                                  ? () {
+                                      _textFocusNode.unfocus();
+                                    }
+                                  : () {
 //                                _showKeyboard(model);
-
-                                Navigator.push(
-                                    context,
-                                    PopRoute(
-                                        child: ChangeNotifierProvider<ChatProvider>.value(
-                                            value: _chatProvider,
-                                            child: InputButtomWidget(
-                                              onChanged: (String text) {
-                                                _chatProvider.setIsComposing(text.length > 0);
-                                              },
-                                              controller: _textController,
-                                              onSubmitted: _handleSubmitted,
-                                            )))).then((_) {
-                                  FocusScope.of(context).requestFocus(_textFocusNode);
-                                  _textFocusNode.unfocus();
-                                  print("122");
-                                });
-                                print("#1 123123");
-                              },
+                                      Navigator.push(
+                                          context,
+                                          PopRoute(
+                                              child: ChangeNotifierProvider<ChatProvider>.value(
+                                                  value: _chatProvider,
+                                                  child: InputButtomWidget(
+                                                    onChanged: (String text) {
+                                                      _chatProvider.setIsComposing(text.length > 0);
+                                                    },
+                                                    controller: _textController,
+                                                    onSubmitted: _handleSubmitted,
+                                                  )))).then((_) {
+                                        FocusScope.of(context).requestFocus(_textFocusNode);
+                                        _textFocusNode.unfocus();
+                                        print("122");
+                                      });
+                                      print("#1 123123");
+                                    },
                               onSubmitted: _handleSubmitted,
                               decoration: InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息'),
                             ),
@@ -1367,6 +1437,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         if (flickManager != null && flickManager.flickVideoManager != null) {
           if (flickManager.flickVideoManager.isPlaying && isPlay == 0) {
             flickManager?.flickControlManager?.autoPause();
+            if (time != null && time > 0) {
+              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+            }
           } else if (flickManager.flickVideoManager.isPlaying && isPlay == 1) {
             if (time != null && time > 0) {
               flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
@@ -1393,8 +1466,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         if (isShow != null) {
           _resShow = isShow == 1;
         }
-        if (ques.type == h5 && isShow != null && isShow == 1) {
-          gameStart();
+        if (ques.type == h5 && isShow != null) {
+          if (isShow == 1) {
+            gameStart();
+          } else {
+            //结束游戏
+            gameOver(ques: ques);
+          }
         }
         _resProvider.setRes(ques, isShow: _resShow);
       }
@@ -1414,10 +1492,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         if (isShow != null) {
           _resShow = isShow == 1;
         }
-        if (ques.type == h5 && isShow != null && isShow == 1) {
-          gameStart();
-        }
 
+        if (ques.type == h5 && isShow != null) {
+          if (isShow == 1) {
+            gameStart();
+          } else {
+            //结束游戏
+            gameOver(ques: ques);
+          }
+        }
         //只展示图片不操作
         if (_currentRes == null || isShow == null) {
           _resProvider.setRes(ques, isShow: _resShow);
@@ -1669,7 +1752,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   Future showStarDialog(int num) {
-    return _startForward(num);
+    if (num > 0) {
+      return _startForward(num);
+    }
+    return null;
     // return NavigatorUtil.showGSYDialog(
     //     context: context,
     //     builder: (BuildContext context) {
@@ -1713,6 +1799,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
     _socketPingTimer?.cancel();
+
     socket?.close();
     BetterSocket.close();
     socket = null;
