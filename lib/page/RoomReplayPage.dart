@@ -87,7 +87,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   CourseProvider _courseProvider;
   ReplayProgressProvider _replayProgressProvider = ReplayProgressProvider();
   RoomReplayPageState(RoomData roomData) {
-    _courseProvider = CourseProvider(0, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
+    _courseProvider = CourseProvider(1, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
   }
 
   @override
@@ -127,7 +127,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   HandProvider _handProvider = HandProvider();
   LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
-  WebViewPlusController _webViewPlusController;
+
   int _isPlay;
   int _time;
   final TextEditingController _textController = new TextEditingController();
@@ -321,16 +321,14 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 
   ///构建选择题
   Widget _buildSel() {
-    return LiveQuesWidget(
-      isReplay: true,
-    );
+    return LiveQuesWidget();
   }
 
   Widget _buildCourseware() {
     return Consumer2<CourseProvider, ResProvider>(builder: (context, courseStatusModel, resModel, child) {
       Widget result;
       print("left with:${courseStatusModel.coursewareWidth} height:${ScreenUtil.getInstance().screenHeight}");
-      if (courseStatusModel.status == 0) {
+      if (resModel.res == null) {
         result = Container(
           child: Stack(
             alignment: Alignment(-0.9, -0.9),
@@ -340,10 +338,25 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                   child: Container(
                       alignment: Alignment.center,
                       color: Colors.black,
-                      child: Image.file(
-                        File("${widget.roomData.courseware.localPath}/${widget.roomData.courseware.findFirst().data.ps.pic}"),
-                        fit: BoxFit.contain,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                            "images/live/awaitIcon.png",
+                            width: ScreenUtil.getInstance().getWidthPx(200),
+                            fit: BoxFit.contain,
+                          ),
+                          Text(
+                            DateTime.now().isAfter(courseStatusModel.roomData.endTime) ? "下课啦~" : "请准备好纸笔耐心等待~",
+                            style: TextStyle(color: Colors.orange),
+                          )
+                        ],
                       ))),
+              Image.file(
+                File("${widget.roomData.courseware.localPath}/${widget.roomData.courseware.findFirst().data.ps.pic}"),
+//                    width:ScreenUtil.getInstance().getWidthPx(200),
+                fit: BoxFit.contain,
+              ),
             ],
           ),
         );
@@ -387,7 +400,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                     })
               ].toSet(),
               onWebViewCreated: (controller) async {
-                _webViewPlusController = controller;
                 print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
                 controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
               },
@@ -442,7 +454,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 
       if (!(resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0)) {
         result = Container(
-          color: (resModel.res == null && courseStatusModel.status != 0) ? Colors.white : Colors.black,
+          color: Colors.black,
           width: courseStatusModel.coursewareWidth,
           child: Center(
             child: Container(
@@ -641,15 +653,15 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                             icon: new Icon(
                               Icons.arrow_back_ios,
                               color: Colors.white,
-                              size: ScreenUtil.getInstance().getSp(10),
+                              size: ScreenUtil.getInstance().getSp(12),
                             ),
                             onPressed: () {
                               _back();
                             }),
                         SizedBox(
-                          width: ScreenUtil.getInstance().getWidthPx(12),
+                          width: ScreenUtil.getInstance().getWidthPx(15),
                         ),
-                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(10)))
+                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(12)))
                       ],
                     ))
                 : Container(),
@@ -1385,9 +1397,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           if (flickManager.flickVideoManager.isPlaying && isPlay == 0) {
             print(" flickManager?.flickControlManager?.autoPause();");
             flickManager?.flickControlManager?.autoPause();
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-            }
           } else if (flickManager.flickVideoManager.isPlaying && isPlay == 1) {
             if (time != null && time > 0) {
               flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
@@ -1446,10 +1455,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       }
     }
     _currentRes = ques;
-  }
-
-  gameOver() async {
-//    _webViewPlusController.evaluateJavascript('window.gameOver();');
   }
 
   //处理定时器

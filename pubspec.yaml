@@ -56,7 +56,8 @@ dependencies:
 #  flutter_webview_plugin: ^0.3.8
   flutter_webview_plugin:
     path: ./plugins/flutter_webview_plugin-0.3.11
-  webview_flutter_plus: ^0.1.1+9
+  webview_flutter_plus:
+    path: ./plugins/webview_flutter_plus-0.1.1+9
   image_cropper: ^1.2.3
   oktoast: ^2.2.0
 #  fluwx: ^2.2.0
