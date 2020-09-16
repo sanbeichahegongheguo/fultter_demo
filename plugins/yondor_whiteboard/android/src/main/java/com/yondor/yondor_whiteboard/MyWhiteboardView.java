@@ -16,6 +16,7 @@ import com.herewhite.sdk.WhiteSdkConfiguration;
 import com.herewhite.sdk.WhiteboardView;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.PlayerConfiguration;
+import com.herewhite.sdk.domain.PlayerObserverMode;
 import com.herewhite.sdk.domain.PlayerPhase;
 import com.herewhite.sdk.domain.PlayerState;
 import com.herewhite.sdk.domain.Promise;
@@ -95,6 +96,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     }
     private void init(){
         WhiteSdkConfiguration configuration = new WhiteSdkConfiguration(appIdentifier);
+//        configuration.setDisableDeviceInputs(true);
         whiteSdk = new WhiteSdk(whiteboardView, context, configuration);
         boardManager.setListener(this);
         whiteboardView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -224,6 +226,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         playerConfiguration.setBeginTimestamp(beginTimestamp);
 //        playerConfiguration.setMediaURL(mediaUrl);
         playerConfiguration.setDuration(duration);
+
         whiteSdk.createPlayer(playerConfiguration, new AbstractPlayerEventListener() {
             // 以下为房间状态回调，可以查看 [状态管理] 文档
 
@@ -273,6 +276,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             @Override
             public void then(Player p) {
                 log.i("then player");
+//                p.setObserverMode(PlayerObserverMode.directory);
                 player = p;
                 play();
             }

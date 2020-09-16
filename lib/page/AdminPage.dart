@@ -214,9 +214,9 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                     _getBt("退出账号", "images/admin/icon_out.png", () {
                       _goOut(store);
                     }, new Text("")),
-                    _getBt("测试直播", "images/admin/icon_out.png", () {
-                      _goRoom(store.state.userInfo);
-                    }, new Text("")),
+//                    _getBt("测试直播", "images/admin/icon_out.png", () {
+//                      _goRoom(store.state.userInfo);
+//                    }, new Text("")),
                   ],
                 ),
               ],
@@ -325,30 +325,30 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
 
   Future _goRoom(User userInfo) async {
-    RoomUtil.goRoomPage(
-      context,
-      url: "https://qres.k12china.com/qlib/zip/2020/09/09/1632fb2b234420a8.zip",
-      userId: userInfo.userId,
-      userName: userInfo.realName,
-      roomName: "【2】【秋季同步提升班】测试——丘建宽",
-      roomUuid: "529bb7c1a2da4af2818639706824e294",
-      peLiveCourseallotId: 571976,
-      startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
-      endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
-      recordId: "95379824280870912",
-    );
 //    RoomUtil.goRoomPage(
 //      context,
-//      url: "https://qres.k12china.com/qlib/zip/2020/08/20/162cdb26f8aa73a5.zip",
+//      url: "https://qres.k12china.com/qlib/zip/2020/09/09/1632fb2b234420a8.zip",
 //      userId: userInfo.userId,
 //      userName: userInfo.realName,
 //      roomName: "【2】【秋季同步提升班】测试——丘建宽",
-//      roomUuid: "82398619d2d646d8b1b3f9f196fb50a6",
-//      peLiveCourseallotId: 571550,
+//      roomUuid: "529bb7c1a2da4af2818639706824e294",
+//      peLiveCourseallotId: 571976,
 //      startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
 //      endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
-//      recordId: "96014852878766080",
+////      recordId: "95379824280870912",
 //    );
+    RoomUtil.goRoomPage(
+      context,
+      url: "https://qres.k12china.com/qlib/zip/2020/09/15/1634df8dae6319be.zip",
+      userId: userInfo.userId,
+      userName: userInfo.realName,
+      roomName: "【2】【秋季同步提升班】测试——丘建宽",
+      roomUuid: "9d3ec305cbd54a618554f75cd01005ae",
+      peLiveCourseallotId: 571551,
+      startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
+      endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
+//      recordId: "96014852878766080",
+    );
   }
 
   //退出賬號

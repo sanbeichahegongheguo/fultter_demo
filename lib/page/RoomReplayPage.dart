@@ -127,7 +127,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   HandProvider _handProvider = HandProvider();
   LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
-
+  WebViewPlusController _webViewPlusController;
   int _isPlay;
   int _time;
   final TextEditingController _textController = new TextEditingController();
@@ -253,7 +253,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                                         child: _buildChat(),
                                       ),
                                     ),
-                                    _buildTextComposer(),
+//                                    _buildTextComposer(),
                                   ],
                                 ),
                               )
@@ -264,9 +264,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                             Consumer<CourseProvider>(builder: (context, model, child) {
                               return model.status == 1 ? _getLiveTimerWidget() : Container();
                             }),
-                            Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1 ? _buildRank() : Container();
-                            }),
+//                            Consumer<CourseProvider>(builder: (context, model, child) {
+//                              return model.status == 1 ? _buildRank() : Container();
+//                            }),
                             Consumer<CourseProvider>(builder: (context, model, child) {
                               return model.status == 1
                                   ? Positioned(
@@ -321,7 +321,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 
   ///构建选择题
   Widget _buildSel() {
-    return LiveQuesWidget();
+    return LiveQuesWidget(
+      isReplay: true,
+    );
   }
 
   Widget _buildCourseware() {
@@ -400,6 +402,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                     })
               ].toSet(),
               onWebViewCreated: (controller) async {
+                _webViewPlusController = controller;
                 print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
                 controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
               },
@@ -454,7 +457,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 
       if (!(resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0)) {
         result = Container(
-          color: Colors.black,
+          color: (resModel.res == null && courseStatusModel.status != 0) ? Colors.white : Colors.black,
           width: courseStatusModel.coursewareWidth,
           child: Center(
             child: Container(
@@ -489,7 +492,24 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                         }
                       }
                     }
-                    return Offstage(offstage: !(show), child: _buildWhiteboard());
+                    return Offstage(
+                        offstage: !(show),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            _buildWhiteboard(),
+                            GestureDetector(
+                              onTap: () {
+                                showTopAndBottom();
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                width: courseStatusModel.maxWidth,
+                                height: ScreenUtil.getInstance().screenHeight,
+                              ),
+                            )
+                          ],
+                        ));
                   }),
                   (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
                           (resModel.isShow == null || !resModel.isShow)
@@ -636,15 +656,15 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                             icon: new Icon(
                               Icons.arrow_back_ios,
                               color: Colors.white,
-                              size: ScreenUtil.getInstance().getSp(12),
+                              size: ScreenUtil.getInstance().getSp(10),
                             ),
                             onPressed: () {
                               _back();
                             }),
                         SizedBox(
-                          width: ScreenUtil.getInstance().getWidthPx(15),
+                          width: ScreenUtil.getInstance().getWidthPx(12),
                         ),
-                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(12)))
+                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(10)))
                       ],
                     ))
                 : Container(),
@@ -1203,10 +1223,10 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         _courseProvider.setInitBoardView(true);
       });
       await _teacherPlayer.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
-      await _teacherPlayer.setDataSource(courseRecordData.url, autoPlay: true, showCover: true).catchError((e) {
+      await _teacherPlayer.setDataSource(courseRecordData.url, autoPlay: false, showCover: true).catchError((e) {
         print("setDataSource error: $e");
       });
-//      _whiteboardController.startReplay(beginTimestamp: beginTimestamp, duration: duration, mediaURL: courseRecordData.url);
+      _whiteboardController.startReplay(beginTimestamp: beginTimestamp, duration: duration, mediaURL: courseRecordData.url);
     };
     var params = {
       "liveCourseallotId": _courseProvider.roomData.liveCourseallotId,
@@ -1222,8 +1242,8 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
     ReplayData data = res.data;
     data.list.forEach((ReplayItem element) {
-      element.playTime = element.t - courseRecordData.startTime + 12000;
-//      element.playTime = element.pt + 1000;
+//      element.playTime = element.t - courseRecordData.startTime + 12000;
+      element.playTime = element.pt;
       var decode = json.decode(element.op);
       final jsonText = decode["Event"]["msg"];
       element.op = jsonText;
@@ -1380,6 +1400,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           if (flickManager.flickVideoManager.isPlaying && isPlay == 0) {
             print(" flickManager?.flickControlManager?.autoPause();");
             flickManager?.flickControlManager?.autoPause();
+            if (time != null && time > 0) {
+              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+            }
           } else if (flickManager.flickVideoManager.isPlaying && isPlay == 1) {
             if (time != null && time > 0) {
               flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
@@ -1438,6 +1461,10 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       }
     }
     _currentRes = ques;
+  }
+
+  gameOver() async {
+//    _webViewPlusController.evaluateJavascript('window.gameOver();');
   }
 
   //处理定时器

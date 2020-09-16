@@ -84,7 +84,7 @@ class WhiteboardController {
           if (Platform.isIOS) {
             data = data.toDouble() * 1000;
           }
-          print("_onMethodCall onScheduleTimeChanged ${call.arguments}  data $data round ${data.round()}");
+//          print("_onMethodCall onScheduleTimeChanged ${call.arguments}  data $data round ${data.round()}");
           onScheduleTimeChanged(data.round());
         }
         return true;

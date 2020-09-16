@@ -152,12 +152,12 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         let dict = call.arguments as! NSDictionary
         let beginTimestamp:String = dict["beginTimestamp"] as! String
         let duration:String = dict["duration"] as! String
-        let mediaUrl = dict["mediaURL"] as! String
+//        let mediaUrl = dict["mediaURL"] as! String
         let whitePlayerConfig =  WhitePlayerConfig.init(room: self.uuid, roomToken: self.roomToken)
         let number = NumberFormatter.init()
         whitePlayerConfig.beginTimestamp = number.number(from: beginTimestamp)
         whitePlayerConfig.duration = number.number(from: duration)
-        whitePlayerConfig.mediaURL = mediaUrl
+//        whitePlayerConfig.mediaURL = mediaUrl
         print("YondorWhiteboard whitePlayerConfig.beginTimestamp ",whitePlayerConfig.beginTimestamp)
         print("YondorWhiteboard whitePlayerConfig.duration ",whitePlayerConfig.duration)
         self.sdk.createReplayer(with: whitePlayerConfig, callbacks: self ,completionHandler: { (success:Bool,whitePlayer:WhitePlayer?, err:Error?) in

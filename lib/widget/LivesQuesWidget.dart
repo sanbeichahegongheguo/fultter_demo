@@ -13,6 +13,9 @@ import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
 class LiveQuesWidget extends StatefulWidget {
+  final bool isReplay;
+
+  const LiveQuesWidget({Key key, this.isReplay = false}) : super(key: key);
   @override
   _LiveQuesWidgetState createState() => _LiveQuesWidgetState();
 }
@@ -65,22 +68,31 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
                       var answer =
                           '{"answer":"${model.val - 1}","isRight":"$isRight","quesId":${model.ques.qid},"userAnswer":{"qid":${model.ques.qid},"uan":[{"an":"${model.val - 1}","r":"$isRight"}]}}';
                       var useTime = DateTime.now().difference(model.dateTime).inMilliseconds;
+                      var liveEventId = 1;
+                      if (widget.isReplay) {
+                        liveEventId = 5;
+                      }
                       var param = {
                         "catalogId": model.ques.ctatlogid,
                         "liveCourseallotId": courseProvider.roomData.liveCourseallotId,
-                        "liveEventId": 1,
+                        "liveEventId": liveEventId,
                         "quesId": model.ques.qid,
                         "isRight": isRight,
                         "roomId": courseProvider.roomData.room.roomUuid
                       };
                       param["answerJson"] = answer;
                       param["useTime"] = useTime;
+                      var ctkDatafrommapId = 49;
+                      if (widget.isReplay) {
+                        //回放
+                        ctkDatafrommapId = 56;
+                      }
                       var qlibParam = {
                         "lessonId": model.ques.ctatlogid,
                         "quesId": model.ques.qid,
                         "isRight": isRight,
                         "batchNo": courseProvider.roomData.room.roomUuid,
-                        "ctkDatafrommapId": 49
+                        "ctkDatafrommapId": ctkDatafrommapId
                       };
                       qlibParam["costTime"] = useTime;
                       qlibParam["userAnswer"] = answer;

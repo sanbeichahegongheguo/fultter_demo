@@ -28,6 +28,7 @@ class UserDao {
     var res =
         await httpManager.netFetch(AddressUtil.getInstance().login(), params, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
+
     if (res != null && res.result) {
       var json = res.data;
       if (json["success"]["ok"] == 0) {

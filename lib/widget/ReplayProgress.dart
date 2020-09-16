@@ -25,7 +25,7 @@ class ReplayProgress extends StatefulWidget {
   _ReplayProgressState createState() => _ReplayProgressState(whiteboardController, teacherPlayer);
 }
 
-class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProviderStateMixin {
+class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   AnimationController _controller;
   Animation<Offset> animation;
   Widget playWidget = Icon(
@@ -46,6 +46,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   WhiteboardController _whiteboardController;
   CourseProvider _courseProvider;
   FijkPlayer _teacherPlayer;
+  bool isPlay = false;
   String _textDuration = "";
   _ReplayProgressState(WhiteboardController whiteboardController, FijkPlayer flickManager) {
     _whiteboardController = whiteboardController;
@@ -58,10 +59,39 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     _controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
     animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
     _controller.forward();
+    _teacherPlayer.addListener(() {
+      print("_teacherPlayer state ${_teacherPlayer.state}");
+    });
     _initWhiteboardController();
 //    _flickManager.flickVideoManager.addListener(() {
 //      print("videoPlayerController ${_flickManager.flickVideoManager.isPlaying}");
 //    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        //前台展示
+        if (isPlay) {
+          _play();
+          isPlay = false;
+        }
+        break;
+      case AppLifecycleState.inactive:
+//        print('应用程序处于非活动状态，并且未接收用户输入');
+
+        break;
+      case AppLifecycleState.paused:
+        //后台展示
+        if (_teacherPlayer.state == FijkState.started) {
+          isPlay = true;
+          _pause();
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   _initWhiteboardController() {
@@ -83,7 +113,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
       final playerPhase = PlayerPhase.values.firstWhere((PlayerPhase element) {
         return element.toString() == "$PlayerPhase.$data";
       });
-      print("playerPhase  $playerPhase");
+//      print("playerPhase  $playerPhase");
       switch (playerPhase) {
         case PlayerPhase.waitingFirstFrame:
           break;
@@ -125,7 +155,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         }
       });
 //      findBeforeAndAfter(l, data);
-      print("_whiteboardController  onScheduleTimeChanged $data");
+//      print("_whiteboardController  onScheduleTimeChanged $data");
     };
     currentIconWidget = playWidget;
   }
@@ -196,54 +226,63 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
               child: SlideTransition(
                 position: animation,
                 child: Container(
-                    color: Colors.black.withAlpha(80),
-                    height: 50,
-                    width: ScreenUtil.getInstance().screenWidth,
-                    child: Row(
-                      children: [
-                        AnimatedSwitcher(
-                          transitionBuilder: (child, anim) {
-                            return ScaleTransition(child: child, scale: anim);
-                          },
-                          duration: Duration(milliseconds: 500),
-                          child: IconButton(
-                            key: ValueKey(model.playerPhase),
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            icon: currentIconWidget,
-                            onPressed: _iconFun,
+                  color: Colors.black.withAlpha(80),
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                  child: Container(
+//                      color: Colors.black.withAlpha(80),
+                      height: 50,
+                      width: ScreenUtil.getInstance().screenWidth,
+                      child: Row(
+                        children: [
+                          AnimatedSwitcher(
+                            transitionBuilder: (child, anim) {
+                              return ScaleTransition(child: child, scale: anim);
+                            },
+                            duration: Duration(milliseconds: 500),
+                            child: IconButton(
+                              key: ValueKey(model.playerPhase),
+                              padding: EdgeInsets.only(left: 8, right: 0),
+                              icon: currentIconWidget,
+                              onPressed: _iconFun,
+                            ),
                           ),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(left: 8, right: 10),
-                            child: Text(
+                          Container(
+                            width: ScreenUtil.getInstance().getWidth(20),
+                            child: Center(
+                                child: Text(
                               _nowDuration,
                               style: TextStyle(color: Colors.white),
                             )),
-                        Expanded(
-                          child: SeekBar(
-                            backgroundColor: Colors.grey,
-                            max: model.duration.inMilliseconds.toDouble(),
-                            progresseight: 7,
-                            indicatorColor: Colors.green,
-                            indicatorRadius: 7,
-                            value: model.val,
-                            progressColor: Colors.greenAccent,
-                            onValueChanged: (ProgressValue progressValue) {
-                              model.setVal(progressValue.value);
-                            },
-                            upValueChanged: (ProgressValue progressValue) {
-                              _seekTo(progressValue.value.round());
-                            },
                           ),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(left: 10, right: 8),
-                            child: Text(
-                              _textDuration,
-                              style: TextStyle(color: Colors.white),
-                            )),
-                      ],
-                    )),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: SeekBar(
+                              backgroundColor: Colors.grey,
+                              max: model.duration.inMilliseconds.toDouble(),
+                              progresseight: 8,
+                              indicatorColor: Colors.green,
+                              indicatorRadius: 8,
+                              value: model.val,
+                              progressColor: Colors.greenAccent,
+                              onValueChanged: (ProgressValue progressValue) {
+                                model.setVal(progressValue.value);
+                              },
+                              upValueChanged: (ProgressValue progressValue) {
+                                _seekTo(progressValue.value.round());
+                              },
+                            ),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.only(left: 10, right: 8 + MediaQuery.of(context).padding.right),
+                              child: Text(
+                                _textDuration,
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ],
+                      )),
+                ),
               )),
         ],
       );
@@ -306,7 +345,9 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     widget.handleSocketMsg(socketMsg);
   }
 
-  _seekTo(int value) {
+  _seekTo(int value) async {
+    await _teacherPlayer.pause();
+    await _whiteboardController.pause();
     ReplayItem before;
     ReplayItem beforeShow;
     if (_courseProvider.roomData.courseRecordData.coursewareOp.list != null) {
@@ -336,7 +377,6 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
             _firstCourseware();
           }
         }
-
         ReplayItem newBefore = ReplayItem.fromJson(before.toJson());
         print("do elemet before $newBefore");
         if (newBefore.ty == LiveRoomConst.mp4) {
@@ -348,10 +388,19 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
           beforeTime = beforeTime + Duration(milliseconds: (value - newBefore.playTime).abs()).inSeconds;
           decode["time"] = beforeTime.toInt();
           newBefore.op = jsonEncode(decode);
-        } else if (newBefore.ty == LiveRoomConst.SEL) {
+        } else if (newBefore.ty == LiveRoomConst.SEL || newBefore.ty == LiveRoomConst.JUD || newBefore.ty == LiveRoomConst.MULSEL) {
           var decode = json.decode(newBefore.op);
           decode.remove('isShow');
           newBefore.op = jsonEncode(decode);
+        } else if (newBefore.ty == LiveRoomConst.h5) {
+          var decode = json.decode(newBefore.op);
+          if (decode["isShow"] != null && decode["isShow"] == 1) {
+            decode.remove('isShow');
+            newBefore.op = jsonEncode(decode);
+            widget.handleSocketMsg(SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op));
+            decode["isShow"] = 1;
+            newBefore.op = jsonEncode(decode);
+          }
         } else if (newBefore.ty == LiveRoomConst.RANRED || newBefore.ty == LiveRoomConst.REDRAIN) {
           var decode = json.decode(newBefore.op);
           decode["ty"] = LiveRoomConst.ppt;
@@ -364,10 +413,9 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         _firstCourseware();
       }
     }
-    _teacherPlayer.pause();
-    _whiteboardController.pause();
-    _teacherPlayer?.seekTo(value);
-    _whiteboardController.seekToScheduleTime(value);
+
+    await _teacherPlayer?.seekTo(value);
+    await _whiteboardController.seekToScheduleTime(value);
     _teacherPlayer.start();
     _whiteboardController.play();
   }

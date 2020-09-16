@@ -93,26 +93,26 @@ class _CoursewareVideoState extends State<CoursewareVideo> {
                         },
                       ),
                     ),
-                    FlickAutoHideChild(
-                      autoHide: false,
-                      showIfVideoNotInitialized: false,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: Colors.black38,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: FlickSoundToggle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          // FlickFullScreenToggle(),
-                        ],
-                      ),
-                    ),
+//                    FlickAutoHideChild(
+//                      autoHide: false,
+//                      showIfVideoNotInitialized: false,
+//                      child: Row(
+//                        mainAxisAlignment: MainAxisAlignment.end,
+//                        children: <Widget>[
+//                          Container(
+//                            padding: EdgeInsets.all(2),
+//                            decoration: BoxDecoration(
+//                              color: Colors.black38,
+//                              borderRadius: BorderRadius.circular(20),
+//                            ),
+//                            child: FlickSoundToggle(
+//                              color: Colors.white,
+//                            ),
+//                          ),
+//                          // FlickFullScreenToggle(),
+//                        ],
+//                      ),
+//                    ),
                   ],
                 ),
         ),
