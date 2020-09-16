@@ -120,6 +120,9 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         case PlayerPhase.playing:
           _teacherPlayer?.start();
           currentIconWidget = pauseWidget;
+          if (_courseProvider.status == 0) {
+            _courseProvider.setStatus(1);
+          }
           break;
         case PlayerPhase.pause:
           currentIconWidget = playWidget;
