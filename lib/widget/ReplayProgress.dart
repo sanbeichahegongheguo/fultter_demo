@@ -97,7 +97,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   _initWhiteboardController() {
     _courseProvider = Provider.of<CourseProvider>(context, listen: false);
     _replayProgressProvider = Provider.of<ReplayProgressProvider>(context, listen: false);
-
+    _firstCourseware();
     final courseRecordData = _courseProvider.roomData.courseRecordData;
     //开始时间
     final beginTimestamp = courseRecordData.startTime;
@@ -120,9 +120,6 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         case PlayerPhase.playing:
           _teacherPlayer?.start();
           currentIconWidget = pauseWidget;
-          if (_courseProvider.status == 0) {
-            _courseProvider.setStatus(1);
-          }
           break;
         case PlayerPhase.pause:
           currentIconWidget = playWidget;
@@ -324,7 +321,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
 
   Map noShowMap = {
     LiveRoomConst.EVENT_HAND: Object(),
-    LiveRoomConst.BOARD: Object(),
+//    LiveRoomConst.BOARD: Object(),
     LiveRoomConst.EVENT_BOARD: Object(),
   };
   Map showMap = {
@@ -374,44 +371,14 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         if (noShowMap.containsKey(before.ty)) {
 //          final beforeShow = findBeforeShow(_courseProvider.roomData.courseRecordData.coursewareOp.list, value);
           if (beforeShow != null) {
-            SocketMsg socketMsg = SocketMsg(type: beforeShow.ty, timestamp: beforeShow.t, text: beforeShow.op);
-            widget.handleSocketMsg(socketMsg);
+            print("do elemet beforeShow $beforeShow");
+            _showQues(beforeShow, value);
           } else {
             _firstCourseware();
           }
         }
-        ReplayItem newBefore = ReplayItem.fromJson(before.toJson());
-        print("do elemet before $newBefore");
-        if (newBefore.ty == LiveRoomConst.mp4) {
-          var decode = json.decode(newBefore.op);
-          if (decode["time"] == null) {
-            decode["time"] = 0;
-          }
-          double beforeTime = double.parse(decode["time"].toString());
-          beforeTime = beforeTime + Duration(milliseconds: (value - newBefore.playTime).abs()).inSeconds;
-          decode["time"] = beforeTime.toInt();
-          newBefore.op = jsonEncode(decode);
-        } else if (newBefore.ty == LiveRoomConst.SEL || newBefore.ty == LiveRoomConst.JUD || newBefore.ty == LiveRoomConst.MULSEL) {
-          var decode = json.decode(newBefore.op);
-          decode.remove('isShow');
-          newBefore.op = jsonEncode(decode);
-        } else if (newBefore.ty == LiveRoomConst.h5) {
-          var decode = json.decode(newBefore.op);
-          if (decode["isShow"] != null && decode["isShow"] == 1) {
-            decode.remove('isShow');
-            newBefore.op = jsonEncode(decode);
-            widget.handleSocketMsg(SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op));
-            decode["isShow"] = 1;
-            newBefore.op = jsonEncode(decode);
-          }
-        } else if (newBefore.ty == LiveRoomConst.RANRED || newBefore.ty == LiveRoomConst.REDRAIN) {
-          var decode = json.decode(newBefore.op);
-          decode["ty"] = LiveRoomConst.ppt;
-          newBefore.op = jsonEncode(decode);
-        }
-        print("do elemet after before $newBefore");
-        SocketMsg socketMsg = SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op);
-        widget.handleSocketMsg(socketMsg);
+        print("do elemet before $before");
+        _showQues(before, value);
       } else {
         _firstCourseware();
       }
@@ -421,5 +388,40 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     await _whiteboardController.seekToScheduleTime(value);
     _teacherPlayer.start();
     _whiteboardController.play();
+  }
+
+  _showQues(before, value) {
+    ReplayItem newBefore = ReplayItem.fromJson(before.toJson());
+
+    if (newBefore.ty == LiveRoomConst.mp4) {
+      var decode = json.decode(newBefore.op);
+      if (decode["time"] == null) {
+        decode["time"] = 0;
+      }
+      double beforeTime = double.parse(decode["time"].toString());
+      beforeTime = beforeTime + Duration(milliseconds: (value - newBefore.playTime).abs()).inSeconds;
+      decode["time"] = beforeTime.toInt();
+      newBefore.op = jsonEncode(decode);
+    } else if (newBefore.ty == LiveRoomConst.SEL || newBefore.ty == LiveRoomConst.JUD || newBefore.ty == LiveRoomConst.MULSEL) {
+      var decode = json.decode(newBefore.op);
+      decode.remove('isShow');
+      newBefore.op = jsonEncode(decode);
+    } else if (newBefore.ty == LiveRoomConst.h5) {
+      var decode = json.decode(newBefore.op);
+      if (decode["isShow"] != null && decode["isShow"] == 1) {
+        decode.remove('isShow');
+        newBefore.op = jsonEncode(decode);
+        widget.handleSocketMsg(SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op));
+        decode["isShow"] = 1;
+        newBefore.op = jsonEncode(decode);
+      }
+    } else if (newBefore.ty == LiveRoomConst.RANRED || newBefore.ty == LiveRoomConst.REDRAIN) {
+      var decode = json.decode(newBefore.op);
+      decode["ty"] = LiveRoomConst.ppt;
+      newBefore.op = jsonEncode(decode);
+    }
+    print("do elemet after before $newBefore");
+    SocketMsg socketMsg = SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op);
+    widget.handleSocketMsg(socketMsg);
   }
 }

@@ -87,7 +87,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   CourseProvider _courseProvider;
   ReplayProgressProvider _replayProgressProvider = ReplayProgressProvider();
   RoomReplayPageState(RoomData roomData) {
-    _courseProvider = CourseProvider(0, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
+    _courseProvider = CourseProvider(1, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
   }
 
   @override
@@ -1293,6 +1293,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         _handleCourseware(socketMsg);
         break;
       case BOARD:
+        _closeVideo();
         _resProvider.setRes(null);
         _currentRes = null;
         break;
@@ -1577,6 +1578,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
 
     if (_currentRes == null || (_currentRes.qid != ques.qid && isShow == null)) {
+      if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
+        _closeVideo();
+      }
       _resProvider.setRes(ques);
       _currentRes = ques;
     }
@@ -1745,7 +1749,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     super.dispose();
   }
 
-  _closeVideo() {
+  _closeVideo() async {
     print("_closeVideo _closeVideo _closeVideo");
     flickManager?.dispose();
     flickManager = null;

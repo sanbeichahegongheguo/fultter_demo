@@ -1,14 +1,14 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=/Users/guoguanxing/Downloads/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/guoguanxing/Desktop/parnet/fultter_start"
+export "FLUTTER_APPLICATION_PATH=/Users/guoguanxing/project/fultter_start"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
 export "SYMROOT=${SOURCE_ROOT}/../build/ios"
 export "OTHER_LDFLAGS=$(inherited) -framework Flutter"
 export "FLUTTER_FRAMEWORK_DIR=/Users/guoguanxing/Downloads/flutter/bin/cache/artifacts/engine/ios"
-export "FLUTTER_BUILD_NAME=2.0.670"
-export "FLUTTER_BUILD_NUMBER=340122"
+export "FLUTTER_BUILD_NAME=2.0.710"
+export "FLUTTER_BUILD_NUMBER=340203"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=false"
 export "TREE_SHAKE_ICONS=false"

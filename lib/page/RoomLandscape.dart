@@ -642,8 +642,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 //    });
   }
 
-  gameOver({Res ques}) async {
-    _webViewPlusController.evaluateJavascript('window.gameOver();');
+  gameOver({Res ques, bool isSwitch = false}) async {
+    if (!isSwitch) {
+      //不是切换课件才结束
+      _webViewPlusController.evaluateJavascript('window.gameOver();');
+    }
+
     if (ques == null) {
       return null;
     }
@@ -1346,6 +1350,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         _handleCourseware(socketMsg);
         break;
       case "board":
+        _closeVideo();
         _resProvider.setRes(null);
         _currentRes = null;
         break;
@@ -1498,7 +1503,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             gameStart();
           } else {
             //结束游戏
-            gameOver(ques: ques);
+            gameOver(ques: ques, isSwitch: true);
           }
         }
         //只展示图片不操作
@@ -1635,6 +1640,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
 
     if (_currentRes == null || (_currentRes.qid != ques.qid && isShow == null)) {
+      if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
+        _closeVideo();
+      }
       _resProvider.setRes(ques);
       _currentRes = ques;
     }
@@ -1686,6 +1694,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         }
       }
     }
+  }
+
+  _switchCouseware(Res res, {bool isShow}) {
+    _resProvider.setRes(res, isShow: isShow);
   }
 
   Future showLiveTopDialog(data) {
@@ -1808,10 +1820,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   _closeVideo() async {
-    flickManager?.dispose();
-    flickManager = null;
-    _isPlay = null;
-    _time = null;
+    Future.microtask(() {
+      flickManager?.dispose();
+      flickManager = null;
+      _isPlay = null;
+      _time = null;
+    });
   }
 
   _back() {
