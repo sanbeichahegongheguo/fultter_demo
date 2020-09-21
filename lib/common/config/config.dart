@@ -22,42 +22,49 @@ class Config {
   static const USER_PHONE = "user-phone";
   static const DES_IV = "myyondor"; //加密偏移值
   static const PHONE_UID = "phone-uid"; //加密偏移值
-  static const PARENT_HOME = "parentHomeWorkList";//最近作业集合
-  static const All_UNIT = "all-unit";//所有单元集合
-  static const STUDY_QUES = "study-quesData";//所有单元集合
-  static const HOME_NUM = "home_num";//用户本学期作业数据
-  static const STUDY_MSG = "studyMsg";//用户学习情况
+  static const PARENT_HOME = "parentHomeWorkList"; //最近作业集合
+  static const All_UNIT = "all-unit"; //所有单元集合
+  static const STUDY_QUES = "study-quesData"; //所有单元集合
+  static const HOME_NUM = "home_num"; //用户本学期作业数据
+  static const STUDY_MSG = "studyMsg"; //用户学习情况
   static const starNum = "star-num";
   static const hotGiftList = "hot-gift-list";
   static const ADVER_KEY = "adver";
-  static const parentRewardModule = "parent-reward-module";   //家长奖励模块
-  static const coachXZYModule = "coach-xzy-module";  //辅导页面小状元模块
-  static const coachJZModule = "coach-jz-module";  //辅导页面精准教育模块
-  static const lEmotionModule = "l-emotion-module";  //学情页面模块
+  static const parentRewardModule = "parent-reward-module"; //家长奖励模块
+  static const parentTopRewardModule = "parent-top-reward-module"; //家长奖励头部模块
+  static const coachXZYModule = "coach-xzy-module"; //辅导页面小状元模块
+  static const coachJZModule = "coach-jz-module"; //辅导页面精准教育模块
+  static const lEmotionModule = "l-emotion-module"; //学情页面模块
   static const SIGN_TIMES = "sign-times";
-  static const ANDROID_AD_APP_ID = "1106507482";  //安卓腾讯广告 appid
+  static const ANDROID_AD_APP_ID = "1106507482"; //安卓腾讯广告 appid
   static const ANDROID_BANNER_ID = "1060575419369196"; //安卓腾讯广告 bannerId
-  static const IOS_AD_APP_ID = "1106430707";    //IOS  腾讯广告 appid
-  static const IOS_BANNER_ID = "1060186030422542";//IOS  腾讯广告 bannerId
+  static const IOS_AD_APP_ID = "1106430707"; //IOS  腾讯广告 appid
+  static const IOS_BANNER_ID = "1060186030422542"; //IOS  腾讯广告 bannerId
   static const LANGUAGE = Locale('zh', 'CH');
-  static const TITLE ='远大小状元';
-  static const CUR_VERSION ='2.0.000';
-  static const indexNotice ='index-notice';   //辅导页面顶部公告
-  static const countdown = 0;   //倒计时
-  static const mainLastCourse ='null';   //课程数据
-  static const APPAPPLICATION_KEY ='APPAPPLICATION_KEY';   //辅导页面顶部公告
-  static const IOS_APP_ID ='1155973972';   //苹果商店appid
-  static const EVENT_287 ='event_287';   //启动事件
-  static const EVENT_PROTOCOL ='event_protocol';   //用户协议
-  static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
+  static const TITLE = '远大小状元';
+  static const CUR_VERSION = '2.0.000';
+  static const indexNotice = 'index-notice'; //辅导页面顶部公告
+  static const countdown = 0; //倒计时
+  static const mainLastCourse = 'null'; //课程数据
+  static const APPAPPLICATION_KEY = 'APPAPPLICATION_KEY'; //辅导页面顶部公告
+  static const IOS_APP_ID = '1155973972'; //苹果商店appid
+  static const EVENT_287 = 'event_287'; //启动事件
+  static const EVENT_PROTOCOL = 'event_protocol'; //用户协议
+  static const tenUrl =
+      "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
   static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
   static const STUDENT_SCHEME = "yondorstudenthwapp://"; //学生端路由
-  static const STUDENT_TEN_URL = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
-  static const STUDENT_HUAWEI_URL = "https://appstore.huawei.com/app/C101097841";//学生端华为应用商店
-  static const STUDENT_IOS_URL = "https://apps.apple.com/cn/app/id1475045442"; //學生端苹果商店
+  static const STUDENT_TEN_URL =
+      "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
+  static const STUDENT_HUAWEI_URL =
+      "https://appstore.huawei.com/app/C101097841"; //学生端华为应用商店
+  static const STUDENT_IOS_URL =
+      "https://apps.apple.com/cn/app/id1475045442"; //學生端苹果商店
   static const Leave_Time = "0";
   static const APP_ID = '08ca6fe94bcf4513b96020e377193954';
   static const LOGCAT_APP_ID = 1;
-  static String AGORA_AUTH = base64Encode("44e9176721dd43c09999197ed05afa35:4af6376d4e044eecb68b5b4041a2a77d".codeUnits);
+  static String AGORA_AUTH = base64Encode(
+      "44e9176721dd43c09999197ed05afa35:4af6376d4e044eecb68b5b4041a2a77d"
+          .codeUnits);
   static const IOS_PAY_PARAM_KEY = "IOS_PAY_PARAM";
 }
