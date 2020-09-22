@@ -36,6 +36,10 @@ class RoomUtil {
     var bool = await _handleCameraAndMic();
     if (!bool) {
       showToast("权限不足无法进入房间!");
+      await openAppSettings();
+      if (callFunc != null) {
+        callFunc();
+      }
       return;
     }
     ProgressProvider progressProvider = ProgressProvider();
@@ -169,6 +173,7 @@ class RoomUtil {
       //offline
       offline = true;
       fail("@loadCoursePack error:$error use offline mode.");
+      return;
     });
 
     bool match = false;
@@ -191,6 +196,9 @@ class RoomUtil {
         if (progress != null) {
           progress(NumUtil.getNumByValueDouble(loaded / total * 100, 2));
         }
+      }).catchError((error) {
+        fail("@downloadCoursePack error:$error .");
+        return;
       });
       print("download files ok");
     } else {

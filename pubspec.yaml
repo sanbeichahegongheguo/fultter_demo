@@ -7,7 +7,7 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 2.0.710+340215
+version: 2.0.720+340220
 
 environment:
   sdk: ">=2.5.0 <3.0.0"

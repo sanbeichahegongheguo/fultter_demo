@@ -47,7 +47,7 @@ class AudioRecorderUtils {
   }
 
   void dispose() {
-    recorder.stop();
+    recorder?.stop();
     recorder = null;
   }
 }

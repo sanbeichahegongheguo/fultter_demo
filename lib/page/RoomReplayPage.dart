@@ -615,7 +615,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 //          return GamePayleWidget();
 //        });
     print("gameStart gameStart");
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future(() {
       return Navigator.push(context, PopRoute(child: GamePayleWidget()));
     });
 //    Future.delayed(Duration(milliseconds: 500), () {
@@ -667,13 +667,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       panelBuilder: (FijkPlayer player, FijkData data, BuildContext context, Size viewSize, Rect texturePos) {
         return Container();
       },
-
       cover: Image.asset('images/ic_teacher.png', fit: BoxFit.fill).image,
-//      child: CoursewareVideo(
-//        _teacherFlickManager,
-//        soundAction: showTopAndBottom,
-//        isHiddenControls: true,
-//      ),
     );
     return result;
     return Consumer2<TeacherProvider, CourseProvider>(builder: (context, teacherModel, courseStatusModel, child) {
@@ -1207,6 +1201,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _courseProvider.setInitBoardView(true);
       });
+      await _teacherPlayer.setOption(FijkOption.formatCategory, "fflags", "fastseek");
       await _teacherPlayer.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
       await _teacherPlayer.setDataSource(courseRecordData.url, autoPlay: false, showCover: true).catchError((e) {
         print("setDataSource error: $e");
@@ -1415,8 +1410,14 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         if (isShow != null) {
           _resShow = isShow == 1;
         }
-        if (ques.type == h5 && isShow != null && isShow == 1) {
-          gameStart();
+        if (ques.type == h5 && isShow != null) {
+          if (isShow == 1) {
+            gameStart();
+          } else {
+            //结束游戏
+//            gameOver(ques: ques);
+            return;
+          }
         }
         _resProvider.setRes(ques, isShow: _resShow);
       }
@@ -1437,7 +1438,13 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           _resShow = isShow == 1;
         }
         if (ques.type == h5 && isShow != null && isShow == 1) {
-          gameStart();
+          if (isShow == 1) {
+            gameStart();
+          } else {
+            //结束游戏
+//            gameOver(ques: ques);
+            return;
+          }
         }
 
         //只展示图片不操作
@@ -1490,6 +1497,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
     if (!isCheck || flag) {
       Navigator.push(context, PopRoute(child: RedRain())).then((value) {
+        if (value == null || value == 0) {
+          return;
+        }
         var param = {
           "catalogId": ques.ctatlogid,
           "liveCourseallotId": widget.roomData.liveCourseallotId,
@@ -1542,26 +1552,27 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
     if (!isCheck || flag) {
       showRedPacketDialog().then((value) {
-        if (value != null) {
-          var param = {
-            "catalogId": ques.ctatlogid,
-            "liveCourseallotId": widget.roomData.liveCourseallotId,
-            "liveEventId": 3,
-            "quesId": ques.qid,
-            "star": value,
-            "roomId": widget.roomData.room.roomUuid
-          };
-          RoomDao.rewardStar(param).then((res) {
-            Log.f("rewardStar  ${res.toString()}", tag: RoomReplayPage.sName);
-            if (res.result != null && res.data != null && res.data["code"] == 200) {
-              if (res.data["data"]["status"] == 1) {
-                showStarDialog(value);
-              }
-            } else {
-              showToast("领取失败请稍后重试!!!");
-            }
-          });
+        if (value == null || value == 0) {
+          return;
         }
+        var param = {
+          "catalogId": ques.ctatlogid,
+          "liveCourseallotId": widget.roomData.liveCourseallotId,
+          "liveEventId": 3,
+          "quesId": ques.qid,
+          "star": value,
+          "roomId": widget.roomData.room.roomUuid
+        };
+        RoomDao.rewardStar(param).then((res) {
+          Log.f("rewardStar  ${res.toString()}", tag: RoomReplayPage.sName);
+          if (res.result != null && res.data != null && res.data["code"] == 200) {
+            if (res.data["data"]["status"] == 1) {
+              showStarDialog(value);
+            }
+          } else {
+            showToast("领取失败请稍后重试!!!");
+          }
+        });
       });
     }
   }

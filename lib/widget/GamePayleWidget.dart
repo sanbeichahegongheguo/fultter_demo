@@ -87,6 +87,7 @@ class _GamePayleWidgetState extends State<GamePayleWidget> with SingleTickerProv
     if (_isBack) {
       return;
     }
+    _isBack = true;
     Navigator.pop(context);
   }
 }

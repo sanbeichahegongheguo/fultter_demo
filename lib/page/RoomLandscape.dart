@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:better_socket/better_socket.dart';
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,44 +84,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   static const String EVENT_JOIN_SUCCESS = LiveRoomConst.EVENT_JOIN_SUCCESS; //加入房间返回成功事件
   static const String EVENT_CURRENT = LiveRoomConst.EVENT_CURRENT; //加入房间成功返回当前事件
 
-  CourseProvider _courseProvider;
   RoomLandscapePageState(RoomData roomData) {
     _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
     _chatProvider.setMuteAllChat(roomData.room.muteAllChat == 1);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    if (Platform.isIOS) {
-      OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
-    }
-    OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
-    orientation = 1;
-    _initWebsocketManager();
-    _local = widget.roomData.user;
-    initializeRtm();
-    initializeRtc().then((value) {
-      this._updateUsers(widget.roomData.room.coVideoUsers);
-    });
-
-    if (Platform.isIOS) {
-      HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
-    }
-    Future.delayed(Duration(milliseconds: 1000)).then((e) {
-      rewardFirstStar();
-    });
-    _textController.addListener(() {
-      _chatProvider.setIsComposing(_textController.text.length > 0);
-    });
-    _whiteboardController.onCreated = (result) {
-      print("_whiteboardController  $result");
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        _courseProvider.setInitBoardView(true);
-      });
-    };
-  }
-
+  CourseProvider _courseProvider;
   int orientation = 0;
   AgoraRtmClient _rtmClient;
   AgoraRtmChannel _rtmChannel;
@@ -150,13 +119,45 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   static final _users = <int>[];
   WhiteboardController _whiteboardController = WhiteboardController();
   Timer _hiddenTopTimer;
-  FlickManager flickManager;
+  FijkPlayer flickManager = FijkPlayer();
   Timer _socketPingTimer;
   Duration _socketPingDuration = Duration(seconds: 45);
   bool isShowDialog = false;
   bool isShowTip = true;
   Timer isShowTipTimer;
   FocusNode _textFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isIOS) {
+      OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+    }
+    OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+    orientation = 1;
+    _initWebsocketManager();
+    _local = widget.roomData.user;
+    initializeRtm();
+    initializeRtc().then((value) {
+      this._updateUsers(widget.roomData.room.coVideoUsers);
+    });
+    if (Platform.isIOS) {
+      HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
+    }
+    Future.delayed(Duration(milliseconds: 1000)).then((e) {
+      rewardFirstStar();
+    });
+    _textController.addListener(() {
+      _chatProvider.setIsComposing(_textController.text.length > 0);
+    });
+    _whiteboardController.onCreated = (result) {
+      print("_whiteboardController  $result");
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        _courseProvider.setInitBoardView(true);
+      });
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     var coursewareWidth = (ScreenUtil.getInstance().screenWidth * 0.8) - MediaQuery.of(context).padding.left;
@@ -372,51 +373,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         );
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
-          if (Platform.isIOS) {
-            if (resModel.isShow == null || !resModel.isShow) {
-              Future.delayed(Duration(milliseconds: 500), () {
-                _boardProvider.setTestBoard(0);
-                Future.delayed(Duration(milliseconds: 500), () {
-                  _boardProvider.setTestBoard(1);
-                });
-              });
-            }
-          }
-          print("${resModel.isShow == null || !resModel.isShow}resModel.isShow == null || !resModel.isShow");
-          result = Container(
-            color: Colors.black,
-            child: WebViewPlus(
-              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-              javascriptMode: JavascriptMode.unrestricted,
-              javascriptChannels: <JavascriptChannel>[
-                JavascriptChannel(
-                    name: 'Courseware',
-                    onMessageReceived: (JavascriptMessage message) async {
-                      var msg = jsonDecode(message.message);
-                      Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
-                      Store<GSYState> store = StoreProvider.of(context);
-                      BetterSocket.sendMsg(jsonEncode({
-                        "Event": {
-                          "event": "event-doCourseware",
-                          "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
-                        }
-                      }));
-                    })
-              ].toSet(),
-              onWebViewCreated: (controller) async {
-                _webViewPlusController = controller;
-                print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-
-                controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
-//                controller.loadUrl(await CommonUtils.urlJoinUser("http://192.168.20.63:8080/2020/09/5f6061b68386/1058/index.html"));
-              },
-              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                new Factory<OneSequenceGestureRecognizer>(
-                  () => new EagerGestureRecognizer(),
-                ),
-              ].toSet(),
-            ),
-          );
+          result = _buildWebView(resModel);
         } else if (resModel.res.type == ppt ||
             resModel.res.type == BREAK ||
             resModel.res.type == JUD ||
@@ -424,38 +381,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             resModel.res.type == MULSEL ||
             resModel.res.type == RANRED ||
             resModel.res.type == REDRAIN) {
-          result = GestureDetector(
-            child: Container(
-                child: Image.file(
-              File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
-              fit: BoxFit.contain,
-            )),
-            onTap: () => _roomShowTopProvider.setIsShow(true),
-          );
+          result = _buildPic(resModel);
         } else if (resModel.res.type == mp4) {
-          if (flickManager == null) {
-            File file = File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.mp4);
-            flickManager = FlickManager(
-              autoPlay: false,
-              videoPlayerController: file.existsSync()
-                  ? VideoPlayerController.file(file)
-                  : VideoPlayerController.network(widget.roomData.courseware.domain + resModel.res.data.ps.mp4),
-            );
-            if (_time != null && _time > 0) {
-              Future.delayed(Duration(seconds: 2), () async {
-                if (_isPlay != null && _isPlay == 1) {
-                  flickManager.flickControlManager?.seekTo(Duration(seconds: _time + 2));
-                  flickManager?.flickControlManager?.play();
-                } else {
-                  flickManager.flickControlManager?.seekTo(Duration(seconds: _time));
-                }
-              });
-            }
-          }
-          result = Container(
-            child: CoursewareVideo(flickManager,
-                pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: () => _roomShowTopProvider.setIsShow(true)),
-          );
+          result = _buildMp4(resModel);
         }
       }
 
@@ -480,6 +408,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                   ),
                   Consumer<BoardProvider>(builder: (context, model, child) {
                     print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
+                    print(
+                        " 等待老师开始游戏 ${(resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) && (resModel.isShow == null || !resModel.isShow)}");
                     var show = true;
                     if (courseStatusModel.isInitBoardView) {
                       show = (courseStatusModel.status == 1 && model.enableBoard == 1);
@@ -566,9 +496,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                         }),
                       ),
                     );
-                  }),
-                  //学生视频
-
+                  }), //学生视频
                   Offstage(
                     offstage: !(courseStatusModel.status == 1),
                     child: Align(
@@ -587,44 +515,78 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     });
   }
 
-  ///左上角 星星
-  Widget _starWidget() {
-    return Consumer<StarWidgetProvider>(builder: (context, model, child) {
-      return Positioned(
-        top: 12,
-        left: 20,
-        child: new Container(
-          color: Color(0xFF00000021),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Opacity(
-                opacity: 0.9,
-                child: new Chip(
-                  backgroundColor: Color(0xFF000000).withOpacity(0.7),
-                  avatar: Opacity(
-                    opacity: 1,
-                    child: Image.asset(
-                      "images/live/chat/icon_star.png",
-                      width: ScreenUtil.getInstance().getWidth(15),
-                    ),
-                  ),
-                  label: Text(
-                    "${model.star}",
-                    style: TextStyle(
-                      color: Color(0xFFff8400).withOpacity(1),
-                      fontWeight: FontWeight.bold,
-                      fontSize: ScreenUtil.getInstance().getSp(42) / 4,
-                    ),
-                  ),
-                ),
-              )
-            ],
+  Widget _buildMp4(ResProvider resModel) {
+    return FijkView(
+      player: flickManager,
+      color: Colors.black,
+//      panelBuilder: (FijkPlayer player, FijkData data, BuildContext context, Size viewSize, Rect texturePos) {
+//        return Container();
+//      },
+      cover: Image.file(File('${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}'), fit: BoxFit.contain).image,
+    );
+//    return Container(
+//      child: CoursewareVideo(flickManager,
+//          pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: () => _roomShowTopProvider.setIsShow(true)),
+//    );
+  }
+
+  Widget _buildPic(ResProvider resModel) {
+    return GestureDetector(
+      child: Container(
+          child: Image.file(
+        File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
+        fit: BoxFit.contain,
+      )),
+      onTap: () => _roomShowTopProvider.setIsShow(true),
+    );
+  }
+
+  Widget _buildWebView(ResProvider resModel) {
+    if (Platform.isIOS) {
+      if (resModel.isShow == null || !resModel.isShow) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          _boardProvider.setTestBoard(0);
+          Future.delayed(Duration(milliseconds: 500), () {
+            _boardProvider.setTestBoard(1);
+          });
+        });
+      }
+    }
+    print("${resModel.isShow == null || !resModel.isShow}resModel.isShow == null || !resModel.isShow");
+    return Container(
+      color: Colors.black,
+      child: WebViewPlus(
+        initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+        javascriptMode: JavascriptMode.unrestricted,
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Courseware',
+              onMessageReceived: (JavascriptMessage message) async {
+                var msg = jsonDecode(message.message);
+                Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
+                Store<GSYState> store = StoreProvider.of(context);
+                BetterSocket.sendMsg(jsonEncode({
+                  "Event": {
+                    "event": "event-doCourseware",
+                    "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
+                  }
+                }));
+              })
+        ].toSet(),
+        onWebViewCreated: (controller) async {
+          _webViewPlusController = controller;
+          print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+
+          controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+//                controller.loadUrl(await CommonUtils.urlJoinUser("http://192.168.20.63:8080/2020/09/5f6061b68386/1058/index.html"));
+        },
+        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+          new Factory<OneSequenceGestureRecognizer>(
+            () => new EagerGestureRecognizer(),
           ),
-        ),
-      );
-    });
+        ].toSet(),
+      ),
+    );
   }
 
   gameStart() async {
@@ -634,7 +596,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 //          return GamePayleWidget();
 //        });
     print("gameStart gameStart");
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future(() {
       return Navigator.push(context, PopRoute(child: GamePayleWidget()));
     });
 //    Future.delayed(Duration(milliseconds: 500), () {
@@ -901,16 +863,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         builder: (BuildContext context) {
           return Keyboard(controller: _textController, sendExpression: _sendIcon, submit: () => {_handleSubmitted(_textController.text)});
         });
-    // showDialog(
-    //     barrierColor: Color.fromRGBO(255, 255, 255, 0.1),
-    //     context: context,
-    //     barrierDismissible: true,
-    //     builder: (BuildContext context) {
-    //       return Keyboard(
-    //           controller: _textController,
-    //           sendExpression: _sendIcon,
-    //           submit: () => {_handleSubmitted(_textController.text)});
-    //     });
   }
 
   ///发送表情
@@ -1322,22 +1274,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       Log.w("IOWebSocketChannel onError $message ", tag: RoomLandscapePage.sName);
     });
     BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
-
-//   socket = WebsocketManager(AddressUtil.getInstance().socketUrl(key, "yondor"));
-//   socket.onMessage((dynamic message) {
-//     print('newMsg : $message');
-//     try{
-//        SocketMsg socketMsg = SocketMsg.fromJson(jsonDecode(message.toString()));
-//       _handleSocketMsg(socketMsg);
-//     }catch(e){
-//        Log.e("_handleSocketMsg ${e.toString()} ");
-//     }
-//   });
-//   socket.onClose((dynamic message) {
-//     Log.i("socket Close message $message ");
-//     socket.connect();
-//   });
-//   socket.connect();
   }
 
   _handleSocketMsg(SocketMsg socketMsg) {
@@ -1399,7 +1335,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
   }
 
-  _handleCourseware(SocketMsg socketMsg) {
+  _handleCourseware(SocketMsg socketMsg) async {
     if (socketMsg.text == "") {
       _resProvider.setRes(null);
       return;
@@ -1439,31 +1375,19 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         var isPlay = msg["isPlay"];
 
         var time = msg["time"];
-        if (flickManager != null && flickManager.flickVideoManager != null) {
-          if (flickManager.flickVideoManager.isPlaying && isPlay == 0) {
-            flickManager?.flickControlManager?.autoPause();
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+        if (flickManager.state == FijkState.asyncPreparing || flickManager.state == FijkState.initialized || flickManager.isPlayable()) {
+          if (time != null && time > 0) {
+            flickManager?.seekTo(Duration(seconds: time + 1).inMilliseconds);
+          }
+          if (isPlay == 1) {
+            if (flickManager.state == FijkState.completed) {
+              await flickManager?.seekTo(0);
             }
-          } else if (flickManager.flickVideoManager.isPlaying && isPlay == 1) {
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-              flickManager?.flickControlManager?.play();
+            if (flickManager.state != FijkState.started) {
+              await flickManager.start();
             }
-          } else if (flickManager.flickVideoManager.isVideoEnded && isPlay == 1) {
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-              flickManager?.flickControlManager?.play();
-            }
-            flickManager?.flickControlManager?.play();
-          } else if (!flickManager.flickVideoManager.isPlaying && isPlay == 1) {
-            flickManager?.flickControlManager?.autoResume();
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-              flickManager?.flickControlManager?.play();
-            } else {
-              flickManager?.flickControlManager?.play();
-            }
+          } else {
+            await flickManager.pause();
           }
         }
       } else {
@@ -1477,6 +1401,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           } else {
             //结束游戏
             gameOver(ques: ques);
+            return;
           }
         }
         _resProvider.setRes(ques, isShow: _resShow);
@@ -1487,10 +1412,26 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         _closeVideo();
       }
       if (ques.type == mp4 && _currentRes != null && _currentRes.type == mp4) {
-        if (flickManager.flickVideoManager.videoPlayerController.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}") {
+        if (flickManager.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}" ||
+            flickManager.dataSource != "${widget.roomData.courseware.localPath}/${ques.data.ps.mp4}") {
           File file = File(widget.roomData.courseware.localPath + "/" + ques.data.ps.mp4);
-          flickManager.handleChangeVideo(
-              file.existsSync() ? VideoPlayerController.file(file) : VideoPlayerController.network(widget.roomData.courseware.domain + ques.data.ps.mp4));
+          String network = widget.roomData.courseware.domain + ques.data.ps.mp4;
+          if (flickManager.state != FijkState.idle) {
+            await flickManager.reset();
+          }
+          await flickManager.setDataSource(file.existsSync() ? file.path : network, showCover: true).catchError((e) {
+            print("setDataSource error: $e");
+          });
+          if (_time != null && _time > 0) {
+            Future(() async {
+              await flickManager?.start();
+              await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+              await flickManager?.pause();
+              if (_isPlay != null && _isPlay == 1) {
+                flickManager?.start();
+              }
+            });
+          }
         }
       } else {
         var _resShow;
@@ -1504,6 +1445,27 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           } else {
             //结束游戏
             gameOver(ques: ques, isSwitch: true);
+            return;
+          }
+        }
+        if (ques.type == mp4) {
+          File file = File(widget.roomData.courseware.localPath + "/" + ques.data.ps.mp4);
+          String network = widget.roomData.courseware.domain + ques.data.ps.mp4;
+          await flickManager.setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
+          await flickManager.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
+          await flickManager.setOption(FijkOption.formatCategory, "fflags", "fastseek");
+          await flickManager.setDataSource(file.existsSync() ? file.path : network, showCover: true).catchError((e) {
+            print("setDataSource error: $e");
+          });
+          if (_time != null && _time > 0) {
+            Future(() async {
+              await flickManager?.start();
+              await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+              await flickManager?.pause();
+              if (_isPlay != null && _isPlay == 1) {
+                flickManager?.start();
+              }
+            });
           }
         }
         //只展示图片不操作
@@ -1696,10 +1658,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
   }
 
-  _switchCouseware(Res res, {bool isShow}) {
-    _resProvider.setRes(res, isShow: isShow);
-  }
-
   Future showLiveTopDialog(data) {
     closeDialog();
     return showDialog(
@@ -1820,12 +1778,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   }
 
   _closeVideo() async {
-    Future.microtask(() {
-      flickManager?.dispose();
-      flickManager = null;
-      _isPlay = null;
-      _time = null;
-    });
+    await flickManager?.reset();
+    _isPlay = null;
+    _time = null;
   }
 
   _back() {
