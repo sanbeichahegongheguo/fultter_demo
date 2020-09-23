@@ -9,6 +9,8 @@ class ReplayProgressProvider with ChangeNotifier {
   Duration get duration => _duration;
   String _playerPhase = "buffering";
   String get playerPhase => _playerPhase;
+  List<double> _gameDotList = [];
+  List<double> get gameDotList => _gameDotList;
 
   init({double val, bool isShow, Duration duration}) {
     _val = val ?? _val;
@@ -29,6 +31,11 @@ class ReplayProgressProvider with ChangeNotifier {
 
   setIsShow(bool isShow) {
     _isShow = isShow;
+    notifyListeners();
+  }
+
+  setGameDotList(List<double> gameDotList) {
+    _gameDotList = gameDotList;
     notifyListeners();
   }
 }

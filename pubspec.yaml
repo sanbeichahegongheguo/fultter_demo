@@ -25,14 +25,14 @@ dependencies:
   event_bus: ^1.1.0
   package_info: ^0.4.0+6
   permission_handler: ^5.0.1
-#  imei_plugin: ^1.1.0
+  #  imei_plugin: ^1.1.0
   image_picker: ^0.6.1+2
-#  image_picker: ^0.6.5
+  #  image_picker: ^0.6.5
   flustars: ^0.3.2
   flutter_spinkit: ^4.1.2+1
   cached_network_image: ^2.2.0+1
   flutter_des: ^1.1.0
-#  image_cropper: ^1.1.0
+  #  image_cropper: ^1.1.0
   flutter_redux: ^0.6.0
   rxdart: ^0.24.1
   uuid: 2.2.0
@@ -46,14 +46,14 @@ dependencies:
   flutter_audio_recorder: ^0.5.5
   image_gallery_saver: ^1.5.0
   imei_plugin: ^1.1.0
-#  flutter_video_compress: ^0.3.7+8
+  #  flutter_video_compress: ^0.3.7+8
   video_compress: ^2.0.0
-#  image_picker:
-#    path: ./plugins/image_picker-0.6.5
+  #  image_picker:
+  #    path: ./plugins/image_picker-0.6.5
   orientation: ^1.2.0
   flutter_inapp_purchase:
     path: ./plugins/flutter_inapp_purchase-2.2.0
-#  flutter_webview_plugin: ^0.3.8
+  #  flutter_webview_plugin: ^0.3.8
   flutter_webview_plugin:
     path: ./plugins/flutter_webview_plugin-0.3.11
   webview_flutter_plus:
@@ -65,7 +65,7 @@ dependencies:
     path: ./plugins/fluwx
   flick_video_player: ^0.1.1
   liquid_progress_indicator: ^0.3.2
- # websocket_manager: ^0.2.2
+  # websocket_manager: ^0.2.2
   better_socket:
     path: ./plugins/better_socket-1.1.4
   fradio: ^1.0.1
@@ -75,13 +75,13 @@ dependencies:
   home_indicator: ^1.1.5
   device_info:
     path: ./plugins/device_info
-#  webview_flutter:
-#    path: ./plugins/webview_flutter
+  #  webview_flutter:
+  #    path: ./plugins/webview_flutter
   flutter_native_image:
     path: ./plugins/flutter_native_image
   tencent_cos:
     path: ./plugins/tencent_cos
-#直播
+  #直播
   yondor_whiteboard:
     path: ./plugins/yondor_whiteboard
   agora_rtm: ^0.9.12
@@ -104,14 +104,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   #json_model: #flutter packages pub run json_model
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -119,41 +117,37 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/model.tflite
-   - images/mall_home_commend_default_avater.png
-   - images/btn-close.png
-   - images/home/
-   - images/phone_login/
-   - images/admin/
-   - images/register/
-   - images/coach/
-   - images/study/
-   - images/eye/
-   - images/parent_reward/
-   - images/live/
-   - images/live/top/
-   - images/live/rank/
-   - images/update/ic_up_bg.png
-   - images/update/ic_update_bg.png
-   - images/update/ic_up_close.png
-   - images/share/pyqShare.png
-   - images/share/xwShare.png
-   - images/ic_hand_down.png
-   - images/ic_hand_up.png
-   - images/ic_student.png
-   - images/ic_teacher.png
-   - images/live/chat/
-   - assets/sounds/star.mp3
-   - assets/sounds/ready_go.mp3
-
+    - assets/model.tflite
+    - images/mall_home_commend_default_avater.png
+    - images/btn-close.png
+    - images/home/
+    - images/phone_login/
+    - images/admin/
+    - images/register/
+    - images/coach/
+    - images/study/
+    - images/eye/
+    - images/parent_reward/
+    - images/live/
+    - images/live/top/
+    - images/live/rank/
+    - images/update/ic_up_bg.png
+    - images/update/ic_update_bg.png
+    - images/update/ic_up_close.png
+    - images/share/pyqShare.png
+    - images/share/xwShare.png
+    - images/ic_hand_down.png
+    - images/ic_hand_up.png
+    - images/ic_student.png
+    - images/ic_teacher.png
+    - images/live/chat/
+    - assets/sounds/star.mp3
+    - assets/sounds/ready_go.mp3
   #  - images/a_dot_ham.jpeg
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.io/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
