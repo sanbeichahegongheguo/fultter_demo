@@ -22,20 +22,12 @@ class ReplayProgress extends StatefulWidget {
   final FijkPlayer teacherPlayer;
   final Function handleSocketMsg;
   final Function showTopAndBottom;
-  const ReplayProgress(
-      {Key key,
-      this.whiteboardController,
-      this.teacherPlayer,
-      this.handleSocketMsg,
-      this.showTopAndBottom})
-      : super(key: key);
+  const ReplayProgress({Key key, this.whiteboardController, this.teacherPlayer, this.handleSocketMsg, this.showTopAndBottom}) : super(key: key);
   @override
-  _ReplayProgressState createState() =>
-      _ReplayProgressState(whiteboardController, teacherPlayer);
+  _ReplayProgressState createState() => _ReplayProgressState(whiteboardController, teacherPlayer);
 }
 
-class _ReplayProgressState extends State<ReplayProgress>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   AnimationController _controller;
   Animation<Offset> animation;
   Widget playWidget = Icon(
@@ -58,19 +50,15 @@ class _ReplayProgressState extends State<ReplayProgress>
   FijkPlayer _teacherPlayer;
   bool isPlay = false;
   String _textDuration = "";
-  _ReplayProgressState(
-      WhiteboardController whiteboardController, FijkPlayer flickManager) {
+  _ReplayProgressState(WhiteboardController whiteboardController, FijkPlayer flickManager) {
     _whiteboardController = whiteboardController;
     _teacherPlayer = flickManager;
   }
-  List<double> _list = [];
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
-    animation =
-        Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
+    _controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+    animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
     _controller.forward();
     _teacherPlayer.addListener(() {
       print("_teacherPlayer state ${_teacherPlayer.state}");
@@ -110,28 +98,18 @@ class _ReplayProgressState extends State<ReplayProgress>
 
   _initWhiteboardController() {
     _courseProvider = Provider.of<CourseProvider>(context, listen: false);
-    _replayProgressProvider =
-        Provider.of<ReplayProgressProvider>(context, listen: false);
-    _getGameDot();
+    _replayProgressProvider = Provider.of<ReplayProgressProvider>(context, listen: false);
     _firstCourseware();
     final courseRecordData = _courseProvider.roomData.courseRecordData;
     //开始时间
     final beginTimestamp = courseRecordData.startTime;
     //时长
-    final durationTime =
-        (courseRecordData.endTime - courseRecordData.startTime).abs();
-    _replayProgressProvider.init(
-        duration: Duration(milliseconds: durationTime));
+    final durationTime = (courseRecordData.endTime - courseRecordData.startTime).abs();
+    _replayProgressProvider.init(duration: Duration(milliseconds: durationTime));
     final duration = Duration(milliseconds: durationTime);
-    String durationInSeconds = duration != null
-        ? (duration - Duration(minutes: duration.inMinutes))
-            .inSeconds
-            .toString()
-            .padLeft(2, '0')
-        : null;
+    String durationInSeconds = duration != null ? (duration - Duration(minutes: duration.inMinutes)).inSeconds.toString().padLeft(2, '0') : null;
 
-    _textDuration =
-        duration != null ? '${duration.inMinutes}:$durationInSeconds' : '0:00';
+    _textDuration = duration != null ? '${duration.inMinutes}:$durationInSeconds' : '0:00';
     _whiteboardController.onPhaseChanged = (String data) {
       print("_whiteboardController 111111 onPhaseChanged $data");
       final playerPhase = PlayerPhase.values.firstWhere((PlayerPhase element) {
@@ -167,14 +145,12 @@ class _ReplayProgressState extends State<ReplayProgress>
 //      print("l  ${_courseProvider.roomData.courseRecordData}");
 
 //      List<ReplayItem> l = _courseProvider.roomData.courseRecordData.coursewareOp.list;
-      _courseProvider.roomData.courseRecordData.coursewareOp.list
-          .forEach((ReplayItem element) {
+      _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
 //        print("$data > ${element.playTime} && !${element.isDo}");
         if (data > element.playTime && !element.isDo) {
           element.isDo = true;
           print("do elemet $element");
-          SocketMsg socketMsg = SocketMsg(
-              type: element.ty, timestamp: element.t, text: element.op);
+          SocketMsg socketMsg = SocketMsg(type: element.ty, timestamp: element.t, text: element.op);
           widget.handleSocketMsg(socketMsg);
         } else if (element.playTime > data) {
           return;
@@ -187,26 +163,21 @@ class _ReplayProgressState extends State<ReplayProgress>
   }
 
   ReplayItem findBefore(List<ReplayItem> l, int time) {
-    ReplayItem before = l
-        .lastWhere((ReplayItem element) => element.playTime < time, orElse: () {
+    ReplayItem before = l.lastWhere((ReplayItem element) => element.playTime < time, orElse: () {
       return null;
     });
     return before;
   }
 
   ReplayItem findBeforeShow(List<ReplayItem> l, int time) {
-    ReplayItem before = l.lastWhere(
-        (ReplayItem element) =>
-            element.playTime < time && showMap.containsKey(element.ty),
-        orElse: () {
+    ReplayItem before = l.lastWhere((ReplayItem element) => element.playTime < time && showMap.containsKey(element.ty), orElse: () {
       return null;
     });
     return before;
   }
 
   findBeforeAndAfter(List<ReplayItem> l, int time) {
-    List<ReplayItem> where =
-        l.where((ReplayItem element) => element.playTime < time);
+    List<ReplayItem> where = l.where((ReplayItem element) => element.playTime < time);
   }
 
   @override
@@ -214,15 +185,8 @@ class _ReplayProgressState extends State<ReplayProgress>
     return Consumer<ReplayProgressProvider>(builder: (context, model, child) {
       print("model.duration===>${model.duration}");
       Duration duration = Duration(milliseconds: model.val.round());
-      String durationInSeconds = duration != null
-          ? (duration - Duration(minutes: duration.inMinutes))
-              .inSeconds
-              .toString()
-              .padLeft(2, '0')
-          : null;
-      String _nowDuration = duration != null
-          ? '${duration.inMinutes}:$durationInSeconds'
-          : '0:00';
+      String durationInSeconds = duration != null ? (duration - Duration(minutes: duration.inMinutes)).inSeconds.toString().padLeft(2, '0') : null;
+      String _nowDuration = duration != null ? '${duration.inMinutes}:$durationInSeconds' : '0:00';
       if (_isShow != model.isShow) {
         _isShow = model.isShow;
         if (model.isShow) {
@@ -234,8 +198,7 @@ class _ReplayProgressState extends State<ReplayProgress>
 
       return Stack(
         children: [
-          "$PlayerPhase.${model.playerPhase}" ==
-                  PlayerPhase.buffering.toString()
+          "$PlayerPhase.${model.playerPhase}" == PlayerPhase.buffering.toString()
               ? GestureDetector(
                   onTap: () {
                     widget.showTopAndBottom();
@@ -258,8 +221,7 @@ class _ReplayProgressState extends State<ReplayProgress>
                 position: animation,
                 child: Container(
                   color: Colors.black.withAlpha(80),
-                  padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).padding.bottom),
+                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
                   child: Container(
 //                      color: Colors.black.withAlpha(80),
                       height: 50,
@@ -303,7 +265,7 @@ class _ReplayProgressState extends State<ReplayProgress>
                             // sectionColor: Colors.red,
                             // sectionTextMarginTop: 2,
                             // sectionTextSize: 14,
-                            sectionList: model.gameDotList,
+                            sectionList: _getGameDot(),
                             progressColor: Colors.greenAccent,
                             // hideBubble: true,
                             // showSectionText: true,
@@ -315,10 +277,7 @@ class _ReplayProgressState extends State<ReplayProgress>
                             },
                           )),
                           Padding(
-                              padding: EdgeInsets.only(
-                                  left: 10,
-                                  right:
-                                      8 + MediaQuery.of(context).padding.right),
+                              padding: EdgeInsets.only(left: 10, right: 8 + MediaQuery.of(context).padding.right),
                               child: Text(
                                 _textDuration,
                                 style: TextStyle(color: Colors.white),
@@ -353,8 +312,7 @@ class _ReplayProgressState extends State<ReplayProgress>
 
   _replay() {
     _replayProgressProvider.setVal(0);
-    _courseProvider.roomData.courseRecordData.coursewareOp.list
-        .forEach((ReplayItem element) {
+    _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
       element.isDo = false;
     });
     _firstCourseware();
@@ -385,8 +343,7 @@ class _ReplayProgressState extends State<ReplayProgress>
   _firstCourseware() {
     final first = _courseProvider.roomData.courseware.findFirst();
     print("_courseProvider.roomData.courseware.findFirst(); $first");
-    SocketMsg socketMsg =
-        SocketMsg(type: first.type, timestamp: 0, text: '{"qid":${first.qid}}');
+    SocketMsg socketMsg = SocketMsg(type: first.type, timestamp: 0, text: '{"qid":${first.qid}}');
     widget.handleSocketMsg(socketMsg);
   }
 
@@ -396,8 +353,7 @@ class _ReplayProgressState extends State<ReplayProgress>
     ReplayItem before;
     ReplayItem beforeShow;
     if (_courseProvider.roomData.courseRecordData.coursewareOp.list != null) {
-      _courseProvider.roomData.courseRecordData.coursewareOp.list
-          .forEach((ReplayItem element) {
+      _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
         if (element.playTime < value) {
           before = element;
         }
@@ -436,23 +392,17 @@ class _ReplayProgressState extends State<ReplayProgress>
   }
 
   List<double> _getGameDot() {
-    if (_list.length == 0) {
-      print(
-          "_getGameDot============== ${_courseProvider.roomData.courseRecordData.coursewareOp}");
-      if (_courseProvider.roomData.courseRecordData.coursewareOp != null) {
-        List<ReplayItem> replayItemlist =
-            _courseProvider.roomData.courseRecordData.coursewareOp.list;
-        print("replayItemlist==============$replayItemlist");
-        replayItemlist.forEach((ReplayItem element) {
-          if (element.ty == "SEL" ||
-              element.ty == "HTM" ||
-              element.ty == "MP4") {
-            _list.add(element.playTime.toDouble());
-          }
-        });
-      }
-      print("element==============$_list");
+    List<double> _list = [];
+    if (_courseProvider.roomData.courseRecordData.coursewareOp != null) {
+      List<ReplayItem> replayItemlist = _courseProvider.roomData.courseRecordData.coursewareOp.list;
+      print("replayItemlist==============$replayItemlist");
+      replayItemlist.forEach((ReplayItem element) {
+        if (element.ty == "SEL" || element.ty == "HTM" || element.ty == "MP4") {
+          _list.add(element.playTime.toDouble());
+        }
+      });
     }
+    return _list;
   }
 
   _showQues(before, value) {
@@ -464,13 +414,10 @@ class _ReplayProgressState extends State<ReplayProgress>
         decode["time"] = 0;
       }
       double beforeTime = double.parse(decode["time"].toString());
-      beforeTime = beforeTime +
-          Duration(milliseconds: (value - newBefore.playTime).abs()).inSeconds;
+      beforeTime = beforeTime + Duration(milliseconds: (value - newBefore.playTime).abs()).inSeconds;
       decode["time"] = beforeTime.toInt();
       newBefore.op = jsonEncode(decode);
-    } else if (newBefore.ty == LiveRoomConst.SEL ||
-        newBefore.ty == LiveRoomConst.JUD ||
-        newBefore.ty == LiveRoomConst.MULSEL) {
+    } else if (newBefore.ty == LiveRoomConst.SEL || newBefore.ty == LiveRoomConst.JUD || newBefore.ty == LiveRoomConst.MULSEL) {
       var decode = json.decode(newBefore.op);
       decode.remove('isShow');
       newBefore.op = jsonEncode(decode);
@@ -479,20 +426,17 @@ class _ReplayProgressState extends State<ReplayProgress>
       if (decode["isShow"] != null && decode["isShow"] == 1) {
         decode.remove('isShow');
         newBefore.op = jsonEncode(decode);
-        widget.handleSocketMsg(SocketMsg(
-            type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op));
+        widget.handleSocketMsg(SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op));
         decode["isShow"] = 1;
         newBefore.op = jsonEncode(decode);
       }
-    } else if (newBefore.ty == LiveRoomConst.RANRED ||
-        newBefore.ty == LiveRoomConst.REDRAIN) {
+    } else if (newBefore.ty == LiveRoomConst.RANRED || newBefore.ty == LiveRoomConst.REDRAIN) {
       var decode = json.decode(newBefore.op);
       decode["ty"] = LiveRoomConst.ppt;
       newBefore.op = jsonEncode(decode);
     }
     print("do elemet after before $newBefore");
-    SocketMsg socketMsg = SocketMsg(
-        type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op);
+    SocketMsg socketMsg = SocketMsg(type: newBefore.ty, timestamp: newBefore.t, text: newBefore.op);
     widget.handleSocketMsg(socketMsg);
   }
 }
