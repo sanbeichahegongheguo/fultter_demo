@@ -56,8 +56,7 @@ class WebViewPlugin extends StatefulWidget {
   State<StatefulWidget> createState() => new _WebViewPlugin();
 }
 
-class _WebViewPlugin extends State<WebViewPlugin>
-    with WidgetsBindingObserver, LogBase {
+class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, LogBase {
   // 标记是否是加载中
   bool loading = true;
   //颜色
@@ -166,11 +165,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
     Widget widget;
     if (_status == 0) {
       //loading
-      widget = Container(
-          width: _deviceSize.width,
-          height: _deviceSize.height,
-          color: Colors.white,
-          child: Center(child: CircularProgressIndicator()));
+      widget = Container(width: _deviceSize.width, height: _deviceSize.height, color: Colors.white, child: Center(child: CircularProgressIndicator()));
     } else if (_status == 2) {
       //加载失败
       widget = Container(
@@ -182,9 +177,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(
-                      top: ScreenUtil.getInstance().getHeightPx(90),
-                      bottom: ScreenUtil.getInstance().getHeightPx(33)),
+                  margin: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(90), bottom: ScreenUtil.getInstance().getHeightPx(33)),
                   child: Image.asset(
                     "images/study/img-q.png",
                     fit: BoxFit.cover,
@@ -193,34 +186,25 @@ class _WebViewPlugin extends State<WebViewPlugin>
                 ),
                 Text(
                   "正在努力加载中···",
-                  style: TextStyle(
-                      fontSize: ScreenUtil.getInstance().getSp(42 / 3),
-                      color: Color(0xFF999999)),
+                  style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(42 / 3), color: Color(0xFF999999)),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(
-                      vertical: ScreenUtil.getInstance().getHeightPx(58)),
+                  margin: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().getHeightPx(58)),
                   child: MaterialButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     minWidth: ScreenUtil.getInstance().getWidthPx(515),
                     color: Color(0xFF6ed699),
                     height: ScreenUtil.getInstance().getHeightPx(139),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text("返回首页",
-                        style: TextStyle(
-                            fontSize: ScreenUtil.getInstance().getSp(54 / 3),
-                            color: Color(0xFFffffff))),
+                    child: Text("返回首页", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(54 / 3), color: Color(0xFFffffff))),
                   ),
                 ),
               ],
             ),
           ));
-    } else if (_showAd &&
-        (store.state.application.showBanner == 1 &&
-            store.state.application.showH5Banner == 1)) {
+    } else if (_showAd && (store.state.application.showBanner == 1 && store.state.application.showH5Banner == 1)) {
       //广告
       widget = StreamBuilder<bool>(
           stream: _webviewBloc.showAdStream,
@@ -230,8 +214,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
                 ? Container(
                     height: ScreenUtil.getInstance().screenWidth / 6.4,
                     width: _deviceSize.width,
-                    child:
-                        BannerUtil.buildBanner(null, null, bloc: _webviewBloc),
+                    child: BannerUtil.buildBanner(null, null, bloc: _webviewBloc),
                   )
                 : Container(
                     width: 0,
@@ -284,8 +267,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
   }
 
   StreamSubscription<WebViewStateChanged> setOnStateChanged() {
-    return flutterWebViewPlugin.onStateChanged
-        .listen((WebViewStateChanged state) {
+    return flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state) {
       print("加载类型 " + state.type.toString());
       if (Platform.isAndroid) {
         if (state.url.indexOf(':ROTATE') > -1) {
@@ -346,8 +328,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
                 if (ObjectUtil.isEmpty(data) || data["result"] == "fail") {
                   flutterWebViewPlugin.evalJavascript("window.closeCamera()");
                 } else {
-                  flutterWebViewPlugin.evalJavascript(
-                      "window.getBackPhoto(" + jsonEncode(data) + ")");
+                  flutterWebViewPlugin.evalJavascript("window.getBackPhoto(" + jsonEncode(data) + ")");
                 }
               });
             } else if (state.url.indexOf("webOpenVideo") > -1) {
@@ -407,8 +388,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
               String _userName = userName;
               String _path = path;
               String _description = description;
-              ShareWx.chatShareMiniProgramModel(_webPageUrl, _thumbnail, _title,
-                  _userName, _path, _description);
+              ShareWx.chatShareMiniProgramModel(_webPageUrl, _thumbnail, _title, _userName, _path, _description);
             } else if (state.url.indexOf("share_SESSION") > -1) {
               print("微信会话分享");
               var _urlMsg = state.url.split(":?")[1];
@@ -429,12 +409,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
               String _thumbnail = _urlList["thumbnail"]; //缩略图
               String _title = _urlList["title"];
               String _description = _urlList["description"];
-              var _shareToWeChat = new ShareToWeChat(
-                  webPage: _imagePath,
-                  thumbnail: _thumbnail,
-                  transaction: "",
-                  title: _title,
-                  description: _description);
+              var _shareToWeChat = new ShareToWeChat(webPage: _imagePath, thumbnail: _thumbnail, transaction: "", title: _title, description: _description);
               CommonUtils.showGuide(context, _shareToWeChat);
             } else if (state.url.indexOf("ios_pay") > -1) {
               var params = state.url.split(":?")[1];
@@ -489,15 +464,13 @@ class _WebViewPlugin extends State<WebViewPlugin>
           orientation = 1;
           //是否包含横屏，如果包含，则强制横屏
           print('包含横屏，选择');
-          OrientationPlugin.setPreferredOrientations(
-              [DeviceOrientation.landscapeRight]);
+          OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
           OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
         } else {
           //当前的旋转状态是横屏才进行矫正
           print('不包含横屏，选择竖屏');
           if (orientation == 1) {
-            OrientationPlugin.setPreferredOrientations(
-                [DeviceOrientation.portraitUp]);
+            OrientationPlugin.setPreferredOrientations([DeviceOrientation.portraitUp]);
             OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
           }
         }
@@ -549,10 +522,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
       data["type"] = result["type"];
     } else {
       //ios 选择图片
-      image = type == 1
-          ? await ImagePicker.pickImage(source: ImageSource.gallery)
-          : await ImagePicker.pickImage(
-              source: ImageSource.camera, imageQuality: 50);
+      image = type == 1 ? await ImagePicker.pickImage(source: ImageSource.gallery) : await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50);
       if (ObjectUtil.isEmpty(image) || ObjectUtil.isEmptyString(image.path)) {
         data["result"] = "fail";
         return data;
@@ -562,10 +532,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
       image = await ImageCropper.cropImage(
         sourcePath: image?.path ?? result["path"],
 //      toolbarTitle: "选择图片",
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: "选择图片",
-            lockAspectRatio: false,
-            initAspectRatio: CropAspectRatioPreset.original),
+        androidUiSettings: AndroidUiSettings(toolbarTitle: "选择图片", lockAspectRatio: false, initAspectRatio: CropAspectRatioPreset.original),
       );
     } else {
       image = new File(image?.path ?? result["path"]);
@@ -575,8 +542,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
     if (image != null) {
       int size = (await image.length());
       while (size > _MAX_SIZE) {
-        image = await FlutterNativeImage.compressImage(image.path,
-            percentage: 70, quality: 70);
+        image = await FlutterNativeImage.compressImage(image.path, percentage: 70, quality: 70);
         size = (await image.length());
       }
     }
@@ -596,9 +562,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
     Map data = {"result": "success", "path": ""};
     Uint8List _image;
 
-    File file = type == 1
-        ? await ImagePicker.pickVideo(source: ImageSource.gallery)
-        : await ImagePicker.pickVideo(source: ImageSource.camera);
+    File file = type == 1 ? await ImagePicker.pickVideo(source: ImageSource.gallery) : await ImagePicker.pickVideo(source: ImageSource.camera);
     if (ObjectUtil.isEmpty(file) || ObjectUtil.isEmptyString(file.path)) {
       // 拍摄失败
       data["result"] = "fail";
@@ -645,12 +609,10 @@ class _WebViewPlugin extends State<WebViewPlugin>
       var tmpSecretId = data["data"]["data"]["credentials"]["tmpSecretId"];
       var tmpSecretKey = data["data"]["data"]["credentials"]["tmpSecretKey"];
       var expiredTime = data["data"]["data"]["expiredTime"];
-      var dateStrByDateTime =
-          DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo);
+      var dateStrByDateTime = DateUtil.formatDate(DateTime.now(), format: DateFormats.y_mo);
       dateStrByDateTime = dateStrByDateTime.replaceAll("-", "");
       String cosPath = "video/$dateStrByDateTime/$name.mp4";
-      TencentCos.uploadByFile("ap-guangzhou", "1253703184", "qlib-1253703184",
-          tmpSecretId, tmpSecretKey, token, expiredTime, cosPath, path);
+      TencentCos.uploadByFile("ap-guangzhou", "1253703184", "qlib-1253703184", tmpSecretId, tmpSecretKey, token, expiredTime, cosPath, path);
       TencentCos.setMethodCallHandler(_handleMessages);
     }
   }
@@ -662,11 +624,9 @@ class _WebViewPlugin extends State<WebViewPlugin>
     var result = call.arguments;
     //call.method == "onSuccess" || call.method == "onFailed"
     if (call.method == "onProgress") {
-      flutterWebViewPlugin
-          .evalJavascript("window.drawProgress( " + jsonEncode(result) + ")");
+      flutterWebViewPlugin.evalJavascript("window.drawProgress( " + jsonEncode(result) + ")");
     } else {
-      flutterWebViewPlugin
-          .evalJavascript("window.uploadResult( " + jsonEncode(result) + ")");
+      flutterWebViewPlugin.evalJavascript("window.uploadResult( " + jsonEncode(result) + ")");
     }
   }
 
@@ -732,10 +692,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
             if (ObjectUtil.isEmptyString(message.message)) {
               return;
             }
-            final result = await ImageGallerySaver.saveImage(
-                Uint8List.fromList(base64Decode(message.message)),
-                quality: 60,
-                name: Uuid().v4());
+            final result = await ImageGallerySaver.saveImage(Uint8List.fromList(base64Decode(message.message)), quality: 60, name: Uuid().v4());
             print(result);
             if (!ObjectUtil.isEmptyString(result)) {
               print(result);
@@ -752,8 +709,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
             }
             try {
               var msg = jsonDecode(message.message);
-              NavigatorUtil.goWebView(context, msg["url"],
-                  openType: msg["type"]);
+              NavigatorUtil.goWebView(context, msg["url"], openType: msg["type"]);
             } catch (e) {
               print(e);
             }
@@ -761,8 +717,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
       JavascriptChannel(
           name: 'GetOpenType',
           onMessageReceived: (JavascriptMessage message) {
-            flutterWebViewPlugin
-                .evalJavascript("window.getOpenType('${widget.openType}')");
+            flutterWebViewPlugin.evalJavascript("window.getOpenType('${widget.openType}')");
           }),
 
       ///打开学生端
@@ -777,11 +732,9 @@ class _WebViewPlugin extends State<WebViewPlugin>
           name: 'OpenOther',
           onMessageReceived: (JavascriptMessage message) async {
             if (await canLaunch(message.message)) {
-              await launch(message.message,
-                  forceSafariVC: false, forceWebView: false);
+              await launch(message.message, forceSafariVC: false, forceWebView: false);
             } else {
-              showToast('${message.message}打开失败',
-                  position: ToastPosition.bottom);
+              showToast('${message.message}打开失败', position: ToastPosition.bottom);
             }
           }),
 
@@ -791,10 +744,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
           onMessageReceived: (JavascriptMessage message) async {
             var msg = jsonDecode(message.message);
             print(msg["pos"]);
-            var result = await YondorChannel.detectxy(
-                msg["pos"],
-                msg["thickness"],
-                msg["isSave"] ?? store.state.application.detectxySave == 1);
+            var result = await YondorChannel.detectxy(msg["pos"], msg["thickness"], msg["isSave"] ?? store.state.application.detectxySave == 1);
             flutterWebViewPlugin.evalJavascript("window.dx('$result')");
           }),
       JavascriptChannel(
@@ -806,8 +756,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
             } else if (Platform.isAndroid) {
               platform = "android";
             }
-            flutterWebViewPlugin
-                .evalJavascript("window.platformCall('$platform')");
+            flutterWebViewPlugin.evalJavascript("window.platformCall('$platform')");
           }),
 
       /// 使用手写功能
@@ -826,6 +775,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
                 startTime = msg["startTime"];
                 endTime = msg["endTime"];
               }
+
               if (ObjectUtil.isEmptyString(msg["catalogZipUrl"]) ||
                   ObjectUtil.isEmptyString(msg["className"]) ||
                   ObjectUtil.isEmptyString(msg["peTeacherPlanId"]) ||
@@ -833,8 +783,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
                   startTime == null ||
                   endTime == null) {
                 print("window.showMsg('#1 参数错误加入房间失败！')", level: Log.info);
-                flutterWebViewPlugin
-                    .evalJavascript("window.showMsg('#1 参数错误加入房间失败！')");
+                flutterWebViewPlugin.evalJavascript("window.showMsg('#1 参数错误加入房间失败！')");
                 return;
               }
               await flutterWebViewPlugin.hide();
@@ -842,14 +791,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
               DateTime start = DateTime.parse(startTime).toLocal();
               DateTime end = DateTime.parse(endTime).toLocal();
               print("start ${start.toString()} end ${end.toString()}");
-              _goRoom(
-                  store.state.userInfo,
-                  msg["catalogZipUrl"],
-                  msg["className"],
-                  msg["peTeacherPlanId"],
-                  msg["peLiveCourseallotId"],
-                  start,
-                  end,
+              _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"], start, end,
                   recordId: msg["recordId"]);
             } catch (e) {
               flutterWebViewPlugin.evalJavascript("window.showMsg('#2 $e')");
@@ -862,8 +804,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
           onMessageReceived: (JavascriptMessage message) async {
             String audioBase64 = await _audioRecorderUtils.stop();
             print("====================结束录音");
-            flutterWebViewPlugin
-                .evalJavascript("window.stopAudio('${audioBase64}')");
+            flutterWebViewPlugin.evalJavascript("window.stopAudio('${audioBase64}')");
           }),
       //开始录音
       JavascriptChannel(
@@ -883,8 +824,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
     //初始化
     await _initInappPurchase();
     //获取是否有商品
-    List<IAPItem> items =
-        await FlutterInappPurchase.instance.getProducts([productId]);
+    List<IAPItem> items = await FlutterInappPurchase.instance.getProducts([productId]);
     if (ObjectUtil.isEmptyList(items)) {
       print("没有找到商品！！", level: Log.info);
       flutterWebViewPlugin.evalJavascript("window.hideLoading()");
@@ -900,8 +840,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
       await _inappPurchase.init();
 
       // 更新购买订阅消息
-      _inappPurchase.purchaseUpdatedSubscription =
-          FlutterInappPurchase.purchaseUpdated.listen((productItem) {
+      _inappPurchase.purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
         paying = false;
         print("purchaseUpdatedSubscription 订阅成功！！", level: Log.info);
         flutterWebViewPlugin.evalJavascript("window.hideLoading()");
@@ -917,8 +856,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
         print('purchase-updated: $productItem');
       });
       // 购买报错订阅消息
-      _inappPurchase.purchaseErrorSubscription =
-          FlutterInappPurchase.purchaseError.listen((purchaseError) {
+      _inappPurchase.purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((purchaseError) {
         paying = false;
         print('purchase-error: $purchaseError', level: Log.error);
         flutterWebViewPlugin.evalJavascript("window.hideLoading()");
@@ -931,8 +869,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
         }
         flutterWebViewPlugin.evalJavascript("window.showMsg('$msg')");
       });
-      _inappPurchase.conectionSubscription =
-          FlutterInappPurchase.connectionUpdated.listen((connected) {
+      _inappPurchase.conectionSubscription = FlutterInappPurchase.connectionUpdated.listen((connected) {
         //开始支付
         print('connected: $connected', level: Log.info);
         flutterWebViewPlugin.evalJavascript("window.hideLoading()");
@@ -941,8 +878,7 @@ class _WebViewPlugin extends State<WebViewPlugin>
     }
   }
 
-  _validateApplePay(
-      String receiptData, String orderId, String transactionId) async {
+  _validateApplePay(String receiptData, String orderId, String transactionId) async {
     var res = await ApplicationDao.iosPay(receiptData, orderId, transactionId);
     if (res != null && !res.result) {
       //检验失败或者超时,重试
@@ -954,19 +890,16 @@ class _WebViewPlugin extends State<WebViewPlugin>
       var data = res.data;
       if (data["code"] == 200) {
         print("11111   ${jsonEncode(data["data"])}");
-        flutterWebViewPlugin
-            .evalJavascript("window.iosPayCall('${jsonEncode(data["data"])}')");
+        flutterWebViewPlugin.evalJavascript("window.iosPayCall('${jsonEncode(data["data"])}')");
         if (data["data"]["status"] == 1 || data["data"]["status"] == 3) {
           //1 充值成功 3 已经充值
           print("data==>${data["data"]}");
           await SpUtil.remove(Config.IOS_PAY_PARAM_KEY);
         } else {
-          flutterWebViewPlugin
-              .evalJavascript("window.showMsg('#1 处理异常，如已付款请联系客服！')");
+          flutterWebViewPlugin.evalJavascript("window.showMsg('#1 处理异常，如已付款请联系客服！')");
         }
       } else {
-        flutterWebViewPlugin
-            .evalJavascript("window.showMsg('#2 处理异常，如已付款请联系客服！')");
+        flutterWebViewPlugin.evalJavascript("window.showMsg('#2 处理异常，如已付款请联系客服！')");
       }
     }
   }
@@ -990,12 +923,10 @@ class _WebViewPlugin extends State<WebViewPlugin>
 
   @override
   void print(msg, {int level = Log.fine}) {
-    super.print(msg, level: Log.fine);
+    super.print(msg, level: level);
   }
 
-  Future _goRoom(User userInfo, String url, var roomName, var roomUuid,
-      var peLiveCourseallotId, var startTime, var endTime,
-      {String recordId}) async {
+  Future _goRoom(User userInfo, String url, var roomName, var roomUuid, var peLiveCourseallotId, var startTime, var endTime, {String recordId}) async {
     return RoomUtil.goRoomPage(context,
         url: url,
         userId: userInfo.userId,

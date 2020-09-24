@@ -325,6 +325,8 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     LiveRoomConst.EVENT_HAND: Object(),
 //    LiveRoomConst.BOARD: Object(),
     LiveRoomConst.EVENT_BOARD: Object(),
+    LiveRoomConst.RANRED: Object(),
+    LiveRoomConst.REDRAIN: Object(),
   };
   Map showMap = {
     LiveRoomConst.mp4: Object(),
@@ -333,8 +335,6 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     LiveRoomConst.SEL: Object(),
     LiveRoomConst.MULSEL: Object(),
     LiveRoomConst.JUD: Object(),
-    LiveRoomConst.RANRED: Object(),
-    LiveRoomConst.REDRAIN: Object(),
     LiveRoomConst.TIMER: Object(),
     LiveRoomConst.EVENT_JOIN_SUCCESS: Object(),
     LiveRoomConst.EVENT_CURRENT: Object(),

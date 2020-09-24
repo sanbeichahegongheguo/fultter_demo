@@ -1004,6 +1004,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
     configuration.dimensions = Size(480, 360);
     await AgoraRtcEngine.setVideoEncoderConfiguration(configuration);
+
+    print("appid:${Config.APP_ID} rtctoken:${widget.roomData.user.rtcToken} channelname:${widget.roomData.room.channelName}  uid:${widget.roomData.user.uid}");
     await AgoraRtcEngine.joinChannel(widget.roomData.user.rtcToken, widget.roomData.room.channelName, widget.roomData.user.userName, widget.roomData.user.uid);
   }
 
