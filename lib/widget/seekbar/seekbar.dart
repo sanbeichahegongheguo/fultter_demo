@@ -437,8 +437,17 @@ class _SeekBarPainter extends CustomPainter {
       }
       Paint indicatorPaint = new Paint()
         ..style = PaintingStyle.fill
-        ..color = indicatorColor;
+        ..color = indicatorColor.withAlpha(90);
       canvas.drawCircle(Offset(value * size.width, size.height / 2), indicatorRadius, indicatorPaint);
+      Paint indicatorPaint2 = new Paint()
+        ..style = PaintingStyle.fill
+        ..color = indicatorColor;
+      canvas.drawCircle(Offset(value * size.width, size.height / 2), indicatorRadius - 4, indicatorPaint2);
+
+      // Paint indicatorPaint2 = new Paint()
+      //   ..style = PaintingStyle.fill
+      //   ..color = indicatorColor;
+      // canvas.drawCircle(Offset(value * size.width, size.height / 2), indicatorRadius, indicatorPaint2);
     }
 
     //画顶部的指示器
@@ -490,10 +499,10 @@ class _SeekBarPainter extends CustomPainter {
       if (sectionList != null) {
         final Paint paint2 = Paint()
           ..style = PaintingStyle.fill
-          ..color = Colors.white;
+          ..color = Colors.white70;
         sectionList.forEach((double element) {
           ///x为原距离加上 进度圆点半径
-          canvas.drawCircle(Offset(element * size.width + indicatorRadius - size.height, size.height / 2), size.height / 2, paint2);
+          canvas.drawCircle(Offset(element * size.width + indicatorRadius - progresseight, size.height / 2), progresseight / 2, paint2);
 
           // canvas.drawPath(drawPath(progresseight, element * size.width + indicatorRadius, size.height, radius), paint2);
         });

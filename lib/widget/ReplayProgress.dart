@@ -253,11 +253,11 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
                           ),
                           Expanded(
                               child: SeekBar(
-                            backgroundColor: Colors.grey,
+                            backgroundColor: Colors.black54,
                             max: model.duration.inMilliseconds.toDouble(),
-                            progresseight: 8,
+                            progresseight: 4,
                             indicatorColor: Colors.green,
-                            indicatorRadius: 8,
+                            indicatorRadius: 10,
                             value: model.val,
                             // sectionTexts: _getGameDot(model),
                             // sectionCount: 10,
