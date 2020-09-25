@@ -214,9 +214,9 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                     _getBt("退出账号", "images/admin/icon_out.png", () {
                       _goOut(store);
                     }, new Text("")),
-//                    _getBt("测试直播", "images/admin/icon_out.png", () {
-//                      _goRoom(store.state.userInfo);
-//                    }, new Text("")),
+                    _getBt("测试直播", "images/admin/icon_out.png", () {
+                      _goRoom(store.state.userInfo);
+                    }, new Text("")),
                   ],
                 ),
               ],
@@ -339,15 +339,15 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
 //    );
     RoomUtil.goRoomPage(
       context,
-      url: "https://qres.k12china.com/qlib/zip/2020/09/15/1634df8dae6319be.zip",
+      url: "https://qres.k12china.com/qlib/zip/2020/09/21/1636c3b884422994.zip",
       userId: userInfo.userId,
       userName: userInfo.realName,
       roomName: "【2】【秋季同步提升班】测试——丘建宽",
-      roomUuid: "9d3ec305cbd54a618554f75cd01005ae",
-      peLiveCourseallotId: 571551,
+      roomUuid: "c874a149b4124ab68407ea421e7e33cb",
+      peLiveCourseallotId: 573510,
       startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
       endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
-      recordId: "102001880296587264",
+      yondorRecordId: "2544279687794688",
     );
   }
 

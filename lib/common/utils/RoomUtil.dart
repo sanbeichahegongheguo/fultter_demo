@@ -31,6 +31,7 @@ class RoomUtil {
       int peLiveCourseallotId,
       Function callFunc,
       String recordId,
+      String yondorRecordId,
       DateTime startTime,
       DateTime endTime}) async {
     var bool = await _handleCameraAndMic();
@@ -93,6 +94,11 @@ class RoomUtil {
         //获取回放信息
         print("getCourseRecordBy param $recordId $roomId $userToken");
         var courseRecorReuslt = await RoomDao.getCourseRecordBy(recordId, roomId, userToken);
+        roomData.courseRecordData = courseRecorReuslt.data;
+      } else if (yondorRecordId != null && yondorRecordId != "") {
+        //获取远大回放
+        print("getCourseRecordBy param $recordId $roomId $userToken");
+        var courseRecorReuslt = await RoomDao.getYondorCourseRecordBy(yondorRecordId, roomId, userToken);
         roomData.courseRecordData = courseRecorReuslt.data;
       }
       //获取房间白板信息

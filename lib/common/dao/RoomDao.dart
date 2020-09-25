@@ -75,17 +75,38 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
+  static getYondorCourseRecordBy(String recordId, String roomId, String token) async {
+    var params = {"recordId": recordId};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getYondorCourseRecordBy(), params, null, new Options(method: "get"));
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
+        result = res.data;
+        CourseRecordData courseRecordData = CourseRecordData(
+          startTime: res.data["data"]["startTime"],
+          endTime: res.data["data"]["endTime"],
+          url: res.data["data"]["url"],
+        );
+        result = courseRecordData;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
   static roomChat(String roomId, String token, String msg) async {
     var params = {
       "message": msg,
       "type": 1,
+      "token": token,
+      "roomId": roomId,
     };
-    Map<String, dynamic> header = {"Authorization": "Basic ${Config.AGORA_AUTH}", "token": token};
-    var res = await httpManager.netFetch(AddressUtil.getInstance().roomChat(Config.APP_ID, roomId), params, header, Options(method: "POST"),
-        contentType: HttpManager.CONTENT_TYPE_JSON);
+    var res =
+        await httpManager.netFetch(AddressUtil.getInstance().liveChat(), params, null, Options(method: "POST"), contentType: HttpManager.CONTENT_TYPE_FORM);
     var result;
     if (res != null && res.result) {
-      if (res.data["msg"] == "Success") {
+      if (res.data["code"] == 200) {
         result = res.data;
       } else {
         res.result = false;
