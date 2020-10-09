@@ -50,19 +50,21 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   FijkPlayer _teacherPlayer;
   bool isPlay = false;
   String _textDuration = "";
+  List<double> gameDotList;
   _ReplayProgressState(WhiteboardController whiteboardController, FijkPlayer flickManager) {
     _whiteboardController = whiteboardController;
     _teacherPlayer = flickManager;
   }
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
     _controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
     animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
     _controller.forward();
-    _teacherPlayer.addListener(() {
-      print("_teacherPlayer state ${_teacherPlayer.state}");
-    });
+//    _teacherPlayer.addListener(() {
+//      print("_teacherPlayer state ${_teacherPlayer.state}");
+//    });
     _initWhiteboardController();
 
 //    _flickManager.flickVideoManager.addListener(() {
@@ -71,9 +73,17 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("应用程序 切换" + state.toString());
     switch (state) {
       case AppLifecycleState.resumed:
+        print('应用程序处于前台展示');
         //前台展示
         if (isPlay) {
           _play();
@@ -81,11 +91,15 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
         }
         break;
       case AppLifecycleState.inactive:
-//        print('应用程序处于非活动状态，并且未接收用户输入');
-
+        print('应用程序处于非活动状态，并且未接收用户输入');
+        if (_teacherPlayer.state == FijkState.started) {
+          isPlay = true;
+          _pause();
+        }
         break;
       case AppLifecycleState.paused:
         //后台展示
+        print('应用程序处于后台展示');
         if (_teacherPlayer.state == FijkState.started) {
           isPlay = true;
           _pause();
@@ -145,19 +159,18 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
 //      print("l  ${_courseProvider.roomData.courseRecordData}");
 
 //      List<ReplayItem> l = _courseProvider.roomData.courseRecordData.coursewareOp.list;
-      _courseProvider.roomData.courseRecordData.coursewareOp.list.forEach((ReplayItem element) {
-//        print("$data > ${element.playTime} && !${element.isDo}");
-        if (data > element.playTime && !element.isDo) {
-          element.isDo = true;
-          print("do elemet $element");
-          SocketMsg socketMsg = SocketMsg(type: element.ty, timestamp: element.t, text: element.op);
-          widget.handleSocketMsg(socketMsg);
-        } else if (element.playTime > data) {
-          return;
+      if (_courseProvider.roomData.courseRecordData.coursewareOp != null && _courseProvider.roomData.courseRecordData.coursewareOp.list != null) {
+        for (ReplayItem element in _courseProvider.roomData.courseRecordData.coursewareOp.list) {
+          if (data > element.playTime && !element.isDo) {
+            element.isDo = true;
+            print("do elemet $element");
+            SocketMsg socketMsg = SocketMsg(type: element.ty, timestamp: element.t, text: element.op);
+            widget.handleSocketMsg(socketMsg);
+          } else if (element.playTime > data) {
+            break;
+          }
         }
-      });
-//      findBeforeAndAfter(l, data);
-//      print("_whiteboardController  onScheduleTimeChanged $data");
+      }
     };
     currentIconWidget = playWidget;
   }
@@ -366,11 +379,8 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
           element.isDo = true;
         }
       });
-
-//      final before = findBefore(_courseProvider.roomData.courseRecordData.coursewareOp.list, value);
       if (before != null) {
         if (noShowMap.containsKey(before.ty)) {
-//          final beforeShow = findBeforeShow(_courseProvider.roomData.courseRecordData.coursewareOp.list, value);
           if (beforeShow != null) {
             print("do elemet beforeShow $beforeShow");
             _showQues(beforeShow, value);
@@ -392,17 +402,19 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   }
 
   List<double> _getGameDot() {
-    List<double> _list = [];
-    if (_courseProvider.roomData.courseRecordData.coursewareOp != null) {
-      List<ReplayItem> replayItemlist = _courseProvider.roomData.courseRecordData.coursewareOp.list;
-      print("replayItemlist==============$replayItemlist");
-      replayItemlist.forEach((ReplayItem element) {
-        if (element.ty == "SEL" || element.ty == "HTM" || element.ty == "MP4") {
-          _list.add(element.playTime.toDouble());
-        }
-      });
+    if (gameDotList == null || gameDotList.length == 0) {
+      gameDotList = [];
+      if (_courseProvider.roomData.courseRecordData.coursewareOp != null) {
+        List<ReplayItem> replayItemlist = _courseProvider.roomData.courseRecordData.coursewareOp.list;
+        print("replayItemlist==============$replayItemlist");
+        replayItemlist.forEach((ReplayItem element) {
+          if (element.ty == "SEL" || element.ty == "HTM" || element.ty == "MP4") {
+            gameDotList.add(element.playTime.toDouble());
+          }
+        });
+      }
     }
-    return _list;
+    return gameDotList;
   }
 
   _showQues(before, value) {

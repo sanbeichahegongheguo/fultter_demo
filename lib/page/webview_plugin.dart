@@ -792,7 +792,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
               DateTime end = DateTime.parse(endTime).toLocal();
               print("start ${start.toString()} end ${end.toString()}");
               _goRoom(store.state.userInfo, msg["catalogZipUrl"], msg["className"], msg["peTeacherPlanId"], msg["peLiveCourseallotId"], start, end,
-                  recordId: msg["recordId"],yondorRecordId:  msg["yondorRecordId"]);
+                  recordId: msg["recordId"], yondorRecordId: msg["yondorRecordId"]);
             } catch (e) {
               flutterWebViewPlugin.evalJavascript("window.showMsg('#2 $e')");
             }

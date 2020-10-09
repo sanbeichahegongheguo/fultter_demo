@@ -356,14 +356,14 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
           if (Platform.isIOS) {
-            if (resModel.isShow == null || !resModel.isShow) {
-              Future.delayed(Duration(milliseconds: 500), () {
-                _boardProvider.setTestBoard(0);
-                Future.delayed(Duration(milliseconds: 500), () {
-                  _boardProvider.setTestBoard(1);
-                });
-              });
-            }
+//            if (resModel.isShow == null || !resModel.isShow) {
+//              Future.delayed(Duration(milliseconds: 500), () {
+//                _boardProvider.setTestBoard(0);
+//                Future.delayed(Duration(milliseconds: 500), () {
+//                  _boardProvider.setTestBoard(1);
+//                });
+//              });
+//            }
           }
           print("${resModel.isShow == null || !resModel.isShow}resModel.isShow == null || !resModel.isShow");
           result = Container(
@@ -477,25 +477,39 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                         }
                       }
                     }
+
                     return Offstage(
-                        offstage: !(show),
+                        offstage: Platform.isIOS ? false : !(show),
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            _buildWhiteboard(),
-                            GestureDetector(
-                              onTap: () {
-                                showTopAndBottom();
-                              },
-                              child: Container(
-                                color: Colors.transparent,
-                                width: courseStatusModel.maxWidth,
-                                height: ScreenUtil.getInstance().screenHeight,
-                              ),
-                            )
+                            (Platform.isIOS && !show)
+                                ? Positioned(
+                                    width: 1,
+                                    height: 1,
+                                    child: Container(
+                                      child: _buildWhiteboard(),
+                                    ))
+                                : Positioned(
+                                    child: Container(
+                                    child: _buildWhiteboard(),
+                                  )),
+                            (Platform.isIOS && !show)
+                                ? Container()
+                                : GestureDetector(
+                                    onTap: () {
+                                      showTopAndBottom(isShow: show);
+                                    },
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      width: courseStatusModel.maxWidth,
+                                      height: ScreenUtil.getInstance().screenHeight,
+                                    ),
+                                  )
                           ],
                         ));
                   }),
+
                   (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
                           (resModel.isShow == null || !resModel.isShow)
                       ? Container(
@@ -1061,12 +1075,13 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   ///白板区域
   Widget _buildWhiteboard() {
     if (_whiteboard == null) {
-      _whiteboard = Whiteboard(
-          appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg",
-          uuid: widget.roomData.boardId,
-          roomToken: widget.roomData.boardToken,
-          controller: _whiteboardController,
-          isReplay: 1);
+      _whiteboard = Container(
+          child: Whiteboard(
+              appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg",
+              uuid: widget.roomData.boardId,
+              roomToken: widget.roomData.boardToken,
+              controller: _whiteboardController,
+              isReplay: 1));
     }
     return _whiteboard;
   }
@@ -1337,7 +1352,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
   }
 
-  _handleCourseware(SocketMsg socketMsg) {
+  _handleCourseware(SocketMsg socketMsg) async {
     if (socketMsg.text == "") {
       _resProvider.setRes(null);
       return;
@@ -1794,6 +1809,11 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   }
 
   showTopAndBottom({bool isShow = true}) {
+    if (!isShow) {
+      _roomShowTopProvider.setIsShow(false);
+      _replayProgressProvider.setIsShow(false);
+      return;
+    }
     if (_roomShowTopProvider.isShow && _replayProgressProvider.isShow) {
       _roomShowTopProvider.setIsShow(false);
       _replayProgressProvider.setIsShow(false);

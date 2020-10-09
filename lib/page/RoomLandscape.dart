@@ -1011,6 +1011,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   bool _enableLocalVideo = false;
   bool _enableLocalAudio = false;
+
   _startVideo(RoomUser user) async {
     print("_startVideo ::_local $_local");
     AgoraRtcEngine.setClientRole(user.coVideo == 1 ? ClientRole.Broadcaster : ClientRole.Audience);
@@ -1111,6 +1112,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _local = local;
     } else {
       _local?.coVideo = 0;
+      _local?.enableVideo = 0;
+      _local?.enableChat = 0;
     }
     _startVideo(_local);
     _others.clear();
@@ -1274,6 +1277,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       });
     }, onError: (message) {
       Log.w("IOWebSocketChannel onError $message ", tag: RoomLandscapePage.sName);
+      if (Platform.isIOS) {
+        Future.delayed(Duration(milliseconds: 500), () async {
+          BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
+        });
+      }
     });
     BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
   }
@@ -1288,7 +1296,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         _handleCourseware(socketMsg);
         break;
       case "board":
-        _closeVideo();
+        if ((_currentRes != null && _currentRes.type == mp4)) {
+          _resetVideo();
+        }
         _resProvider.setRes(null);
         _currentRes = null;
         break;
@@ -1411,7 +1421,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     } else {
       //切换新页面
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
-        _closeVideo();
+        _resetVideo();
       }
       if (ques.type == mp4 && _currentRes != null && _currentRes.type == mp4) {
         if (flickManager.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}" ||
@@ -1605,7 +1615,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
     if (_currentRes == null || (_currentRes.qid != ques.qid && isShow == null)) {
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
-        _closeVideo();
+        _resetVideo();
       }
       _resProvider.setRes(ques);
       _currentRes = ques;
@@ -1762,24 +1772,21 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     if (orientation == 1) {
       OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
     }
-    _closeVideo();
-
     AgoraRtcEngine?.leaveChannel();
     AgoraRtcEngine?.destroy();
-
     _rtmChannel?.leave();
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
     _socketPingTimer?.cancel();
-
     socket?.close();
     BetterSocket.close();
+    flickManager?.release();
     socket = null;
     _currentRes = null;
     super.dispose();
   }
 
-  _closeVideo() async {
+  _resetVideo() async {
     await flickManager?.reset();
     _isPlay = null;
     _time = null;
