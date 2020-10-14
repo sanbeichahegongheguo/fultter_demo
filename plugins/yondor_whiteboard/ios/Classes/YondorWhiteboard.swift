@@ -61,6 +61,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     private func joinRoom(){
         
         let roomConfig =  WhiteRoomConfig.init(uuid: self.uuid, roomToken: self.roomToken)
+        roomConfig.timeout = NSNumber(value: 60*60*2)
         roomConfig.isWritable = false
         self.sdk.joinRoom(with: roomConfig, callbacks: nil) { (success:Bool, whiteRoom:WhiteRoom?, e:Error?) in
             print("YondorWhiteboard joinRoom success @@" )

@@ -29,6 +29,7 @@ import com.yondor.yondor_whiteboard.manager.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -121,6 +122,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
                     map.put("created", true);
                     methodChannel.invokeMethod("onCreated",map);
                     RoomParams params = new RoomParams(uuid, roomToken);
+                    params.setTimeout(2,TimeUnit.HOURS);
                     boardManager.init(whiteSdk, params);
                 }
             }
@@ -151,6 +153,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         boardManager.setWritable(writable);
     }
     public void releaseBoard() {
+         log.i("releaseBoard ");
         boardManager.disconnect();
     }
 

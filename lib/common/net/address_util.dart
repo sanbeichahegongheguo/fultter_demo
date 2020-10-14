@@ -666,6 +666,11 @@ class AddressUtil {
     return "${stu_app}live_broadcast/replay";
   }
 
+  //获取课程状态
+  getCourseState() {
+    return "${sw_api_}course/get_course_state";
+  }
+
   ///获取远大回放信息
   getYondorCourseRecordBy() {
     return "${liveApp}live_broadcast/record/info";

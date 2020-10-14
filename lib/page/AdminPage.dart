@@ -214,9 +214,9 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                     _getBt("退出账号", "images/admin/icon_out.png", () {
                       _goOut(store);
                     }, new Text("")),
-                    _getBt("测试直播", "images/admin/icon_out.png", () {
-                      _goRoom(store.state.userInfo);
-                    }, new Text("")),
+//                    _getBt("测试直播", "images/admin/icon_out.png", () {
+//                      _goRoom(store.state.userInfo);
+//                    }, new Text("")),
                   ],
                 ),
               ],

@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:better_socket/better_socket.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
@@ -67,7 +68,7 @@ class RoomLandscapePage extends StatefulWidget {
   }
 }
 
-class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerProviderStateMixin, LogBase {
+class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerProviderStateMixin, LogBase, WidgetsBindingObserver {
   static const String mp4 = LiveRoomConst.mp4;
   static const String ppt = LiveRoomConst.ppt;
   static const String h5 = LiveRoomConst.h5;
@@ -126,10 +127,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   bool isShowTip = true;
   Timer isShowTipTimer;
   FocusNode _textFocusNode = FocusNode();
+  StreamSubscription<ConnectivityResult> _subscription;
+  Timer _connectivityNoneTimer;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    initConnectivity();
     if (Platform.isIOS) {
       OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
     }
@@ -156,6 +161,29 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         _courseProvider.setInitBoardView(true);
       });
     };
+  }
+
+  initConnectivity() async {
+    _subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      print("Connectivity = $result");
+      if (result == ConnectivityResult.none) {
+        print("网络无连接！！！！");
+        if (_connectivityNoneTimer != null && _connectivityNoneTimer.isActive) {
+          _connectivityNoneTimer?.cancel();
+        }
+        _connectivityNoneTimer = null;
+        _connectivityNoneTimer = Timer(Duration(seconds: 10), () {
+          //'网络无连接' 关闭本地音视频
+          _local?.coVideo = 0;
+          _local?.enableVideo = 0;
+          _local?.enableAudio = 0;
+          _startVideo(_local);
+        });
+      } else {
+        _connectivityNoneTimer?.cancel();
+        _connectivityNoneTimer = null;
+      }
+    });
   }
 
   @override
@@ -894,6 +922,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       }
     };
     await _rtmClient.login(widget.roomData.user.rtmToken, widget.roomData.user.uid.toString());
+
     _rtmChannel = await _createChannel(widget.roomData.room.channelName);
     await _rtmChannel.join();
     Store<GSYState> store = StoreProvider.of(context);
@@ -956,7 +985,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     return channel;
   }
 
-  _handleMsg(AgoraRtmMessage message, AgoraRtmMember member) {
+  _handleMsg(AgoraRtmMessage message, AgoraRtmMember member) async {
     _log("Channel msg: " + member.userId + ", msg: " + message.text);
     var msgJson = jsonDecode(message.text);
     switch (msgJson["cmd"]) {
@@ -970,6 +999,18 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         _chatProvider.insertChatMessageList(chatMessage);
         break;
       case 2: // user join or leave msg
+        msgJson["data"]["list"].forEach((item) {
+          if (item["userId"] == _local.userId) {
+            if (item["coVideo"] == 0) {
+              _local?.role = item["role"];
+              _local?.coVideo = 0;
+              _local?.enableVideo = 0;
+              _local?.enableAudio = 0;
+              _startVideo(_local);
+              _studentProvider.notifier(_local);
+            }
+          }
+        });
         break;
       case 3: //room attributes updated msg
         if (_courseProvider.isInitBoardView) {
@@ -1113,7 +1154,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     } else {
       _local?.coVideo = 0;
       _local?.enableVideo = 0;
-      _local?.enableChat = 0;
+      _local?.enableAudio = 0;
     }
     _startVideo(_local);
     _others.clear();
@@ -1769,6 +1810,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (orientation == 1) {
       OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
     }
@@ -1783,6 +1825,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     flickManager?.release();
     socket = null;
     _currentRes = null;
+    _subscription?.cancel();
     super.dispose();
   }
 
@@ -1806,6 +1849,27 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     Future.delayed(Duration(milliseconds: 500), () async {
       Navigator.pop(context);
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("RoomLandscapePageState 切换" + state.toString());
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print('RoomLandscapePageState 处于前台展示');
+        AgoraRtcEngine?.muteAllRemoteVideoStreams(false);
+        AgoraRtcEngine?.muteAllRemoteAudioStreams(false);
+        break;
+      case AppLifecycleState.inactive:
+        print('RoomLandscapePageState 处于非活动状态，并且未接收用户输入');
+        break;
+      case AppLifecycleState.paused:
+        AgoraRtcEngine?.muteAllRemoteVideoStreams(true);
+        AgoraRtcEngine?.muteAllRemoteAudioStreams(true);
+        break;
+      default:
+        break;
+    }
   }
 
   @override

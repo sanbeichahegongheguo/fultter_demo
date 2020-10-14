@@ -295,6 +295,23 @@ class RoomDao {
     }
     return new DataResult(result, res.result);
   }
+
+  ///获取课程状态
+  static getCourseState(teacherPlanId) async {
+    print("teacherPlanId  :$teacherPlanId");
+    var res = await httpManager.netFetch(AddressUtil.getInstance().getCourseState(), {"teacherPlanId": teacherPlanId}, null, new Options(method: "get"));
+    print("res==>$res");
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
+        result = res.data["data"];
+      } else {
+        res.result = false;
+        result = res.data["message"];
+      }
+    }
+    return new DataResult(result, res.result);
+  }
 }
 
 enum CoVideoType {

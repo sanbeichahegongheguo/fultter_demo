@@ -187,12 +187,12 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
 
     @Override
     public void onDisconnectWithError(Exception e) {
-
+        log.e("onDisconnectWithError %s", e.toString());
     }
 
     @Override
     public void onKickedWithReason(String reason) {
-
+        log.i("onDisconnectWithError %s", reason);
     }
 
 
@@ -216,7 +216,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
 
     @Override
     public void onCatchErrorWhenAppendFrame(long userId, Exception error) {
-
+        log.e("onCatchErrorWhenAppendFrame userId %d %s", userId,error.toString());
     }
 
     @Override

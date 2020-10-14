@@ -17,6 +17,7 @@ import 'package:flutter_start/common/channel/CameraChannel.dart';
 import 'package:flutter_start/common/channel/YondorChannel.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/ApplicationDao.dart';
+import 'package:flutter_start/common/dao/RoomDao.dart';
 import 'package:flutter_start/common/net/api.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/redux/user_redux.dart';
@@ -938,6 +939,14 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
         yondorRecordId: yondorRecordId,
         peLiveCourseallotId: peLiveCourseallotId, callFunc: () {
       flutterWebViewPlugin.show();
+      if ((recordId == null || recordId == "")) {
+        //检查是否下课
+        RoomDao.getCourseState(roomUuid).then((res) {
+          if (res.result && res.data == 3) {
+            flutterWebViewPlugin.evalJavascript("window.saveStudentComments('$roomUuid')");
+          }
+        });
+      }
     }, startTime: startTime, endTime: endTime);
   }
 }
