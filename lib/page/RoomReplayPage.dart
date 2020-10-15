@@ -18,6 +18,8 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_start/common/const/LiveRoom.dart';
 import 'package:flutter_start/models/replayData.dart';
 import 'package:flutter_start/widget/ReplayProgress.dart';
+import 'package:flutter_start/widget/room/EyerestWidget.dart';
+import 'package:flutter_start/widget/room/Mp3PlayerWidget.dart';
 import 'package:flutter_start/widget/seekbar/flutter_seekbar.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
@@ -127,6 +129,8 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   HandProvider _handProvider = HandProvider();
   LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
+  Mp3PlayerProvider _mp3PlayerProvider = Mp3PlayerProvider();
+  EyerestProvider _eyerestProvider = EyerestProvider();
   WebViewPlusController _webViewPlusController;
   int _isPlay;
   int _time;
@@ -191,6 +195,12 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           ),
           ChangeNotifierProvider<ReplayProgressProvider>.value(
             value: _replayProgressProvider,
+          ),
+          ChangeNotifierProvider<Mp3PlayerProvider>.value(
+            value: _mp3PlayerProvider,
+          ),
+          ChangeNotifierProvider<EyerestProvider>.value(
+            value: _eyerestProvider,
           ),
         ],
         child: WillPopScope(
@@ -274,6 +284,20 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                                       left: 0,
                                       child: _buildSel(),
                                     )
+                                  : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1
+                                  ? Consumer<Mp3PlayerProvider>(builder: (context, model, child) {
+                                      return Mp3PlayerWidget();
+                                    })
+                                  : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1
+                                  ? Consumer<EyerestProvider>(builder: (context, model, child) {
+                                      return model.isShow ? EyerestWidget(flickManager: model.flickManager) : Container();
+                                    })
                                   : Container();
                             }),
                             _buildTop(),
@@ -1349,6 +1373,12 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       case TIMER:
         _handleTIMER(socketMsg.text);
         break;
+      case LiveRoomConst.MP3:
+        _mp3PlayerProvider.handle(widget.roomData.courseware, socketMsg);
+        break;
+      case LiveRoomConst.EYEREST:
+        _eyerestProvider.handle(widget.roomData.courseware, socketMsg, isReplay: true);
+        break;
     }
   }
 
@@ -1438,6 +1468,8 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       }
     } else {
       //切换新页面
+      _mp3PlayerProvider.close();
+      _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
         _closeVideo();
       }
@@ -1604,6 +1636,8 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
 
     if (_currentRes == null || (_currentRes.qid != ques.qid && isShow == null)) {
+      _mp3PlayerProvider.close();
+      _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
         _closeVideo();
       }
@@ -1772,6 +1806,8 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     BetterSocket.close();
     socket = null;
     _currentRes = null;
+    _mp3PlayerProvider.close();
+    _eyerestProvider.close();
     super.dispose();
   }
 

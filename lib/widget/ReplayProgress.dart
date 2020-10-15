@@ -340,6 +340,8 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
     LiveRoomConst.EVENT_BOARD: Object(),
     LiveRoomConst.RANRED: Object(),
     LiveRoomConst.REDRAIN: Object(),
+    LiveRoomConst.EYEREST: Object(),
+    LiveRoomConst.MP3: Object(),
   };
   Map showMap = {
     LiveRoomConst.mp4: Object(),

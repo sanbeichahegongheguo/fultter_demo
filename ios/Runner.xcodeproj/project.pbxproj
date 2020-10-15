@@ -666,7 +666,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34951;
+				CURRENT_PROJECT_VERSION = 34957;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -709,7 +709,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.720;
+				MARKETING_VERSION = 2.0.730;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -921,7 +921,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34951;
+				CURRENT_PROJECT_VERSION = 34957;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -964,7 +964,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.720;
+				MARKETING_VERSION = 2.0.730;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1068,7 +1068,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34951;
+				CURRENT_PROJECT_VERSION = 34957;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -1111,7 +1111,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.720;
+				MARKETING_VERSION = 2.0.730;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",

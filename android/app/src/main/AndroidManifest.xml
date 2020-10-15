@@ -115,6 +115,7 @@
         <activity
             android:name="com.qq.e.ads.LandscapeADActivity"
             android:screenOrientation="landscape"
+            tools:replace="android:screenOrientation"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -1687,6 +1687,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
 
     if (_currentRes == null || (_currentRes.qid != ques.qid && isShow == null)) {
+      //切换新页面
+      _mp3PlayerProvider.close();
+      _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
         _resetVideo();
       }

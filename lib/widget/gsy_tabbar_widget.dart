@@ -136,6 +136,12 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     print("  tabbar build");
+    var bottomSize = MediaQuery.of(context).padding.bottom;
+
+    if (Platform.isIOS && bottomSize > 30) {
+      bottomSize = 18.5;
+    }
+    print("  bottomSize $bottomSize");
 
     ///底部tab bar
     return new Scaffold(
@@ -161,36 +167,39 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         bottomNavigationBar: new Material(
             //为了适配主题风格，包一层Material实现风格套用
             color: Colors.white, //底部导航栏主题颜色
-            child: Container(
-              //              height: MediaQuery.of(context).size.height * 0.08,
-              height: ScreenUtil.getInstance().getHeightPx(150),
-              child: StreamBuilder<int>(
-                  initialData: 0,
-                  stream: bloc.tabbarBloc.tabbarBannerStream,
-                  builder: (context, AsyncSnapshot<int> snapshot) {
-                    return TabBar(
-                        indicator: BoxDecoration(),
-                        indicatorWeight: 1,
-                        //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
-                        controller: _tabController, //配置控制器
-                        tabs: [
-                          _renderTab(
-                              snapshot.data == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导", snapshot.data == 0 ? true : false),
-                          _renderTab(snapshot.data == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情",
-                              snapshot.data == 1 ? true : false),
-                          _renderTab(
-                              snapshot.data == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励", snapshot.data == 2 ? true : false),
-                          _renderTab(snapshot.data == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理",
-                              snapshot.data == 3 ? true : false),
-                        ],
-                        onTap: (index) {
-                          print('切换');
-                          _onPageChanged?.call(index);
-                          _pageController.jumpTo(MediaQuery.of(context).size.width * index);
-                        });
-                  }),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: Platform.isIOS ? bottomSize : 0),
+              child: Container(
+                //              height: MediaQuery.of(context).size.height * 0.08,
+                height: ScreenUtil.getInstance().getHeightPx(150),
+                child: StreamBuilder<int>(
+                    initialData: 0,
+                    stream: bloc.tabbarBloc.tabbarBannerStream,
+                    builder: (context, AsyncSnapshot<int> snapshot) {
+                      return TabBar(
+                          indicator: BoxDecoration(),
+                          indicatorWeight: 1,
+                          //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
+                          controller: _tabController, //配置控制器
+                          tabs: [
+                            _renderTab(snapshot.data == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导",
+                                snapshot.data == 0 ? true : false),
+                            _renderTab(snapshot.data == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情",
+                                snapshot.data == 1 ? true : false),
+                            _renderTab(snapshot.data == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励",
+                                snapshot.data == 2 ? true : false),
+                            _renderTab(snapshot.data == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理",
+                                snapshot.data == 3 ? true : false),
+                          ],
+                          onTap: (index) {
+                            print('切换');
+                            _onPageChanged?.call(index);
+                            _pageController.jumpTo(MediaQuery.of(context).size.width * index);
+                          });
+                    }),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+                ),
               ),
             )));
   }

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 class Config {
   static const PAGE_SIZE = 20;
-  static const DEBUG = true;
+  static const DEBUG = false;
   static const USE_NATIVE_WEBVIEW = true;
 
   /// //////////////////////////////////////常量////////////////////////////////////// ///
@@ -50,21 +50,15 @@ class Config {
   static const IOS_APP_ID = '1155973972'; //苹果商店appid
   static const EVENT_287 = 'event_287'; //启动事件
   static const EVENT_PROTOCOL = 'event_protocol'; //用户协议
-  static const tenUrl =
-      "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
+  static const tenUrl = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.student";
   static const iosUrl = "https://apps.apple.com/cn/app/id${Config.IOS_APP_ID}";
   static const STUDENT_SCHEME = "yondorstudenthwapp://"; //学生端路由
-  static const STUDENT_TEN_URL =
-      "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
-  static const STUDENT_HUAWEI_URL =
-      "https://appstore.huawei.com/app/C101097841"; //学生端华为应用商店
-  static const STUDENT_IOS_URL =
-      "https://apps.apple.com/cn/app/id1475045442"; //學生端苹果商店
+  static const STUDENT_TEN_URL = "https://android.myapp.com/myapp/detail.htm?apkName=com.yondor.yondorstudenthwapp"; //學生端應用寶
+  static const STUDENT_HUAWEI_URL = "https://appstore.huawei.com/app/C101097841"; //学生端华为应用商店
+  static const STUDENT_IOS_URL = "https://apps.apple.com/cn/app/id1475045442"; //學生端苹果商店
   static const Leave_Time = "0";
   static const APP_ID = '08ca6fe94bcf4513b96020e377193954';
   static const LOGCAT_APP_ID = 1;
-  static String AGORA_AUTH = base64Encode(
-      "44e9176721dd43c09999197ed05afa35:4af6376d4e044eecb68b5b4041a2a77d"
-          .codeUnits);
+  static String AGORA_AUTH = base64Encode("44e9176721dd43c09999197ed05afa35:4af6376d4e044eecb68b5b4041a2a77d".codeUnits);
   static const IOS_PAY_PARAM_KEY = "IOS_PAY_PARAM";
 }
