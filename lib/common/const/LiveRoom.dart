@@ -14,5 +14,7 @@ class LiveRoomConst {
   static const String EVENT_BOARD = "event-board"; //白板切换事件
   static const String EVENT_JOIN_SUCCESS = "event-join-success"; //加入房间返回成功事件
   static const String EVENT_CURRENT = "event-current"; //加入房间成功返回当前事件
+  static const String EYEREST = "EYEREST"; //眼保健操视频
+  static const String MP3 = "MP3"; //MP3播放
 
 }

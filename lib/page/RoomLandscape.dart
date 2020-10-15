@@ -44,6 +44,8 @@ import 'package:flutter_start/widget/StarGif.dart';
 import 'package:flutter_start/widget/UserStarWidget.dart';
 import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
+import 'package:flutter_start/widget/room/EyerestWidget.dart';
+import 'package:flutter_start/widget/room/Mp3PlayerWidget.dart';
 import 'package:flutter_start/widget/starsWiget.dart';
 import 'package:fradio/fradio.dart';
 import 'package:home_indicator/home_indicator.dart';
@@ -111,6 +113,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   HandProvider _handProvider = HandProvider();
   LiveTimerProvider _liveTimerProvider = LiveTimerProvider();
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
+  Mp3PlayerProvider _mp3PlayerProvider = Mp3PlayerProvider();
+  EyerestProvider _eyerestProvider = EyerestProvider();
   WebViewPlusController _webViewPlusController;
   int _isPlay;
   int _time;
@@ -231,6 +235,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           ChangeNotifierProvider<StarWidgetProvider>.value(
             value: _starWidgetProvider,
           ),
+          ChangeNotifierProvider<Mp3PlayerProvider>.value(
+            value: _mp3PlayerProvider,
+          ),
+          ChangeNotifierProvider<EyerestProvider>.value(
+            value: _eyerestProvider,
+          ),
         ],
         child: WillPopScope(
           onWillPop: () {
@@ -313,6 +323,20 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                       left: 0,
                                       child: _buildSel(),
                                     )
+                                  : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1
+                                  ? Consumer<Mp3PlayerProvider>(builder: (context, model, child) {
+                                      return Mp3PlayerWidget();
+                                    })
+                                  : Container();
+                            }),
+                            Consumer<CourseProvider>(builder: (context, model, child) {
+                              return model.status == 1
+                                  ? Consumer<EyerestProvider>(builder: (context, model, child) {
+                                      return model.isShow ? EyerestWidget(flickManager: model.flickManager) : Container();
+                                    })
                                   : Container();
                             }),
                             _buildTop(),
@@ -1385,6 +1409,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case TIMER:
         _handleTIMER(socketMsg.text);
         break;
+      case LiveRoomConst.MP3:
+        _mp3PlayerProvider.handle(widget.roomData.courseware, socketMsg);
+        break;
+      case LiveRoomConst.EYEREST:
+        _eyerestProvider.handle(widget.roomData.courseware, socketMsg);
+        break;
     }
   }
 
@@ -1461,6 +1491,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       }
     } else {
       //切换新页面
+      _mp3PlayerProvider.close();
+      _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
         _resetVideo();
       }
@@ -1826,6 +1858,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     socket = null;
     _currentRes = null;
     _subscription?.cancel();
+    _mp3PlayerProvider.close();
+    _eyerestProvider.close();
     super.dispose();
   }
 

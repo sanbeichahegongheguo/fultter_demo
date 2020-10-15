@@ -21,7 +21,8 @@ import 'package:provider/provider.dart';
 
 class RoomUtil {
   static String tag = "RoomUtil";
-
+  static String mp4Url = "https://qrescdn.k12china.com/qlib/mp4/2020/10/13/17/1317135054.mp4";
+  static String mp4Path = "qlib/mp4/2020/10/13/17/1317135054.mp4";
   static goRoomPage(BuildContext context,
       {String url,
       int userId,
@@ -146,6 +147,7 @@ class RoomUtil {
   static loadCoursePack(String url, Function success, Function fail, {progress: Function}) async {
     // print("GlobalConfig@loadCoursePack  ${uri.scheme}://${uri.host}:${uri.port}${uri.path} ");
     var resUrl = url;
+    Log.f("url=$resUrl", tag: tag);
     var name = url.substring(url.lastIndexOf("/") + 1, url.length);
     Log.f("name=$name", tag: tag);
     var path = "";
@@ -162,12 +164,14 @@ class RoomUtil {
     Log.f("tempPath=$tempPath", tag: tag);
     var directory = "$tempPath/$path";
     var filePath = "$tempPath/$path/$name";
+    var mp4FilePath = "$tempPath/$mp4Path";
 
     Log.f("savePath=$filePath", tag: tag);
-
+    Log.f("mp4FilePath=$mp4FilePath", tag: tag);
     var contentLength = -1;
     var offline = false;
-
+    var mp4ContentLength = -1;
+    var mp4Offline = false;
     await Dio(BaseOptions(sendTimeout: 5)).head(resUrl).then((value) {
       value.headers.forEach((name, values) {
         if (name.toLowerCase() == "content-length") {
@@ -182,7 +186,22 @@ class RoomUtil {
       return;
     });
 
+    await Dio(BaseOptions(sendTimeout: 5)).head(mp4Url).then((value) {
+      value.headers.forEach((name, values) {
+        if (name.toLowerCase() == "content-length") {
+          print("mp4 content-length=$values");
+          mp4ContentLength = int.parse(values[0]);
+        }
+      });
+    }).catchError((error) {
+      //offline
+      mp4Offline = true;
+      fail("@loadCoursePack error:$error use offline mode. mp4");
+      return;
+    });
+
     bool match = false;
+    bool mp4Match = false;
     //not exist file.
     if (File(filePath).existsSync()) {
       print("exist files");
@@ -195,18 +214,48 @@ class RoomUtil {
       }
     }
 
+    if (File(mp4FilePath).existsSync()) {
+      print("exist files");
+      var size = await File(mp4FilePath).length();
+      // print("size=$size");
+      if (size == mp4ContentLength) {
+        mp4Match = true;
+      } else {
+        print("@loadCoursePack Error: file size not match contentLength($contentLength) != $size  mp4");
+      }
+    }
+
     // print("match=$match");
+    var progressNum = 0.0;
     if (!offline && !match) {
       await Dio().download(resUrl, filePath, onReceiveProgress: (int loaded, int total) {
         print("下载进度：" + NumUtil.getNumByValueDouble(loaded / total * 100, 2).toStringAsFixed(2) + "%"); //取精度，如：56.45%
         if (progress != null) {
-          progress(NumUtil.getNumByValueDouble(loaded / total * 100, 2));
+          progressNum = NumUtil.getNumByValueDouble(loaded / total * 100, 2) * 0.8;
+          progress(progressNum);
         }
       }).catchError((error) {
         fail("@downloadCoursePack error:$error .");
         return;
       });
       print("download files ok");
+    } else {
+      progressNum = 80;
+      if (progress != null) {
+        progress(progressNum);
+      }
+    }
+
+    if (!mp4Offline && !mp4Match) {
+      await Dio().download(mp4Url, mp4FilePath, onReceiveProgress: (int loaded, int total) {
+        print("下载进度：" + NumUtil.getNumByValueDouble(loaded / total * 100, 2).toStringAsFixed(2) + "%"); //取精度，如：56.45%
+        if (progress != null) {
+          progress(NumUtil.getNumByValueDouble(loaded / total * 100, 2) * 0.2 + progressNum);
+        }
+      }).catchError((error) {
+        fail("@downloadCoursePack error:$error .");
+        return;
+      });
     } else {
       if (progress != null) {
         progress(100.0);
@@ -223,7 +272,7 @@ class RoomUtil {
     if (!(!offline && !match)) {
       var af = File("$directory/$pathName/courseware.json");
       if (af.existsSync()) {
-        readCoursewareJson("$directory/$pathName", success, fail);
+        readCoursewareJson("$directory/$pathName", success, fail, mp4FilePath);
         return;
       }
     }
@@ -231,11 +280,12 @@ class RoomUtil {
 
     var bytes = File(filePath).readAsBytesSync();
     print("data finish!");
+
     var archive = ZipDecoder().decodeBytes(bytes);
-    parseCourse(archive, "$directory/$pathName", success, fail);
+    parseCourse(archive, "$directory/$pathName", success, fail, mp4FilePath);
   }
 
-  static parseCourse(Archive archive, String savePath, Function success, Function fail) async {
+  static parseCourse(Archive archive, String savePath, Function success, Function fail, String mp4FilePath) async {
     // 将Zip存档的内容解压缩到磁盘。
 //    var directory = Directory(savePath);
 //    print("directory finish! ${directory.existsSync()}");
@@ -255,10 +305,10 @@ class RoomUtil {
       }
     }
     print("解压成功");
-    readCoursewareJson(savePath, success, fail);
+    readCoursewareJson(savePath, success, fail, mp4FilePath);
   }
 
-  static readCoursewareJson(String savePath, Function success, Function fail) {
+  static readCoursewareJson(String savePath, Function success, Function fail, String mp4FilePath) {
     String coursewarePath = "$savePath/courseware.json";
     print("coursewarePath == > $coursewarePath");
     var af = File(coursewarePath);
@@ -271,6 +321,7 @@ class RoomUtil {
       var retJSON = json.decode(jsondata);
       Courseware courseware = Courseware.fromJson(retJSON);
       courseware.localPath = savePath;
+      courseware.eyeMp4Path = mp4FilePath;
       //下载视频资源
       success(courseware);
     } else {

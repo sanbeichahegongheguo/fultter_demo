@@ -6,6 +6,7 @@ class Courseware {
   String date;
   String domain;
   String localPath;
+  String eyeMp4Path;
   List<Item> items;
 
   Courseware({
@@ -45,6 +46,7 @@ class Courseware {
         'domain': domain,
         'items': items,
         'localPath': localPath,
+        'mp3Path': eyeMp4Path,
       };
   @override
   String toString() {
@@ -253,6 +255,7 @@ class Ps {
   String appid;
   String fileid;
   String mp4;
+  String mp3;
 
   Ps({
     this.pic,
@@ -266,6 +269,7 @@ class Ps {
     this.appid,
     this.fileid,
     this.mp4,
+    this.mp3,
   });
 
   factory Ps.fromJson(jsonRes) => jsonRes == null
@@ -282,6 +286,7 @@ class Ps {
           appid: jsonRes['appid'],
           fileid: jsonRes['fileid'],
           mp4: jsonRes['mp4'],
+          mp3: jsonRes['mp3'],
         );
 
   Map<String, dynamic> toJson() => {
@@ -296,6 +301,7 @@ class Ps {
         'appid': appid,
         'fileid': fileid,
         'mp4': mp4,
+        'mp3': mp3,
       };
   @override
   String toString() {
