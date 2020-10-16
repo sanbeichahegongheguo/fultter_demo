@@ -1673,7 +1673,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       var as = an["as"];
       var op = an["op"];
 //      (op as List).addAll(op as List);
-      _roomSelProvider.setIsShow(isShow == 1, ques: ques, op: op, quesAn: as[0], dateTime: DateTime.now());
+      _roomSelProvider.setIsShow(isShow == 1, ques: ques, op: op, quesAn: as, dateTime: DateTime.now());
       if (isShow == 0) {
         //获取排行榜前三用户
         var param = {"liveCourseallotId": widget.roomData.liveCourseallotId, "liveEventId": 1, "quesId": ques.qid, "roomId": widget.roomData.room.roomUuid};

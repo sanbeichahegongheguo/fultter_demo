@@ -16,5 +16,7 @@ class LiveRoomConst {
   static const String EVENT_CURRENT = "event-current"; //加入房间成功返回当前事件
   static const String EYEREST = "EYEREST"; //眼保健操视频
   static const String MP3 = "MP3"; //MP3播放
+  static const String EVENT_STAR = "event-star"; //星星奖励事件
+  static const String EVENT_MUTE = "event-mute"; //禁言事件
 
 }

@@ -576,10 +576,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 //      },
       cover: Image.file(File('${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}'), fit: BoxFit.contain).image,
     );
-//    return Container(
-//      child: CoursewareVideo(flickManager,
-//          pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: () => _roomShowTopProvider.setIsShow(true)),
-//    );
   }
 
   Widget _buildPic(ResProvider resModel) {
@@ -1043,6 +1039,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         _chatProvider.setMuteAllChat(msgJson["data"]["muteAllChat"] == 1);
         if (msgJson["data"]["courseState"] != _courseProvider.status) {
           _courseProvider.setStatus(msgJson["data"]["courseState"]);
+          if (_courseProvider.status == 1) {
+            await AgoraRtcEngine?.muteAllRemoteVideoStreams(false);
+            await AgoraRtcEngine?.muteAllRemoteAudioStreams(false);
+          } else if (_courseProvider.status == 0) {
+            await AgoraRtcEngine?.muteAllRemoteVideoStreams(true);
+            await AgoraRtcEngine?.muteAllRemoteAudioStreams(true);
+          }
         }
         break;
       case 4: //user attributes updated msg
@@ -1069,9 +1072,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
     configuration.dimensions = Size(480, 360);
     await AgoraRtcEngine.setVideoEncoderConfiguration(configuration);
-
     print("appid:${Config.APP_ID} rtctoken:${widget.roomData.user.rtcToken} channelname:${widget.roomData.room.channelName}  uid:${widget.roomData.user.uid}");
     await AgoraRtcEngine.joinChannel(widget.roomData.user.rtcToken, widget.roomData.room.channelName, widget.roomData.user.userName, widget.roomData.user.uid);
+
+    if (_courseProvider.status == 0) {
+      await AgoraRtcEngine?.muteAllRemoteVideoStreams(true);
+      await AgoraRtcEngine?.muteAllRemoteAudioStreams(true);
+    }
   }
 
   bool _enableLocalVideo = false;
@@ -1324,11 +1331,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _socketPingTimer?.cancel();
       _socketPingTimer = null;
       _socketPingTimer = Timer.periodic(_socketPingDuration, (timer) {
-        Log.d('sendMsg : ping', tag: RoomLandscapePage.sName);
+        Log.i('sendMsg : ping', tag: RoomLandscapePage.sName);
         BetterSocket.sendMsg('{"Ping":{}}');
       });
     }, onMessage: (message) {
-      Log.d('newMsg : $message', tag: RoomLandscapePage.sName);
+      Log.i('newMsg : $message', tag: RoomLandscapePage.sName);
       try {
         SocketMsg socketMsg = SocketMsg.fromJson(jsonDecode(message.toString()));
         _handleSocketMsg(socketMsg);
@@ -1336,7 +1343,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         Log.e("_handleSocketMsg ${e.toString()} ", tag: RoomLandscapePage.sName);
       }
     }, onClose: (code, reason, remote) {
-      Log.f("onClose---code:$code  reason:$reason  remote:$remote", tag: RoomLandscapePage.sName);
+      Log.i("onClose---code:$code  reason:$reason  remote:$remote", tag: RoomLandscapePage.sName);
       Future.delayed(Duration(milliseconds: 500), () async {
         BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
       });
@@ -1415,6 +1422,27 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case LiveRoomConst.EYEREST:
         _eyerestProvider.handle(widget.roomData.courseware, socketMsg);
         break;
+      case LiveRoomConst.EVENT_STAR:
+        _handleSTAR(socketMsg.text);
+        break;
+    }
+  }
+
+  _handleSTAR(text) {
+    var msg = jsonDecode(text);
+    //  "cid":  param.CatalogId,
+    //		"qid":  param.QuesId,
+    //		"uid":  user.ID,
+    //		"star": param.Star,
+    //		"msg":  fmt.Sprintf("%s获得%d星星奖励", name, param.Star),
+    //		"eid":  param.LiveEventId,
+    var eid = msg["eid"];
+    var uid = msg["uid"];
+    var star = msg["star"];
+    if (eid == 12 && uid.toString() == _local.userUuid) {
+      if (star > 0) {
+        showStarDialog(star);
+      }
     }
   }
 
@@ -1725,7 +1753,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       var as = an["as"];
       var op = an["op"];
 //      (op as List).addAll(op as List);
-      _roomSelProvider.setIsShow(isShow == 1, ques: ques, op: op, quesAn: as[0], dateTime: DateTime.now());
+      _roomSelProvider.setIsShow(isShow == 1, ques: ques, op: op, quesAn: as, dateTime: DateTime.now());
       if (isShow == 0) {
         //获取排行榜前三用户
         var param = {"liveCourseallotId": widget.roomData.liveCourseallotId, "liveEventId": 1, "quesId": ques.qid, "roomId": widget.roomData.room.roomUuid};
@@ -1894,8 +1922,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     switch (state) {
       case AppLifecycleState.resumed:
         print('RoomLandscapePageState 处于前台展示');
-        AgoraRtcEngine?.muteAllRemoteVideoStreams(false);
-        AgoraRtcEngine?.muteAllRemoteAudioStreams(false);
+        if (_courseProvider.status == 1) {
+          AgoraRtcEngine?.muteAllRemoteVideoStreams(false);
+          AgoraRtcEngine?.muteAllRemoteAudioStreams(false);
+        }
         break;
       case AppLifecycleState.inactive:
         print('RoomLandscapePageState 处于非活动状态，并且未接收用户输入');

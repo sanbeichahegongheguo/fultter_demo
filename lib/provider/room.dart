@@ -97,8 +97,8 @@ class RoomShowTopProvider with ChangeNotifier {
 }
 
 class RoomSelProvider with ChangeNotifier {
-  int _val = 0;
-  int get val => _val;
+  List _groupValueList = List.generate(7, (index) => 0);
+  List get groupValueList => _groupValueList;
   DateTime _dateTime;
   DateTime get dateTime => _dateTime;
   var _op;
@@ -107,14 +107,10 @@ class RoomSelProvider with ChangeNotifier {
   bool get isShow => _isShow;
   Res _ques;
   Res get ques => _ques;
-
+  int _times = 0;
+  int get times => _times;
   var _quesAn;
   get quesAn => _quesAn;
-
-  switchVal(int val) {
-    _val = val;
-    notifyListeners();
-  }
 
   notify() {
     notifyListeners();
@@ -123,9 +119,11 @@ class RoomSelProvider with ChangeNotifier {
   setIsShow(bool isShow, {ques, op, quesAn, dateTime}) {
     _isShow = isShow;
     if (!isShow) {
-      _val = 0;
+      _groupValueList = List.generate(6, (index) => 0);
     }
     if (ques != null) {
+      //重新设置题目，次数清0
+      _times = 0;
       _ques = ques;
     }
     if (op != null) {
@@ -138,6 +136,10 @@ class RoomSelProvider with ChangeNotifier {
       _dateTime = dateTime;
     }
     notifyListeners();
+  }
+
+  addTimes() {
+    _times++;
   }
 }
 

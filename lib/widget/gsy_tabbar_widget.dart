@@ -209,9 +209,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     var res = await InfoDao.signReward();
     if (res != null && res != "") {
       if (res["err"] == 0) {
-        setState(() {
-          _signTimes = res["signTimes"];
-        });
+        Future(() => setState(() {
+              _signTimes = res["signTimes"];
+            }));
       }
     }
   }
@@ -222,9 +222,9 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
     if (res != null && res != "") {
       if (res["success"]["ok"] == 0) {
         int unNum = int.parse(res["success"]["data"]);
-        setState(() {
-          _unReadNotice = unNum > 99 ? "..." : unNum.toString();
-        });
+        Future(() => setState(() {
+              _unReadNotice = unNum > 99 ? "..." : unNum.toString();
+            }));
       }
     }
   }

@@ -12,7 +12,8 @@ class LiveQuesDialog extends StatefulWidget {
   final String ir;
   final String an;
   final int star;
-  const LiveQuesDialog({Key key, this.ir, this.star = 0, this.an}) : super(key: key);
+  final int times;
+  const LiveQuesDialog({Key key, this.ir, this.star = 0, this.an, this.times = 0}) : super(key: key);
   @override
   _StarDialogState createState() => _StarDialogState();
 }
@@ -20,7 +21,7 @@ class LiveQuesDialog extends StatefulWidget {
 class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMixin {
   AnimationController _controller;
   Timer _timer;
-  Duration _timeoutSeconds = const Duration(seconds: 3);
+  Duration _timeoutSeconds;
   BuildContext myContext;
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     myContext = context;
+    _timeoutSeconds = Duration(seconds: widget.ir == "T" ? 3 : 5);
     _timer = Timer(_timeoutSeconds, back);
     final screenSize = MediaQuery.of(context).size;
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
@@ -62,7 +64,7 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
                           ConstrainedBox(
                             constraints: BoxConstraints(maxHeight: _maxContentHeight, maxWidth: screenSize.height * 0.8),
                             child: Container(
-                                height: ScreenUtil.getInstance().getHeightPx(800),
+                                height: ScreenUtil.getInstance().getHeightPx(widget.ir == "T" ? 800 : 950),
                                 width: ScreenUtil.getInstance().getWidthPx(350),
                                 alignment: Alignment.topCenter,
                                 decoration: BoxDecoration(
@@ -72,7 +74,7 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
                                 child: Stack(
                                   children: <Widget>[
                                     Align(
-                                      alignment: Alignment(0.0, 0.3),
+                                      alignment: Alignment(0.0, 0.4),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[
@@ -118,8 +120,19 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
                                                   ),
                                                 ])),
                                           SizedBox(
-                                            height: ScreenUtil.getInstance().getHeightPx(50),
+                                            height: ScreenUtil.getInstance().getHeightPx(80),
                                           ),
+                                          widget.ir == "F" && widget.times == 1
+                                              ? CommonUtils.buildBtn("重新答题",
+                                                  width: ScreenUtil.getInstance().getWidthPx(120),
+                                                  height: ScreenUtil.getInstance().getWidthPx(58),
+                                                  onTap: () => _reAnswer(),
+                                                  splashColor: Colors.amber,
+                                                  decorationColor: Color(0xFF3cc969),
+                                                  textColor: Colors.white,
+                                                  textSize: ScreenUtil.getInstance().getSp(8),
+                                                  elevation: 2)
+                                              : Container()
                                         ],
                                       ),
                                     ),
@@ -131,14 +144,6 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
                                   ],
                                 )),
                           ),
-//              IconButton(
-//                icon: Image.asset("images/btn-close.png",fit: BoxFit.cover,width: ScreenUtil.getInstance().getWidthPx(100),),
-//                color: Colors.transparent,
-//                onPressed: () {
-//                  print("12312312321");
-//                  Navigator.pop(context);
-//                },
-//              )
                         ],
                       ),
                     ),
@@ -146,6 +151,12 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
                 ),
               ),
             )));
+  }
+
+  _reAnswer() {
+    back();
+    final roomSelProvider = Provider.of<RoomSelProvider>(context, listen: false);
+    roomSelProvider.setIsShow(true);
   }
 
   var isBack = 0;

@@ -55,6 +55,13 @@ class MyApp extends StatelessWidget {
               textStyle: TextStyle(fontSize: 16),
               dismissOtherOnShow: true,
               child: MaterialApp(
+                builder: (context, widget) {
+                  return MediaQuery(
+                    //设置文字大小不随系统设置改变
+                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                    child: widget,
+                  );
+                },
                 localizationsDelegates: [
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,

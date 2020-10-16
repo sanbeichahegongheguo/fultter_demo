@@ -28,7 +28,6 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
 
   @override
   Widget build(BuildContext context) {
-    List groupValueList = List.generate(6, (index) => 0);
     return Consumer<RoomSelProvider>(builder: (context, model, child) {
       final courseProvider = Provider.of<CourseProvider>(context, listen: false);
       return model.isShow
@@ -48,86 +47,15 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
                     itemBuilder: (context, index) {
                       return Container(
                         margin: new EdgeInsets.only(right: 10),
-                        child: _getOption(index, model, groupValueList),
+                        child: _getOption(index, model),
                       );
                     },
                   ),
                   Container(
-                    child: CommonUtils.buildBtn("确定", width: ScreenUtil.getInstance().getWidthPx(89), height: ScreenUtil.getInstance().getWidthPx(58),
-                        onTap: () {
-                      if (model.val < 1) {
-                        return;
-                      }
-                      var isRight = "F";
-                      print("model.quesAn  ${model.quesAn} (model.val - 1) ${(model.val - 1)} ${model.quesAn == (model.val - 1)}");
-                      if (model.quesAn.toString() == (model.val - 1).toString()) {
-                        isRight = "T";
-                      }
-                      final val = model.val;
-                      final op = model.op;
-                      var answer =
-                          '{"answer":"${model.val - 1}","isRight":"$isRight","quesId":${model.ques.qid},"userAnswer":{"qid":${model.ques.qid},"uan":[{"an":"${model.val - 1}","r":"$isRight"}]}}';
-                      var useTime = DateTime.now().difference(model.dateTime).inMilliseconds;
-                      var liveEventId = 1;
-                      if (widget.isReplay) {
-                        liveEventId = 5;
-                      }
-                      var param = {
-                        "catalogId": model.ques.ctatlogid,
-                        "liveCourseallotId": courseProvider.roomData.liveCourseallotId,
-                        "liveEventId": liveEventId,
-                        "quesId": model.ques.qid,
-                        "isRight": isRight,
-                        "roomId": courseProvider.roomData.room.roomUuid
-                      };
-                      param["answerJson"] = answer;
-                      param["useTime"] = useTime;
-                      var ctkDatafrommapId = 49;
-                      if (widget.isReplay) {
-                        //回放
-                        ctkDatafrommapId = 56;
-                      }
-                      var qlibParam = {
-                        "lessonId": model.ques.ctatlogid,
-                        "quesId": model.ques.qid,
-                        "isRight": isRight,
-                        "batchNo": courseProvider.roomData.room.roomUuid,
-                        "ctkDatafrommapId": ctkDatafrommapId
-                      };
-                      qlibParam["costTime"] = useTime;
-                      qlibParam["userAnswer"] = answer;
-                      RoomDao.saveQuesToQlib(qlibParam);
-                      RoomDao.saveQues(param).then((res) {
-                        Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
-                        if (res.result != null && res.data != null && res.data["code"] == 200) {
-                          courseProvider.closeDialog();
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                print("  op     $op");
-                                return ChangeNotifierProvider<CourseProvider>.value(
-                                    value: courseProvider,
-                                    child: LiveQuesDialog(
-                                      ir: isRight,
-                                      star: res.data["data"]["star"],
-                                      an: "${(op != null && op.length == 1) ? op[val - 1] : _selBtnName[val - 1]}",
-                                    ));
-                              }).then((_) {
-                            print("LiveQuesDialog back");
-                            try {
-                              if (res.data["data"]["star"] > 0) {
-                                courseProvider.showStarDialog(res.data["data"]["star"]);
-                              }
-                            } catch (e) {
-                              print(e);
-                            }
-                          });
-                        } else {
-                          showToast("提交失败请稍后重试!!!");
-                        }
-                      });
-                      model.setIsShow(false);
-                    },
+                    child: CommonUtils.buildBtn("确定",
+                        width: ScreenUtil.getInstance().getWidthPx(89),
+                        height: ScreenUtil.getInstance().getWidthPx(58),
+                        onTap: () => _submit(model),
                         splashColor: Colors.amber,
                         decorationColor: Color(0xFF3cc969),
                         textColor: Colors.white,
@@ -140,24 +68,118 @@ class _LiveQuesWidgetState extends State<LiveQuesWidget> {
     });
   }
 
-  _getOption(index, model, groupValueList) {
+  _submit(RoomSelProvider model) {
+    List an = List();
+    List answerOp = List();
+    for (int i = 0; i < model.groupValueList.length; i++) {
+      if (model.groupValueList[i] > 0) {
+        an.add(model.groupValueList[i] - 1);
+        answerOp.add(_selBtnName[model.groupValueList[i] - 1]);
+      }
+    }
+
+    if (an.length < 1) {
+      return;
+    }
+    final courseProvider = Provider.of<CourseProvider>(context, listen: false);
+    var isRight = "F";
+    print("model.quesAn  ${model.quesAn} an $an  ");
+    final userAnswer = an.join(",");
+    if (model.quesAn.join(",") == userAnswer) {
+      isRight = "T";
+    }
+    print("isRight  $isRight");
+    final op = model.op;
+    var answer =
+        '{"answer":"$userAnswer","isRight":"$isRight","quesId":${model.ques.qid},"userAnswer":{"qid":${model.ques.qid},"uan":[{"an":"$userAnswer","r":"$isRight"}]}}';
+    var useTime = DateTime.now().difference(model.dateTime).inMilliseconds;
+    var liveEventId = 1;
+    if (widget.isReplay) {
+      liveEventId = 5;
+    }
+    var param = {
+      "catalogId": model.ques.ctatlogid,
+      "liveCourseallotId": courseProvider.roomData.liveCourseallotId,
+      "liveEventId": liveEventId,
+      "quesId": model.ques.qid,
+      "isRight": isRight,
+      "roomId": courseProvider.roomData.room.roomUuid
+    };
+    param["answerJson"] = answer;
+    param["useTime"] = useTime;
+    var ctkDatafrommapId = 49;
+    if (widget.isReplay) {
+      //回放
+      ctkDatafrommapId = 56;
+    }
+    var qlibParam = {
+      "lessonId": model.ques.ctatlogid,
+      "quesId": model.ques.qid,
+      "isRight": isRight,
+      "batchNo": courseProvider.roomData.room.roomUuid,
+      "ctkDatafrommapId": ctkDatafrommapId
+    };
+    qlibParam["costTime"] = useTime;
+    qlibParam["userAnswer"] = answer;
+    RoomDao.saveQuesToQlib(qlibParam);
+    RoomDao.saveQues(param).then((res) {
+      Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
+      if (res.result != null && res.data != null && res.data["code"] == 200) {
+        model.addTimes();
+        courseProvider.closeDialog();
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              print("  op     $op");
+              return ChangeNotifierProvider<CourseProvider>.value(
+                  value: courseProvider,
+                  child: ChangeNotifierProvider<RoomSelProvider>.value(
+                      value: model,
+                      child: LiveQuesDialog(
+                        ir: isRight,
+                        star: res.data["data"]["star"],
+                        an: "${answerOp.join(",")}",
+                        times: model.times,
+                      )));
+            }).then((_) {
+          print("LiveQuesDialog back");
+          try {
+            if (res.data["data"]["star"] > 0) {
+              courseProvider.showStarDialog(res.data["data"]["star"]);
+            }
+          } catch (e) {
+            print(e);
+          }
+        });
+      } else {
+        showToast("提交失败请稍后重试!!!");
+      }
+    });
+    model.setIsShow(false);
+  }
+
+  _getOption(int index, RoomSelProvider model) {
     return FRadio(
       corner: FRadioCorner.all(50),
       width: ScreenUtil.getInstance().getWidthPx(89),
       height: ScreenUtil.getInstance().getWidthPx(58),
       value: index + 1,
-      groupValue: model.ques.type == RoomLandscapePageState.MULSEL ? groupValueList[index] : model.val,
+      groupValue: model.groupValueList[index], // model.ques.type == RoomLandscapePageState.MULSEL ? groupValueList[index] : model.val,
       onChanged: (value) {
-        if (model.ques.type == RoomLandscapePageState.MULSEL) {
-          if (groupValueList[index] == value) {
-            groupValueList[index] = 0;
-          } else {
-            groupValueList[index] = value;
-          }
-          model.notify();
+        print("onChanged value $value");
+        if (model.groupValueList[index] == value) {
+          model.groupValueList[index] = 0;
         } else {
-          model.switchVal(value);
+          model.groupValueList[index] = value;
         }
+        if (model.ques.type == RoomLandscapePageState.SEL) {
+          for (int i = 0; i < model.groupValueList.length; i++) {
+            if (i != index) {
+              model.groupValueList[i] = 0;
+            }
+          }
+        }
+        model.notify();
       },
       gradient: LinearGradient(
         colors: [
