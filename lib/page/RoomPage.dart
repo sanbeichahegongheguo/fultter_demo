@@ -46,8 +46,8 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
 
   AgoraRtmClient _rtmClient;
   AgoraRtmChannel _rtmChannel;
-  RoomUser _local ;
-  RoomUser _teacher ;
+  RoomUser _local;
+  RoomUser _teacher;
   List<RoomUser> _others = new List();
   Widget _whiteboard;
   TeacherProvider _teacherProvider = TeacherProvider();
@@ -85,7 +85,7 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
             elevation: 0,
             centerTitle: true,
             title: Text(
-             widget.roomData.room.roomName,
+              widget.roomData.room.roomName,
               style: TextStyle(color: Colors.black),
             ),
             backgroundColor: Color(0xFFffffff),
@@ -102,66 +102,60 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
             _buildVideo(),
             //选项卡
             Consumer<RoomTabProvider>(builder: (context, model, child) {
-              return  Row(
+              return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize:MainAxisSize.max,
+                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   SizedBox(
                       height: 40,
-                      width: ScreenUtil.getInstance().screenWidth/2,
-                      child:FlatButton(
-                          textColor: model.index ==1?Colors.blueAccent:Colors.black26,
+                      width: ScreenUtil.getInstance().screenWidth / 2,
+                      child: FlatButton(
+                          textColor: model.index == 1 ? Colors.blueAccent : Colors.black26,
                           child: Text(
                             "教材区",
                           ),
                           highlightColor: Colors.transparent,
                           color: Colors.transparent,
-                          onPressed:(){
-                            if(model.index!=1){
+                          onPressed: () {
+                            if (model.index != 1) {
                               model.switchIndex(1);
                             }
                           },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0)))
-                  ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)))),
                   SizedBox(
                     height: 40,
-                    width: ScreenUtil.getInstance().screenWidth/2,
+                    width: ScreenUtil.getInstance().screenWidth / 2,
                     child: FlatButton(
-                        textColor: model.index ==2?Colors.blueAccent:Colors.black26,
+                        textColor: model.index == 2 ? Colors.blueAccent : Colors.black26,
                         child: Text(
                           "聊天区",
                         ),
                         highlightColor: Colors.transparent,
                         color: Colors.transparent,
-                        onPressed:(){
-                          if(model.index!=2){
+                        onPressed: () {
+                          if (model.index != 2) {
                             model.switchIndex(2);
                           }
                         },
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0))),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
                   )
                 ],
               );
             }),
             Consumer<RoomTabProvider>(builder: (context, model, child) {
               return Expanded(
-                flex: model.index ==1?1:0,
-                child:Visibility(
-                visible:model.index ==1,
-                replacement:Container(),
-                maintainState:true,
-                child:model.index ==1?_buildWhiteboard():Container()),
+                flex: model.index == 1 ? 1 : 0,
+                child: Visibility(
+                    visible: model.index == 1, replacement: Container(), maintainState: true, child: model.index == 1 ? _buildWhiteboard() : Container()),
               );
             }),
             Consumer<RoomTabProvider>(builder: (context, model, child) {
               return Expanded(
-                flex: model.index ==2?1:0,
-                child:Visibility(
-                    visible:model.index ==2,
-                    replacement:Container(),
-                    maintainState:true,
+                flex: model.index == 2 ? 1 : 0,
+                child: Visibility(
+                    visible: model.index == 2,
+                    replacement: Container(),
+                    maintainState: true,
                     child: GestureDetector(
                       behavior: HitTestBehavior.translucent,
                       onTap: () {
@@ -174,117 +168,117 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
               );
             }),
             Consumer<RoomTabProvider>(builder: (context, model, child) {
-              return model.index ==2?_buildTextComposer():Container();
+              return model.index == 2 ? _buildTextComposer() : Container();
             }),
           ])),
     );
   }
 
   ///视频区域
-  Widget _buildVideo(){
+  Widget _buildVideo() {
     return Consumer<TeacherProvider>(builder: (context, model, child) {
-      return  Stack(
+      return Stack(
         alignment: AlignmentDirectional(0.9, -0.9),
         children: <Widget>[
           Container(
               color: Colors.white,
               height: ScreenUtil.getInstance().getHeightPx(550),
-              child:model.user!=null && model.user.coVideo==1 && model.user.enableVideo==1? AgoraRenderWidget(model.user.uid):Container(
-                color:Colors.white,
-                child: Image.asset(
-                  'images/ic_teacher.png',
-                  width: ScreenUtil.getInstance().screenWidth,
-                  height: ScreenUtil.getInstance().getWidthPx(550),
-                ),
-              )
-          ),
+              child: model.user != null && model.user.coVideo == 1 && model.user.enableVideo == 1
+                  ? AgoraRenderWidget(model.user.uid)
+                  : Container(
+                      color: Colors.white,
+                      child: Image.asset(
+                        'images/ic_teacher.png',
+                        width: ScreenUtil.getInstance().screenWidth,
+                        height: ScreenUtil.getInstance().getWidthPx(550),
+                      ),
+                    )),
           Consumer<StudentProvider>(builder: (context, model, child) {
-             AgoraRtcEngine.setClientRole(model.user.coVideo==1 ?ClientRole.Broadcaster : ClientRole.Audience);
-             AgoraRtcEngine.muteLocalAudioStream(model.user.enableVideo!=1);
-             AgoraRtcEngine.muteLocalVideoStream(model.user.enableAudio!=1);
-            if(model.user.enableVideo ==1 ){
+            AgoraRtcEngine.setClientRole(model.user.coVideo == 1 ? ClientRole.Broadcaster : ClientRole.Audience);
+            AgoraRtcEngine.muteLocalAudioStream(model.user.enableVideo != 1);
+            AgoraRtcEngine.muteLocalVideoStream(model.user.enableAudio != 1);
+            if (model.user.enableVideo == 1) {
               AgoraRtcEngine.enableLocalVideo(true);
             }
-            if(model.user.enableAudio ==1 ){
+            if (model.user.enableAudio == 1) {
               AgoraRtcEngine.enableLocalAudio(true);
             }
             Widget widget = Container();
-            if (model.user.coVideo==1){
+            if (model.user.coVideo == 1) {
               widget = Container(
                   color: Colors.white,
                   height: ScreenUtil.getInstance().getHeightPx(220),
                   width: ScreenUtil.getInstance().getHeightPx(220),
-                  child: model.user.coVideo==1 && model.user.enableVideo==1? AgoraRenderWidget(model.user.uid,local: true):Container(
-                      color:Colors.white,
-                      child: Image.asset(
-                        'images/ic_student.png',
-                        width: ScreenUtil.getInstance().screenWidth,
-                        height: ScreenUtil.getInstance().getWidthPx(550),
-                      )
-                  ));
-            }else if(_others.length>0){
+                  child: model.user.coVideo == 1 && model.user.enableVideo == 1
+                      ? AgoraRenderWidget(model.user.uid, local: true)
+                      : Container(
+                          color: Colors.white,
+                          child: Image.asset(
+                            'images/ic_student.png',
+                            width: ScreenUtil.getInstance().screenWidth,
+                            height: ScreenUtil.getInstance().getWidthPx(550),
+                          )));
+            } else if (_others.length > 0) {
               widget = Container(
                   color: Colors.white,
                   height: ScreenUtil.getInstance().getHeightPx(220),
                   width: ScreenUtil.getInstance().getHeightPx(220),
-                  child: _others[0].coVideo==1 &&  _others[0].enableVideo==1? AgoraRenderWidget( _others[0].uid):Container(
-                      color:Colors.white,
-                      child: Image.asset(
-                        'images/ic_student.png',
-                        width: ScreenUtil.getInstance().screenWidth,
-                        height: ScreenUtil.getInstance().getWidthPx(550),
-                      )
-                  ));
+                  child: _others[0].coVideo == 1 && _others[0].enableVideo == 1
+                      ? AgoraRenderWidget(_others[0].uid)
+                      : Container(
+                          color: Colors.white,
+                          child: Image.asset(
+                            'images/ic_student.png',
+                            width: ScreenUtil.getInstance().screenWidth,
+                            height: ScreenUtil.getInstance().getWidthPx(550),
+                          )));
             }
-            return  widget;
+            return widget;
           }),
         ],
       );
     });
-
   }
+
   ///聊天内容
   Widget _buildTextComposer() {
-    return  Stack(children: <Widget>[
-       GestureDetector(
+    return Stack(children: <Widget>[
+      GestureDetector(
           onTap: () {
-            FocusScope.of(context).requestFocus( FocusNode());
+            FocusScope.of(context).requestFocus(FocusNode());
           },
-          child:  Container(
-            decoration:  BoxDecoration(),
+          child: Container(
+            decoration: BoxDecoration(),
           )),
-       Column(
+      Column(
         children: <Widget>[
           Divider(height: 1.0),
           Container(
               decoration: BoxDecoration(color: Theme.of(context).cardColor),
-              child:  IconTheme(
-                  data:  IconThemeData(color: Theme.of(context).accentColor),
-                  child:  Consumer<ChatProvider>(builder: (context, model, child) {
+              child: IconTheme(
+                  data: IconThemeData(color: Theme.of(context).accentColor),
+                  child: Consumer<ChatProvider>(builder: (context, model, child) {
                     return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child:  Row(children: <Widget>[
+                        child: Row(children: <Widget>[
                           Flexible(
                               child: new TextField(
-                                enabled: !model.muteAllChat,
-                                controller: _textController,
-                                onChanged: (String text) {
-                                  _chatProvider.setIsComposing(text.length > 0);
-                                },
-                                onSubmitted: _handleSubmitted,
-                                decoration:  InputDecoration.collapsed(hintText: model.muteAllChat?"禁言中":'发送消息'),
-                              )),
-                          !model.muteAllChat?Container(
-                              margin:  EdgeInsets.symmetric(horizontal: 4.0),
-                              child:  IconButton(
-                                  icon:  Icon(Icons.send),
-                                  onPressed: model.isComposing
-                                      ? () => _handleSubmitted(_textController.text)
-                                      : null),
-                            ):Container()
+                            enabled: !model.muteAllChat,
+                            controller: _textController,
+                            onChanged: (String text) {
+                              _chatProvider.setIsComposing(text.length > 0);
+                            },
+                            onSubmitted: _handleSubmitted,
+                            decoration: InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息'),
+                          )),
+                          !model.muteAllChat
+                              ? Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: IconButton(icon: Icon(Icons.send), onPressed: model.isComposing ? () => _handleSubmitted(_textController.text) : null),
+                                )
+                              : Container()
                         ]));
-                  })
-                  )),
+                  }))),
         ],
       )
     ]);
@@ -292,11 +286,11 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
 
   ///发送信息
   Future _handleSubmitted(String text) async {
-      if (text.trim() == "") return;
-      _textController.clear();
-      _chatProvider.setIsComposing(false);
-      FocusScope.of(context).requestFocus(new FocusNode());
-      RoomDao.roomChat(widget.roomData.room.roomId,widget.token, text);
+    if (text.trim() == "") return;
+    _textController.clear();
+    _chatProvider.setIsComposing(false);
+    FocusScope.of(context).requestFocus(new FocusNode());
+    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid);
   }
 
   ///初始化消息
@@ -304,8 +298,7 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
     _rtmClient = await AgoraRtmClient.createInstance(Config.APP_ID);
     print("rtmToken ${widget.roomData.user.rtmToken}  uid ${widget.roomData.user.uid.toString()}");
     _rtmClient.onMessageReceived = (AgoraRtmMessage message, String peerId) {
-
-      _handlePeerMsg(message,peerId);
+      _handlePeerMsg(message, peerId);
     };
     _rtmClient.onConnectionStateChanged = (int state, int reason) {
       _log('Connection state changed: ' + state.toString() + ', reason: ' + reason.toString());
@@ -319,24 +312,25 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
     await _rtmChannel.join();
   }
 
-  _handlePeerMsg(AgoraRtmMessage message, String peerId){
+  _handlePeerMsg(AgoraRtmMessage message, String peerId) {
     _log("Peer msg: " + peerId + ", msg: " + message.text);
     var msgJson = jsonDecode(message.text);
-    switch (msgJson["cmd"]){
+    switch (msgJson["cmd"]) {
       //co-video operation msg
       case 1:
-        if(msgJson["data"]["type"]==(CoVideoType.REJECT.index+1)){
+        if (msgJson["data"]["type"] == (CoVideoType.REJECT.index + 1)) {
           showToast("老师拒绝了你的连麦申请！");
-        }else if (msgJson["data"]["type"]==(CoVideoType.ACCEPT.index+1)){
+        } else if (msgJson["data"]["type"] == (CoVideoType.ACCEPT.index + 1)) {
           _handTypeProvider.switchType(0);
           showToast("老师接受了你的连麦申请！");
-        } else if (msgJson["data"]["type"]==(CoVideoType.ABORT.index+1)){
+        } else if (msgJson["data"]["type"] == (CoVideoType.ABORT.index + 1)) {
           _handTypeProvider.switchType(1);
           showToast("连麦结束！");
         }
         break;
     }
   }
+
   Future<AgoraRtmChannel> _createChannel(String name) async {
     AgoraRtmChannel channel = await _rtmClient.createChannel(name);
     channel.onMemberJoined = (AgoraRtmMember member) {
@@ -346,48 +340,47 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
       _log("Member left: " + member.userId + ', channel: ' + member.channelId);
     };
     channel.onMessageReceived = (AgoraRtmMessage message, AgoraRtmMember member) {
-
-      _handleMsg(message,member);
+      _handleMsg(message, member);
     };
     channel.onMemberCountUpdated = (int count) {
       _log("Channel onMemberCountUpdated:  count:$count ");
     };
-    channel.onError = (err){
+    channel.onError = (err) {
       _log("Channel err:  err:$err ");
     };
     return channel;
   }
-  _handleMsg(AgoraRtmMessage message, AgoraRtmMember member){
+
+  _handleMsg(AgoraRtmMessage message, AgoraRtmMember member) {
     _log("Channel msg: " + member.userId + ", msg: " + message.text);
     var msgJson = jsonDecode(message.text);
-    switch (msgJson["cmd"]){
-      case 1://simple chat msg
+    switch (msgJson["cmd"]) {
+      case 1: //simple chat msg
         ChatMessage chatMessage = ChatMessage(
-            timestamp:msgJson["timestamp"],
+            timestamp: msgJson["timestamp"],
             userId: msgJson["data"]["userId"],
-            userName:msgJson["data"]["userName"],
-            type:msgJson["data"]["type"],
-            message:msgJson["data"]["message"]
-        );
+            userName: msgJson["data"]["userName"],
+            type: msgJson["data"]["type"],
+            message: msgJson["data"]["message"]);
         _chatProvider.insertChatMessageList(chatMessage);
         break;
       case 2: // user join or leave msg
         break;
       case 3: //room attributes updated msg
         _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
-        _chatProvider.setMuteAllChat( msgJson["data"]["muteAllChat"]==1);
+        _chatProvider.setMuteAllChat(msgJson["data"]["muteAllChat"] == 1);
         break;
-      case 4://user attributes updated msg
+      case 4: //user attributes updated msg
         List<RoomUser> coVideoUsers = new List();
-        msgJson["data"].forEach((item){
+        msgJson["data"].forEach((item) {
           coVideoUsers.add(RoomUser.fromJson(item));
         });
         _updateUsers(coVideoUsers);
         break;
-      case 5://replay msg
+      case 5: //replay msg
     }
-
   }
+
   Future<void> initializeRtc() async {
     await AgoraRtcEngine.create(Config.APP_ID);
     await AgoraRtcEngine.enableVideo();
@@ -401,19 +394,21 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
     configuration.dimensions = Size(1920, 1080);
     await AgoraRtcEngine.setVideoEncoderConfiguration(configuration);
     await AgoraRtcEngine.joinChannel(widget.roomData.user.rtcToken, widget.roomData.room.channelName, widget.roomData.user.userName, widget.roomData.user.uid);
-    if (_teacher!=null ){
+    if (_teacher != null) {
       _teacherProvider.notifier(_teacher);
     }
   }
+
   _startVideo() async {
     print("_startVideo ::_local $_local");
   }
+
   /// Add agora event handlers
   void _addAgoraEventHandlers() {
     AgoraRtcEngine.onError = (dynamic code) {
-        final info = 'onError: $code';
-        print("onError: $code");
-        _infoStrings.add(info);
+      final info = 'onError: $code';
+      print("onError: $code");
+      _infoStrings.add(info);
     };
 
     AgoraRtcEngine.onJoinChannelSuccess = (
@@ -421,29 +416,29 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
       int uid,
       int elapsed,
     ) {
-        final info = 'onJoinChannel: $channel, uid: $uid';
-        _infoStrings.add(info);
+      final info = 'onJoinChannel: $channel, uid: $uid';
+      _infoStrings.add(info);
     };
 
     AgoraRtcEngine.onLeaveChannel = () {
-        _infoStrings.add('onLeaveChannel');
-        _users.clear();
+      _infoStrings.add('onLeaveChannel');
+      _users.clear();
     };
 
     AgoraRtcEngine.onUserJoined = (int uid, int elapsed) {
-        final info = 'userJoined: $uid';
-        _infoStrings.add(info);
-        _users.add(uid);
+      final info = 'userJoined: $uid';
+      _infoStrings.add(info);
+      _users.add(uid);
     };
 
     AgoraRtcEngine.onUserOffline = (int uid, int reason) {
-        final info = 'userOffline: $uid';
-        _infoStrings.add(info);
-        _users.remove(uid);
+      final info = 'userOffline: $uid';
+      _infoStrings.add(info);
+      _users.remove(uid);
     };
     AgoraRtcEngine.onFirstRemoteVideoFrame = (int uid, int width, int height, int elapsed) {
-        final info = 'firstRemoteVideo: $uid ${width}x $height';
-        _infoStrings.add(info);
+      final info = 'firstRemoteVideo: $uid ${width}x $height';
+      _infoStrings.add(info);
     };
   }
 
@@ -451,137 +446,138 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
     print(info);
     _infoStrings.insert(0, info);
   }
-  void _updateUsers(List<RoomUser> coVideoUsers){
+
+  void _updateUsers(List<RoomUser> coVideoUsers) {
     RoomUser local;
     RoomUser teacher;
     List<RoomUser> others = new List();
     coVideoUsers?.forEach((u) {
       if (u.isTeacher()) {
         teacher = u;
-      }else if (u.userId ==_local.userId){
+      } else if (u.userId == _local.userId) {
         local = u;
-      }else{
+      } else {
         others.add(u);
       }
     });
 
-    if (ObjectUtil.isNotEmpty(teacher)){
+    if (ObjectUtil.isNotEmpty(teacher)) {
       _teacher = teacher;
-    }else{
+    } else {
       _teacher?.coVideo = 0;
     }
     _teacherProvider.notifier(_teacher);
 
-    if (ObjectUtil.isNotEmpty(local)){
+    if (ObjectUtil.isNotEmpty(local)) {
       _local = local;
       _startVideo();
-    }else{
+    } else {
       _local?.coVideo = 0;
     }
     _others.clear();
     _others.addAll(others);
     _studentProvider.notifier(_local);
   }
+
   ///白板区域
-  Widget _buildWhiteboard()  {
-    return Stack(
-        alignment: AlignmentDirectional(0.9, -0.9),
-        children: <Widget>[
-          Whiteboard(uuid: widget.boardId,roomToken: widget.boardToken,controller: _whiteboardController),
-          Consumer<HandTypeProvider>(builder: (context, model, child) {
-            return GestureDetector(
-              child:Card(
-                elevation:1,
-                color:Colors.white,
-                child: Image.asset(
-                  model.type==1?'images/ic_hand_up.png':'images/ic_hand_down.png',
-                  width: ScreenUtil.getInstance().getWidthPx(135),
-                ),
-              ),
-              onTap: () {
-                _hand();
-              },
-            );
-          }),
-        ]
-    );
+  Widget _buildWhiteboard() {
+    return Stack(alignment: AlignmentDirectional(0.9, -0.9), children: <Widget>[
+      Whiteboard(uuid: widget.boardId, roomToken: widget.boardToken, controller: _whiteboardController),
+      Consumer<HandTypeProvider>(builder: (context, model, child) {
+        return GestureDetector(
+          child: Card(
+            elevation: 1,
+            color: Colors.white,
+            child: Image.asset(
+              model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
+              width: ScreenUtil.getInstance().getWidthPx(135),
+            ),
+          ),
+          onTap: () {
+            _hand();
+          },
+        );
+      }),
+    ]);
   }
 
   _hand() async {
-    if (_handTypeProvider.type==1){
+    if (_handTypeProvider.type == 1) {
       //举手
-      await RoomDao.roomCoVideo(widget.roomData.room.roomId,widget.token, CoVideoType.APPLY);
-    }else{
+      await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, CoVideoType.APPLY);
+    } else {
       //取消连麦
-      var res  = await RoomDao.roomCoVideo(widget.roomData.room.roomId,widget.token, _local.coVideo==1?CoVideoType.EXIT:CoVideoType.CANCEL);
-      if (res.data["msg"] == "Success"){
+      var res = await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, _local.coVideo == 1 ? CoVideoType.EXIT : CoVideoType.CANCEL);
+      if (res.data["msg"] == "Success") {
         _handTypeProvider.switchType(1);
       }
     }
   }
+
   ///聊天区域
-  Widget _buildChat(){
-   return ScrollConfiguration(
-     behavior: MyBehavior(),
-     child: Scrollable(
-       physics: AlwaysScrollableScrollPhysics(),
-       controller: listScrollController,
-       axisDirection: AxisDirection.up,
-       viewportBuilder: (context, offset) {
-         return ExpandedViewport(
-           offset: offset,
-           axisDirection: AxisDirection.up,
-           slivers: <Widget>[
-             SliverExpanded(),
-             Consumer<ChatProvider>(builder: (context, model, child) {
-               return   SliverList(
-                 delegate: SliverChildBuilderDelegate((c, i) {
-                   return Container(
-                       alignment: Alignment.centerLeft,
-                       child: Row(
-                         //  mainAxisAlignment:MainAxisAlignment.end,
-                         crossAxisAlignment: CrossAxisAlignment.start,
-                         children: <Widget>[
-                           Padding(
-                             padding: const EdgeInsets.only(right: 5.0, left: 10,top:5),
-                             child: Text(
-                               model.chatMessageList[i].userName,
-                               textAlign:TextAlign.center,
-                               softWrap: true,
-                               style: TextStyle(fontSize: 14.0, color: Colors.black),
-                             ),
-                           ),
-                           Container(
-                             constraints: BoxConstraints(
-                               maxWidth: MediaQuery.of(context).size.width * 0.8,
-                             ),
-                             child:  Bubble(
-                               style: BubbleStyle(
-                                 nip: BubbleNip.leftText,
-                                 color: Colors.white,
-                                 nipOffset: 5,
-                                 nipWidth: 10,
-                                 nipHeight: 10,
-                                 margin: BubbleEdges.only(right: 50.0),
-                                 padding: BubbleEdges.only(top: 8, bottom: 10, left: 10, right: 15),
-                               ),
-                               child: Text(
-                                 model.chatMessageList[i].message,
-                                 softWrap: true,
-                                 style: TextStyle(fontSize: 14.0, color: Colors.black),
-                               ),
-                             ),
-                             margin: EdgeInsets.only(
-                               bottom: 5.0,
-                             ),
-                           ),
-                         ],
-                       ));
-                 },
-                   childCount: model.chatMessageList.length,
-                 ),
-               );
-             }),
+  Widget _buildChat() {
+    return ScrollConfiguration(
+      behavior: MyBehavior(),
+      child: Scrollable(
+        physics: AlwaysScrollableScrollPhysics(),
+        controller: listScrollController,
+        axisDirection: AxisDirection.up,
+        viewportBuilder: (context, offset) {
+          return ExpandedViewport(
+            offset: offset,
+            axisDirection: AxisDirection.up,
+            slivers: <Widget>[
+              SliverExpanded(),
+              Consumer<ChatProvider>(builder: (context, model, child) {
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (c, i) {
+                      return Container(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            //  mainAxisAlignment:MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(right: 5.0, left: 10, top: 5),
+                                child: Text(
+                                  model.chatMessageList[i].userName,
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                                ),
+                              ),
+                              Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.of(context).size.width * 0.8,
+                                ),
+                                child: Bubble(
+                                  style: BubbleStyle(
+                                    nip: BubbleNip.leftText,
+                                    color: Colors.white,
+                                    nipOffset: 5,
+                                    nipWidth: 10,
+                                    nipHeight: 10,
+                                    margin: BubbleEdges.only(right: 50.0),
+                                    padding: BubbleEdges.only(top: 8, bottom: 10, left: 10, right: 15),
+                                  ),
+                                  child: Text(
+                                    model.chatMessageList[i].message,
+                                    softWrap: true,
+                                    style: TextStyle(fontSize: 14.0, color: Colors.black),
+                                  ),
+                                ),
+                                margin: EdgeInsets.only(
+                                  bottom: 5.0,
+                                ),
+                              ),
+                            ],
+                          ));
+                    },
+                    childCount: model.chatMessageList.length,
+                  ),
+                );
+              }),
 //                        SliverToBoxAdapter(
 //                          child: isShowLoading
 //                              ? Container(
@@ -599,13 +595,14 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
 //                          )
 //                              : new Container(),
 //                        ),
-           ],
-         );
-       },
-     ),
-   );
- }
- @override
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  @override
   void dispose() {
     super.dispose();
     AgoraRtcEngine?.leaveChannel();
@@ -614,6 +611,7 @@ class RoomPageState extends State<RoomPage> with SingleTickerProviderStateMixin 
     _rtmClient?.logout();
   }
 }
+
 class MyBehavior extends ScrollBehavior {
   @override
   Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {

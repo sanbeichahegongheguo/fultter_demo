@@ -26,6 +26,9 @@ main() {
         SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
         SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
       }
+      if (Platform.isIOS) {
+        PaintingBinding.instance.imageCache.maximumSizeBytes = 20 << 20;
+      }
       Screen.keepOn(true);
     }, onError: (Object obj, StackTrace stack) {
       Log.e(obj, tag: "main");

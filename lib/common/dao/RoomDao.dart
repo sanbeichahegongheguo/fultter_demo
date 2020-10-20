@@ -95,12 +95,13 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
-  static roomChat(String roomId, String token, String msg) async {
+  static roomChat(String roomId, String token, String msg, String liveRoomId) async {
     var params = {
       "message": msg,
       "type": 1,
       "token": token,
       "roomId": roomId,
+      "liveRoomId": liveRoomId,
     };
     var res =
         await httpManager.netFetch(AddressUtil.getInstance().liveChat(), params, null, Options(method: "POST"), contentType: HttpManager.CONTENT_TYPE_FORM);
@@ -110,9 +111,10 @@ class RoomDao {
         result = res.data;
       } else {
         res.result = false;
+        result = res.data["message"];
       }
     }
-    return new DataResult(result, res.result);
+    return DataResult(result, res.result);
   }
 
   static appCheck() async {

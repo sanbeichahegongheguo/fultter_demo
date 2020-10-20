@@ -856,7 +856,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     _textController.clear();
     _chatProvider.setIsComposing(false);
     FocusScope.of(context).requestFocus(new FocusNode());
-    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text);
+    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid);
   }
 
   ///初始化消息

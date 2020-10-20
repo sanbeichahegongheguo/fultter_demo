@@ -924,7 +924,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _textController.clear();
     _chatProvider.setIsComposing(false);
     FocusScope.of(context).requestFocus(new FocusNode());
-    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text);
+    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid).then((res) {
+      if (res != null && !res.result) {
+        showToast(res.data);
+      }
+    });
   }
 
   ///初始化消息
@@ -1886,11 +1890,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     socket?.close();
     BetterSocket.close();
     flickManager?.release();
+    flickManager?.dispose();
     socket = null;
     _currentRes = null;
     _subscription?.cancel();
     _mp3PlayerProvider.close();
     _eyerestProvider.close();
+    _textController?.dispose();
+    PaintingBinding.instance.imageCache.clear();
     super.dispose();
   }
 
