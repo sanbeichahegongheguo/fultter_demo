@@ -279,3 +279,27 @@ class CourseProvider with ChangeNotifier {
     _maxWidth = maxWidth;
   }
 }
+
+class NetworkQualityProvider with ChangeNotifier {
+  List networkLevel = ['unknown', 'excellent', 'good', 'poor', 'bad', 'very bad', 'down'];
+  Map networkQualityIcon = {
+    'excellent': 'images/live/signal-good@2x.png',
+    'good': 'images/live/signal-good@2x.png',
+    'poor': 'images/live/signal-normal@2x.png',
+    'bad': 'images/live/signal-normal@2x.png',
+    'very bad': 'images/live/signal-bad@2x.png',
+    'down': 'images/live/signal-bad@2x.png',
+    'unknown': 'images/live/signal-bad@2x.png',
+  };
+  String networkQuality = 'unknown';
+  String defaultQuality = 'unknown';
+
+  String get images => networkQualityIcon[networkQuality];
+
+  setNetworkQuality(int quality) {
+    if (quality < networkLevel.length) {
+      networkQuality = networkLevel[quality] ?? defaultQuality;
+      notifyListeners();
+    }
+  }
+}

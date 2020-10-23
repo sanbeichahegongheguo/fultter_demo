@@ -18,5 +18,6 @@ class LiveRoomConst {
   static const String MP3 = "MP3"; //MP3播放
   static const String EVENT_STAR = "event-star"; //星星奖励事件
   static const String EVENT_MUTE = "event-mute"; //禁言事件
+  static const String EVENT_ALL = "event-all"; //所有事件
 
 }

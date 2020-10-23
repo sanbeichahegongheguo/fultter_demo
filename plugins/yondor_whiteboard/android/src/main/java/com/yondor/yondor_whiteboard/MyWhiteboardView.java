@@ -100,9 +100,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
 //        configuration.setDisableDeviceInputs(true);
         whiteSdk = new WhiteSdk(whiteboardView, context, configuration);
         boardManager.setListener(this);
-        whiteboardView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            boardManager.refreshViewSize();
-        });
+//        whiteboardView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+//            boardManager.refreshViewSize();
+//        });
     }
     private void initView(){
         initBoardWithRoomToken(uuid,roomToken);
@@ -129,7 +129,8 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
 
             @Override
             public void catchEx(SDKError t) {
-                log.e(t.getMessage());
+                log.e("初始化错误",t.getMessage());
+                initView();
 //                ToastManager.showShort(t.getMessage());
             }
         });

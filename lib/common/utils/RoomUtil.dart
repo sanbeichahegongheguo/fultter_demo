@@ -5,6 +5,7 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/net/address_util.dart';
+import 'package:flutter_start/common/utils/ping.dart';
 import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/provider/room.dart';
@@ -23,6 +24,8 @@ class RoomUtil {
   static String tag = "RoomUtil";
   static String mp4Url = "https://qrescdn.k12china.com/qlib/mp4/2020/10/13/17/1317135054.mp4";
   static String mp4Path = "qlib/mp4/2020/10/13/17/1317135054.mp4";
+  static String qresCdnHost = "qrescdn.k12china.com";
+  static String qresHost = "qres.k12china.com";
   static goRoomPage(BuildContext context,
       {String url,
       int userId,
@@ -228,6 +231,22 @@ class RoomUtil {
     // print("match=$match");
     var progressNum = 0.0;
     if (!offline && !match) {
+      //网络检测
+      try {
+        final command = BashPingCommand();
+        print("11111k12china.com  ");
+        var pingSettings = PingSettings(timeout: 2, packetSize: 1024);
+        final now = DateTime.now();
+        double qres = await command.execute(qresHost, pingSettings);
+        double qrescdn = await command.execute(qresCdnHost, pingSettings);
+        print(" qrescdn $qrescdn ms  qres $qres ms  runtime ${DateTime.now().difference(now).inMilliseconds}");
+        if (qres < qrescdn) {
+          resUrl = resUrl.replaceFirst(qresCdnHost, qresHost);
+        }
+      } catch (e) {
+        Log.e(e, tag: "RoomUtil");
+      }
+
       await Dio().download(resUrl, filePath, onReceiveProgress: (int loaded, int total) {
         print("下载进度：" + NumUtil.getNumByValueDouble(loaded / total * 100, 2).toStringAsFixed(2) + "%"); //取精度，如：56.45%
         if (progress != null) {

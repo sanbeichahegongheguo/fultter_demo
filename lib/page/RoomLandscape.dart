@@ -8,7 +8,6 @@ import 'package:agora_rtm/agora_rtm.dart';
 import 'package:better_socket/better_socket.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:fijkplayer/fijkplayer.dart';
-import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +24,7 @@ import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/Log.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/ping.dart';
 import 'package:flutter_start/models/ChatMessage.dart';
 import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/models/Room.dart';
@@ -115,6 +115,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
   Mp3PlayerProvider _mp3PlayerProvider = Mp3PlayerProvider();
   EyerestProvider _eyerestProvider = EyerestProvider();
+  NetworkQualityProvider _networkQualityProvider = NetworkQualityProvider();
   WebViewPlusController _webViewPlusController;
   int _isPlay;
   int _time;
@@ -126,14 +127,16 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Timer _hiddenTopTimer;
   FijkPlayer flickManager = FijkPlayer();
   Timer _socketPingTimer;
+  Timer _socketLossTimer;
   Duration _socketPingDuration = Duration(seconds: 45);
+  Duration _socketLossDuration = Duration(seconds: 10);
   bool isShowDialog = false;
   bool isShowTip = true;
   Timer isShowTipTimer;
   FocusNode _textFocusNode = FocusNode();
   StreamSubscription<ConnectivityResult> _subscription;
   Timer _connectivityNoneTimer;
-
+  List<SocketMsg> msgList = List();
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -240,6 +243,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           ),
           ChangeNotifierProvider<EyerestProvider>.value(
             value: _eyerestProvider,
+          ),
+          ChangeNotifierProvider<NetworkQualityProvider>.value(
+            value: _networkQualityProvider,
           ),
         ],
         child: WillPopScope(
@@ -751,7 +757,22 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           width: ScreenUtil.getInstance().screenWidth * 0.2,
           height: ScreenUtil.getInstance().getHeightPx(550),
           child: flag
-              ? AgoraRenderWidget(teacherModel.user.uid)
+              ? Stack(
+                  alignment: AlignmentDirectional.bottomStart,
+                  children: [
+                    AgoraRenderWidget(teacherModel.user.uid),
+                    Consumer<NetworkQualityProvider>(builder: (context, model, child) {
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 1, left: 1),
+                        child: Image.asset(
+                          model.images,
+                          fit: BoxFit.contain,
+                          width: ScreenUtil.getInstance().getWidth(11),
+                        ),
+                      );
+                    })
+                  ],
+                )
               : Container(
                   color: Colors.white,
                   child: Image.asset('images/ic_teacher.png', fit: BoxFit.fill, width: ScreenUtil.getInstance().screenWidth * 0.2
@@ -1156,6 +1177,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       final info = 'firstRemoteVideo: $uid ${width}x $height';
       print("onFirstRemoteVideoFrame : $info");
     };
+
+    AgoraRtcEngine.onNetworkQuality = (int uid, int txQuality, int rxQuality) {
+      print("onNetworkQuality : uid :$uid  txQuality:$txQuality  rxQuality:$rxQuality  ", level: Log.debug);
+
+      if (uid == 0) {
+        int val = max<int>(txQuality, rxQuality);
+        _networkQualityProvider.setNetworkQuality(val);
+      }
+    };
   }
 
   void _log(String info) {
@@ -1338,11 +1368,17 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         Log.i('sendMsg : ping', tag: RoomLandscapePage.sName);
         BetterSocket.sendMsg('{"Ping":{}}');
       });
+      _socketLossTimer?.cancel();
+      _socketLossTimer = null;
+      _socketLossTimer = Timer.periodic(_socketLossDuration, (timer) {
+        Log.i('sendMsg : GetCurrent', tag: RoomLandscapePage.sName);
+        BetterSocket.sendMsg('{"GetCurrent":{}}');
+      });
     }, onMessage: (message) {
       Log.i('newMsg : $message', tag: RoomLandscapePage.sName);
       try {
         SocketMsg socketMsg = SocketMsg.fromJson(jsonDecode(message.toString()));
-        _handleSocketMsg(socketMsg);
+        Future(() => _handleSocketMsg(socketMsg));
       } catch (e) {
         Log.e("_handleSocketMsg ${e.toString()} ", tag: RoomLandscapePage.sName);
       }
@@ -1362,29 +1398,35 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
   }
 
+  SocketMsg _lastCoursewaretMsg;
+  SocketMsg _lastQuesMsg;
+  SocketMsg _lastTimerMsg;
+  SocketMsg _lastEyerestMsg;
+  SocketMsg _lastMp3MsgMsg;
   _handleSocketMsg(SocketMsg socketMsg) {
     switch (socketMsg.type) {
       case ppt:
       case h5:
       case mp4:
       case BREAK:
-      case "event-current":
-        _handleCourseware(socketMsg);
+      case LiveRoomConst.EVENT_CURRENT:
+        _lastCoursewaretMsg = socketMsg;
+        Future(() => _handleCourseware(socketMsg));
         break;
-      case "board":
+      case LiveRoomConst.BOARD:
         if ((_currentRes != null && _currentRes.type == mp4)) {
           _resetVideo();
         }
         _resProvider.setRes(null);
         _currentRes = null;
         break;
-      case "event-board":
+      case LiveRoomConst.EVENT_BOARD:
         _boardProvider.setEnableBoard(socketMsg.text == "1" ? 1 : 0);
         break;
-      case "event-hand":
+      case LiveRoomConst.EVENT_HAND:
         _handProvider.setEnableHand(socketMsg.text != null && socketMsg.text == "1" ? true : false);
         break;
-      case "event-join-success":
+      case LiveRoomConst.EVENT_JOIN_SUCCESS:
         if (socketMsg.text == "") {
           return;
         }
@@ -1409,26 +1451,81 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case SEL:
       case JUD:
       case MULSEL:
+        _lastQuesMsg = socketMsg;
         _handleSEL(socketMsg.text);
         break;
       case RANRED:
+        _lastQuesMsg = socketMsg;
         _handleRANRED(socketMsg.text);
         break;
       case REDRAIN:
+        _lastQuesMsg = socketMsg;
         _handleREDRAIN(socketMsg.text);
         break;
       case TIMER:
+        _lastTimerMsg = socketMsg;
         _handleTIMER(socketMsg.text);
         break;
       case LiveRoomConst.MP3:
+        _lastMp3MsgMsg = socketMsg;
         _mp3PlayerProvider.handle(widget.roomData.courseware, socketMsg);
         break;
       case LiveRoomConst.EYEREST:
+        _lastEyerestMsg = socketMsg;
         _eyerestProvider.handle(widget.roomData.courseware, socketMsg);
         break;
       case LiveRoomConst.EVENT_STAR:
         _handleSTAR(socketMsg.text);
         break;
+      case LiveRoomConst.EVENT_ALL:
+        _handleEventAll(socketMsg);
+        break;
+    }
+  }
+
+  _handleEventAll(SocketMsg socketMsg) {
+    //处理课件内容
+    var msg = jsonDecode(socketMsg.text);
+    var coursewareEvent = msg["coursewareEvent"];
+    var questEvent = msg["questEvent"];
+    var timerEvent = msg["timerEvent"];
+    var eyerestEvent = msg["eyerestEvent"];
+    var mp3Event = msg["mp3Event"];
+    if (coursewareEvent != null) {
+      SocketMsg coursewaretMsg = SocketMsg.fromJson(coursewareEvent);
+      if (_lastCoursewaretMsg == null || _lastCoursewaretMsg.timestamp < coursewaretMsg.timestamp) {
+        _handleCourseware(coursewaretMsg);
+      }
+    }
+    if (questEvent != null) {
+      SocketMsg questMsg = SocketMsg.fromJson(questEvent);
+      if (_lastQuesMsg == null || _lastQuesMsg.timestamp < questMsg.timestamp) {
+        if (questMsg.type == SEL || questMsg.type == JUD || questMsg.type == MULSEL) {
+          _handleSEL(questMsg.text, isCheck: true);
+        } else if (questMsg.type == RANRED) {
+          _handleRANRED(questMsg.text, isCheck: true);
+        } else if (questMsg.type == REDRAIN) {
+          _handleREDRAIN(questMsg.text, isCheck: true);
+        }
+      }
+    }
+    if (timerEvent != null) {
+      SocketMsg timerMsg = SocketMsg.fromJson(timerEvent);
+      if (_lastTimerMsg == null || _lastTimerMsg.timestamp < timerMsg.timestamp) {
+        _handleTIMER(timerMsg.text);
+      }
+    }
+    if (eyerestEvent != null) {
+      SocketMsg eyerestMsg = SocketMsg.fromJson(eyerestEvent);
+      if (_lastEyerestMsg == null || _lastEyerestMsg.timestamp < eyerestMsg.timestamp) {
+        _eyerestProvider.handle(widget.roomData.courseware, socketMsg);
+      }
+    }
+    if (mp3Event != null) {
+      SocketMsg mp3Msg = SocketMsg.fromJson(mp3Event);
+      if (_lastMp3MsgMsg == null || _lastMp3MsgMsg.timestamp < mp3Msg.timestamp) {
+        _mp3PlayerProvider.handle(widget.roomData.courseware, socketMsg);
+      }
     }
   }
 
@@ -1526,7 +1623,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _mp3PlayerProvider.close();
       _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
-        _resetVideo();
+        await _resetVideo();
       }
       if (ques.type == mp4 && _currentRes != null && _currentRes.type == mp4) {
         if (flickManager.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}" ||
@@ -1887,6 +1984,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
     _socketPingTimer?.cancel();
+    _socketLossTimer?.cancel();
     socket?.close();
     BetterSocket.close();
     flickManager?.release();
