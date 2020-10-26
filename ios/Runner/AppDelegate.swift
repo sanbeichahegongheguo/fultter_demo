@@ -17,6 +17,7 @@ import Flutter
             //注册插件
             BannerPlugin.registerWithRegistrar(registar: registrar(forPlugin: "BannerPlugin") as! FlutterPluginRegistrar, controller: controller!)
         }
+        SimplePingChannel().register(controller: window.rootViewController as! FlutterViewController)
         FLTCameraPlugin.register(with: self.registrar(forPlugin: "FLTCameraPlugin") as! FlutterPluginRegistrar)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }

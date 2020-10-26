@@ -233,7 +233,7 @@ class RoomUtil {
     if (!offline && !match) {
       //网络检测
       try {
-        final command = BashPingCommand();
+        final command = PingCommand.create();
         print("11111k12china.com  ");
         var pingSettings = PingSettings(timeout: 2, packetSize: 1024);
         final now = DateTime.now();

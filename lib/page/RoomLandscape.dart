@@ -1988,7 +1988,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     socket?.close();
     BetterSocket.close();
     flickManager?.release();
-    flickManager?.dispose();
     socket = null;
     _currentRes = null;
     _subscription?.cancel();

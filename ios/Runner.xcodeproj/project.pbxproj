@@ -50,6 +50,8 @@
 		AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2722EEA37400765808 /* ImageData.mm */; };
 		AEF43F2D22EEA37400765808 /* Mnist.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEF43F2922EEA37400765808 /* Mnist.mm */; };
 		B49C639924DCEBDF0037462B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B49C639824DCEBDF0037462B /* StoreKit.framework */; };
+		B4F3092325426994006D3797 /* SimplePingChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4F3092025426994006D3797 /* SimplePingChannel.swift */; };
+		B4F3092B254278E5006D3797 /* MySimplePing.m in Sources */ = {isa = PBXBuildFile; fileRef = B4F3092A254278E5006D3797 /* MySimplePing.m */; };
 		D5AC550C610483AA74C2FC9A /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 703282FEB9B72281A2657B4F /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -152,6 +154,9 @@
 		AEF43F2922EEA37400765808 /* Mnist.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Mnist.mm; sourceTree = "<group>"; };
 		AEF43F2A22EEA37400765808 /* PathObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathObject.h; sourceTree = "<group>"; };
 		B49C639824DCEBDF0037462B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		B4F3092025426994006D3797 /* SimplePingChannel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SimplePingChannel.swift; path = SimplePing/SimplePingChannel.swift; sourceTree = "<group>"; };
+		B4F3092725427738006D3797 /* MySimplePing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MySimplePing.h; path = SimplePing/MySimplePing.h; sourceTree = "<group>"; };
+		B4F3092A254278E5006D3797 /* MySimplePing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MySimplePing.m; path = SimplePing/MySimplePing.m; sourceTree = "<group>"; };
 		C1D536F4DEB8EFD859C25C45 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -233,6 +238,9 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				B4F3092A254278E5006D3797 /* MySimplePing.m */,
+				B4F3092725427738006D3797 /* MySimplePing.h */,
+				B4F3092025426994006D3797 /* SimplePingChannel.swift */,
 				AEC4E405249CD81F000241F9 /* Runner.entitlements */,
 				AEC4E3EF249C52F4000241F9 /* RunnerDebug.entitlements */,
 				AEC4096F23B21C77000F8FDC /* Resources */,
@@ -568,6 +576,7 @@
 				AEF43F2C22EEA37400765808 /* ImageData.mm in Sources */,
 				AEC4093023B1EF88000F8FDC /* BJImageCropper.m in Sources */,
 				AEC4092F23B1EF88000F8FDC /* CameraPlugin.m in Sources */,
+				B4F3092B254278E5006D3797 /* MySimplePing.m in Sources */,
 				AED4820822F82622005E93AB /* BannerViewFactory.swift in Sources */,
 				AEC4092D23B1EF88000F8FDC /* CameraMic.m in Sources */,
 				AEC4092E23B1EF88000F8FDC /* CustomGallery.m in Sources */,
@@ -579,6 +588,7 @@
 				AEC4093123B1EF88000F8FDC /* CustomCamera.m in Sources */,
 				AE7A1E312318FF1300B76925 /* SplashView.swift in Sources */,
 				AE7A1E332319066500B76925 /* SplashViewFactory.swift in Sources */,
+				B4F3092325426994006D3797 /* SimplePingChannel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,6 +618,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -660,13 +671,14 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34957;
+				CURRENT_PROJECT_VERSION = 34958;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -709,7 +721,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.730;
+				MARKETING_VERSION = 2.0.735;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -805,6 +817,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -862,6 +875,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -915,13 +929,14 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34957;
+				CURRENT_PROJECT_VERSION = 34958;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -964,7 +979,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.730;
+				MARKETING_VERSION = 2.0.735;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1062,13 +1077,14 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34957;
+				CURRENT_PROJECT_VERSION = 34958;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -1111,7 +1127,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.730;
+				MARKETING_VERSION = 2.0.735;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",

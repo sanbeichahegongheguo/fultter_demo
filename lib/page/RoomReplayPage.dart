@@ -100,9 +100,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     }
     OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
     orientation = 1;
-//    _initWebsocketManager();
-//    initializeRtm();
-//    initializeRtc();
     if (Platform.isIOS) {
       HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
     }
@@ -140,7 +137,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   static final _users = <int>[];
   WhiteboardController _whiteboardController = WhiteboardController();
   Timer _hiddenTopTimer;
-  FlickManager flickManager;
+  FijkPlayer flickManager = FijkPlayer();
   FijkPlayer _teacherPlayer = FijkPlayer();
   Timer _socketPingTimer;
   Duration _socketPingDuration = Duration(seconds: 45);
@@ -268,15 +265,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                                 ),
                               )
                             ]),
-//                            Consumer<CourseProvider>(builder: (context, model, child) {
-//                              return model.status == 1 ? UserStarWidget() : Container();
-//                            }),
                             Consumer<CourseProvider>(builder: (context, model, child) {
                               return model.status == 1 ? _getLiveTimerWidget() : Container();
                             }),
-//                            Consumer<CourseProvider>(builder: (context, model, child) {
-//                              return model.status == 1 ? _buildRank() : Container();
-//                            }),
                             Consumer<CourseProvider>(builder: (context, model, child) {
                               return model.status == 1
                                   ? Positioned(
@@ -379,49 +370,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         );
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
-          if (Platform.isIOS) {
-//            if (resModel.isShow == null || !resModel.isShow) {
-//              Future.delayed(Duration(milliseconds: 500), () {
-//                _boardProvider.setTestBoard(0);
-//                Future.delayed(Duration(milliseconds: 500), () {
-//                  _boardProvider.setTestBoard(1);
-//                });
-//              });
-//            }
-          }
-          print("${resModel.isShow == null || !resModel.isShow}resModel.isShow == null || !resModel.isShow");
-          result = Container(
-            color: Colors.black,
-            child: WebViewPlus(
-              initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-              javascriptMode: JavascriptMode.unrestricted,
-              javascriptChannels: <JavascriptChannel>[
-                JavascriptChannel(
-                    name: 'Courseware',
-                    onMessageReceived: (JavascriptMessage message) async {
-                      var msg = jsonDecode(message.message);
-                      Log.f("@收到Courseware 回调 $msg", tag: RoomReplayPage.sName);
-                      Store<GSYState> store = StoreProvider.of(context);
-                      BetterSocket.sendMsg(jsonEncode({
-                        "Event": {
-                          "event": "event-doCourseware",
-                          "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
-                        }
-                      }));
-                    })
-              ].toSet(),
-              onWebViewCreated: (controller) async {
-                _webViewPlusController = controller;
-                print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-                controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
-              },
-              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                new Factory<OneSequenceGestureRecognizer>(
-                  () => new EagerGestureRecognizer(),
-                ),
-              ].toSet(),
-            ),
-          );
+          result = _buildWebView(resModel);
         } else if (resModel.res.type == ppt ||
             resModel.res.type == BREAK ||
             resModel.res.type == JUD ||
@@ -429,38 +378,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
             resModel.res.type == MULSEL ||
             resModel.res.type == RANRED ||
             resModel.res.type == REDRAIN) {
-          result = GestureDetector(
-            child: Container(
-                child: Image.file(
-              File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
-              fit: BoxFit.contain,
-            )),
-            onTap: () => _roomShowTopProvider.setIsShow(true),
-          );
+          result = _buildPic(resModel);
         } else if (resModel.res.type == mp4) {
-          if (flickManager == null) {
-            File file = File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.mp4);
-            flickManager = FlickManager(
-              autoPlay: _isPlay != null && _isPlay == 1,
-              videoPlayerController: file.existsSync()
-                  ? VideoPlayerController.file(file)
-                  : VideoPlayerController.network(widget.roomData.courseware.domain + resModel.res.data.ps.mp4),
-            );
-            if (_time != null && _time > 0) {
-              Future.delayed(Duration(seconds: 2), () async {
-                if (_isPlay != null && _isPlay == 1) {
-                  flickManager.flickControlManager?.seekTo(Duration(seconds: _time + 2));
-                  flickManager?.flickControlManager?.play();
-                } else {
-                  flickManager.flickControlManager?.seekTo(Duration(seconds: _time));
-                }
-              });
-            }
-          }
-          result = Container(
-            child: CoursewareVideo(flickManager,
-                pic: "${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}", soundAction: () => _roomShowTopProvider.setIsShow(true)),
-          );
+          result = _buildMp4(resModel);
         }
       }
 
@@ -533,7 +453,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                           ],
                         ));
                   }),
-
                   (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
                           (resModel.isShow == null || !resModel.isShow)
                       ? Container(
@@ -558,43 +477,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
                           height: 0,
                           width: 0,
                         ),
-                  //举手按钮
-                  Consumer<HandProvider>(builder: (context, model, child) {
-                    if (courseStatusModel.status == 1 && !model.enableHand && _handTypeProvider.type != 1) {
-                      Future.microtask(() => _handTypeProvider.switchType(1));
-                    }
-                    if (courseStatusModel.status == 0 && model.enableHand) {
-                      Future.microtask(() => model.setEnableHand(false));
-                    }
-                    return Offstage(
-                      offstage: !(courseStatusModel.status == 1 && model.enableHand),
-                      child: Align(
-                        alignment: AlignmentDirectional(0.9, 0.9),
-                        child: Consumer<HandTypeProvider>(builder: (context, model, child) {
-                          return GestureDetector(
-                            child: Container(
-                              child: Image.asset(
-                                model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
-                                width: ScreenUtil.getInstance().getHeightPx(225),
-                              ),
-                            ),
-                            onTap: () {
-                              _hand();
-                            },
-                          );
-                        }),
-                      ),
-                    );
-                  }),
-                  //学生视频
-
-                  Offstage(
-                    offstage: !(courseStatusModel.status == 1),
-                    child: Align(
-                      alignment: AlignmentDirectional(0.98, -0.98),
-                      child: _buildStudentVideo(),
-                    ),
-                  )
                 ],
               ),
             ),
@@ -606,44 +488,74 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     });
   }
 
-  ///左上角 星星
-  Widget _starWidget() {
-    return Consumer<StarWidgetProvider>(builder: (context, model, child) {
-      return Positioned(
-        top: 12,
-        left: 20,
-        child: new Container(
-          color: Color(0xFF00000021),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Opacity(
-                opacity: 0.9,
-                child: new Chip(
-                  backgroundColor: Color(0xFF000000).withOpacity(0.7),
-                  avatar: Opacity(
-                    opacity: 1,
-                    child: Image.asset(
-                      "images/live/chat/icon_star.png",
-                      width: ScreenUtil.getInstance().getWidth(15),
-                    ),
-                  ),
-                  label: Text(
-                    "${model.star}",
-                    style: TextStyle(
-                      color: Color(0xFFff8400).withOpacity(1),
-                      fontWeight: FontWeight.bold,
-                      fontSize: ScreenUtil.getInstance().getSp(42) / 4,
-                    ),
-                  ),
-                ),
-              )
-            ],
+  Widget _buildMp4(ResProvider resModel) {
+    return FijkView(
+      player: flickManager,
+      color: Colors.black,
+//      panelBuilder: (FijkPlayer player, FijkData data, BuildContext context, Size viewSize, Rect texturePos) {
+//        return Container();
+//      },
+      cover: Image.file(File('${widget.roomData.courseware.localPath}/${resModel.res.data.ps.pic}'), fit: BoxFit.contain).image,
+    );
+  }
+
+  Widget _buildPic(ResProvider resModel) {
+    return GestureDetector(
+      child: Container(
+          child: Image.file(
+        File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
+        fit: BoxFit.contain,
+      )),
+      onTap: () => _roomShowTopProvider.setIsShow(true),
+    );
+  }
+
+  Widget _buildWebView(ResProvider resModel) {
+    if (Platform.isIOS) {
+//      if (resModel.isShow == null || !resModel.isShow) {
+//        Future.delayed(Duration(milliseconds: 500), () {
+//          _boardProvider.setTestBoard(0);
+//          Future.delayed(Duration(milliseconds: 500), () {
+//            _boardProvider.setTestBoard(1);
+//          });
+//        });
+//      }
+    }
+    print("${resModel.isShow == null || !resModel.isShow}resModel.isShow == null || !resModel.isShow");
+    return Container(
+      color: Colors.black,
+      child: WebViewPlus(
+        initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+        javascriptMode: JavascriptMode.unrestricted,
+        javascriptChannels: <JavascriptChannel>[
+          JavascriptChannel(
+              name: 'Courseware',
+              onMessageReceived: (JavascriptMessage message) async {
+                var msg = jsonDecode(message.message);
+                Log.f("@收到Courseware 回调 $msg", tag: RoomReplayPage.sName);
+                Store<GSYState> store = StoreProvider.of(context);
+                BetterSocket.sendMsg(jsonEncode({
+                  "Event": {
+                    "event": "event-doCourseware",
+                    "msg": '{"qid":${resModel.res.qid},"isFinish":true,"uid":${store.state.userInfo.userId}}',
+                  }
+                }));
+              })
+        ].toSet(),
+        onWebViewCreated: (controller) async {
+          _webViewPlusController = controller;
+          print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+
+          controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+//                controller.loadUrl(await CommonUtils.urlJoinUser("http://192.168.20.63:8080/2020/09/5f6061b68386/1058/index.html"));
+        },
+        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+          new Factory<OneSequenceGestureRecognizer>(
+            () => new EagerGestureRecognizer(),
           ),
-        ),
-      );
-    });
+        ].toSet(),
+      ),
+    );
   }
 
   gameStart() async {
@@ -1327,7 +1239,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         _handleCourseware(socketMsg);
         break;
       case BOARD:
-        _closeVideo();
+        if ((_currentRes != null && _currentRes.type == mp4)) {
+          _resetVideo();
+        }
         _resProvider.setRes(null);
         _currentRes = null;
         break;
@@ -1420,34 +1334,21 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     if (_currentRes != null && _currentRes.qid == ques.qid) {
       if (_currentRes.type == mp4) {
         var isPlay = msg["isPlay"];
+
         var time = msg["time"];
-        print("_currentRes.type == mp4 $isPlay  $time");
-        if (flickManager != null && flickManager.flickVideoManager != null) {
-          if (flickManager.flickVideoManager.isPlaying && isPlay == 0) {
-            print(" flickManager?.flickControlManager?.autoPause();");
-            flickManager?.flickControlManager?.autoPause();
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
+        if (flickManager.state == FijkState.asyncPreparing || flickManager.state == FijkState.initialized || flickManager.isPlayable()) {
+          if (time != null && time > 0) {
+            flickManager?.seekTo(Duration(seconds: time + 1).inMilliseconds);
+          }
+          if (isPlay == 1) {
+            if (flickManager.state == FijkState.completed) {
+              await flickManager?.seekTo(0);
             }
-          } else if (flickManager.flickVideoManager.isPlaying && isPlay == 1) {
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-              flickManager?.flickControlManager?.play();
+            if (flickManager.state != FijkState.started) {
+              await flickManager.start();
             }
-          } else if (flickManager.flickVideoManager.isVideoEnded && isPlay == 1) {
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-              flickManager?.flickControlManager?.play();
-            }
-            flickManager?.flickControlManager?.play();
-          } else if (!flickManager.flickVideoManager.isPlaying && isPlay == 1) {
-            flickManager?.flickControlManager?.autoResume();
-            if (time != null && time > 0) {
-              flickManager?.flickControlManager?.seekTo(Duration(seconds: time));
-              flickManager?.flickControlManager?.play();
-            } else {
-              flickManager?.flickControlManager?.play();
-            }
+          } else {
+            await flickManager.pause();
           }
         }
       } else {
@@ -1471,29 +1372,65 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       _mp3PlayerProvider.close();
       _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
-        _closeVideo();
+        await _resetVideo();
       }
       if (ques.type == mp4 && _currentRes != null && _currentRes.type == mp4) {
-        if (flickManager.flickVideoManager.videoPlayerController.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}") {
+        if (flickManager.dataSource != "${widget.roomData.courseware.domain}${ques.data.ps.mp4}" ||
+            flickManager.dataSource != "${widget.roomData.courseware.localPath}/${ques.data.ps.mp4}") {
           File file = File(widget.roomData.courseware.localPath + "/" + ques.data.ps.mp4);
-          flickManager?.handleChangeVideo(
-              file.existsSync() ? VideoPlayerController.file(file) : VideoPlayerController.network(widget.roomData.courseware.domain + ques.data.ps.mp4));
+          String network = widget.roomData.courseware.domain + ques.data.ps.mp4;
+          if (flickManager.state != FijkState.idle) {
+            await flickManager.reset();
+          }
+          await flickManager.setDataSource(file.existsSync() ? file.path : network, showCover: true).catchError((e) {
+            print("setDataSource error: $e");
+          });
+          if (_time != null && _time > 0) {
+            Future(() async {
+              await flickManager?.start();
+              await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+              await flickManager?.pause();
+              if (_isPlay != null && _isPlay == 1) {
+                flickManager?.start();
+              }
+            });
+          }
         }
       } else {
         var _resShow;
         if (isShow != null) {
           _resShow = isShow == 1;
         }
-        if (ques.type == h5 && isShow != null && isShow == 1) {
+
+        if (ques.type == h5 && isShow != null) {
           if (isShow == 1) {
             gameStart();
           } else {
             //结束游戏
-//            gameOver(ques: ques);
+//            gameOver(ques: ques, isSwitch: true);
             return;
           }
         }
-
+        if (ques.type == mp4) {
+          File file = File(widget.roomData.courseware.localPath + "/" + ques.data.ps.mp4);
+          String network = widget.roomData.courseware.domain + ques.data.ps.mp4;
+          await flickManager.setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
+          await flickManager.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
+          await flickManager.setOption(FijkOption.formatCategory, "fflags", "fastseek");
+          await flickManager.setDataSource(file.existsSync() ? file.path : network, showCover: true).catchError((e) {
+            print("setDataSource error: $e");
+          });
+          if (_time != null && _time > 0) {
+            Future(() async {
+              await flickManager?.start();
+              await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+              await flickManager?.pause();
+              if (_isPlay != null && _isPlay == 1) {
+                flickManager?.start();
+              }
+            });
+          }
+        }
         //只展示图片不操作
         if (_currentRes == null || isShow == null) {
           _resProvider.setRes(ques, isShow: _resShow);
@@ -1639,7 +1576,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       _mp3PlayerProvider.close();
       _eyerestProvider.close();
       if ((_currentRes != null && _currentRes.type == mp4 && ques.type != mp4)) {
-        _closeVideo();
+        _resetVideo();
       }
       _resProvider.setRes(ques);
       _currentRes = ques;
@@ -1793,17 +1730,14 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     if (orientation == 1) {
       OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
     }
-    _closeVideo();
-
+    flickManager?.release();
     AgoraRtcEngine?.leaveChannel();
     AgoraRtcEngine?.destroy();
     _rtmChannel?.leave();
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
     _socketPingTimer?.cancel();
-    socket?.close();
     _teacherPlayer?.release();
-    BetterSocket.close();
     socket = null;
     _currentRes = null;
     _mp3PlayerProvider.close();
@@ -1811,10 +1745,8 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     super.dispose();
   }
 
-  _closeVideo() async {
-    print("_closeVideo _closeVideo _closeVideo");
-    flickManager?.dispose();
-    flickManager = null;
+  _resetVideo() async {
+    await flickManager?.reset();
     _isPlay = null;
     _time = null;
   }

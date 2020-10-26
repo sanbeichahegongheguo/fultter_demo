@@ -11,3 +11,4 @@
 #import "Yondor.h"
 #import "CameraPlugin.h"
 #import "Whiteboard/Whiteboard.h"
+#import "MySimplePing.h"

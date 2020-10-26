@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:process/process.dart';
 
 abstract class PingCommand {
@@ -9,7 +10,7 @@ abstract class PingCommand {
 
   factory PingCommand.create() {
     if (Platform.isAndroid) return BashPingCommand();
-//    if (Platform.isIOS) return SimplePingCommand();
+    if (Platform.isIOS) return SimplePingCommand();
     throw UnsupportedError("Unhandled platform.");
   }
 }
@@ -44,6 +45,23 @@ class BashPingCommand extends PingCommand {
       throw PingError.INVALID_FORMAT;
     }
     return double.parse(value);
+  }
+}
+
+class SimplePingCommand extends PingCommand {
+  final MethodChannel _channel = MethodChannel('com.yondor.simplePing');
+
+  @override
+  Future<double> execute(String host, PingSettings settings) async {
+    try {
+      return await _channel.invokeMethod('ping', {
+        'hostName': host,
+        'packetSize': settings.packetSize,
+        'timeout': settings.timeout,
+      });
+    } on PlatformException {
+      throw PingError.REQUEST_FAILED;
+    }
   }
 }
 
