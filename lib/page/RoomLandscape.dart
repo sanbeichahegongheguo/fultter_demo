@@ -1179,7 +1179,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     };
 
     AgoraRtcEngine.onNetworkQuality = (int uid, int txQuality, int rxQuality) {
-      print("onNetworkQuality : uid :$uid  txQuality:$txQuality  rxQuality:$rxQuality  ", level: Log.debug);
+//      print("onNetworkQuality : uid :$uid  txQuality:$txQuality  rxQuality:$rxQuality  ", level: Log.debug);
 
       if (uid == 0) {
         int val = max<int>(txQuality, rxQuality);
@@ -1854,6 +1854,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       var as = an["as"];
       var op = an["op"];
 //      (op as List).addAll(op as List);
+      if (isShow == 1) {
+        if (ques.qid != _resProvider.res.qid) {
+          //只在当前窗口弹出
+          return;
+        }
+      }
       _roomSelProvider.setIsShow(isShow == 1, ques: ques, op: op, quesAn: as, dateTime: DateTime.now());
       if (isShow == 0) {
         //获取排行榜前三用户
