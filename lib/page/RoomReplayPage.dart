@@ -1731,8 +1731,6 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
       OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
     }
     flickManager?.release();
-    AgoraRtcEngine?.leaveChannel();
-    AgoraRtcEngine?.destroy();
     _rtmChannel?.leave();
     _rtmClient?.logout();
     _hiddenTopTimer?.cancel();
