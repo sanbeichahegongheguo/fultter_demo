@@ -29,7 +29,7 @@ class _LiveTopDialogState extends State<LiveTopDialog> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    _timer = Timer(_timeoutSeconds, back);
+    _timer = Timer(_timeoutSeconds, () => back);
     final screenSize = MediaQuery.of(context).size;
     var _maxContentHeight = screenSize.height * 0.8;
     return ScaleTransition(

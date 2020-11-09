@@ -122,7 +122,7 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
     for (int i = 0; i < controlerList.length; i++) {
       controlerList[i]?.dispose();
     }
-    controller.dispose();
+    controller?.dispose();
     super.dispose();
   }
 

@@ -37,13 +37,13 @@ class _StarGifState extends State<StarGif> with SingleTickerProviderStateMixin {
         _provider.setIndex(1);
         _timer = Timer(_timeoutSeconds, () {
           _provider.setIndex(2);
-          _timer.cancel();
+          _timer?.cancel();
           _timer = Timer(_timeoutSeconds, () {
             _provider.setIndex(3);
-            _timer.cancel();
+            _timer?.cancel();
             _timer = Timer(_backTime, () {
               back();
-              _timer.cancel();
+              _timer?.cancel();
             });
           });
         });

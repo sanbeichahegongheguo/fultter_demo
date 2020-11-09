@@ -35,7 +35,7 @@ class _StarDialogState extends State<LiveQuesDialog> with TickerProviderStateMix
   Widget build(BuildContext context) {
     myContext = context;
     _timeoutSeconds = Duration(seconds: widget.ir == "T" ? 3 : 5);
-    _timer = Timer(_timeoutSeconds, back);
+    _timer = Timer(_timeoutSeconds, () => back);
     final screenSize = MediaQuery.of(context).size;
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
     var _maxContentHeight = screenSize.height * 0.8;
