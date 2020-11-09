@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
@@ -26,18 +28,6 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     localUrl();
-    OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
-
-//    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 1500))
-//      ..addListener(() {
-//        setState(() {});
-//      });
-//    _animation = CurvedAnimation(parent: _controller, curve: Curves.bounceOut);
-
-    //   _rotatecontroller =
-    //     AnimationController(duration: const Duration(seconds: 3), vsync: this);
-    // _rotateAnimation =
-    //     Tween(begin: 0.0, end: 0.25).animate(_rotatecontroller);
   }
 
   ///旋转动画
@@ -164,6 +154,11 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
         return Random().nextInt((widthSrcreen - 100).toInt()).toDouble();
       });
     }
+    bool isIos13 = true;
+    if (Platform.isIOS) {
+      isIos13 = CommonUtils.ios13();
+    }
+
     var list = List.generate(_starNum, (index) {
       return ChangeNotifierProvider.value(
         value: _prociderList[index],
@@ -174,11 +169,11 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
             child: GestureDetector(
               onTap: () async {
                 print("$index ${_starMap[index]}");
-                _controllerList[index].stop();
+                _controllerList[index]?.stop();
                 _starMap[index] = 1;
                 _prociderList[index].notify();
-                _rotatecontrollerList[index].stop();
-                await playLocal();
+                _rotatecontrollerList[index]?.stop();
+                playLocal();
                 // _zoomcontrollerList[index].forward();
                 Future.delayed(Duration(milliseconds: 500), () {
                   _starMap[index] = 2;
@@ -187,36 +182,57 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
                 });
               },
               child: _starMap[index] == null
-                  ? RotationTransition(
-                      alignment: Alignment.center,
-                      turns: _rotateAnimationList[index],
-                      child: Image.asset(
-                        "images/live/chat/icon_star.png",
-                        height: 100,
-                        width: 100,
-                        alignment: Alignment.center,
-                      ),
-                    )
+                  ? isIos13
+                      ? RotationTransition(
+                          alignment: Alignment.center,
+                          turns: _rotateAnimationList[index],
+                          child: Image.asset(
+                            "images/live/chat/icon_star.png",
+                            height: 100,
+                            width: 100,
+                            alignment: Alignment.center,
+                          ),
+                        )
+                      : Image.asset(
+                          "images/live/chat/icon_star.png",
+                          height: 100,
+                          width: 100,
+                          alignment: Alignment.center,
+                        )
                   : _starMap[index] == 1
-                      ? PlayAnimation<MultiTweenValues<AniProps>>(
-                          tween: _tween, // Pass in tween
-                          duration: _tween.duration,
-                          builder: (context, child, value) {
-                            return Stack(
+                      ? isIos13
+                          ? PlayAnimation<MultiTweenValues<AniProps>>(
+                              tween: _tween, // Pass in tween
+                              duration: _tween.duration,
+                              builder: (context, child, value) {
+                                return Stack(
+                                  alignment: AlignmentDirectional.center,
+                                  children: [
+                                    new Center(
+                                      child: Image.asset(
+                                        "images/live/chat/star_boom.png",
+                                        height: value.get(AniProps.width),
+                                        width: value.get(AniProps.width),
+                                        alignment: Alignment.center,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            )
+                          : Stack(
                               alignment: AlignmentDirectional.center,
                               children: [
                                 new Center(
                                   child: Image.asset(
                                     "images/live/chat/star_boom.png",
-                                    height: value.get(AniProps.width),
-                                    width: value.get(AniProps.width),
+                                    height: 100,
+                                    width: 100,
                                     alignment: Alignment.center,
                                   ),
                                 ),
                               ],
-                            );
-                          },
-                        )
+                            )
                       : Container(),
             ),
           );

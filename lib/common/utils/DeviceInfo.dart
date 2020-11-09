@@ -6,10 +6,13 @@ import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:uuid/uuid.dart';
+
 class DeviceInfo {
   static DeviceInfo instance = new DeviceInfo();
   DeviceInfoPlugin _deviceInfo = new DeviceInfoPlugin();
-  DeviceInfoPlugin get deviceInfo  =>_deviceInfo;
+  DeviceInfoPlugin get deviceInfo => _deviceInfo;
+  String _osVersion;
+  String get osVersion => _osVersion;
   Map<String, dynamic> _deviceInfoMap;
   String deviceId = "";
   String _yondorDeviceId = "";
@@ -22,6 +25,7 @@ class DeviceInfo {
         return this._deviceInfoMap;
       } else if (Platform.isIOS) {
         IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
+        _osVersion = iosInfo.systemVersion;
         this._deviceInfoMap = _readIosDeviceInfo(iosInfo);
         return this._deviceInfoMap;
       }
@@ -66,16 +70,17 @@ class DeviceInfo {
 
   Future<String> getDeviceUUID() async {
     if (null != _deviceUUID && _deviceUUID != "") {
-      return  _deviceUUID;
+      return _deviceUUID;
     }
     var uid = SpUtil.getString(Config.PHONE_UID);
     if (null == uid || uid == "") {
-        uid = new Uuid().v1();
-        SpUtil.putString(Config.PHONE_UID, uid);
+      uid = new Uuid().v1();
+      SpUtil.putString(Config.PHONE_UID, uid);
     }
-    _deviceUUID = uid ;
+    _deviceUUID = uid;
     return uid;
   }
+
   Future<String> getYondorDeviceId() async {
     //直接返回
     if (ObjectUtil.isNotEmpty(this._yondorDeviceId)) {
@@ -85,11 +90,12 @@ class DeviceInfo {
     var did = await this.getDeviceId();
     if (Platform.isAndroid) {
       var yondorInfo = await new DeviceInfo().deviceInfo.yondorInfo;
-      did =  did + yondorInfo["kid"];
+      did = did + yondorInfo["kid"];
     }
     this._yondorDeviceId = did;
     return this._yondorDeviceId;
   }
+
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,

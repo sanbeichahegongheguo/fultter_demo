@@ -325,30 +325,30 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
 
   Future _goRoom(User userInfo) async {
-//    RoomUtil.goRoomPage(
-//      context,
-//      url: "https://qres.k12china.com/qlib/zip/2020/09/09/1632fb2b234420a8.zip",
-//      userId: userInfo.userId,
-//      userName: userInfo.realName,
-//      roomName: "【2】【秋季同步提升班】测试——丘建宽",
-//      roomUuid: "529bb7c1a2da4af2818639706824e294",
-//      peLiveCourseallotId: 571976,
-//      startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
-//      endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
-////      recordId: "95379824280870912",
-//    );
     RoomUtil.goRoomPage(
       context,
-      url: "https://qres.k12china.com/qlib/zip/2020/09/21/1636c3b884422994.zip",
+      url: "https://qres.k12china.com/qlib/zip/2020/09/09/1632fb2b234420a8.zip",
       userId: userInfo.userId,
       userName: userInfo.realName,
       roomName: "【2】【秋季同步提升班】测试——丘建宽",
-      roomUuid: "c874a149b4124ab68407ea421e7e33cb",
-      peLiveCourseallotId: 573510,
+      roomUuid: "529bb7c1a2da4af2818639706824e294",
+      peLiveCourseallotId: 571976,
       startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
       endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
-      yondorRecordId: "2544279687794688",
+//      recordId: "95379824280870912",
     );
+//    RoomUtil.goRoomPage(
+//      context,
+//      url: "https://qres.k12china.com/qlib/zip/2020/09/21/1636c3b884422994.zip",
+//      userId: userInfo.userId,
+//      userName: userInfo.realName,
+//      roomName: "【2】【秋季同步提升班】测试——丘建宽",
+//      roomUuid: "c874a149b4124ab68407ea421e7e33cb",
+//      peLiveCourseallotId: 573510,
+//      startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
+//      endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
+//      yondorRecordId: "2544279687794688",
+//    );
   }
 
   //退出賬號

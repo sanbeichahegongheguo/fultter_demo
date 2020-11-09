@@ -18,7 +18,7 @@ class AddressUtil {
   String apiHost = "https://api.k12china.com/";
   String qresHost = "https://qres.k12china.com/";
   String stu_h5 = "https://www.k12china.com/stu_h5/web/";
-  String liveApp = "https://www.k12china.com/app_live/v1/";
+  String liveApp = "https://www.k12china.com/app_live/";
 //  String studentHost = "http://192.168.6.31:30915/student:";
 //  String k12apiHost = "http://192.168.6.30:31191/k12-api/";
 //  String studentWebHost = "http://192.168.6.31:31528/studentweb/";
@@ -50,7 +50,8 @@ class AddressUtil {
     apiHost = "https://api.k12china.com/";
     qresHost = "https://qres.k12china.com/";
     stu_h5 = "https://www.k12china.com/stu_h5/web/";
-    liveApp = "https://www.k12china.com/app_live/v1/";
+    liveApp = "https://www.k12china.com/app_live/";
+
 //    studentHost = "http://192.168.6.31:30915/student:";
 //    k12apiHost = "http://192.168.6.30:31191/k12-api/";
 //    studentWebHost = "http://192.168.6.31:31528/studentweb/";
@@ -63,7 +64,7 @@ class AddressUtil {
 //    apiHost = "http://192.168.6.30:31456/";
 //    qresHost = "https://qres.k12china.com/";
 //    stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
-//    liveApp = "http://192.168.6.30:32442/app_live/v1/";
+//    liveApp = "http://192.168.6.30:32442/app_live/";
   }
 
   _domain2() {
@@ -77,7 +78,7 @@ class AddressUtil {
     getSchoolUrl = "https://www.yondor.cn/k12-api/search/getSchool";
     stu_upload = "https://www.yondor.cn/stu_upload/";
     stu_h5 = "https://www.yondor.cn/stu_h5/web/";
-    liveApp = "https://www.yondor.com/app_live/v1/";
+    liveApp = "https://www.yondor.com/app_live/";
   }
 
   static AddressUtil _singleton = AddressUtil();
@@ -536,9 +537,19 @@ class AddressUtil {
     return "$agora_base_url/edu/v1/apps/$appId/room/entry";
   }
 
+  ///加入房间
+  yondorRoomEntry() {
+    return "${liveApp}edu/v1/apps/room/entry";
+  }
+
   ///获取房间信息
   room(String appId, String roomId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId";
+  }
+
+  ///获取房间信息
+  yondorRoom(String roomId) {
+    return "${liveApp}edu/v1/apps/room/$roomId";
   }
 
   ///退出房间
@@ -558,12 +569,17 @@ class AddressUtil {
 
   ///聊天
   liveChat() {
-    return "${liveApp}msg/edu/send";
+    return "${liveApp}v1/msg/edu/send";
   }
 
   ///获取房间白班信息
   roomBoard(String appId, String roomId) {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/board";
+  }
+
+  ///获取房间白班信息
+  yondorRoomBoard(String roomId) {
+    return "${liveApp}edu/v1/apps/room/$roomId/board";
   }
 
   ///获取回放信息
@@ -673,6 +689,6 @@ class AddressUtil {
 
   ///获取远大回放信息
   getYondorCourseRecordBy() {
-    return "${liveApp}live_broadcast/record/info";
+    return "${liveApp}v1/live_broadcast/record/info";
   }
 }

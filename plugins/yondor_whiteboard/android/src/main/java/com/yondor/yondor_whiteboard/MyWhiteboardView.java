@@ -185,6 +185,12 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
             case "updateRoom":
                 updateRoom(call,result);
                 break;
+            case "setWritable":
+                Map<String, Object> writableRequest = (Map<String, Object>) call.arguments;
+                boolean canWrite = Boolean.parseBoolean((String) writableRequest.get("isWritable"));
+                boardManager.setWritable(canWrite);
+                result.success(null);
+                break;
             case "start":
                 startReplay(call,result);
                 result.success(null);

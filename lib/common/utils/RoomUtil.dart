@@ -53,7 +53,7 @@ class RoomUtil {
         builder: (BuildContext context) {
           return ChangeNotifierProvider<ProgressProvider>.value(value: progressProvider, child: ProgressLoading());
         });
-    loadCoursePack(url, (Courseware courseware) async {
+    joinAgoraRoom(Courseware courseware) async {
       print("room_page@initState loadCoursePack finsh load course");
       LogUtil.v("courseware data == ${courseware.toString()}");
 
@@ -116,7 +116,74 @@ class RoomUtil {
           callFunc();
         }
       });
-    }, (msg) {
+    }
+
+    joinYondorRoom(Courseware courseware) async {
+      print("room_page@initState loadCoursePack finsh load course");
+      LogUtil.v("courseware data == ${courseware.toString()}");
+
+      var params = {
+        "roomName": roomName,
+        "roomUuid": roomUuid,
+        "userName": userName,
+        "userUuid": userId,
+        "role": 2,
+        "type": 2,
+      };
+      //进入房间
+      var res = await RoomDao.yondorRoomEntry(params);
+      if (!res.result) {
+        showToast("网络异常,请稍后重试");
+        Navigator.pop(context);
+        return;
+      }
+      if (res.data["code"] != 200) {
+        showToast("网络异常,请稍后重试");
+        Navigator.pop(context);
+        return;
+      }
+      print('请求接口数据成功');
+      print(res);
+      //获取房间信息
+      var userToken = res.data["data"]["userToken"];
+      var roomId = res.data["data"]["roomId"];
+      res = await RoomDao.yondorRoom(roomId);
+      if (!res.result) {
+        showToast("网络异常,请稍后重试");
+        Navigator.pop(context);
+        return;
+      }
+      RoomData roomData = res.data;
+      roomData.startTime = startTime;
+      roomData.endTime = endTime;
+      roomData.courseware = courseware;
+      roomData.liveCourseallotId = peLiveCourseallotId;
+      //判断是否回放
+      if (recordId != null && recordId != "") {
+        //获取回放信息
+        print("getCourseRecordBy param $recordId $roomId $userToken");
+        var courseRecorReuslt = await RoomDao.getCourseRecordBy(recordId, roomId, userToken);
+        roomData.courseRecordData = courseRecorReuslt.data;
+      } else if (yondorRecordId != null && yondorRecordId != "") {
+        //获取远大回放
+        print("getCourseRecordBy param $recordId $roomId $userToken");
+        var courseRecorReuslt = await RoomDao.getYondorCourseRecordBy(yondorRecordId, roomId, userToken);
+        roomData.courseRecordData = courseRecorReuslt.data;
+      }
+      //获取房间白板信息
+      var roomBoard = await RoomDao.yondorRoomBoard(roomId);
+      roomData.boardId = roomBoard.data["data"]["boardId"];
+      roomData.boardToken = roomBoard.data["data"]["boardToken"];
+      Navigator.pop(context);
+      print("roomboard $roomBoard");
+      NavigatorUtil.goRoomPage(context, data: roomData, userToken: userToken, isReplay: roomData.courseRecordData != null).then((_) {
+        if (callFunc != null) {
+          callFunc();
+        }
+      });
+    }
+
+    loadCoursePack(url, joinAgoraRoom, (msg) {
       print(msg);
       showToast("加载资源失败,请重试!!");
       if (callFunc != null) {

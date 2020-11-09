@@ -18,6 +18,16 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
+  static yondorRoomEntry(params) async {
+    var res = await httpManager.netFetch(AddressUtil.getInstance().yondorRoomEntry(), params, null, Options(method: "POST"),
+        contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      result = res.data;
+    }
+    return new DataResult(result, res.result);
+  }
+
   static room(String roomId, String token) async {
     Map<String, dynamic> header = {"Authorization": "Basic ${Config.AGORA_AUTH}", "token": token};
     var res = await httpManager.netFetch(AddressUtil.getInstance().room(Config.APP_ID, roomId), null, header, Options(method: "GET"));
@@ -32,12 +42,38 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
+  static yondorRoom(String roomId) async {
+    var res = await httpManager.netFetch(AddressUtil.getInstance().yondorRoom(roomId), null, null, Options(method: "GET"));
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
+        result = RoomData.fromJson(res.data["data"]);
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
   static roomBoard(String roomId, String token) async {
     Map<String, dynamic> header = {"Authorization": "Basic ${Config.AGORA_AUTH}", "token": token};
     var res = await httpManager.netFetch(AddressUtil.getInstance().roomBoard(Config.APP_ID, roomId), null, header, Options(method: "GET"));
     var result;
     if (res != null && res.result) {
       if (res.data["msg"] == "Success") {
+        result = res.data;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  static yondorRoomBoard(String roomId) async {
+    var res = await httpManager.netFetch(AddressUtil.getInstance().yondorRoomBoard(roomId), null, null, Options(method: "GET"));
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
         result = res.data;
       } else {
         res.result = false;

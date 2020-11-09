@@ -46,6 +46,7 @@ import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
 import 'package:flutter_start/widget/room/EyerestWidget.dart';
 import 'package:flutter_start/widget/room/Mp3PlayerWidget.dart';
+import 'package:flutter_start/widget/room/RoomEduSocket.dart';
 import 'package:flutter_start/widget/starsWiget.dart';
 import 'package:fradio/fradio.dart';
 import 'package:home_indicator/home_indicator.dart';
@@ -95,6 +96,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   CourseProvider _courseProvider;
   int orientation = 0;
   AgoraRtmClient _rtmClient;
+  RoomEduSocket _roomEduSocket;
   AgoraRtmChannel _rtmChannel;
   var socket;
   RoomUser _local;
@@ -137,6 +139,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   StreamSubscription<ConnectivityResult> _subscription;
   Timer _connectivityNoneTimer;
   List<SocketMsg> msgList = List();
+  bool _isIos13 = true;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -150,6 +153,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _initWebsocketManager();
     _local = widget.roomData.user;
     initializeRtm();
+
     initializeRtc().then((value) {
       this._updateUsers(widget.roomData.room.coVideoUsers);
     });
@@ -167,6 +171,37 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _courseProvider.setInitBoardView(true);
       });
+    };
+    if (Platform.isIOS) {
+      _isIos13 = CommonUtils.ios13();
+      print("is ios13  $_isIos13");
+    }
+
+//    _initS();
+  }
+
+  _initS() async {
+    _roomEduSocket = RoomEduSocket();
+    _roomEduSocket.init(widget.roomData.user.userId);
+    var key = await httpManager.getAuthorization();
+    _roomEduSocket.join(key, widget.roomData.room.roomUuid);
+    _roomEduSocket.onMemberJoined = (AgoraRtmMember member) {
+      _log("Member joined: " + member.userId + ', channel: ' + member.channelId);
+    };
+    _roomEduSocket.onMemberLeft = (AgoraRtmMember member) {
+      _log("Member left: " + member.userId + ', channel: ' + member.channelId);
+    };
+    _roomEduSocket.onMessageReceived = (AgoraRtmMessage message, AgoraRtmMember member) {
+      _handleMsg(message, member);
+    };
+    _roomEduSocket.onMemberCountUpdated = (int count) {
+      _log("Channel onMemberCountUpdated:  count:$count ");
+    };
+    _roomEduSocket.onError = (err) {
+      _log("Channel err:  err:$err ");
+    };
+    _roomEduSocket.onMessageReceivedUser = (AgoraRtmMessage message, String peerId) {
+      _handlePeerMsg(message, peerId);
     };
   }
 
@@ -455,15 +490,22 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  AnimatedSwitcher(
-                    duration: Duration(milliseconds: 800),
-                    child: result != null
-                        ? Container(
-                            key: ValueKey("${resModel?.res?.qid ?? 0}"),
-                            child: result,
-                          )
-                        : Container(),
-                  ),
+                  _isIos13
+                      ? AnimatedSwitcher(
+                          duration: Duration(milliseconds: 800),
+                          child: result != null
+                              ? Container(
+                                  key: ValueKey("${resModel?.res?.qid ?? 0}"),
+                                  child: result,
+                                )
+                              : Container(),
+                        )
+                      : result != null
+                          ? Container(
+                              key: ValueKey("${resModel?.res?.qid ?? 0}"),
+                              child: result,
+                            )
+                          : Container(),
                   Consumer<BoardProvider>(builder: (context, model, child) {
                     print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
                     print(
@@ -598,9 +640,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget _buildWebView(ResProvider resModel) {
     if (Platform.isIOS) {
       if (resModel.isShow == null || !resModel.isShow) {
-        Future.delayed(Duration(milliseconds: 500), () {
+        Future.delayed(Duration(milliseconds: 800), () {
           _boardProvider.setTestBoard(0);
-          Future.delayed(Duration(milliseconds: 500), () {
+          Future.delayed(Duration(milliseconds: 800), () {
             _boardProvider.setTestBoard(1);
           });
         });
@@ -1728,6 +1770,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
     if (!isCheck || flag) {
       Navigator.push(context, PopRoute(child: RedRain())).then((value) {
+        if (null == value || value == 0) {
+          return;
+        }
         var param = {
           "catalogId": ques.ctatlogid,
           "liveCourseallotId": widget.roomData.liveCourseallotId,
@@ -2001,6 +2046,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _eyerestProvider.close();
     _textController?.dispose();
     PaintingBinding.instance.imageCache.clear();
+    _roomEduSocket?.close();
     super.dispose();
   }
 

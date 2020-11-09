@@ -31,6 +31,14 @@ class WhiteboardController {
     return _channel.invokeMethod("updateRoom", param);
   }
 
+  Future setWritable({bool isWritable}) {
+    var param = {};
+    if (null != isWritable) {
+      param["isWritable"] = isWritable;
+    }
+    return _channel.invokeMethod("setWritable", param);
+  }
+
   Future startReplay({int beginTimestamp, int duration, String mediaURL}) {
     if (Platform.isIOS) {
       beginTimestamp = (beginTimestamp.toDouble() / 1000).round();
