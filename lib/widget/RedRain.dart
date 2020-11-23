@@ -123,9 +123,9 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
                 //动画从 controller.forward() 正向执行 结束时会回调此方法
                 print("status is completed");
                 //重置起点
-                _rotatecontrollerList[index].reset();
+                _rotatecontrollerList[index]?.reset();
                 //开启
-                _rotatecontrollerList[index].forward();
+                _rotatecontrollerList[index]?.forward();
               } else if (status == AnimationStatus.dismissed) {
                 //动画从 controller.reverse() 反向执行 结束时会回调此方法
                 print("status is dismissed");
@@ -171,14 +171,14 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
                 print("$index ${_starMap[index]}");
                 _controllerList[index]?.stop();
                 _starMap[index] = 1;
-                _prociderList[index].notify();
+                _prociderList[index]?.notify();
                 _rotatecontrollerList[index]?.stop();
                 playLocal();
                 // _zoomcontrollerList[index].forward();
                 Future.delayed(Duration(milliseconds: 500), () {
                   _starMap[index] = 2;
-                  _prociderList[index].notify();
-                  _controllerList[index].forward();
+                  _prociderList[index]?.notify();
+                  _controllerList[index]?.forward();
                 });
               },
               child: _starMap[index] == null
@@ -241,8 +241,8 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
     });
     for (int i = 0; i < _controllerList.length; i++) {
       Future.delayed(Duration(milliseconds: secondList[i]), () {
-        _rotatecontrollerList[i].forward();
-        _controllerList[i].forward();
+        _rotatecontrollerList[i]?.forward();
+        _controllerList[i]?.forward();
       });
     }
     return WillPopScope(
@@ -280,12 +280,14 @@ class _RedRainState extends State<RedRain> with TickerProviderStateMixin {
   @override
   void dispose() {
     player?.dispose();
-    _controllerList?.forEach((element) {
-      element?.dispose();
-    });
-    _rotatecontrollerList?.forEach((element) {
-      element?.dispose();
-    });
+    for (int i = 0; i < _controllerList.length; i++) {
+      _controllerList[i]?.dispose();
+      _controllerList[i] = null;
+    }
+    for (int i = 0; i < _rotatecontrollerList.length; i++) {
+      _rotatecontrollerList[i]?.dispose();
+      _rotatecontrollerList[i] = null;
+    }
     super.dispose();
 //    _prociderList.forEach((element) {
 //      element?.dispose();

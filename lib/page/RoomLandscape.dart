@@ -152,8 +152,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     orientation = 1;
     _initWebsocketManager();
     _local = widget.roomData.user;
-    initializeRtm();
-
+    if (widget.token == null || widget.token == "") {
+      _initYondorRtm();
+    } else {
+      initializeRtm();
+    }
     initializeRtc().then((value) {
       this._updateUsers(widget.roomData.room.coVideoUsers);
     });
@@ -176,11 +179,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _isIos13 = CommonUtils.ios13();
       print("is ios13  $_isIos13");
     }
-
-//    _initS();
   }
 
-  _initS() async {
+  _initYondorRtm() async {
     _roomEduSocket = RoomEduSocket();
     _roomEduSocket.init(widget.roomData.user.userId);
     var key = await httpManager.getAuthorization();
@@ -1165,6 +1166,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       }
       AgoraRtcEngine.muteLocalAudioStream(user.enableAudio == 0);
       AgoraRtcEngine.muteLocalVideoStream(user.enableVideo == 0);
+//      _whiteboardController?.setWritable(true);
     } else if (user.coVideo == 0) {
       _enableLocalVideo = false;
       _enableLocalAudio = false;
@@ -1172,6 +1174,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       AgoraRtcEngine.muteLocalVideoStream(true);
       AgoraRtcEngine.enableLocalVideo(false);
       AgoraRtcEngine.enableLocalAudio(false);
+//      _whiteboardController?.setWritable(false);
     }
   }
 
@@ -1285,7 +1288,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     if (_handTypeProvider.type == 1) {
       //举手
       _handTypeProvider.switchType(0);
-      await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, CoVideoType.APPLY);
+      if (widget.token == null || widget.token == "") {
+        await RoomDao.yondorRoomCoVideo(widget.roomData.room.roomId, CoVideoType.APPLY);
+      } else {
+        await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, CoVideoType.APPLY);
+      }
     } else {
       //取消连麦
 //      var res = await RoomDao.roomCoVideo(widget.roomData.room.roomId, widget.token, _local.coVideo == 1 ? CoVideoType.EXIT : CoVideoType.CANCEL);
@@ -1542,6 +1549,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     if (questEvent != null) {
       SocketMsg questMsg = SocketMsg.fromJson(questEvent);
       if (_lastQuesMsg == null || _lastQuesMsg.timestamp < questMsg.timestamp) {
+        _lastQuesMsg = questMsg;
         if (questMsg.type == SEL || questMsg.type == JUD || questMsg.type == MULSEL) {
           _handleSEL(questMsg.text, isCheck: true);
         } else if (questMsg.type == RANRED) {
@@ -1554,18 +1562,21 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     if (timerEvent != null) {
       SocketMsg timerMsg = SocketMsg.fromJson(timerEvent);
       if (_lastTimerMsg == null || _lastTimerMsg.timestamp < timerMsg.timestamp) {
+        _lastTimerMsg = timerMsg;
         _handleTIMER(timerMsg.text);
       }
     }
     if (eyerestEvent != null) {
       SocketMsg eyerestMsg = SocketMsg.fromJson(eyerestEvent);
       if (_lastEyerestMsg == null || _lastEyerestMsg.timestamp < eyerestMsg.timestamp) {
+        _lastEyerestMsg = eyerestMsg;
         _eyerestProvider.handle(widget.roomData.courseware, socketMsg);
       }
     }
     if (mp3Event != null) {
       SocketMsg mp3Msg = SocketMsg.fromJson(mp3Event);
       if (_lastMp3MsgMsg == null || _lastMp3MsgMsg.timestamp < mp3Msg.timestamp) {
+        _lastMp3MsgMsg = mp3Msg;
         _mp3PlayerProvider.handle(widget.roomData.courseware, socketMsg);
       }
     }

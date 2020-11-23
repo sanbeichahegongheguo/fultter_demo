@@ -188,6 +188,24 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
+  ///举手
+  static yondorRoomCoVideo(String roomId, CoVideoType type) async {
+    Map<String, dynamic> params = {
+      "type": type.index + 1,
+    };
+    var res = await httpManager.netFetch(AddressUtil.getInstance().yondorRoomCoVideo(roomId), params, null, Options(method: "POST"),
+        contentType: HttpManager.CONTENT_TYPE_FORM);
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
+        result = res.data;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
   ///领取星星
   static rewardStar(params) async {
     var res = await httpManager.netFetch(AddressUtil.getInstance().roomRewardStar(), params, null, new Options(method: "post"),

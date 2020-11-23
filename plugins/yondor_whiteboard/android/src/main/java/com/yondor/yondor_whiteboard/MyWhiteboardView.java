@@ -187,8 +187,10 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
                 break;
             case "setWritable":
                 Map<String, Object> writableRequest = (Map<String, Object>) call.arguments;
-                boolean canWrite = Boolean.parseBoolean((String) writableRequest.get("isWritable"));
-                boardManager.setWritable(canWrite);
+                int isWritable = (int) writableRequest.get("isWritable");
+                boolean canWrite = isWritable==1;
+                setWritable(canWrite);
+                disableDeviceInputs(!canWrite);
                 result.success(null);
                 break;
             case "start":

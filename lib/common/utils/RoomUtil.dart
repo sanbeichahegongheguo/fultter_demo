@@ -37,7 +37,8 @@ class RoomUtil {
       String recordId,
       String yondorRecordId,
       DateTime startTime,
-      DateTime endTime}) async {
+      DateTime endTime,
+      String roomType}) async {
     var bool = await _handleCameraAndMic();
     if (!bool) {
       showToast("权限不足无法进入房间!");
@@ -162,7 +163,7 @@ class RoomUtil {
       if (recordId != null && recordId != "") {
         //获取回放信息
         print("getCourseRecordBy param $recordId $roomId $userToken");
-        var courseRecorReuslt = await RoomDao.getCourseRecordBy(recordId, roomId, userToken);
+        var courseRecorReuslt = await RoomDao.getYondorCourseRecordBy(recordId, roomId, userToken);
         roomData.courseRecordData = courseRecorReuslt.data;
       } else if (yondorRecordId != null && yondorRecordId != "") {
         //获取远大回放
@@ -183,7 +184,13 @@ class RoomUtil {
       });
     }
 
-    loadCoursePack(url, joinAgoraRoom, (msg) {
+    //判断是使用声网房间还是远大房间
+    var joinFun = joinAgoraRoom;
+    if (roomType != null && roomType == "yondor_edu") {
+      joinFun = joinYondorRoom;
+    }
+
+    loadCoursePack(url, joinFun, (msg) {
       print(msg);
       showToast("加载资源失败,请重试!!");
       if (callFunc != null) {

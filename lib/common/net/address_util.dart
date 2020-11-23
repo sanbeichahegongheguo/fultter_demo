@@ -592,6 +592,11 @@ class AddressUtil {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/covideo";
   }
 
+  ///举手连麦
+  yondorRoomCoVideo(String roomId) {
+    return "${liveApp}edu/v1/apps/room/$roomId/covideo";
+  }
+
   ///加入房间
   socketUrl(String key, String roomId) {
     return "$ws_url/stu_chat/live?key=$key&roomId=$roomId";

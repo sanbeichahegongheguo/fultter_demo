@@ -20,6 +20,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     let channel:FlutterMethodChannel
     let messenger:FlutterBinaryMessenger
     var isDisableDeviceInputs:Bool
+    var isDisableCameraTransform:Bool
     private var sdk:WhiteSDK!
     let boardView:WhiteBoardView
     var room:WhiteRoom!
@@ -41,6 +42,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         self.boardView.backgroundColor = UIColor.clear
         self.boardView.scrollView.backgroundColor = UIColor.clear
         self.isDisableDeviceInputs = false;
+        self.isDisableCameraTransform = false;
         super.init()
         self.channel.setMethodCallHandler(handle)
         let conifg = WhiteSdkConfiguration.init(app:self.appIdentifier)
@@ -83,7 +85,16 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
             let dict = call.arguments as! NSDictionary
             let isBoardLock =  dict["isBoardLock"] as! Int
             self.disableCameraTransform(disabled: isBoardLock==1);
-            break
+            result(nil);
+            break;
+        case "setWritable":
+            let dict = call.arguments as! NSDictionary
+            let isWritable = dict["isWritable"] as! Int;
+            let canWrite:Bool = isWritable==1;
+            self.setWritable(writable: canWrite);
+            self.disableDeviceInputs(disabled: !canWrite);
+            result(nil);
+            break;
         case "start":
             self.startReplay(call: call,result: result);
             result(nil)
@@ -128,17 +139,20 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     }
     
     public func disableCameraTransform(disabled:Bool) {
-        if (disabled != self.isDisableDeviceInputs) {
-            if (disabled) {
-                self.room.disableDeviceInputs(true);
-            } else {
-                self.room.disableDeviceInputs(self.isDisableDeviceInputs);
-            }
-        }
+//        if (disabled != self.isDisableDeviceInputs) {
+//            if (disabled) {
+//                self.room.disableDeviceInputs(true);
+//            } else {
+//                self.room.disableDeviceInputs(self.isDisableDeviceInputs);
+//            }
+//        }
         self.room.disableCameraTransform(disabled);
+        self.isDisableCameraTransform = disabled;
+    }
+    public func disableDeviceInputs(disabled:Bool) {
+        self.room.disableDeviceInputs(disabled);
         self.isDisableDeviceInputs = disabled;
     }
-    
     public func throwError(_ error:Error){
         print("YondorWhiteboard #3 throwError ",error.localizedDescription)
     }

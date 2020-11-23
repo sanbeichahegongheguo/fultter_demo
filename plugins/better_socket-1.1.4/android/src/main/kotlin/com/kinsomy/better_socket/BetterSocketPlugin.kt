@@ -39,6 +39,21 @@ class BetterSocketPlugin(private val registrar: Registrar) : MethodCallHandler {
                     plugin.queuingEventSink.setDelegate(null)
                 }
             })
+            val pluginv2 = BetterSocketPlugin(registrar)
+
+            val channelv2 = MethodChannel(registrar.messenger(), "better_socket_v2")
+            channelv2.setMethodCallHandler(pluginv2)
+
+            //注册WebSocket Flutter回调
+            EventChannel(registrar.messenger(), "better_socket_v2/event").setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(p0: Any?, sink: EventChannel.EventSink?) {
+                    pluginv2.queuingEventSink.setDelegate(sink)
+                }
+
+                override fun onCancel(p0: Any?) {
+                    pluginv2.queuingEventSink.setDelegate(null)
+                }
+            })
         }
     }
 

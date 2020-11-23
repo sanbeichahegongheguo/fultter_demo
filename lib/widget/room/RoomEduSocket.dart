@@ -17,7 +17,7 @@ class RoomEduSocket {
   IO.Socket socket;
   bool init(String userId) {
     print("@RoomEduSocket init");
-    socket = IO.io("http://192.168.20.63:8080/", {
+    socket = IO.io("https://www.k12china.com/", {
       "path": "/app_live/socket.io",
       'transports': ['websocket'],
     });

@@ -31,10 +31,10 @@ class WhiteboardController {
     return _channel.invokeMethod("updateRoom", param);
   }
 
-  Future setWritable({bool isWritable}) {
+  Future setWritable(bool isWritable) {
     var param = {};
     if (null != isWritable) {
-      param["isWritable"] = isWritable;
+      param["isWritable"] = isWritable ? 1 : 0;
     }
     return _channel.invokeMethod("setWritable", param);
   }
