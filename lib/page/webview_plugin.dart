@@ -814,6 +814,39 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
             _audioRecorderUtils.start(message);
             flutterWebViewPlugin.evalJavascript("window.StartRecording()");
           }),
+      JavascriptChannel(
+          name: "Rotate",
+          onMessageReceived: (JavascriptMessage message) {
+            if (Platform.isIOS) {
+              if (message.message.indexOf(':ROTATE') > -1) {
+                orientation = 1;
+                //是否包含横屏，如果包含，则强制横屏
+                print('包含横屏，选择');
+                OrientationPlugin.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+                OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+              } else {
+                //当前的旋转状态是横屏才进行矫正
+                print('不包含横屏，选择竖屏');
+                if (orientation == 1) {
+                  OrientationPlugin.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                  OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+                }
+              }
+            } else if (Platform.isAndroid) {
+              if (message.message.indexOf(':ROTATE') > -1) {
+                orientation = 1;
+                //是否包含横屏，如果包含，则强制横屏
+                print('包含横屏，选择');
+                OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
+              } else {
+                //当前的旋转状态是横屏才进行矫正
+                print('不包含横屏，选择竖屏');
+                if (orientation == 1) {
+                  OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
+                }
+              }
+            }
+          }),
     ].toSet();
   }
 
