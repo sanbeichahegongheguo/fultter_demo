@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/common/utils/Log.dart';
 import 'package:flutter_start/provider/room.dart';
 import 'package:frefresh/frefresh.dart';
@@ -36,9 +37,11 @@ class _LiveRankWidgetState extends State<LiveRankWidget> {
   _OpacityProvider _opacityProvider = _OpacityProvider();
   _XYProvider _xyProvider = _XYProvider();
   Store<GSYState> store;
-  //护眼图标初始位置
+  //图标初始位置
   double xPosition;
   double yPosition;
+
+  bool _isIos13 = DeviceInfo.instance.ios13();
   @override
   Widget build(BuildContext context) {
     store = StoreProvider.of(context);
@@ -52,151 +55,13 @@ class _LiveRankWidgetState extends State<LiveRankWidget> {
         ChangeNotifierProvider.value(
           value: _opacityProvider,
           child: Consumer<_OpacityProvider>(builder: (context, model, child) {
-            return AnimatedOpacity(
-              duration: Duration(milliseconds: 500),
-              opacity: model.opacity,
-              child: Offstage(
-                offstage: !(model.opacity == 1),
-                child: Stack(
-                  alignment: AlignmentDirectional(0.95, -0.95),
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(color: Colors.white),
-                      padding: EdgeInsets.only(
-                          left: ScreenUtil.getInstance().getWidthPx(80),
-                          right: ScreenUtil.getInstance().getWidthPx(80),
-                          top: ScreenUtil.getInstance().getWidthPx(20)),
-                      width: courseProvider.coursewareWidth,
-                      child: ChangeNotifierProvider.value(
-                          value: _typeProvider,
-                          child: Consumer<_TypeProvider>(builder: (context, model, child) {
-                            var dataList = model.type == 0 ? starDataList : quesDataList;
-                            var maData = model.type == 0 ? starMyData : quesMyData;
-                            return Column(
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: <Widget>[
-                                    Expanded(
-                                        child: FlatButton(
-                                            textColor: model.type == 0 ? Colors.white : Color(0xFFb2b1b9),
-                                            child: Text("星星榜"),
-                                            highlightColor: Colors.transparent,
-                                            color: model.type == 0 ? Color(0xffb2b1b9) : Colors.transparent,
-                                            onPressed: () {
-                                              model.switchType(0);
-                                            },
-                                            shape: RoundedRectangleBorder(
-                                                side: BorderSide(color: Colors.grey, width: 0.5),
-                                                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10))))),
-                                    Expanded(
-                                      child: FlatButton(
-                                          textColor: model.type == 1 ? Colors.white : Color(0xFFb2b1b9),
-                                          child: Text(
-                                            "答题榜",
-                                          ),
-                                          highlightColor: Colors.transparent,
-                                          color: model.type == 1 ? Color(0xffb2b1b9) : Colors.transparent,
-                                          onPressed: () {
-                                            model.switchType(1);
-                                            print("switchType");
-                                          },
-                                          shape: RoundedRectangleBorder(
-                                              side: BorderSide(color: Colors.grey, width: 0.5),
-                                              borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
-                                    )
-                                  ],
-                                ),
-                                Expanded(
-                                  child: dataList == null || dataList.length == 0
-                                      ? Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Image.asset("images/live/rank/noneQueIcon.png",
-                                                width: ScreenUtil.getInstance().getWidthPx(150), height: ScreenUtil.getInstance().getWidthPx(150)),
-                                            SizedBox(
-                                              height: ScreenUtil.getInstance().getWidthPx(10),
-                                            ),
-                                            Text("  暂无${model.type == 0 ? "星星" : "答题"}榜数据！", style: TextStyle(color: Color(0xFFb2b1b9))),
-                                          ],
-                                        )
-                                      : FRefresh(
-                                          headerHeight: 60.0,
-                                          controller: controller,
-                                          header: Container(
-                                            width: 60.0,
-                                            height: 60.0,
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(),
-                                            child: OverflowBox(
-                                              maxHeight: 100.0,
-                                              maxWidth: 100.0,
-                                              child: SpinKitRing(
-                                                color: Colors.grey,
-                                                size: 45,
-                                              ),
-                                            ),
-                                          ),
-                                          child: ListView.builder(
-                                            itemCount: dataList.length,
-                                            physics: NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemBuilder: (_, i) {
-                                              return _buildLine(_getIcon(i), dataList[i]["headerImg"], dataList[i]["realName"],
-                                                  model.type == 0 ? dataList[i]["star"] : dataList[i]["answerCount"], model.type, (i + 1).toString());
-                                            },
-                                          ),
-                                          onRefresh: () async {
-                                            /// 通过 controller 结束刷新
-                                            if (model.type == 0) {
-                                              await getStarData();
-                                              await getUserStarData();
-                                            } else {
-                                              await getData();
-                                              await getUserData();
-                                            }
-                                            controller.finishRefresh();
-                                          },
-                                        ),
-                                ),
-                                Container(
-                                  child: _buildLine(
-                                      _getIcon(maData["rank"] != null && maData["rank"] > 0 ? maData["rank"] - 1 : -1),
-                                      store.state.userInfo.headUrl,
-                                      "${store.state.userInfo.realName}",
-                                      model.type == 0 ? maData["star"] : maData["answerCount"],
-                                      model.type,
-                                      maData["rank"],
-                                      height: ScreenUtil.getInstance().getHeightPx(280)),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xfff1f1f1),
-                                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: ScreenUtil.getInstance().getHeightPx(40),
-                                )
-                              ],
-                            );
-                          })),
-                    ),
-                    FSuper(
-                      width: ScreenUtil.getInstance().getWidthPx(40),
-                      height: ScreenUtil.getInstance().getWidthPx(40),
-                      child1: Image.asset(
-                        "images/live/rank/closeIcon.png",
-                        width: ScreenUtil.getInstance().getWidthPx(40),
-                        height: ScreenUtil.getInstance().getWidthPx(40),
-                      ),
-                      onClick: () {
-                        _opacityProvider.setOpacity(_opacityProvider.opacity == 1 ? 0 : 1);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return _isIos13
+                ? AnimatedOpacity(
+                    duration: Duration(milliseconds: 500),
+                    opacity: model.opacity,
+                    child: _buildBody(model, courseProvider),
+                  )
+                : _buildBody(model, courseProvider);
           }),
         ),
         ChangeNotifierProvider.value(
@@ -217,11 +82,154 @@ class _LiveRankWidgetState extends State<LiveRankWidget> {
     );
   }
 
+  Widget _buildBody(model, courseProvider) {
+    return Offstage(
+      offstage: !(model.opacity == 1),
+      child: Stack(
+        alignment: AlignmentDirectional(0.95, -0.95),
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(color: Colors.white),
+            padding: EdgeInsets.only(
+                left: ScreenUtil.getInstance().getWidthPx(80), right: ScreenUtil.getInstance().getWidthPx(80), top: ScreenUtil.getInstance().getWidthPx(20)),
+            width: courseProvider.coursewareWidth,
+            child: ChangeNotifierProvider.value(
+                value: _typeProvider,
+                child: Consumer<_TypeProvider>(builder: (context, model, child) {
+                  var dataList = model.type == 0 ? starDataList : quesDataList;
+                  var maData = model.type == 0 ? starMyData : quesMyData;
+                  return Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Expanded(
+                              child: FlatButton(
+                                  textColor: model.type == 0 ? Colors.white : Color(0xFFb2b1b9),
+                                  child: Text("星星榜"),
+                                  highlightColor: Colors.transparent,
+                                  color: model.type == 0 ? Color(0xffb2b1b9) : Colors.transparent,
+                                  onPressed: () {
+                                    model.switchType(0);
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Colors.grey, width: 0.5),
+                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10))))),
+                          Expanded(
+                            child: FlatButton(
+                                textColor: model.type == 1 ? Colors.white : Color(0xFFb2b1b9),
+                                child: Text(
+                                  "答题榜",
+                                ),
+                                highlightColor: Colors.transparent,
+                                color: model.type == 1 ? Color(0xffb2b1b9) : Colors.transparent,
+                                onPressed: () {
+                                  model.switchType(1);
+                                  print("switchType");
+                                },
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(color: Colors.grey, width: 0.5),
+                                    borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
+                          )
+                        ],
+                      ),
+                      Expanded(
+                        child: dataList == null || dataList.length == 0
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.asset("images/live/rank/noneQueIcon.png",
+                                      width: ScreenUtil.getInstance().getWidthPx(150), height: ScreenUtil.getInstance().getWidthPx(150)),
+                                  SizedBox(
+                                    height: ScreenUtil.getInstance().getWidthPx(10),
+                                  ),
+                                  Text("  暂无${model.type == 0 ? "星星" : "答题"}榜数据！", style: TextStyle(color: Color(0xFFb2b1b9))),
+                                ],
+                              )
+                            : FRefresh(
+                                headerHeight: 60.0,
+                                controller: controller,
+                                header: Container(
+                                  width: 60.0,
+                                  height: 60.0,
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(),
+                                  child: OverflowBox(
+                                    maxHeight: 100.0,
+                                    maxWidth: 100.0,
+                                    child: SpinKitRing(
+                                      color: Colors.grey,
+                                      size: 45,
+                                    ),
+                                  ),
+                                ),
+                                child: ListView.builder(
+                                  itemCount: dataList.length,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (_, i) {
+                                    return _buildLine(_getIcon(i), dataList[i]["headerImg"], dataList[i]["realName"],
+                                        model.type == 0 ? dataList[i]["star"] : dataList[i]["answerCount"], model.type, (i + 1).toString());
+                                  },
+                                ),
+                                onRefresh: () async {
+                                  /// 通过 controller 结束刷新
+                                  if (model.type == 0) {
+                                    await getStarData();
+                                    await getUserStarData();
+                                  } else {
+                                    await getData();
+                                    await getUserData();
+                                  }
+                                  controller.finishRefresh();
+                                },
+                              ),
+                      ),
+                      Container(
+                        child: _buildLine(_getIcon(maData["rank"] != null && maData["rank"] > 0 ? maData["rank"] - 1 : -1), store.state.userInfo.headUrl,
+                            "${store.state.userInfo.realName}", model.type == 0 ? maData["star"] : maData["answerCount"], model.type, maData["rank"],
+                            height: ScreenUtil.getInstance().getHeightPx(280)),
+                        decoration: BoxDecoration(
+                          color: Color(0xfff1f1f1),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                      ),
+                      SizedBox(
+                        height: ScreenUtil.getInstance().getHeightPx(40),
+                      )
+                    ],
+                  );
+                })),
+          ),
+          FSuper(
+            width: ScreenUtil.getInstance().getWidthPx(40),
+            height: ScreenUtil.getInstance().getWidthPx(40),
+            child1: Image.asset(
+              "images/live/rank/closeIcon.png",
+              width: ScreenUtil.getInstance().getWidthPx(40),
+              height: ScreenUtil.getInstance().getWidthPx(40),
+            ),
+            onClick: () {
+              _opacityProvider.setOpacity(_opacityProvider.opacity == 1 ? 0 : 1);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   String _getIcon(i) {
     if (i == null) {
       return "";
     }
-    return i == 0 ? "images/live/rank/queNo1Icon.png" : i == 1 ? "images/live/rank/queNo2Icon.png" : i == 2 ? "images/live/rank/queNo3Icon.png" : "";
+    return i == 0
+        ? "images/live/rank/queNo1Icon.png"
+        : i == 1
+            ? "images/live/rank/queNo2Icon.png"
+            : i == 2
+                ? "images/live/rank/queNo3Icon.png"
+                : "";
   }
 
   _buildLine(topIcon, headerImg, realName, star, type, rank, {height}) {

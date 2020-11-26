@@ -98,20 +98,6 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
           }
         });
       }
-      // _widgetList.add(completedNum == widget.frequency - 3
-      //     ? Container()
-      //     : AnimatedBuilder(
-      //         animation: animation,
-      //         builder: (BuildContext ctx, Widget child) {
-      //           return new Center(
-      //               child: Image.asset(
-      //             "image/rainStar.png",
-      //             width: animation.value,
-      //             height: animation.value,
-      //           ));
-      //         },
-      //       ));
-
     }
 
     return _widgetList;

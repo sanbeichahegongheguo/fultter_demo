@@ -76,8 +76,8 @@ class Mp3PlayerProvider with ChangeNotifier {
   }
 
   close() async {
-    player?.stop();
-    player?.dispose();
+    await player?.stop();
+    await player?.dispose();
     player = null;
     filePath = null;
     startTime = null;

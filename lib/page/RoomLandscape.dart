@@ -40,6 +40,7 @@ import 'package:flutter_start/widget/LiveTopDialog.dart';
 import 'package:flutter_start/widget/LivesQuesWidget.dart';
 import 'package:flutter_start/widget/RedPacket.dart';
 import 'package:flutter_start/widget/RedRain.dart';
+import 'package:flutter_start/widget/StarDialog.dart';
 import 'package:flutter_start/widget/StarGif.dart';
 import 'package:flutter_start/widget/UserStarWidget.dart';
 import 'package:flutter_start/widget/courseware_video.dart';
@@ -640,10 +641,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   Widget _buildWebView(ResProvider resModel) {
     if (Platform.isIOS) {
+      final _ms = _isIos13 ? 800 : 1000;
       if (resModel.isShow == null || !resModel.isShow) {
-        Future.delayed(Duration(milliseconds: 800), () {
+        Future.delayed(Duration(milliseconds: _ms), () {
           _boardProvider.setTestBoard(0);
-          Future.delayed(Duration(milliseconds: 800), () {
+          Future.delayed(Duration(milliseconds: _ms), () {
             _boardProvider.setTestBoard(1);
           });
         });
@@ -1980,6 +1982,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
         if (res.result != null && res.data != null && res.data["code"] == 200) {
           if (res.data["data"]["status"] == 1) {
+            _starWidgetProvider.addStar(s);
             closeDialog();
             showDialog(
                 context: context,
@@ -2026,12 +2029,21 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   ///启动获取星星动画
   _startForward(num) {
     closeDialog();
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return ChangeNotifierProvider<StarWidgetProvider>.value(value: _starWidgetProvider, child: Start(frequency: num));
-        });
+    if (_isIos13) {
+      return showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ChangeNotifierProvider<StarWidgetProvider>.value(value: _starWidgetProvider, child: Start(frequency: num));
+          });
+    } else {
+      return showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ChangeNotifierProvider<StarWidgetProvider>.value(value: _starWidgetProvider, child: StarDialog(starNum: num));
+          });
+    }
   }
 
   @override

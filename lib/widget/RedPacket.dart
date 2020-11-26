@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/provider/room.dart';
 import 'package:provider/provider.dart';
 
@@ -16,12 +17,15 @@ class RedPacketDialog extends StatefulWidget {
 
 class _RedPacketDialogState extends State<RedPacketDialog> with TickerProviderStateMixin {
   AnimationController _controller;
+  bool _isIos13 = DeviceInfo.instance.ios13();
   @override
   void initState() {
 //    OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
     super.initState();
-    _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    _controller.forward();
+    if (_isIos13) {
+      _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
+      _controller.forward();
+    }
   }
 
   @override
@@ -34,46 +38,55 @@ class _RedPacketDialogState extends State<RedPacketDialog> with TickerProviderSt
       width: courseProvider.coursewareWidth,
       child: Material(
         color: Colors.transparent,
-        child: ScaleTransition(
-          scale: _controller,
-          child: Center(
-            child: Stack(
-              children: <Widget>[
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: screenSize.height),
-                  child: Container(
-                      height: ScreenUtil.getInstance().getHeightPx(1350),
-                      alignment: Alignment.topCenter,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage("images/live/redPacket.png"),
-                        ),
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: ScreenUtil.getInstance().getHeightPx(800),
-                          ),
+        child: _isIos13
+            ? ScaleTransition(
+                scale: _controller,
+                child: _buildBody(screenSize),
+              )
+            : _buildBody(screenSize),
+      ),
+    );
+  }
+
+  Widget _buildBody(screenSize) {
+    return Center(
+      child: Stack(
+        children: <Widget>[
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: screenSize.height),
+            child: Container(
+                height: ScreenUtil.getInstance().getHeightPx(1350),
+                alignment: Alignment.topCenter,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("images/live/redPacket.png"),
+                  ),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(800),
+                    ),
 //                          Text("恭喜你,"),
 //                          Text("共获得颗${widget.starNum}星星!"),
-                          SizedBox(
-                            height: ScreenUtil.getInstance().getHeightPx(175),
-                          ),
-                          Container(
-                            child: CommonUtils.buildBtn("领取",
-                                width: ScreenUtil.getInstance().getWidthPx(200), height: ScreenUtil.getInstance().getHeightPx(170), onTap: () {
-                              var s = Random().nextInt(15) + 10;
-                              Navigator.pop(context, s);
-                            },
-                                splashColor: Colors.amber,
-                                decorationColor: Color(0xFFfbd951),
-                                textColor: Colors.white,
-                                textSize: ScreenUtil.getInstance().getSp(8),
-                                elevation: 2),
-                          ),
-                        ],
-                      )),
-                ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(175),
+                    ),
+                    Container(
+                      child: CommonUtils.buildBtn("领取", width: ScreenUtil.getInstance().getWidthPx(200), height: ScreenUtil.getInstance().getHeightPx(170),
+                          onTap: () {
+                        var s = Random().nextInt(15) + 10;
+                        Navigator.pop(context, s);
+                      },
+                          splashColor: Colors.amber,
+                          decorationColor: Color(0xFFfbd951),
+                          textColor: Colors.white,
+                          textSize: ScreenUtil.getInstance().getSp(8),
+                          elevation: 2),
+                    ),
+                  ],
+                )),
+          ),
 //              IconButton(
 //                icon: Image.asset("images/btn-close.png",fit: BoxFit.cover,width: ScreenUtil.getInstance().getWidthPx(100),),
 //                color: Colors.transparent,
@@ -82,10 +95,7 @@ class _RedPacketDialogState extends State<RedPacketDialog> with TickerProviderSt
 //                  Navigator.pop(context);
 //                },
 //              )
-              ],
-            ),
-          ),
-        ),
+        ],
       ),
     );
   }

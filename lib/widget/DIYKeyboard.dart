@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 
 class Keyboard extends StatefulWidget {
   final sendExpression;
@@ -57,19 +58,21 @@ class _KeyboardState extends State<Keyboard> with SingleTickerProviderStateMixin
 
   ///键盘内容
   List<String> _sentimentNames = ["icon1", "icon2", "ok", "666", "flower", "gift", "zan", "heartIcon", "^", "*", "确定"];
-
+  bool _isIos13 = DeviceInfo.instance.ios13();
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
-    animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
-    _controller.forward();
+    if (_isIos13) {
+      _controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+      animation = Tween(begin: Offset(0.0, 1.0), end: Offset.zero).animate(_controller);
+      _controller?.forward();
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    _controller?.dispose();
   }
 
   ///获取一个数字自定义键盘
@@ -193,7 +196,7 @@ class _KeyboardState extends State<Keyboard> with SingleTickerProviderStateMixin
 
   ///退出
   _back() {
-    _controller.reset();
+    _controller?.reset();
     Navigator.pop(context);
   }
 
@@ -263,6 +266,17 @@ class _KeyboardState extends State<Keyboard> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    Widget body = Container(
+      color: Color(0xFFeeeeee),
+      height: _width / 5 * 5 + _spacing * 4,
+      child: new Wrap(
+        direction: Axis.vertical,
+        spacing: _spacing, // 主轴(水平)方向间距
+        runSpacing: _spacing, // 纵轴（垂直）方向间距
+        alignment: WrapAlignment.start, //沿主轴方向居中
+        children: _start ? getKeyboard() : getSentimentKeyboard(),
+      ),
+    );
     return Stack(
       alignment: Alignment.center,
       fit: StackFit.expand,
@@ -270,20 +284,12 @@ class _KeyboardState extends State<Keyboard> with SingleTickerProviderStateMixin
         Positioned(
             right: 20,
             bottom: 45,
-            child: SlideTransition(
-                position: animation,
-                //将要执行动画的子view
-                child: Container(
-                  color: Color(0xFFeeeeee),
-                  height: _width / 5 * 5 + _spacing * 4,
-                  child: new Wrap(
-                    direction: Axis.vertical,
-                    spacing: _spacing, // 主轴(水平)方向间距
-                    runSpacing: _spacing, // 纵轴（垂直）方向间距
-                    alignment: WrapAlignment.start, //沿主轴方向居中
-                    children: _start ? getKeyboard() : getSentimentKeyboard(),
-                  ),
-                ))),
+            child: _isIos13
+                ? SlideTransition(
+                    position: animation,
+                    //将要执行动画的子view
+                    child: body)
+                : body),
       ],
     );
   }

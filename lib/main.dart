@@ -13,6 +13,7 @@ import 'package:redux/redux.dart';
 import 'package:screen/screen.dart';
 
 import 'common/config/config.dart';
+import 'common/utils/CommonUtils.dart';
 import 'models/Application.dart';
 import 'models/user.dart';
 
@@ -27,7 +28,10 @@ main() {
         SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
       }
       if (Platform.isIOS) {
-        PaintingBinding.instance.imageCache.maximumSizeBytes = 20 << 20;
+        final _isIos13 = CommonUtils.ios13();
+        if (!_isIos13) {
+          PaintingBinding.instance.imageCache.maximumSizeBytes = 20 << 20;
+        }
       }
       Screen.keepOn(true);
     }, onError: (Object obj, StackTrace stack) {

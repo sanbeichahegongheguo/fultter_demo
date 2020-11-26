@@ -29,7 +29,6 @@ class _EyerestWidgetState extends State<EyerestWidget> {
 
   @override
   void dispose() {
-    _eyerestProvider?.close();
     super.dispose();
   }
 
@@ -81,18 +80,18 @@ class EyerestProvider with ChangeNotifier {
     if (!isShow) {
       if (_qShow != null && _qShow == 1) {
         init(new FijkPlayer(), filePath: "${courseware.eyeMp4Path}", startTime: socketMsg.timestamp);
-        await flickManager.setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
-        await flickManager.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
-        await flickManager.setOption(FijkOption.formatCategory, "fflags", "fastseek");
+        await flickManager?.setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
+        await flickManager?.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
+        await flickManager?.setOption(FijkOption.formatCategory, "fflags", "fastseek");
         final startDate = DateUtil.getDateTimeByMs(startTime);
-        await flickManager.setDataSource(filePath, showCover: true).catchError((e) {
+        await flickManager?.setDataSource(filePath, showCover: true)?.catchError((e) {
           print("setDataSource error: $e");
         });
-        await flickManager.start();
+        await flickManager?.start();
         if (!isReplay) {
           if (DateTime.now().difference(startDate).inMilliseconds > 1000) {
             Future.delayed(Duration(seconds: 1), () {
-              flickManager.seekTo(DateTime.now().difference(startDate).inMilliseconds + 1000);
+              flickManager?.seekTo(DateTime.now().difference(startDate).inMilliseconds + 1000);
             });
           }
         }
@@ -105,8 +104,8 @@ class EyerestProvider with ChangeNotifier {
   }
 
   close() async {
-    flickManager?.stop();
-    flickManager?.release();
+    await flickManager?.stop();
+    await flickManager?.release();
     flickManager = null;
     filePath = null;
     startTime = null;

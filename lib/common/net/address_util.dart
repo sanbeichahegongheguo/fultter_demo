@@ -19,20 +19,6 @@ class AddressUtil {
   String qresHost = "https://qres.k12china.com/";
   String stu_h5 = "https://www.k12china.com/stu_h5/web/";
   String liveApp = "https://www.k12china.com/app_live/";
-//  String studentHost = "http://192.168.6.31:30915/student:";
-//  String k12apiHost = "http://192.168.6.30:31191/k12-api/";
-//  String studentWebHost = "http://192.168.6.31:31528/studentweb/";
-//  String stu_app = "http://192.168.6.30:31255/stu_app/v1/";
-//  String h5Host = "http://192.168.6.30:30593/";
-//  String common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
-//  String sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
-//  String stu_upload = "http://192.168.6.30:31921/stu_upload/";
-//  String ws_url = "ws://192.168.6.30:30531";
-//  String apiHost = "http://192.168.6.30:31456/";
-//  String qresHost = "https://qres.k12china.com/";
-//  String agora_base_url = "https://api.agora.io";
-//  String stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
-
   String getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
 
   _domain1() {
@@ -45,7 +31,6 @@ class AddressUtil {
     sw_api_ = "https://api.k12china.com/sw/api/v1/";
     stu_upload = "https://www.k12china.com/stu_upload/";
     getSchoolUrl = "https://www.k12china.com/k12-api/search/getSchool";
-
     ws_url = "wss://www.k12china.com";
     apiHost = "https://api.k12china.com/";
     qresHost = "https://qres.k12china.com/";

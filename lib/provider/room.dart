@@ -233,12 +233,17 @@ class StarWidgetProvider with ChangeNotifier {
   int get star => _star;
 
   setStar(int star) {
-    _star = star;
+    this._star = star;
+    notifyListeners();
+  }
+
+  addStar(int star) {
+    this._star += star;
     notifyListeners();
   }
 
   increment() {
-    _star++;
+    this._star++;
     notifyListeners();
   }
 }

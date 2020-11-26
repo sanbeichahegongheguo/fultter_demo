@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:supercharged/supercharged.dart';
@@ -11,12 +12,11 @@ class GamePayleWidget extends StatefulWidget {
 enum AniProps { width, color, alpha }
 
 class _GamePayleWidgetState extends State<GamePayleWidget> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
   final player = AudioPlayer(); //音频播放
+  bool _isIos13 = DeviceInfo.instance.ios13();
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
     localUrl();
     Future.delayed(Duration(milliseconds: 2500), () {
       _back();
@@ -46,7 +46,6 @@ class _GamePayleWidgetState extends State<GamePayleWidget> with SingleTickerProv
   void dispose() {
     super.dispose();
     player?.dispose();
-    _controller?.dispose();
   }
 
   @override
@@ -62,23 +61,29 @@ class _GamePayleWidgetState extends State<GamePayleWidget> with SingleTickerProv
         },
         child: Container(
             color: Colors.black.withAlpha(40),
-            child: PlayAnimation<MultiTweenValues<AniProps>>(
-              tween: _tween, // Pass in tween
-              duration: _tween.duration,
-              builder: (context, child, value) {
-                return Opacity(
-                  opacity: value.get(AniProps.alpha) == null ? 1 : value.get(AniProps.alpha),
-                  child: Center(
-                    child: Image.asset(
-                      "images/live/chat/game_ready.png",
-                      height: value.get(AniProps.width),
-                      width: value.get(AniProps.width),
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                );
-              },
-            )),
+            child: _isIos13
+                ? PlayAnimation<MultiTweenValues<AniProps>>(
+                    tween: _tween, // Pass in tween
+                    duration: _tween.duration,
+                    builder: (context, child, value) {
+                      return Opacity(
+                        opacity: value.get(AniProps.alpha) == null ? 1 : value.get(AniProps.alpha),
+                        child: _buildBody(value.get(AniProps.width)),
+                      );
+                    },
+                  )
+                : _buildBody(350.0)),
+      ),
+    );
+  }
+
+  Widget _buildBody(width) {
+    return Center(
+      child: Image.asset(
+        "images/live/chat/game_ready.png",
+        height: width,
+        width: width,
+        alignment: Alignment.center,
       ),
     );
   }

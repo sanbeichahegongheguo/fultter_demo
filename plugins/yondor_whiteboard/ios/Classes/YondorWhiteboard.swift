@@ -61,7 +61,6 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     }
     
     private func joinRoom(){
-        
         let roomConfig =  WhiteRoomConfig.init(uuid: self.uuid, roomToken: self.roomToken)
         roomConfig.timeout = NSNumber(value: 60*60*2)
         roomConfig.isWritable = false
@@ -74,7 +73,10 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
             if (success){
                 self.room = whiteRoom!
                 self.disableCameraTransform(disabled:true);
+                self.disableDeviceInputs(disabled: true);
                 self.setWritable(writable: false);
+            }else{
+                self.joinRoom()
             }
         }
     }
@@ -139,13 +141,6 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     }
     
     public func disableCameraTransform(disabled:Bool) {
-//        if (disabled != self.isDisableDeviceInputs) {
-//            if (disabled) {
-//                self.room.disableDeviceInputs(true);
-//            } else {
-//                self.room.disableDeviceInputs(self.isDisableDeviceInputs);
-//            }
-//        }
         self.room.disableCameraTransform(disabled);
         self.isDisableCameraTransform = disabled;
     }

@@ -7,6 +7,8 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:uuid/uuid.dart';
 
+import 'CommonUtils.dart';
+
 class DeviceInfo {
   static DeviceInfo instance = new DeviceInfo();
   DeviceInfoPlugin _deviceInfo = new DeviceInfoPlugin();
@@ -17,6 +19,7 @@ class DeviceInfo {
   String deviceId = "";
   String _yondorDeviceId = "";
   String _deviceUUID = "";
+  bool _ios13;
   Future<Map<String, dynamic>> getDeviceInfo() async {
     if (null == this._deviceInfoMap) {
       if (Platform.isAndroid) {
@@ -94,6 +97,17 @@ class DeviceInfo {
     }
     this._yondorDeviceId = did;
     return this._yondorDeviceId;
+  }
+
+  bool ios13() {
+    if (_ios13 == null) {
+      if (Platform.isIOS) {
+        _ios13 = CommonUtils.ios13();
+      } else {
+        _ios13 = true;
+      }
+    }
+    return _ios13;
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
