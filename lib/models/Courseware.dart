@@ -256,6 +256,7 @@ class Ps {
   String fileid;
   String mp4;
   String mp3;
+  String password;
 
   Ps({
     this.pic,
@@ -270,6 +271,7 @@ class Ps {
     this.fileid,
     this.mp4,
     this.mp3,
+    this.password,
   });
 
   factory Ps.fromJson(jsonRes) => jsonRes == null
@@ -287,6 +289,7 @@ class Ps {
           fileid: jsonRes['fileid'],
           mp4: jsonRes['mp4'],
           mp3: jsonRes['mp3'],
+          password: jsonRes['password'],
         );
 
   Map<String, dynamic> toJson() => {
@@ -302,6 +305,7 @@ class Ps {
         'fileid': fileid,
         'mp4': mp4,
         'mp3': mp3,
+        'password': password,
       };
   @override
   String toString() {

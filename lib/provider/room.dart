@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_start/models/ChatMessage.dart';
 import 'package:flutter_start/models/Courseware.dart';
@@ -70,13 +72,21 @@ class ChatProvider with ChangeNotifier {
 
   List<ChatMessage> _chatMessageList = new List();
   List<ChatMessage> get chatMessageList => _chatMessageList;
+  final Completer<int> _msgListSetup = Completer();
   setIsComposing(bool isComposing) {
     _isComposing = isComposing;
     notifyListeners();
   }
 
-  insertChatMessageList(ChatMessage msg) {
+  insertChatMessageList(ChatMessage msg) async {
+    await _msgListSetup.future;
     _chatMessageList.insert(0, msg);
+    notifyListeners();
+  }
+
+  setChatMessageList(List<ChatMessage> msg) {
+    _chatMessageList = msg;
+    _msgListSetup.complete(1);
     notifyListeners();
   }
 

@@ -180,6 +180,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _isIos13 = CommonUtils.ios13();
       print("is ios13  $_isIos13");
     }
+    getMsgList();
   }
 
   _initYondorRtm() async {
@@ -674,10 +675,23 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         ].toSet(),
         onWebViewCreated: (controller) async {
           _webViewPlusController = controller;
-          print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-
-          controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
-//                controller.loadUrl(await CommonUtils.urlJoinUser("http://192.168.20.63:8080/2020/09/5f6061b68386/1058/index.html"));
+          if (ObjectUtil.isEmptyString(resModel.res.data.ps.password)) {
+            print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+            controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+          } else {
+            var password = resModel.res.data.ps.password;
+            String filterPsw = password.substring(12, 13) +
+                password.substring(9, 10) +
+                password.substring(6, 7) +
+                password.substring(3, 4) +
+                password.substring(7, 8) +
+                password.substring(11, 12) +
+                password.substring(15, 16) +
+                password.substring(10, 11);
+            var toURL = widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url + "?h5code=$filterPsw");
+            print("Roomlandscape@onWebViewCreated loadurl===>$toURL");
+            controller.loadUrl(toURL);
+          }
         },
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
           new Factory<OneSequenceGestureRecognizer>(
@@ -990,7 +1004,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _textController.clear();
     _chatProvider.setIsComposing(false);
     FocusScope.of(context).requestFocus(new FocusNode());
-    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid).then((res) {
+    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid, liveCourseallotId: widget.roomData.liveCourseallotId)
+        .then((res) {
       if (res != null && !res.result) {
         showToast(res.data);
       }
@@ -1624,18 +1639,23 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     if (ques.type == mp4 && msg["time"] == null) {
       msg["time"] = 0;
     }
+
+    if (ques != null && ques.type == mp4) {
+      _isPlay = msg["isPlay"];
+      _time = msg["time"];
+    }
+
     if (_currentRes == null && socketMsg.type == "event-current" && ques.type == mp4) {
       DateTime now = DateTime.now();
       DateTime quesTimeBy = DateUtil.getDateTimeByMs(socketMsg.timestamp);
       int inSeconds = now.difference(quesTimeBy).inSeconds;
       print("相差时间 inSeconds  $inSeconds");
-      msg["time"] = msg["time"] + inSeconds;
+      if (_isPlay != null && _isPlay == 1) {
+        print("相差时间 _isPlay  $_isPlay");
+        msg["time"] = msg["time"] + inSeconds;
+      }
     }
     Log.d("1111111111111 ${msg["time"]}", tag: RoomLandscapePage.sName);
-    if (ques != null && ques.type == mp4) {
-      _isPlay = msg["isPlay"];
-      _time = msg["time"];
-    }
 
     if (_currentRes != null && _currentRes.qid == ques.qid) {
       if (_currentRes.type == mp4) {
@@ -1643,18 +1663,29 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
         var time = msg["time"];
         if (flickManager.state == FijkState.asyncPreparing || flickManager.state == FijkState.initialized || flickManager.isPlayable()) {
-          if (time != null && time > 0) {
-            flickManager?.seekTo(Duration(seconds: time + 1).inMilliseconds);
-          }
           if (isPlay == 1) {
+            if (time != null && time > 0) {
+              Log.d("暂停  flickManager?.seekTo $time ", tag: RoomLandscapePage.sName);
+              await flickManager?.seekTo(Duration(seconds: time).inMilliseconds + 500);
+            }
             if (flickManager.state == FijkState.completed) {
               await flickManager?.seekTo(0);
             }
             if (flickManager.state != FijkState.started) {
-              await flickManager.start();
+              await flickManager?.start();
             }
           } else {
-            await flickManager.pause();
+            if (time != null && time > 0) {
+              Log.d("暂停  flickManager?.seekTo $time ", tag: RoomLandscapePage.sName);
+              await flickManager?.seekTo(Duration(seconds: time).inMilliseconds);
+            }
+            Log.d("暂停  flickManager?.pause()", tag: RoomLandscapePage.sName);
+//            await flickManager?.pause();
+            await flickManager?.start();
+//            await flickManager?.pause();
+            Future.delayed(Duration(milliseconds: 300), () {
+              flickManager?.pause();
+            });
           }
         }
       } else {
@@ -1695,6 +1726,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             Future(() async {
               await flickManager?.start();
               await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+              Future.delayed(Duration(seconds: 1), () {
+                flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+              });
               await flickManager?.pause();
               if (_isPlay != null && _isPlay == 1) {
                 flickManager?.start();
@@ -1727,14 +1761,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             print("setDataSource error: $e");
           });
           if (_time != null && _time > 0) {
-            Future(() async {
-              await flickManager?.start();
-              await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
-              await flickManager?.pause();
-              if (_isPlay != null && _isPlay == 1) {
-                flickManager?.start();
-              }
+            await flickManager?.start();
+            await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+            await flickManager?.pause();
+            Future.delayed(Duration(seconds: 1), () {
+              flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
             });
+            if (_isPlay != null && _isPlay == 1) {
+              flickManager?.start();
+            }
           }
         }
         //只展示图片不操作
@@ -2115,6 +2150,27 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         break;
       default:
         break;
+    }
+  }
+
+  getMsgList() async {
+    print("@getMsgList");
+    try {
+      final res = await RoomDao.getMsgList(widget.roomData.liveCourseallotId, widget.roomData.room.roomId);
+      if (res.result != null && res.result && res.data != null) {
+        if (res.data is List<ChatMessage>) {
+          final list = res.data;
+          list.insertAll(0, _chatProvider.chatMessageList);
+          _chatProvider.setChatMessageList(list);
+        } else {
+          _chatProvider.setChatMessageList(List<ChatMessage>());
+        }
+      } else {
+        _chatProvider.setChatMessageList(List<ChatMessage>());
+      }
+    } catch (e) {
+      print("@@getMsgList $e");
+      _chatProvider.setChatMessageList(List<ChatMessage>());
     }
   }
 

@@ -335,6 +335,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
       peLiveCourseallotId: 571976,
       startTime: DateUtil.getDateTime("2020-08-31 16:00:00"),
       endTime: DateUtil.getDateTime("2020-08-31 17:10:00"),
+//        roomType: "yondor_edu"
 //      recordId: "95379824280870912",
     );
 //    RoomUtil.goRoomPage(

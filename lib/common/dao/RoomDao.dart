@@ -3,6 +3,7 @@ import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
 import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/net/api.dart';
+import 'package:flutter_start/models/ChatMessage.dart';
 import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/models/replayData.dart';
 
@@ -131,13 +132,40 @@ class RoomDao {
     return new DataResult(result, res.result);
   }
 
-  static roomChat(String roomId, String token, String msg, String liveRoomId) async {
+  static getMsgList(int liveCourseallotId, String roomId) async {
+    print("@getMsgList 111");
+    var params = {"liveCourseallotId": liveCourseallotId, "pageNo": 1, "pageSize": 30, "roomId": roomId};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().yondorRoomMsgList(roomId), params, null, Options(method: "get"),
+        contentType: HttpManager.CONTENT_TYPE_FORM);
+    print("@getMsgList res $res");
+    var result;
+    if (res != null && res.result) {
+      if (res.data["code"] == 200) {
+        final data = res.data["data"]["data"];
+        List<ChatMessage> list = new List();
+        if (data != null && data is List) {
+          data.forEach((element) {
+            print("@getMsgList element $element");
+            list.add(ChatMessage.fromJson(element));
+          });
+        }
+        print("@getMsgList $list");
+        result = list;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  static roomChat(String roomId, String token, String msg, String liveRoomId, {int liveCourseallotId = 0}) async {
     var params = {
       "message": msg,
       "type": 1,
       "token": token,
       "roomId": roomId,
       "liveRoomId": liveRoomId,
+      "liveCourseallotId": liveCourseallotId,
     };
     var res =
         await httpManager.netFetch(AddressUtil.getInstance().liveChat(), params, null, Options(method: "POST"), contentType: HttpManager.CONTENT_TYPE_FORM);

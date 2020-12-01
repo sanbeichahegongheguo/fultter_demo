@@ -58,6 +58,9 @@ class RoomEduSocket {
 
   messageReceived(data) {
     print("@RoomEduSocket messageReceived: $data");
+    if (data == null) {
+      return;
+    }
     if (onMessageReceived != null) {
       AgoraRtmMessage agoraRtmMessage = AgoraRtmMessage(jsonEncode(data["message"]["text"]), data["message"]["ts"], data["message"]["offline"]);
       AgoraRtmMember agoraRtmMember = AgoraRtmMember.fromJson(data["member"]);
@@ -67,6 +70,9 @@ class RoomEduSocket {
 
   messageReceivedUser(data) {
     print("@RoomEduSocket messageReceivedUser: $data");
+    if (data == null) {
+      return;
+    }
     if (onMessageReceivedUser != null) {
       AgoraRtmMessage agoraRtmMessage = AgoraRtmMessage(jsonEncode(data["message"]["text"]), data["message"]["ts"], data["message"]["offline"]);
       String peerId = data["peerId"];
@@ -76,6 +82,9 @@ class RoomEduSocket {
 
   memberLeft(data) {
     print("@RoomEduSocket memberLeft:  $data");
+    if (data == null) {
+      return;
+    }
     if (onMemberLeft != null) {
       AgoraRtmMember agoraRtmMember = AgoraRtmMember.fromJson(data);
       onMemberLeft(agoraRtmMember);
@@ -84,6 +93,9 @@ class RoomEduSocket {
 
   memberJoined(data) {
     print("@RoomEduSocket memberJoined: $data");
+    if (data == null) {
+      return;
+    }
     if (onMemberJoined != null) {
       AgoraRtmMember agoraRtmMember = AgoraRtmMember.fromJson(data);
       onMemberJoined(agoraRtmMember);

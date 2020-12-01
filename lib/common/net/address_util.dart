@@ -681,4 +681,9 @@ class AddressUtil {
   getYondorCourseRecordBy() {
     return "${liveApp}v1/live_broadcast/record/info";
   }
+
+  ///房间聊天记录
+  yondorRoomMsgList(String roomId) {
+    return "${liveApp}edu/v1/apps/room/$roomId/chat/record";
+  }
 }
