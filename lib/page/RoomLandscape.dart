@@ -1640,20 +1640,19 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       msg["time"] = 0;
     }
 
-    if (ques != null && ques.type == mp4) {
-      _isPlay = msg["isPlay"];
-      _time = msg["time"];
-    }
-
     if (_currentRes == null && socketMsg.type == "event-current" && ques.type == mp4) {
       DateTime now = DateTime.now();
       DateTime quesTimeBy = DateUtil.getDateTimeByMs(socketMsg.timestamp);
       int inSeconds = now.difference(quesTimeBy).inSeconds;
       print("相差时间 inSeconds  $inSeconds");
-      if (_isPlay != null && _isPlay == 1) {
-        print("相差时间 _isPlay  $_isPlay");
+      if (msg["isPlay"] != null && msg["isPlay"] == 1) {
+        print("相差时间 _isPlay  ${msg["isPlay"]}");
         msg["time"] = msg["time"] + inSeconds;
       }
+    }
+    if (ques != null && ques.type == mp4) {
+      _isPlay = msg["isPlay"];
+      _time = msg["time"];
     }
     Log.d("1111111111111 ${msg["time"]}", tag: RoomLandscapePage.sName);
 
@@ -1680,9 +1679,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               await flickManager?.seekTo(Duration(seconds: time).inMilliseconds);
             }
             Log.d("暂停  flickManager?.pause()", tag: RoomLandscapePage.sName);
-//            await flickManager?.pause();
             await flickManager?.start();
-//            await flickManager?.pause();
             Future.delayed(Duration(milliseconds: 300), () {
               flickManager?.pause();
             });
@@ -1727,7 +1724,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               await flickManager?.start();
               await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
               Future.delayed(Duration(seconds: 1), () {
-                flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+                if (_isPlay != null && _isPlay == 1) {
+                  flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+                }
               });
               await flickManager?.pause();
               if (_isPlay != null && _isPlay == 1) {
@@ -1761,15 +1760,19 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             print("setDataSource error: $e");
           });
           if (_time != null && _time > 0) {
-            await flickManager?.start();
-            await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
-            await flickManager?.pause();
-            Future.delayed(Duration(seconds: 1), () {
-              flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+            Future(() async {
+              await flickManager?.start();
+              await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
+              Future.delayed(Duration(seconds: 1), () {
+                if (_isPlay != null && _isPlay == 1) {
+                  flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+                }
+              });
+              await flickManager?.pause();
+              if (_isPlay != null && _isPlay == 1) {
+                flickManager?.start();
+              }
             });
-            if (_isPlay != null && _isPlay == 1) {
-              flickManager?.start();
-            }
           }
         }
         //只展示图片不操作
