@@ -7,7 +7,7 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 2.0.752+340242
+version: 2.0.754+340244
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -60,9 +60,10 @@ dependencies:
     path: ./plugins/webview_flutter_plus-0.1.1+9
   image_cropper: ^1.2.3
   oktoast: ^2.2.0
+  fluwx_no_pay: ^2.3.2
 #  fluwx: ^2.2.0
-  fluwx:
-    path: ./plugins/fluwx
+#  fluwx:
+#    path: ./plugins/fluwx
   flick_video_player: ^0.1.1
   liquid_progress_indicator: ^0.3.2
   # websocket_manager: ^0.2.2

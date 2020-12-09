@@ -678,7 +678,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34970;
+				CURRENT_PROJECT_VERSION = 34972;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -721,7 +721,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.752;
+				MARKETING_VERSION = 2.0.754;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -765,8 +765,6 @@
 					"\"flutter_native_image\"",
 					"-framework",
 					"\"flutter_webview_plugin\"",
-					"-framework",
-					"\"fluwx\"",
 					"-framework",
 					"\"image_cropper\"",
 					"-framework",
@@ -936,7 +934,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34970;
+				CURRENT_PROJECT_VERSION = 34972;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -979,7 +977,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.752;
+				MARKETING_VERSION = 2.0.754;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1023,8 +1021,6 @@
 					"\"flutter_native_image\"",
 					"-framework",
 					"\"flutter_webview_plugin\"",
-					"-framework",
-					"\"fluwx\"",
 					"-framework",
 					"\"image_cropper\"",
 					"-framework",
@@ -1084,7 +1080,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 34970;
+				CURRENT_PROJECT_VERSION = 34972;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = US9G9C67S4;
 				ENABLE_BITCODE = NO;
@@ -1127,7 +1123,7 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/lib",
 				);
-				MARKETING_VERSION = 2.0.752;
+				MARKETING_VERSION = 2.0.754;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1171,8 +1167,6 @@
 					"\"flutter_native_image\"",
 					"-framework",
 					"\"flutter_webview_plugin\"",
-					"-framework",
-					"\"fluwx\"",
 					"-framework",
 					"\"image_cropper\"",
 					"-framework",

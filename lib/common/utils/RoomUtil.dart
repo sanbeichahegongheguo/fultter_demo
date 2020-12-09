@@ -94,6 +94,7 @@ class RoomUtil {
       roomData.endTime = endTime;
       roomData.courseware = courseware;
       roomData.liveCourseallotId = peLiveCourseallotId;
+      print("recordId $recordId");
       //判断是否回放
       if (recordId != null && recordId != "") {
         //获取回放信息

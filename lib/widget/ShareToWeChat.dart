@@ -1,6 +1,6 @@
 import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
-import 'package:fluwx/fluwx.dart' as fluwx;
+import 'package:fluwx_no_pay/fluwx_no_pay.dart' as fluwx;
 
 class ShareToWeChat extends StatefulWidget {
   const ShareToWeChat({
@@ -38,7 +38,7 @@ class _StatefulWidget extends State<ShareToWeChat> {
   ) : super();
   @override
   initState() {
-    fluwx.register(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
+    fluwx.registerWxApi(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true, universalLink: "https://goapp.k12china.com/app/student/");
     super.initState();
   }
 
@@ -58,8 +58,8 @@ class _StatefulWidget extends State<ShareToWeChat> {
         print("收藏");
         break;
     }
-    fluwx.share(fluwx.WeChatShareWebPageModel(
-        webPage: _webPage, thumbnail: _thumbnail, transaction: _transaction, title: _title, scene: scene, description: _description));
+    fluwx.shareToWeChat(
+        fluwx.WeChatShareWebPageModel(_webPage, thumbnail: fluwx.WeChatImage.network(_thumbnail), title: _title, scene: scene, description: _description));
     Navigator.pop(context);
   }
 

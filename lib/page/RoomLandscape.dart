@@ -1725,7 +1725,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
               Future.delayed(Duration(seconds: 1), () {
                 if (_isPlay != null && _isPlay == 1) {
-                  flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+                  flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 2000);
                 }
               });
               await flickManager?.pause();
@@ -1765,7 +1765,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               await flickManager?.seekTo(Duration(seconds: _time).inMilliseconds);
               Future.delayed(Duration(seconds: 1), () {
                 if (_isPlay != null && _isPlay == 1) {
-                  flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 1000);
+                  flickManager?.seekTo(Duration(seconds: _time).inMilliseconds + 2000);
                 }
               });
               await flickManager?.pause();

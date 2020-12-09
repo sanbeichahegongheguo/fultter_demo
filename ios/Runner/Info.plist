@@ -43,6 +43,7 @@
 	<array>
 		<string>yondorstudenthwapp</string>
 		<string>weixin</string>
+		<string>weixinULAPI</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

@@ -1,9 +1,9 @@
-import 'package:fluwx/fluwx.dart' as fluwx;
-import 'package:fluwx/fluwx.dart';
+import 'package:fluwx_no_pay/fluwx_no_pay.dart' as fluwx;
+import 'package:fluwx_no_pay/fluwx_no_pay.dart';
 
 class ShareWx {
   static wxshare(num, _webPage, _thumbnail, _transaction, _title, _description) {
-    fluwx.register(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
+    fluwx.registerWxApi(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true, universalLink: "https://goapp.k12china.com/app/student/");
     fluwx.WeChatScene scene = fluwx.WeChatScene.SESSION;
     switch (num) {
       case 0:
@@ -23,13 +23,13 @@ class ShareWx {
         print("微信小程序");
         break;
     }
-    fluwx.share(fluwx.WeChatShareWebPageModel(
-        webPage: _webPage, thumbnail: _thumbnail, transaction: _transaction, title: _title, scene: scene, description: _description));
+    fluwx.shareToWeChat(
+        fluwx.WeChatShareWebPageModel(_webPage, thumbnail: fluwx.WeChatImage.network(_thumbnail), title: _title, scene: scene, description: _description));
   }
 
   ///分享微信小程序
   static chatShareMiniProgramModel(_webPageUrl, _userName, _title, _path, _description, _thumbnail) {
-    fluwx.register(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
+    fluwx.registerWxApi(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true, universalLink: "https://goapp.k12china.com/app/student/");
     fluwx.WeChatScene scene = fluwx.WeChatScene.SESSION;
 
 //     _webPageUrl = "http://www.qq.com";
@@ -48,7 +48,7 @@ class ShareWx {
         description: _description,
         thumbnail: _thumbnail,
         miniProgramType: WXMiniProgramType.TEST);
-    fluwx.share(model);
+    fluwx.shareToWeChat(model);
   }
 
   ///[WXMiniProgramType.RELEASE]正式版
@@ -56,7 +56,7 @@ class ShareWx {
   ///[WXMiniProgramType.PREVIEW]预览版
   ///打开微信 小程序
   static launchMiniProgram(username, type, path) {
-    fluwx.register(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true);
+    fluwx.registerWxApi(appId: "wx6b9c3fe446a8d77d", doOnAndroid: true, doOnIOS: true, universalLink: "https://goapp.k12china.com/app/student/");
     WXMiniProgramType miniProgramType = WXMiniProgramType.RELEASE;
     switch (type) {
       case 0:
@@ -70,6 +70,6 @@ class ShareWx {
         break;
     }
     print("username====>${username}");
-    fluwx.launchMiniProgram(username: username, miniProgramType: miniProgramType, path: path);
+    fluwx.launchWeChatMiniProgram(username: username, miniProgramType: miniProgramType, path: path);
   }
 }
