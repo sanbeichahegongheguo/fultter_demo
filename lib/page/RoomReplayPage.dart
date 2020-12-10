@@ -544,10 +544,23 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         ].toSet(),
         onWebViewCreated: (controller) async {
           _webViewPlusController = controller;
-          print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-
-          controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
-//                controller.loadUrl(await CommonUtils.urlJoinUser("http://192.168.20.63:8080/2020/09/5f6061b68386/1058/index.html"));
+          if (ObjectUtil.isEmptyString(resModel.res.data.ps.password)) {
+            print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+            controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+          } else {
+            var password = resModel.res.data.ps.password;
+            String filterPsw = password.substring(12, 13) +
+                password.substring(9, 10) +
+                password.substring(6, 7) +
+                password.substring(3, 4) +
+                password.substring(7, 8) +
+                password.substring(11, 12) +
+                password.substring(15, 16) +
+                password.substring(10, 11);
+            var toURL = widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url + "?h5code=$filterPsw");
+            print("Roomlandscape@onWebViewCreated loadurl===>$toURL");
+            controller.loadUrl(toURL);
+          }
         },
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
           new Factory<OneSequenceGestureRecognizer>(
@@ -1229,7 +1242,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
 //   socket.connect();
   }
 
-  _handleSocketMsg(SocketMsg socketMsg) {
+  _handleSocketMsg(SocketMsg socketMsg) async {
     switch (socketMsg.type) {
       case ppt:
       case h5:

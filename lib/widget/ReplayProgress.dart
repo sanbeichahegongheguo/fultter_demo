@@ -196,7 +196,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Consumer<ReplayProgressProvider>(builder: (context, model, child) {
-      print("model.duration===>${model.duration}");
+      // print("model.duration===>${model.duration}");
       Duration duration = Duration(milliseconds: model.val.round());
       String durationInSeconds = duration != null ? (duration - Duration(minutes: duration.inMinutes)).inSeconds.toString().padLeft(2, '0') : null;
       String _nowDuration = duration != null ? '${duration.inMinutes}:$durationInSeconds' : '0:00';
