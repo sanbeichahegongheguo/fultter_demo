@@ -186,6 +186,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                 Column(
                   children: <Widget>[
                     _getBt("个人资料与设置", "images/admin/icon_set.png", _goSetUserInfo, new Text("")),
+                    _getBt("物流信息", "images/admin/icon_logistics.png", _goLogistics, new Text("")),
                     _getBt("护眼设置", "images/admin/icon_eye_protection.png", _goSetEye, new Text("")),
                     _getBt("设置监护密码", "images/admin/icon_password.png", _setMonitoringPassword, new Text("")),
 //                    StreamBuilder<String>(
@@ -228,6 +229,11 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
 
   _setMonitoringPassword() {
+    ApplicationDao.trafficStatistic(569);
+    NavigatorUtil.goMonitoringPassword(context);
+  }
+
+  _goLogistics() {
     ApplicationDao.trafficStatistic(569);
     NavigatorUtil.goMonitoringPassword(context);
   }

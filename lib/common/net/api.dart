@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_start/common/net/code.dart';
 import 'package:flutter_start/common/net/interceptors/error_interceptor.dart';
@@ -33,6 +34,14 @@ class HttpManager {
     dio.interceptors.add(new ErrorInterceptors(dio));
 
     dio.interceptors.add(new ResponseInterceptors());
+
+    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+    //   client.findProxy = (uri) {
+    //     return "PROXY 192.168.20.63:9090";
+    //   };
+    //   //代理工具会提供一个抓包的自签名证书，会通不过证书校验，所以我们禁用证书校验
+    //   client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    // };
   }
 
   ///发起网络请求

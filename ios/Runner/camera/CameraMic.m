@@ -11,12 +11,13 @@
 #import <AVKit/AVKit.h>
 #import <Photos/Photos.h>
 #import <Flutter/Flutter.h>
+#import <TOCropViewController/TOCropViewController.h>
 @interface CameraMic:NSObject<UIImagePickerControllerDelegate,
 								UINavigationControllerDelegate,
 								AVAudioRecorderDelegate,
 								AVAudioPlayerDelegate, 
 								CallbackDelegate,
-                                UIAlertViewDelegate>
+                                UIAlertViewDelegate,TOCropViewControllerDelegate>
 {
     NSString* _audioPath;
     AVAudioRecorder* _audioRecorder;
@@ -118,6 +119,7 @@ static BOOL _isSingle = false;
         NSString * script = [NSString stringWithFormat:@"{\"path\":\"%@\",\"type\":%ld}", imgPath, type];
 //        NSLog(@"script===>%@",script);
         tmp = nil;;
+        imageData = nil;
         _result(script);
 //        [webV stringByEvaluatingJavaScriptFromString:script];
         if(_customCamera!=nil){
@@ -128,7 +130,28 @@ static BOOL _isSingle = false;
         [self removeGalleryBtn];
         _result = nil;
 }
-    
+-(void)successfulData:(NSData*)imageData{
+        NSNumber *myDoubleNumber = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+        NSString *filename = [NSString stringWithFormat:@"%ld.jpg", (long)[myDoubleNumber integerValue]];
+        NSString *path = [[NSString alloc] initWithUTF8String:[CameraMic getAppDirectory]];
+        NSString *imagePath = [path stringByAppendingPathComponent:filename];
+        [imageData writeToFile:imagePath atomically:YES];
+        NSInteger type = 1;
+        if(currentBtn.tag == 100){
+            type = 0;
+        }
+        NSString * script = [NSString stringWithFormat:@"{\"path\":\"%@\",\"type\":%ld}", imagePath, type];
+        imageData = nil;
+        _result(script);
+        if(_customCamera!=nil){
+            [_customCamera dismissModalViewControllerAnimated:YES];
+            [_customCamera.view removeFromSuperview];
+            [_customCamera.view.superview removeFromSuperview];
+        }
+        [self removeGalleryBtn];
+        _result = nil;
+}
+
 -(void)ok{
     NSLog(@"retake");
     
@@ -638,41 +661,71 @@ static BOOL _isSingle = false;
 {
  
     NSLog(@"imagePickerController");
+    UIImage* _image = nil;
     if([_pickerType  isEqual: @"gallery"]){
         NSLog(@"相册图片...........");
-        image = [info objectForKey:UIImagePickerControllerOriginalImage] ;
+        _image = [info objectForKey:UIImagePickerControllerOriginalImage] ;
     }else{
-        image = [info objectForKey: UIImagePickerControllerOriginalImage]; //不管是否裁剪，获取原始图片
+        _image = [info objectForKey: UIImagePickerControllerOriginalImage]; //不管是否裁剪，获取原始图片
     }
-	
-	scaleImage = [self scaleImage:image toScale:1.0];   //拍摄后的照片进行尺寸大小缩放,原来为0.5	
-    NSNumber *myDoubleNumber = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];	
-    NSString *filename = [NSString stringWithFormat:@"%ld.jpg", (long)[myDoubleNumber integerValue]];//origin	
 
-    if([_pickerType isEqual:@"gallery"]){
-        NSString *path = [[NSString alloc] initWithUTF8String:[CameraMic getAppDirectory]];
-        NSString *imagePath = [path stringByAppendingPathComponent:filename];
-        [UIImageJPEGRepresentation(scaleImage, 0.5) writeToFile:imagePath atomically:YES];
-		[_customGallery dismissModalViewControllerAnimated:YES];
-		[_customGallery.view removeFromSuperview];
-		[_customGallery.view.superview removeFromSuperview];
-        [_customCamera cropImageStart:scaleImage type:currentBtn.tag];
-//        const char *ptr = [imagePath cStringUsingEncoding:NSUTF8StringEncoding];
-//        [self successful:ptr];
+    if(_pickerType==@"gallery"){
+        [self cropImageStar:_image];
+        _image = nil;
         image = nil;
         scaleImage = nil;
         return;
     }
-   // [self setGalleryEnable:NO];
-    
     [self removeGalleryBtn];
     if(_customCamera != nil) {
         //调用裁剪
-        [_customCamera cropImageStart:scaleImage type:currentBtn.tag];
+        [self cropImageStar:_image];
+        _image = nil;
         image = nil;
         scaleImage = nil;
     } else {NSLog(@"_customCamera = nil");}
 }
+-(void)cropImageStar:(UIImage*)cropImage{
+    TOCropViewController *cropController = [[TOCropViewController alloc] initWithImage:cropImage];
+    cropController.delegate = self;
+    //截图的展示样式
+    cropController.aspectRatioPreset = TOCropViewControllerAspectRatioPresetOriginal;
+    //隐藏比例选择按钮
+    cropController.aspectRatioPickerButtonHidden = YES;
+    cropController.aspectRatioLockEnabled = NO;
+    //重置后缩小到当前设置的长宽比
+    cropController.resetAspectRatioEnabled = NO;
+    //是否可以手动拖动
+    cropController.cropView.cropBoxResizeEnabled = YES;
+    UIButton* _resetButton = cropController.toolbar.resetButton;
+    [_resetButton setImage:nil forState:UIControlStateNormal];
+    [_resetButton setTitle: @"还原" forState:UIControlStateNormal];
+    [_resetButton setTintColor:[UIColor systemBlueColor]];
+    [_resetButton.titleLabel setFont:[UIFont systemFontOfSize:17.0f]];
+    [_resetButton sizeToFit];
+    _resetButton.contentMode = UIViewContentModeCenter;
+    _resetButton.enabled = NO;
+    [topVC dismissViewControllerAnimated:NO completion:nil];
+    [topVC presentViewController:cropController animated:NO completion:nil];
+}
+
+# pragma mark -TOCropViewControllerDelegate 图片裁剪
+- (void)cropViewController:(TOCropViewController *)cropViewController didCropToImage:(UIImage *)cropImage withRect:(CGRect)cropRect angle:(NSInteger)angle{
+    NSLog(@"TOCropViewControllerDelegate");
+    cropImage = [self scaleImage:cropImage toScale:0.5];
+    NSData *imgData = UIImageJPEGRepresentation(cropImage, 0.7);
+    [self successfulData:imgData];
+    [topVC dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+
+- (void)cropViewController:(TOCropViewController *)cropViewController didFinishCancelled:(BOOL)cancelled {
+    _result(@"");
+    [cropViewController dismissViewControllerAnimated:YES completion:nil];
+    _result = nil;
+}
+
 
 /*拍摄后的照片进行尺寸大小缩放*/
 -(UIImage *)scaleImage:(UIImage *)image toScale:(float)scaleSize  

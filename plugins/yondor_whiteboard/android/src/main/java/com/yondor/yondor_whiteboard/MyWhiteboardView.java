@@ -14,6 +14,7 @@ import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
 import com.herewhite.sdk.WhiteSdkConfiguration;
 import com.herewhite.sdk.WhiteboardView;
+import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.PlayerConfiguration;
 import com.herewhite.sdk.domain.PlayerObserverMode;
@@ -23,6 +24,7 @@ import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RoomPhase;
 import com.herewhite.sdk.domain.SDKError;
 import com.herewhite.sdk.domain.SceneState;
+import com.herewhite.sdk.domain.ViewMode;
 import com.yondor.yondor_whiteboard.listener.BoardEventListener;
 import com.yondor.yondor_whiteboard.manager.BoardManager;
 import com.yondor.yondor_whiteboard.manager.LogManager;
@@ -52,6 +54,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     private MethodChannel methodChannel;
     private Gson gson = new Gson();
     private int isReplay = 0;
+    private Map<String, Object> userPayload;
     private Player player;
     private Handler handler;
     MyWhiteboardView(Context context, BinaryMessenger messenger, long uid, Map<String, Object> params) {
@@ -72,6 +75,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         if(params.containsKey("isReplay")){
             isReplay = (int)params.get("isReplay");
         }
+        if(params.containsKey("userPayload")){
+            userPayload =  (Map<String, Object>) params.get("userPayload");
+        }
         this.context = context;
         whiteboardView = new WhiteboardView(context);
         whiteboardView.setBackgroundColor(0x00000000);
@@ -83,6 +89,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         }else{
             initView();
         }
+        log.i(ViewMode.Follower.name());
 
     }
 
@@ -97,6 +104,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     }
     private void init(){
         WhiteSdkConfiguration configuration = new WhiteSdkConfiguration(appIdentifier);
+        configuration.setUserCursor(true);
 //        configuration.setDisableDeviceInputs(true);
         whiteSdk = new WhiteSdk(whiteboardView, context, configuration);
         boardManager.setListener(this);
@@ -106,7 +114,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     }
     private void initView(){
         initBoardWithRoomToken(uuid,roomToken);
-//        boardManager.setViewMode(ViewMode.Follower);
+        boardManager.setViewMode(ViewMode.Follower);
         disableDeviceInputs(true);
         setWritable(false);
         disableCameraTransform(true);
@@ -123,6 +131,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
                     methodChannel.invokeMethod("onCreated",map);
                     RoomParams params = new RoomParams(uuid, roomToken);
                     params.setTimeout(2,TimeUnit.HOURS);
+                    if (null!=userPayload){
+                        params.setUserPayload(userPayload);
+                    }
                     boardManager.init(whiteSdk, params);
                 }
             }
@@ -138,6 +149,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     @Override
     public void onRoomPhaseChanged(RoomPhase phase) {
         log.i("onRoomPhaseChanged %s",phase.name());
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", phase.name());
+        postMsg("onRoomPhaseChanged",map);
     }
 
     @Override
@@ -148,6 +162,14 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     @Override
     public void onMemberStateChanged(MemberState state) {
         log.i("onMemberStateChanged %s",state.getCurrentApplianceName());
+    }
+
+    @Override
+    public void onBroadcastStateChanged(BroadcastState state) {
+        log.i("onBroadcastStateChanged %s",state.getMode().name());
+        if (!state.getMode().equals("Follower")){
+            boardManager.setViewMode(ViewMode.Follower);
+        }
     }
 
     public void setWritable(boolean writable) {
@@ -239,6 +261,8 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
 //        playerConfiguration.setMediaURL(mediaUrl);
         playerConfiguration.setDuration(duration);
 
+
+        whiteSdk.releasePlayer();
         whiteSdk.createPlayer(playerConfiguration, new AbstractPlayerEventListener() {
             // 以下为房间状态回调，可以查看 [状态管理] 文档
 

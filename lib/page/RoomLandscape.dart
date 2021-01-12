@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:better_socket/better_socket.dart';
 import 'package:connectivity/connectivity.dart';
@@ -15,6 +14,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/const/LiveRoom.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
@@ -118,7 +118,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   StarWidgetProvider _starWidgetProvider = StarWidgetProvider();
   Mp3PlayerProvider _mp3PlayerProvider = Mp3PlayerProvider();
   EyerestProvider _eyerestProvider = EyerestProvider();
+  WhiteboardProvider _whiteboardProvider = WhiteboardProvider();
   NetworkQualityProvider _networkQualityProvider = NetworkQualityProvider();
+  ScreenProvider _screenProvider = ScreenProvider();
   WebViewPlusController _webViewPlusController;
   int _isPlay;
   int _time;
@@ -170,17 +172,24 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _textController.addListener(() {
       _chatProvider.setIsComposing(_textController.text.length > 0);
     });
+    _initWhiteBoard();
+    if (Platform.isIOS) {
+      _isIos13 = CommonUtils.ios13();
+      print("is ios13  $_isIos13");
+    }
+    getMsgList();
+  }
+
+  _initWhiteBoard() async {
     _whiteboardController.onCreated = (result) {
       print("_whiteboardController  $result");
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _courseProvider.setInitBoardView(true);
       });
     };
-    if (Platform.isIOS) {
-      _isIos13 = CommonUtils.ios13();
-      print("is ios13  $_isIos13");
-    }
-    getMsgList();
+    _whiteboardController.onRoomPhaseChanged = (result) {
+      _whiteboardProvider.setRoomPhase(result);
+    };
   }
 
   _initYondorRtm() async {
@@ -285,6 +294,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           ChangeNotifierProvider<NetworkQualityProvider>.value(
             value: _networkQualityProvider,
           ),
+          ChangeNotifierProvider<WhiteboardProvider>.value(
+            value: _whiteboardProvider,
+          ),
+          ChangeNotifierProvider<ScreenProvider>.value(
+            value: _screenProvider,
+          ),
         ],
         child: WillPopScope(
           onWillPop: () {
@@ -351,6 +366,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                 ),
                               )
                             ]),
+                            Consumer2<CourseProvider, ScreenProvider>(builder: (context, courseModel, screenModel, child) {
+                              return courseModel.status == 1 && screenModel.screenId > 0
+                                  ? GestureDetector(
+                                      child: Container(width: courseModel.coursewareWidth, child: AgoraRenderWidget(screenModel.screenId)),
+                                      onTap: () => _roomShowTopProvider.setIsShow(true),
+                                    )
+                                  : Container();
+                            }),
                             Consumer<CourseProvider>(builder: (context, model, child) {
                               return model.status == 1 ? UserStarWidget() : Container();
                             }),
@@ -383,11 +406,43 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                     })
                                   : Container();
                             }),
+                            _buildNetBad(),
                             _buildTop(),
                           ],
                         )))),
           ),
         ));
+  }
+
+  _buildNetBad() {
+    return Consumer2<NetworkQualityProvider, CourseProvider>(builder: (context, model, courseModel, child) {
+      return model.isBad() && courseModel.status == 1
+          ? Container(
+              width: _courseProvider.coursewareWidth,
+              color: Colors.red.withOpacity(0.8),
+              height: ScreenUtil.getInstance().getHeight(50),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ImageIcon(
+                          AssetImage(model.images),
+                          color: Colors.white,
+                        ),
+                        Text(
+                          "网络信号差，请检查网络～",
+                          style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(13 / 2)),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
+          : Container();
+    });
   }
 
   ///倒计时组件
@@ -461,12 +516,6 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             ],
           ),
         );
-      } else if (resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0) {
-        result = GestureDetector(
-          key: ValueKey("screen"),
-          child: Container(child: AgoraRenderWidget(resModel.res.screenId)),
-          onTap: () => _roomShowTopProvider.setIsShow(true),
-        );
       } else if (resModel.res != null) {
         if (resModel.res.type == h5) {
           result = _buildWebView(resModel);
@@ -534,7 +583,35 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            _buildWhiteboard(),
+                            Stack(
+                              children: [
+                                _buildWhiteboard(),
+                                Consumer<WhiteboardProvider>(builder: (context, model, child) {
+                                  print("model.roomPhase  ${model.roomPhase} ");
+                                  return model.roomPhase != "connected"
+                                      ? Positioned.fill(
+                                          child: Center(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              SpinKitRing(
+                                                size: ScreenUtil.getInstance().getSp(28),
+                                                color: Color(0xFF195FA4),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                "${LiveRoomConst.ROOM_PHASE_NAME[model.roomPhase]}···",
+                                                style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(8)),
+                                              )
+                                            ],
+                                          ),
+                                        ))
+                                      : Container(height: 0, width: 0);
+                                }),
+                              ],
+                            ),
                             GestureDetector(
                               onTap: () {
                                 _roomShowTopProvider.setIsShow(true);
@@ -810,6 +887,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget _buildVideo() {
     return Consumer2<TeacherProvider, CourseProvider>(builder: (context, teacherModel, courseStatusModel, child) {
       final flag = courseStatusModel.status == 1 && teacherModel.user != null && teacherModel.user.coVideo == 1 && teacherModel.user.enableVideo == 1;
+
       return Container(
 //              alignment:Alignment.center,
 //              color: Colors.red,
@@ -1118,9 +1196,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         });
         break;
       case 3: //room attributes updated msg
-        if (_courseProvider.isInitBoardView) {
-          _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
-        }
+        // if (_courseProvider.isInitBoardView) {
+        //   _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
+        // }
         _chatProvider.setMuteAllChat(msgJson["data"]["muteAllChat"] == 1);
         if (msgJson["data"]["courseState"] != _courseProvider.status) {
           _courseProvider.setStatus(msgJson["data"]["courseState"]);
@@ -1146,12 +1224,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   Future<void> initializeRtc() async {
     await AgoraRtcEngine.create(Config.APP_ID);
-
     await AgoraRtcEngine.enableVideo();
     await AgoraRtcEngine.setChannelProfile(ChannelProfile.LiveBroadcasting);
     await AgoraRtcEngine.setClientRole(ClientRole.Audience);
+
     await AgoraRtcEngine.enableDualStreamMode(false);
     await AgoraRtcEngine.setRemoteDefaultVideoStreamType(0);
+    await AgoraRtcEngine.setAudioProfile(AudioProfile.MusicHighQuality, AudioScenario.GameStreaming);
     _addAgoraEventHandlers();
     await AgoraRtcEngine.enableWebSdkInteroperability(true);
     VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
@@ -1222,7 +1301,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       final info = 'userJoined: $uid';
       print("onUserJoined : $info");
       if (_teacher != null && _teacher.screenId == uid) {
-        _resProvider.setScreen(uid);
+        _screenProvider.setScreenId(uid);
+        // _resProvider.setScreen(uid);
       }
       _users.add(uid);
     };
@@ -1231,7 +1311,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       final info = 'userOffline: $uid';
       print("onUserOffline : $info");
       if (_teacher != null && _teacher.screenId == uid) {
-        _resProvider.setScreen(0);
+        _screenProvider.setScreenId(0);
+        // _resProvider.setScreen(0);
       }
       _users.remove(uid);
     };
@@ -1243,7 +1324,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     AgoraRtcEngine.onNetworkQuality = (int uid, int txQuality, int rxQuality) {
 //      print("onNetworkQuality : uid :$uid  txQuality:$txQuality  rxQuality:$rxQuality  ", level: Log.debug);
 
-      if (uid == 0) {
+      if (uid == 0 && _courseProvider.status != 0) {
         int val = max<int>(txQuality, rxQuality);
         _networkQualityProvider.setNetworkQuality(val);
       }
@@ -1292,11 +1373,22 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   ///白板区域
   Widget _buildWhiteboard() {
     if (_whiteboard == null) {
+      print("widget.roomData.boardId ${widget.roomData.boardId}");
+      Store<GSYState> store = StoreProvider.of(context);
+      Map userPayload = {
+        "ydID": store.state.userInfo.userId.toString(),
+        "userId": widget.roomData.user.uid,
+        "identity": widget.roomData.user.role == 1 ? "host" : "guest",
+        "userName": store.state.userInfo.realName,
+        "userIcon": store.state.userInfo.headUrl,
+      };
+      // String userPayload = jsonEncode(userPayloadMap);
       _whiteboard = Whiteboard(
           appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg",
           uuid: widget.roomData.boardId,
           roomToken: widget.roomData.boardToken,
-          controller: _whiteboardController);
+          controller: _whiteboardController,
+          userPayload: userPayload);
     }
     return _whiteboard;
   }
@@ -1756,6 +1848,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           await flickManager.setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
           await flickManager.setOption(FijkOption.hostCategory, "request-audio-focus", 1);
           await flickManager.setOption(FijkOption.formatCategory, "fflags", "fastseek");
+          await flickManager.setOption(FijkOption.playerCategory, "framedrop", 5);
           await flickManager.setDataSource(file.existsSync() ? file.path : network, showCover: true).catchError((e) {
             print("setDataSource error: $e");
           });

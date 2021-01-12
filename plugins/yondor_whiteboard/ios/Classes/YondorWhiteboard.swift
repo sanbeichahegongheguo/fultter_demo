@@ -9,12 +9,13 @@
 import Foundation
 import UIKit
 
-class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelegate, WhitePlayerEventDelegate{
+class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelegate, WhitePlayerEventDelegate,WhiteRoomCallbackDelegate{
     let viewId:Int64
     let args: NSDictionary
     let uuid:String
     let roomToken:String
     let appIdentifier:String
+    let userPayload:NSDictionary
     let isReplay:Int
     let withFrame:CGRect
     let channel:FlutterMethodChannel
@@ -35,6 +36,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         self.roomToken = self.args["roomToken"] as! String
         self.appIdentifier = self.args["appIdentifier"] as! String
         self.isReplay = self.args["isReplay"] as! Int
+        self.userPayload = self.args["userPayload"] as! NSDictionary
         self.withFrame = withFrame
         self.channel = FlutterMethodChannel(name: "com.yondor.live/whiteboard_"+String(viewId), binaryMessenger: messenger)
         self.boardView = WhiteBoardView.init(frame: self.withFrame,configuration:WKWebViewConfiguration.init())
@@ -63,8 +65,9 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     private func joinRoom(){
         let roomConfig =  WhiteRoomConfig.init(uuid: self.uuid, roomToken: self.roomToken)
         roomConfig.timeout = NSNumber(value: 60*60*2)
+        roomConfig.userPayload = self.userPayload
         roomConfig.isWritable = false
-        self.sdk.joinRoom(with: roomConfig, callbacks: nil) { (success:Bool, whiteRoom:WhiteRoom?, e:Error?) in
+        self.sdk.joinRoom(with: roomConfig, callbacks: self) { (success:Bool, whiteRoom:WhiteRoom?, e:Error?) in
             print("YondorWhiteboard joinRoom success @@" )
             print(success);
             var result = [String : Any]()
@@ -157,7 +160,32 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         print("YondorWhiteboard #4 sdkSetupFail ",error.localizedDescription)
     }
     
+    //直播房间连接状态
+    func firePhaseChanged(_ phase: WhiteRoomPhase) {
+        print("YondorWhiteboard firePhaseChanged ",phase)
+        var result = [String : Any]()
+        var data:String = ""
+        switch phase {
+        case .connecting:
+            data = "connecting"
+        case .connected:
+            data = "connected"
+        case .reconnecting:
+            data = "reconnecting"
+        case .disconnecting:
+            data = "disconnecting"
+        case .disconnected:
+            data = "disconnected"
+        @unknown default:
+            data = ""
+        }
+        result["data"] = data
+        postMsg(method: "onRoomPhaseChanged",data: result);
+    }
     
+    
+    
+    //回放
     func startReplay(call: FlutterMethodCall, result: @escaping FlutterResult){
         let dict = call.arguments as! NSDictionary
         let beginTimestamp:String = dict["beginTimestamp"] as! String
@@ -181,6 +209,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         })
         
     }
+  
     //播放状态切换回调
     func phaseChanged(_ phase:WhitePlayerPhase) {
         print("YondorWhiteboard phaseChanged ",phase)

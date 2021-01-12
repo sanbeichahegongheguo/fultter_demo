@@ -29,7 +29,7 @@ class _UserStarWidgetState extends State<UserStarWidget> {
         print(res.data["code"]);
         final star = res.data["data"]["star"];
         if (star != null) {
-          starWidgetProvider.addStar(star);
+          starWidgetProvider.setStar(star);
         }
       } else {
         showToast("获取星星失败!!!");

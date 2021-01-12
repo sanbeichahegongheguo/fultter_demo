@@ -225,6 +225,26 @@ class HandProvider with ChangeNotifier {
   }
 }
 
+class WhiteboardProvider with ChangeNotifier {
+  String _roomPhase = "connecting";
+  String get roomPhase => _roomPhase;
+
+  setRoomPhase(String roomPhase) {
+    _roomPhase = roomPhase;
+    notifyListeners();
+  }
+}
+
+class ScreenProvider with ChangeNotifier {
+  int _screenId = 0;
+  int get screenId => _screenId;
+
+  setScreenId(int screenId) {
+    _screenId = screenId;
+    notifyListeners();
+  }
+}
+
 class LiveTimerProvider with ChangeNotifier {
   int _time = 0;
   int get time => _time;
@@ -273,6 +293,8 @@ class CourseProvider with ChangeNotifier {
   double get maxWidth => _maxWidth;
   bool _isInitBoardView = false;
   bool get isInitBoardView => _isInitBoardView;
+  bool _showReplayProgress = false;
+  bool get showReplayProgress => _showReplayProgress;
   CourseProvider(int status, {RoomData roomData, Function closeDialog, Function showStarDialog}) {
     _status = status;
     this._roomData = roomData;
@@ -286,6 +308,11 @@ class CourseProvider with ChangeNotifier {
 
   setInitBoardView(bool isInit) {
     _isInitBoardView = isInit;
+    notifyListeners();
+  }
+
+  setShowReplayProgress(bool showReplayProgress) {
+    _showReplayProgress = showReplayProgress;
     notifyListeners();
   }
 
@@ -306,8 +333,8 @@ class NetworkQualityProvider with ChangeNotifier {
     'down': 'images/live/signal-bad@2x.png',
     'unknown': 'images/live/signal-bad@2x.png',
   };
-  String networkQuality = 'unknown';
-  String defaultQuality = 'unknown';
+  String networkQuality = 'good';
+  String defaultQuality = 'good';
 
   String get images => networkQualityIcon[networkQuality];
 
@@ -316,5 +343,9 @@ class NetworkQualityProvider with ChangeNotifier {
       networkQuality = networkLevel[quality] ?? defaultQuality;
       notifyListeners();
     }
+  }
+
+  bool isBad() {
+    return images.contains("signal-bad");
   }
 }

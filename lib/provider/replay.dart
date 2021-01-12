@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class ReplayProgressProvider with ChangeNotifier {
   double _val = 0;
   double get val => _val;
+  double _before = 0;
+  double get before => _before;
   bool _isShow = true;
   bool get isShow => _isShow;
   Duration _duration;
@@ -21,6 +23,10 @@ class ReplayProgressProvider with ChangeNotifier {
   setVal(double val) {
     _val = val;
     notifyListeners();
+  }
+
+  setBefore(double before) {
+    _before = before;
   }
 
   setPlayerPhase(String playerPhase) {

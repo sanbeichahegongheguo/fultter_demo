@@ -15,6 +15,7 @@ class WhiteboardController {
   Function(bool data) onCreated;
   Function(bool data) replayPlay;
   Function(String data) onPhaseChanged;
+  Function(String data) onRoomPhaseChanged; //房间连接状态变化
   Function(int time) onScheduleTimeChanged;
   MethodChannel _channel;
 
@@ -94,6 +95,12 @@ class WhiteboardController {
           }
 //          print("_onMethodCall onScheduleTimeChanged ${call.arguments}  data $data round ${data.round()}");
           onScheduleTimeChanged(data.round());
+        }
+        return true;
+      case 'onRoomPhaseChanged':
+        if (onRoomPhaseChanged != null) {
+          print("_onMethodCall onRoomPhaseChanged ${call.arguments}");
+          onRoomPhaseChanged(call.arguments["data"]);
         }
         return true;
     }

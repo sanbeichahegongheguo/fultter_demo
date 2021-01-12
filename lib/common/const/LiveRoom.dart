@@ -19,5 +19,5 @@ class LiveRoomConst {
   static const String EVENT_STAR = "event-star"; //星星奖励事件
   static const String EVENT_MUTE = "event-mute"; //禁言事件
   static const String EVENT_ALL = "event-all"; //所有事件
-
+  static const Map ROOM_PHASE_NAME = {"connecting": "正在连接", "connected": "连接成功", "reconnecting": "正在重连", "disconnecting": "正在断开连接", "disconnected": "已断开连接"};
 }

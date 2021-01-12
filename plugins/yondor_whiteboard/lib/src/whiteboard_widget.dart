@@ -12,7 +12,8 @@ class Whiteboard extends StatefulWidget {
   final String appIdentifier;
   final WhiteboardController controller;
   final int isReplay;
-  const Whiteboard({Key key, this.uuid, this.roomToken, this.appIdentifier, this.controller, this.isReplay = 0}) : super(key: key);
+  final Map userPayload;
+  const Whiteboard({Key key, this.uuid, this.roomToken, this.appIdentifier, this.controller, this.isReplay = 0, this.userPayload}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,7 +33,13 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
     return Platform.isAndroid
         ? AndroidView(
             viewType: "whiteboard_view",
-            creationParams: {"appIdentifier": widget.appIdentifier, "uuid": widget.uuid, "roomToken": widget.roomToken, "isReplay": widget.isReplay},
+            creationParams: {
+              "appIdentifier": widget.appIdentifier,
+              "uuid": widget.uuid,
+              "roomToken": widget.roomToken,
+              "isReplay": widget.isReplay,
+              "userPayload": widget.userPayload
+            },
             creationParamsCodec: const StandardMessageCodec(),
             onPlatformViewCreated: (id) {
               MethodChannel _channel = MethodChannel('com.yondor.live/whiteboard_$id');
@@ -40,7 +47,13 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
             })
         : UiKitView(
             viewType: "whiteboard_view",
-            creationParams: {"appIdentifier": widget.appIdentifier, "uuid": widget.uuid, "roomToken": widget.roomToken, "isReplay": widget.isReplay},
+            creationParams: {
+              "appIdentifier": widget.appIdentifier,
+              "uuid": widget.uuid,
+              "roomToken": widget.roomToken,
+              "isReplay": widget.isReplay,
+              "userPayload": widget.userPayload
+            },
             creationParamsCodec: const StandardMessageCodec(),
             onPlatformViewCreated: (id) {
               MethodChannel _channel = MethodChannel('com.yondor.live/whiteboard_$id');

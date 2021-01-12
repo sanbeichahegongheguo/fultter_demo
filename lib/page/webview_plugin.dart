@@ -325,7 +325,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
                 }
               }
               _getImage(type, state.url).then((data) {
-                print("-----!!!!!!------$data");
+                // print("-----!!!!!!------$data");
                 if (ObjectUtil.isEmpty(data) || data["result"] == "fail") {
                   flutterWebViewPlugin.evalJavascript("window.closeCamera()");
                 } else {
@@ -543,6 +543,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
     if (image != null) {
       int size = (await image.length());
       while (size > _MAX_SIZE) {
+        print("压缩图片");
         image = await FlutterNativeImage.compressImage(image.path, percentage: 70, quality: 70);
         size = (await image.length());
       }
@@ -979,6 +980,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
           if (res.result && res.data == 3) {
             flutterWebViewPlugin.evalJavascript("window.saveStudentComments('$roomUuid')");
           }
+          flutterWebViewPlugin.evalJavascript("window.callReturn()");
         });
       }
     }, startTime: startTime, endTime: endTime);

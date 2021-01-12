@@ -7,6 +7,7 @@ import com.herewhite.sdk.Room;
 import com.herewhite.sdk.RoomCallbacks;
 import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
+import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RoomPhase;
@@ -16,6 +17,8 @@ import com.herewhite.sdk.domain.SceneState;
 import com.herewhite.sdk.domain.ViewMode;
 import com.yondor.yondor_whiteboard.annotation.Appliance;
 import com.yondor.yondor_whiteboard.listener.BoardEventListener;
+
+import org.jetbrains.annotations.NotNull;
 
 
 public class BoardManager extends NetlessManager<Room> implements RoomCallbacks {
@@ -27,7 +30,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
     private Boolean disableDeviceInputs;
     private Boolean disableCameraTransform;
     private Boolean writable;
-
+    private ViewMode viewMode;
     private Handler handler = new Handler(Looper.getMainLooper());
     private BoardEventListener listener;
 
@@ -45,7 +48,6 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
             MemberState state = new MemberState();
             state.setCurrentApplianceName(appliance);
             t.setMemberState(state);
-
         } else {
             this.appliance = appliance;
         }
@@ -182,18 +184,24 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
 
 
     @Override
-    public void onDisconnectWithError(Exception e) {
+    public void onDisconnectWithError(@NotNull Exception e) {
+        e.printStackTrace();
         log.e("onDisconnectWithError %s", e.toString());
+        handler.post(() -> listener.onRoomPhaseChanged(RoomPhase.disconnected));
     }
 
     @Override
     public void onKickedWithReason(String reason) {
-        log.i("onDisconnectWithError %s", reason);
+        log.i("onKickedWithReason %s", reason);
+        handler.post(() -> listener.onRoomPhaseChanged(RoomPhase.disconnected));
     }
 
 
     public void setViewMode(ViewMode viewMode) {
-        t.setViewMode(viewMode);
+        if (t != null) {
+            t.setViewMode(viewMode);
+        }
+        this.viewMode = viewMode;
     }
 
     @Override
@@ -206,6 +214,10 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
             SceneState sceneState = modifyState.getSceneState();
             if (sceneState != null) {
                 handler.post(() -> listener.onSceneStateChanged(sceneState));
+            }
+            BroadcastState broadcastState = modifyState.getBroadcastState();
+            if (broadcastState!=null){
+                handler.post(() -> listener.onBroadcastStateChanged(broadcastState));
             }
         }
     }
@@ -246,6 +258,10 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
         if (listener != null) {
             listener.onSceneStateChanged(room.getSceneState());
         }
+        if (viewMode !=null ){
+            setViewMode(viewMode);
+        }
+
     }
 
     @Override

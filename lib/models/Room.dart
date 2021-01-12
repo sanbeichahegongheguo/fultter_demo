@@ -16,6 +16,7 @@ class RoomData {
   DateTime startTime;
   DateTime endTime;
   CourseRecordData courseRecordData;
+  List<CourseRecordData> courseRecordDataList;
   RoomData({
     this.room,
     this.user,
@@ -25,18 +26,29 @@ class RoomData {
     this.boardToken,
     this.recordId,
     this.courseRecordData,
+    this.courseRecordDataList,
   });
 
-  factory RoomData.fromJson(jsonRes) => jsonRes == null
-      ? null
-      : RoomData(
-          room: Room.fromJson(jsonRes['room']),
-          user: RoomUser.fromJson(jsonRes['user']),
-          boardId: jsonRes['boardId'],
-          boardToken: jsonRes['boardToken'],
-          recordId: jsonRes['recordId'],
-          courseRecordData: CourseRecordData.fromJson(jsonRes['courseRecordData']),
-        );
+  factory RoomData.fromJson(jsonRes) {
+    if (jsonRes == null) return null;
+    List<CourseRecordData> courseRecordDataList = jsonRes['courseRecordDataList'] is List ? [] : null;
+    if (courseRecordDataList != null) {
+      for (var item in jsonRes['coVideoUsers']) {
+        if (item != null) {
+          courseRecordDataList.add(CourseRecordData.fromJson(item));
+        }
+      }
+    }
+    return RoomData(
+      room: Room.fromJson(jsonRes['room']),
+      user: RoomUser.fromJson(jsonRes['user']),
+      boardId: jsonRes['boardId'],
+      boardToken: jsonRes['boardToken'],
+      recordId: jsonRes['recordId'],
+      courseRecordData: CourseRecordData.fromJson(jsonRes['courseRecordData']),
+      courseRecordDataList: courseRecordDataList,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'room': room,
@@ -220,14 +232,20 @@ class MsgUser {
 
 class CourseRecordData {
   int startTime;
+  int multiStartTime;
   int endTime;
+  int multiEndTime;
+  int multiIndex;
   String url;
   int status;
   String statusText;
   ReplayData coursewareOp;
   CourseRecordData({
     this.startTime,
+    this.multiStartTime,
     this.endTime,
+    this.multiEndTime,
+    this.multiIndex,
     this.url,
     this.status,
     this.statusText,
@@ -237,7 +255,10 @@ class CourseRecordData {
       ? null
       : CourseRecordData(
           startTime: jsonRes['startTime'],
+          multiStartTime: jsonRes['multiStartTime'],
           endTime: jsonRes['endTime'],
+          multiEndTime: jsonRes['multiEndTime'],
+          multiIndex: jsonRes['multiIndex'],
           url: jsonRes['url'],
           status: jsonRes['status'],
           statusText: jsonRes['statusText'],
@@ -246,7 +267,10 @@ class CourseRecordData {
 
   Map<String, dynamic> toJson() => {
         'startTime': startTime,
+        'multiStartTime': multiStartTime,
         'endTime': endTime,
+        'multiEndTime': multiEndTime,
+        'multiIndex': multiIndex,
         'url': url,
         'status': status,
         'statusText': statusText,
