@@ -11,11 +11,25 @@ enum PlayerPhase {
   buffering,
 }
 
+enum Appliance {
+  pencil, //铅笔
+  selector, //选择工具
+  rectangle, //矩形绘制工具
+  ellipse, //圆、椭圆绘制工具
+  eraser, //橡皮，用于擦除其他教具绘制的笔迹
+  text, //文字工具
+  straight, //直线绘制工具
+  arrow, //	箭头绘制工具
+  hand, //抓手工具
+  laserPointer, //激光笔工具
+}
+
 class WhiteboardController {
   Function(bool data) onCreated;
   Function(bool data) replayPlay;
   Function(String data) onPhaseChanged;
   Function(String data) onRoomPhaseChanged; //房间连接状态变化
+  Function(String data) onApplianceChanged; //房间连接状态变化
   Function(int time) onScheduleTimeChanged;
   MethodChannel _channel;
 
@@ -60,6 +74,15 @@ class WhiteboardController {
     return _channel.invokeMethod("replay", null);
   }
 
+  Future undo() {
+    return _channel.invokeMethod("undo", null);
+  }
+
+  Future setAppliance(Appliance appliance) {
+    String data = appliance.toString().replaceAll("Appliance.", "");
+    return _channel.invokeMethod("setAppliance", {"data": data});
+  }
+
   Future seekToScheduleTime(int time) {
     if (Platform.isIOS) {
       time = (time.toDouble() / 1000.0).round();
@@ -101,6 +124,12 @@ class WhiteboardController {
         if (onRoomPhaseChanged != null) {
           print("_onMethodCall onRoomPhaseChanged ${call.arguments}");
           onRoomPhaseChanged(call.arguments["data"]);
+        }
+        return true;
+      case 'onApplianceChanged':
+        if (onApplianceChanged != null) {
+          print("_onMethodCall onApplianceChanged ${call.arguments}");
+          onApplianceChanged(call.arguments["data"]);
         }
         return true;
     }

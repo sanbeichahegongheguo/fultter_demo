@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:better_socket/better_socket.dart';
 import 'package:connectivity/connectivity.dart';
@@ -45,6 +45,7 @@ import 'package:flutter_start/widget/StarGif.dart';
 import 'package:flutter_start/widget/UserStarWidget.dart';
 import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
+import 'package:flutter_start/widget/room/DeviceInputsMenu.dart';
 import 'package:flutter_start/widget/room/EyerestWidget.dart';
 import 'package:flutter_start/widget/room/Mp3PlayerWidget.dart';
 import 'package:flutter_start/widget/room/RoomEduSocket.dart';
@@ -168,6 +169,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     }
     Future.delayed(Duration(milliseconds: 1000)).then((e) {
       rewardFirstStar();
+      grantBoard();
     });
     _textController.addListener(() {
       _chatProvider.setIsComposing(_textController.text.length > 0);
@@ -189,6 +191,12 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     };
     _whiteboardController.onRoomPhaseChanged = (result) {
       _whiteboardProvider.setRoomPhase(result);
+    };
+    _whiteboardController.onApplianceChanged = (result) {
+      final appliance = Appliance.values.firstWhere((Appliance element) {
+        return element.toString() == "$Appliance.$result";
+      });
+      _boardProvider.setAppliance(appliance);
     };
   }
 
@@ -231,6 +239,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           _local?.coVideo = 0;
           _local?.enableVideo = 0;
           _local?.enableAudio = 0;
+          _local?.grantBoard = 0;
           _startVideo(_local);
         });
       } else {
@@ -612,16 +621,27 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                 }),
                               ],
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                _roomShowTopProvider.setIsShow(true);
-                              },
-                              child: Container(
-                                color: Colors.transparent,
-                                width: courseStatusModel.maxWidth,
-                                height: ScreenUtil.getInstance().screenHeight,
-                              ),
-                            )
+                            _local?.grantBoard == 1 && model.grantBoard == 1
+                                ? Container(height: 0, width: 0)
+                                : GestureDetector(
+                                    onTap: () {
+                                      _roomShowTopProvider.setIsShow(true);
+                                    },
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      width: courseStatusModel.maxWidth,
+                                      height: ScreenUtil.getInstance().screenHeight,
+                                    ),
+                                  ),
+                            _local?.grantBoard == 1 && model.grantBoard == 1
+                                ? Positioned(
+                                    right: 2,
+                                    bottom: 2,
+                                    child: DeviceInputsMenu(
+                                      whiteboardController: _whiteboardController,
+                                      appliance: model.appliance,
+                                    ))
+                                : Container(height: 0, width: 0)
                           ],
                         ));
                   }),
@@ -922,11 +942,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Widget _buildStudentVideo() {
     return Consumer<StudentProvider>(builder: (context, model, child) {
       Widget widget = Container();
-
+      Widget other = Container();
+      Widget my = Container();
       if (model.user != null) {
         if (model.user.coVideo == 1) {
-          widget = Container(
-              color: Colors.white,
+          my = Container(
+              padding: EdgeInsets.only(right: 5),
+              // color: Colors.white,
               width: ScreenUtil.getInstance().screenWidth * 0.15,
               height: ScreenUtil.getInstance().getHeightPx(350),
               child: model.user.coVideo == 1 && model.user.enableVideo == 1
@@ -936,30 +958,47 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                       child: Image.asset(
                         'images/ic_student.png',
                       )));
-        } else if (_others.length > 0) {
-          widget = Container(
-              color: Colors.white,
-              width: ScreenUtil.getInstance().screenWidth * 0.15,
-              height: ScreenUtil.getInstance().getHeightPx(350),
-              child: _others[0].coVideo == 1 && _others[0].enableVideo == 1
-                  ? AgoraRenderWidget(_others[0].uid)
-                  : Container(
-                      color: Colors.white,
-                      child: Image.asset(
-                        'images/ic_student.png',
-                        width: ScreenUtil.getInstance().screenWidth,
-                        height: ScreenUtil.getInstance().getWidthPx(550),
-                      )));
         }
       }
-
-      return Offstage(
-        offstage: !(_courseProvider.status == 1),
-        child: Align(
-          alignment: AlignmentDirectional(0.98, -0.98),
-          child: widget,
+      if (_others != null && _others.length > 0) {
+        other = ListView.builder(
+            // padding: EdgeInsets.only(right: 5),
+            reverse: true,
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemCount: _others.length,
+            itemBuilder: (BuildContext context, int i) {
+              return Container(
+                  color: Colors.white,
+                  width: ScreenUtil.getInstance().screenWidth * 0.15,
+                  height: ScreenUtil.getInstance().getHeightPx(350),
+                  child: _others[i].coVideo == 1 && _others[i].enableVideo == 1
+                      ? AgoraRenderWidget(_others[i].uid)
+                      : Container(
+                          color: Colors.white,
+                          child: Image.asset(
+                            'images/ic_student.png',
+                            width: ScreenUtil.getInstance().screenWidth,
+                            height: ScreenUtil.getInstance().getWidthPx(550),
+                          )));
+            });
+      }
+      widget = Container(
+        // color: Colors.pink,
+        height: ScreenUtil.getInstance().getHeightPx(350),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: other,
+            ),
+            my
+          ],
         ),
       );
+      return widget;
     });
   }
 
@@ -1114,6 +1153,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       List<Map<String, String>> attributes = List();
       Map<String, String> attribute = Map();
       attribute["uid"] = store.state.userInfo.userId.toString();
+      attribute["userId"] = widget.roomData.user.userId;
       attribute["role"] = "student";
       attribute["name"] = store.state.userInfo.realName;
       if (!ObjectUtil.isEmptyString(store.state.userInfo.headUrl)) {
@@ -1139,6 +1179,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           showToast("老师拒绝了你的连麦申请！");
         } else if (msgJson["data"]["type"] == (CoVideoType.ACCEPT.index + 1)) {
           Future.microtask(() => _handTypeProvider.switchType(0));
+          Future.microtask(() => _handProvider.setEnableHand(false));
           showToast("老师接受了你的连麦申请！");
         } else if (msgJson["data"]["type"] == (CoVideoType.ABORT.index + 1)) {
           Future.microtask(() => _handTypeProvider.switchType(1));
@@ -1189,6 +1230,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               _local?.coVideo = 0;
               _local?.enableVideo = 0;
               _local?.enableAudio = 0;
+              _local?.grantBoard = 0;
               _startVideo(_local);
               _studentProvider.notifier(_local);
             }
@@ -1262,7 +1304,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       }
       AgoraRtcEngine.muteLocalAudioStream(user.enableAudio == 0);
       AgoraRtcEngine.muteLocalVideoStream(user.enableVideo == 0);
-//      _whiteboardController?.setWritable(true);
+      _whiteboardController?.setWritable(user.grantBoard == 1);
+      _boardProvider.setGrantBoard(user.grantBoard);
     } else if (user.coVideo == 0) {
       _enableLocalVideo = false;
       _enableLocalAudio = false;
@@ -1270,7 +1313,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       AgoraRtcEngine.muteLocalVideoStream(true);
       AgoraRtcEngine.enableLocalVideo(false);
       AgoraRtcEngine.enableLocalAudio(false);
-//      _whiteboardController?.setWritable(false);
+      _whiteboardController?.setWritable(false);
     }
   }
 
@@ -1363,6 +1406,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _local?.coVideo = 0;
       _local?.enableVideo = 0;
       _local?.enableAudio = 0;
+      _local?.grantBoard = 0;
     }
     _startVideo(_local);
     _others.clear();
@@ -1567,6 +1611,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       case h5:
       case mp4:
       case BREAK:
+      case LiveRoomConst.P2H:
       case LiveRoomConst.EVENT_CURRENT:
         _lastCoursewaretMsg = socketMsg;
         Future(() => _handleCourseware(socketMsg));
@@ -2083,6 +2128,18 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         });
   }
 
+  grantBoard() async {
+    if (ObjectUtil.isEmptyString(widget.token)) {
+      return;
+    }
+    RoomDao.grantBoard(
+      token: widget.token,
+      roomId: widget.roomData.room.roomId,
+      userId: widget.roomData.user.userId,
+      grantBoard: 0,
+    );
+  }
+
   Future rewardFirstStar() async {
     //检查是否已经领奖
     var flag = false;
@@ -2252,7 +2309,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   getMsgList() async {
     print("@getMsgList");
     try {
-      final res = await RoomDao.getMsgList(widget.roomData.liveCourseallotId, widget.roomData.room.roomId);
+      final res = await RoomDao.getMsgList(widget.roomData.liveCourseallotId, widget.roomData.room.roomUuid);
       if (res.result != null && res.result && res.data != null) {
         if (res.data is List<ChatMessage>) {
           final list = res.data;

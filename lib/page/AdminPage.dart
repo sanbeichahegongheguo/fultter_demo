@@ -234,8 +234,8 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
   }
 
   _goLogistics() {
-    ApplicationDao.trafficStatistic(569);
-    NavigatorUtil.goMonitoringPassword(context);
+    ApplicationDao.trafficStatistic(704);
+    NavigatorUtil.goWebView(context, AddressUtil.getInstance().goLogisticsOnline());
   }
 
   //判断用户是否有头像

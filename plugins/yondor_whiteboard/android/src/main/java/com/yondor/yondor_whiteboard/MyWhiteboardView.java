@@ -14,6 +14,7 @@ import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
 import com.herewhite.sdk.WhiteSdkConfiguration;
 import com.herewhite.sdk.WhiteboardView;
+import com.herewhite.sdk.domain.Appliance;
 import com.herewhite.sdk.domain.BroadcastState;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.PlayerConfiguration;
@@ -162,6 +163,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     @Override
     public void onMemberStateChanged(MemberState state) {
         log.i("onMemberStateChanged %s",state.getCurrentApplianceName());
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", state.getCurrentApplianceName());
+        postMsg("onApplianceChanged",map);
     }
 
     @Override
@@ -235,6 +239,16 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
                 Map<String, Object> request = (Map<String, Object>) call.arguments;
                 Long time = Long.parseLong((String) request.get("data"));
                 seekToScheduleTime(time);
+                result.success(null);
+                break;
+            case "setAppliance":
+                Map<String, Object> applianceRequest = (Map<String, Object>) call.arguments;
+                String appliance = (String) applianceRequest.get("data");
+                boardManager.setAppliance(appliance);
+                result.success(null);
+                break;
+            case "undo":
+                boardManager.undo();
                 result.success(null);
                 break;
             default:
@@ -382,6 +396,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         map.put("data", time);
         postMsg("onScheduleTimeChanged",map);
     }
+
     private void seekToScheduleTime(long seekTime){
         if (this.player==null){
             Map<String, Object> map = new HashMap<>();

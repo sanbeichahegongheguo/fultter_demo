@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/daoResult.dart';
@@ -59,6 +61,22 @@ class RoomDao {
   static roomBoard(String roomId, String token) async {
     Map<String, dynamic> header = {"Authorization": "Basic ${Config.AGORA_AUTH}", "token": token};
     var res = await httpManager.netFetch(AddressUtil.getInstance().roomBoard(Config.APP_ID, roomId), null, header, Options(method: "GET"));
+    var result;
+    if (res != null && res.result) {
+      if (res.data["msg"] == "Success") {
+        result = res.data;
+      } else {
+        res.result = false;
+      }
+    }
+    return new DataResult(result, res.result);
+  }
+
+  static grantBoard({String roomId, String token, String userId, int grantBoard}) async {
+    var params = <String, dynamic>{"grantBoard": grantBoard};
+    Map<String, dynamic> header = {"Authorization": "Basic ${Config.AGORA_AUTH}", "token": token};
+    var res = await httpManager.netFetch(AddressUtil.getInstance().grantBoard(Config.APP_ID, roomId, userId), params, header, Options(method: "POST"),
+        contentType: HttpManager.CONTENT_TYPE_JSON);
     var result;
     if (res != null && res.result) {
       if (res.data["msg"] == "Success") {

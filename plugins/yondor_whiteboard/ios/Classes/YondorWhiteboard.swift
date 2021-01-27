@@ -75,6 +75,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
             self.channel.invokeMethod("onCreated", arguments: result)
             if (success){
                 self.room = whiteRoom!
+                self.room.disableSerialization(false);
                 self.disableCameraTransform(disabled:true);
                 self.disableDeviceInputs(disabled: true);
                 self.setWritable(writable: false);
@@ -125,6 +126,15 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
             self.seekToScheduleTime(time: time);
             result(nil);
             break;
+        case "setAppliance":
+            let dict = call.arguments as! NSDictionary
+            let appliance = dict["data"] as! String
+            self.setAppliance(appliance: appliance);
+            result(nil);
+            break;
+        case "undo":
+            self.undo();
+            result(nil);
         default:
             result(nil)
             break
@@ -144,13 +154,18 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     }
     
     public func disableCameraTransform(disabled:Bool) {
-        self.room.disableCameraTransform(disabled);
+        if (self.room != nil) {
+            self.room.disableCameraTransform(disabled);
+        }
         self.isDisableCameraTransform = disabled;
     }
     public func disableDeviceInputs(disabled:Bool) {
-        self.room.disableDeviceInputs(disabled);
+        if (self.room != nil) {
+            self.room.disableDeviceInputs(disabled);
+        }
         self.isDisableDeviceInputs = disabled;
     }
+   
     public func throwError(_ error:Error){
         print("YondorWhiteboard #3 throwError ",error.localizedDescription)
     }
@@ -183,8 +198,33 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         postMsg(method: "onRoomPhaseChanged",data: result);
     }
     
+    func fireRoomStateChanged(_ modifyState: WhiteRoomState!) {
+        let memberState = modifyState.memberState
+        if (memberState !== nil){
+            var result = [String : Any]()
+            result["data"] = memberState?.currentApplianceName.rawValue
+            postMsg(method: "onApplianceChanged",data: result);
+        }
+    }
+    func fireCanUndoStepsUpdate(_ canUndoSteps: Int) {
+        print("fireCanUndoStepsUpdate canUndoSteps ",canUndoSteps)
+    }
+    public func setAppliance(appliance:String){
+        if (self.room != nil) {
+            let memberState =  WhiteMemberState.init()
+            memberState.currentApplianceName = WhiteApplianceNameKey.init(rawValue: appliance)
+            self.room.setMemberState(memberState)
+           
+        }
+    }
     
-    
+    public func undo() {
+        if (self.room != nil) {
+//            if(canUndoSteps>0){
+             self.room.undo();
+//            }
+        }
+    }
     //回放
     func startReplay(call: FlutterMethodCall, result: @escaping FlutterResult){
         let dict = call.arguments as! NSDictionary

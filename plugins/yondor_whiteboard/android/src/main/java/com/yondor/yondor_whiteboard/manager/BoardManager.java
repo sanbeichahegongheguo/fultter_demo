@@ -31,6 +31,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
     private Boolean disableCameraTransform;
     private Boolean writable;
     private ViewMode viewMode;
+    private long canUndoSteps = 0;
     private Handler handler = new Handler(Looper.getMainLooper());
     private BoardEventListener listener;
 
@@ -50,6 +51,14 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
             t.setMemberState(state);
         } else {
             this.appliance = appliance;
+        }
+    }
+
+    public void undo() {
+        if (t != null) {
+//            if(canUndoSteps>0){
+                t.undo();
+//            }
         }
     }
 
@@ -224,6 +233,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
 
     @Override
     public void onCanUndoStepsUpdate(long canUndoSteps) {
+        this.canUndoSteps = canUndoSteps;
         log.i("onCanUndoStepsUpdate %d", canUndoSteps);
     }
 
@@ -240,6 +250,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
     @Override
     void onSuccess(Room room) {
         log.i("onSuccess");
+        this.canUndoSteps = 0;
         if (appliance != null) {
             setAppliance(appliance);
         }
@@ -261,7 +272,23 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
         if (viewMode !=null ){
             setViewMode(viewMode);
         }
+        setDisableSerialization(false);
+    }
 
+    /**
+     * 是否禁止如下方法（默认值是 true）。可修改。
+     * room.redo
+     * room.undo
+     * room.duplicate
+     * room.copy
+     * room.paste
+     * @param disableSerialization
+     */
+    public void setDisableSerialization(boolean disableSerialization) {
+        if (t != null) {
+            log.i("setDisableSerialization %b", disableSerialization);
+            t.disableSerialization(disableSerialization);
+        }
     }
 
     @Override

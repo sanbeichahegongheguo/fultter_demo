@@ -37,19 +37,19 @@ class AddressUtil {
     stu_h5 = "https://www.k12china.com/stu_h5/web/";
     liveApp = "https://www.k12china.com/app_live/";
 
-//    studentHost = "http://192.168.6.31:30915/student:";
-//    k12apiHost = "http://192.168.6.30:31191/k12-api/";
-//    studentWebHost = "http://192.168.6.31:31528/studentweb/";
-//    stu_app = "http://192.168.6.30:31255/stu_app/v1/";
-//    h5Host = "http://192.168.6.30:30593/";
-//    common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
-//    sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
-//    stu_upload = "http://192.168.6.30:31921/stu_upload/";
-//    ws_url = "ws://192.168.6.30:30531";
-//    apiHost = "http://192.168.6.30:31456/";
-//    qresHost = "https://qres.k12china.com/";
-//    stu_h5 = "http://192.168.6.30:31842/stu_h5/web/";
-//    liveApp = "http://192.168.6.30:32442/app_live/";
+    // studentHost = "http://192.168.6.31:30915/student:";
+    // k12apiHost = "http://192.168.6.30:31191/k12-api/";
+    // studentWebHost = "http://192.168.6.31:31528/studentweb/";
+    // stu_app = "http://192.168.6.30:31255/stu_app/v1/";
+    // h5Host = "http://192.168.6.30:30593/";
+    // common_dc_client = "http://192.168.6.30:31221/common_dc_client/";
+    // sw_api_ = "http://192.168.6.30:30309/sw/api/v1/";
+    // stu_upload = "http://192.168.6.30:31921/stu_upload/";
+    // ws_url = "ws://192.168.6.30:30531";
+    // apiHost = "http://192.168.6.30:31456/";
+    // qresHost = "https://qres.k12china.com/";
+    // stu_h5 = "http://192.168.6.30:30593";
+    // liveApp = "http://192.168.6.30:32442/app_live/";
   }
 
   _domain2() {
@@ -562,6 +562,11 @@ class AddressUtil {
     return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/board";
   }
 
+  ///改变房间白板状态
+  grantBoard(String appId, String roomId, String userId) {
+    return "$agora_base_url/edu/v1/apps/$appId/room/$roomId/user/$userId";
+  }
+
   ///获取房间白班信息
   yondorRoomBoard(String roomId) {
     return "${liveApp}edu/v1/apps/room/$roomId/board";
@@ -685,5 +690,10 @@ class AddressUtil {
   ///房间聊天记录
   yondorRoomMsgList(String roomId) {
     return "${liveApp}edu/v1/apps/room/$roomId/chat/record";
+  }
+
+  ///物流管理
+  goLogisticsOnline() {
+    return "${stu_h5}logistics_online/index.html";
   }
 }

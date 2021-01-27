@@ -5,6 +5,7 @@ import 'package:flutter_start/models/ChatMessage.dart';
 import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/models/RoomUser.dart';
+import 'package:yondor_whiteboard/whiteboard.dart';
 
 class RoomTabProvider with ChangeNotifier {
   int _index = 1;
@@ -203,6 +204,10 @@ class BoardProvider with ChangeNotifier {
   int get enableBoard => _enableBoard;
   int _testBoard = 1;
   int get testBoard => _testBoard;
+  int _grantBoard = 0;
+  int get grantBoard => _grantBoard;
+  Appliance _appliance = Appliance.pencil;
+  Appliance get appliance => _appliance;
 
   setEnableBoard(int enableBoard) {
     _enableBoard = enableBoard;
@@ -211,6 +216,18 @@ class BoardProvider with ChangeNotifier {
 
   setTestBoard(int testBoard) {
     _testBoard = testBoard;
+    notifyListeners();
+  }
+
+  setGrantBoard(int grantBoard) {
+    if (_grantBoard != grantBoard) {
+      _grantBoard = grantBoard;
+      notifyListeners();
+    }
+  }
+
+  setAppliance(Appliance appliance) {
+    _appliance = appliance;
     notifyListeners();
   }
 }
