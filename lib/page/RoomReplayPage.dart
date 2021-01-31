@@ -544,22 +544,27 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         ].toSet(),
         onWebViewCreated: (controller) async {
           _webViewPlusController = controller;
-          if (ObjectUtil.isEmptyString(resModel.res.data.ps.password)) {
-            print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
-            controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+          if (resModel.res.type == LiveRoomConst.P2H) {
+            controller.loadUrl(
+                widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.pptHtml) + "&step=${resModel.res.page}");
           } else {
-            var password = resModel.res.data.ps.password;
-            String filterPsw = password.substring(12, 13) +
-                password.substring(9, 10) +
-                password.substring(6, 7) +
-                password.substring(3, 4) +
-                password.substring(7, 8) +
-                password.substring(11, 12) +
-                password.substring(15, 16) +
-                password.substring(10, 11);
-            var toURL = widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url + "?h5code=$filterPsw");
-            print("Roomlandscape@onWebViewCreated loadurl===>$toURL");
-            controller.loadUrl(toURL);
+            if (ObjectUtil.isEmptyString(resModel.res.data.ps.password)) {
+              print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
+              controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url));
+            } else {
+              var password = resModel.res.data.ps.password;
+              String filterPsw = password.substring(12, 13) +
+                  password.substring(9, 10) +
+                  password.substring(6, 7) +
+                  password.substring(3, 4) +
+                  password.substring(7, 8) +
+                  password.substring(11, 12) +
+                  password.substring(15, 16) +
+                  password.substring(10, 11);
+              var toURL = widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url + "?h5code=$filterPsw");
+              print("Roomlandscape@onWebViewCreated loadurl===>$toURL");
+              controller.loadUrl(toURL);
+            }
           }
         },
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
@@ -1364,6 +1369,9 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
             await flickManager.pause();
           }
         }
+      } else if (ques.type == LiveRoomConst.P2H) {
+        var page = msg["page"];
+        p2HGoPage(page);
       } else {
         var _resShow;
         if (isShow != null) {
@@ -1414,7 +1422,10 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
         if (isShow != null) {
           _resShow = isShow == 1;
         }
-
+        if (ques.type == LiveRoomConst.P2H) {
+          var page = msg["page"];
+          ques.page = page;
+        }
         if (ques.type == h5 && isShow != null) {
           if (isShow == 1) {
             gameStart();
@@ -1754,6 +1765,10 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
     _mp3PlayerProvider.close();
     _eyerestProvider.close();
     super.dispose();
+  }
+
+  p2HGoPage(int page) async {
+    _webViewPlusController?.evaluateJavascript("skip2Page($page)");
   }
 
   _resetVideo() async {
