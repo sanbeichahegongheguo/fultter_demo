@@ -314,7 +314,7 @@ class RoomUtil {
         final now = DateTime.now();
         double qres = await command.execute(qresHost, pingSettings);
         double qrescdn = await command.execute(qresCdnHost, pingSettings);
-        print(" qrescdn $qrescdn ms  qres $qres ms  runtime ${DateTime.now().difference(now).inMilliseconds}");
+        Log.i(" qrescdn $qrescdn ms  qres $qres ms  runtime ${DateTime.now().difference(now).inMilliseconds}", tag: "RoomUtil");
         if (qres < qrescdn) {
           resUrl = resUrl.replaceFirst(qresCdnHost, qresHost);
         }

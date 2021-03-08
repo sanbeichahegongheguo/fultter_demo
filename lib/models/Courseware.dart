@@ -139,6 +139,7 @@ class Res {
   Data data;
   int screenId;
   int ctatlogid;
+  int page;
   Res({
     this.qid,
     this.typeid,
@@ -146,6 +147,7 @@ class Res {
     this.data,
     this.screenId,
     this.ctatlogid,
+    this.page,
   });
 
   factory Res.fromJson(jsonRes) => jsonRes == null
@@ -157,6 +159,7 @@ class Res {
           screenId: jsonRes['screenId'],
           data: Data.fromJson(jsonRes['data']),
           ctatlogid: jsonRes['ctatlogid'],
+          page: jsonRes['page'],
         );
 
   Map<String, dynamic> toJson() => {
@@ -166,6 +169,7 @@ class Res {
         'data': data,
         'screenId': screenId,
         'ctatlogid': ctatlogid,
+        'page': page,
       };
   @override
   String toString() {
@@ -257,7 +261,9 @@ class Ps {
   String mp4;
   String mp3;
   String password;
-
+  String background;
+  String pptHtml;
+  String svgUrl;
   Ps({
     this.pic,
     this.name,
@@ -272,6 +278,9 @@ class Ps {
     this.mp4,
     this.mp3,
     this.password,
+    this.background,
+    this.pptHtml,
+    this.svgUrl,
   });
 
   factory Ps.fromJson(jsonRes) => jsonRes == null
@@ -290,6 +299,9 @@ class Ps {
           mp4: jsonRes['mp4'],
           mp3: jsonRes['mp3'],
           password: jsonRes['password'],
+          background: jsonRes['background'],
+          pptHtml: jsonRes['pptHtml'],
+          svgUrl: jsonRes['svgUrl'],
         );
 
   Map<String, dynamic> toJson() => {
@@ -306,6 +318,9 @@ class Ps {
         'mp4': mp4,
         'mp3': mp3,
         'password': password,
+        'background': background,
+        'pptHtml': pptHtml,
+        'svgUrl': svgUrl,
       };
   @override
   String toString() {

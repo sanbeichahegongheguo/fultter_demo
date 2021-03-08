@@ -383,6 +383,7 @@ class RoomDao {
 
   ///保存题目
   static getReplayInfo(params) async {
+    print("getReplayInfo.params==>$params");
     var res = await httpManager.netFetch(AddressUtil.getInstance().getReplayInfo(), params, null, new Options(method: "get"),
         contentType: HttpManager.CONTENT_TYPE_FORM);
     print("res==>$res");

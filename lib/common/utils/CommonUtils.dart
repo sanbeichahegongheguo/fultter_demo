@@ -231,6 +231,9 @@ class CommonUtils {
   }
 
   static bool ios13() {
+    if (ObjectUtil.isEmptyString(DeviceInfo.instance.osVersion)) {
+      return true;
+    }
     var i = compareVersion(DeviceInfo.instance.osVersion, "13.0");
     print("ios13  $i  osVersion ${DeviceInfo.instance.osVersion}");
     if (i == -1) {

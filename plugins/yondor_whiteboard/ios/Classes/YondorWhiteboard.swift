@@ -48,6 +48,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         super.init()
         self.channel.setMethodCallHandler(handle)
         let conifg = WhiteSdkConfiguration.init(app:self.appIdentifier)
+        conifg.userCursor = true
         self.sdk = WhiteSDK.init(whiteBoardView: self.boardView, config: conifg, commonCallbackDelegate: self)
         if (self.isReplay==1){
             var result = [String : Any]()
@@ -230,7 +231,7 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         let dict = call.arguments as! NSDictionary
         let beginTimestamp:String = dict["beginTimestamp"] as! String
         let duration:String = dict["duration"] as! String
-//        let mediaUrl = dict["mediaURL"] as! String
+//      let mediaUrl = dict["mediaURL"] as! String
         let whitePlayerConfig =  WhitePlayerConfig.init(room: self.uuid, roomToken: self.roomToken)
         let number = NumberFormatter.init()
         whitePlayerConfig.beginTimestamp = number.number(from: beginTimestamp)
