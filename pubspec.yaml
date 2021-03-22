@@ -146,6 +146,7 @@ flutter:
     - images/ic_student.png
     - images/ic_teacher.png
     - images/live/chat/
+    - images/live/toolbar/
     - assets/sounds/star.mp3
     - assets/sounds/ready_go.mp3
   #  - images/a_dot_ham.jpeg

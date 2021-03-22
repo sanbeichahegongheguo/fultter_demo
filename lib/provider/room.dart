@@ -366,3 +366,56 @@ class NetworkQualityProvider with ChangeNotifier {
     return images.contains("signal-bad");
   }
 }
+
+class RoomToolbarProvider with ChangeNotifier{
+
+  ///当前选择
+  /// 0 未选择
+  /// 1 画笔
+  /// 2 举手
+  /// 3 排行榜
+  /// 4 聊天
+  int _selectState = 0;
+
+  get selectState  => _selectState;
+
+  setSelectState(int num){
+    if(_selectState != num){
+      _selectState = num;
+    }else{
+      _selectState = 0;
+    }
+    notifyListeners();
+  }
+
+  var _toolColors = [
+    0xFFFC2700,
+    0xFFFED501,
+    0xFF1523E5,
+    0xFF95CD38
+  ];
+  List<int> get toolColors  => _toolColors;
+
+  var toolbarDatas = [
+    {
+      "image": 'images/live/toolbar/paint.png',
+      "imageSelect": 'images/live/toolbar/paint_select.png',
+      "type": 1
+    },
+    {
+      "image": 'images/live/toolbar/handle.png',
+      "imageSelect": 'images/live/toolbar/handle_select.png',
+      "type": 2
+    },
+    {
+      "image": 'images/live/toolbar/ranking.png',
+      "imageSelect": 'images/live/toolbar/ranking_select.png',
+      "type": 3
+    },
+    {
+      "image": 'images/live/toolbar/chat.png',
+      "imageSelect": 'images/live/toolbar/chat_select.png',
+      "type": 4
+    }
+  ];
+}
