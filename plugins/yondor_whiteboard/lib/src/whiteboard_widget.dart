@@ -52,7 +52,7 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
               "uuid": widget.uuid,
               "roomToken": widget.roomToken,
               "isReplay": widget.isReplay,
-              "userPayload": widget.userPayload
+              "userPayload": widget.userPayload ?? Map()
             },
             creationParamsCodec: const StandardMessageCodec(),
             onPlatformViewCreated: (id) {

@@ -29,7 +29,7 @@ class WhiteboardController {
   Function(bool data) replayPlay;
   Function(String data) onPhaseChanged;
   Function(String data) onRoomPhaseChanged; //房间连接状态变化
-  Function(String data) onApplianceChanged; //房间连接状态变化
+  Function(String data, List rgbColor) onApplianceChanged; //房间连接状态变化
   Function(int time) onScheduleTimeChanged;
   MethodChannel _channel;
 
@@ -76,6 +76,10 @@ class WhiteboardController {
 
   Future undo() {
     return _channel.invokeMethod("undo", null);
+  }
+
+  Future setStrokeColor(List<int> rgbColor) {
+    return _channel.invokeMethod("setStrokeColor", {"strokeColor": rgbColor.join(",")});
   }
 
   Future setAppliance(Appliance appliance) {
@@ -129,7 +133,7 @@ class WhiteboardController {
       case 'onApplianceChanged':
         if (onApplianceChanged != null) {
           print("_onMethodCall onApplianceChanged ${call.arguments}");
-          onApplianceChanged(call.arguments["data"]);
+          onApplianceChanged(call.arguments["data"], call.arguments["color"]);
         }
         return true;
     }

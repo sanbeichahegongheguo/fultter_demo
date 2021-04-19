@@ -24,6 +24,7 @@ import 'package:flutter_start/page/RegisterPage.dart';
 import 'package:flutter_start/page/ResetMobilePage.dart';
 import 'package:flutter_start/page/ResetPasswordPage.dart';
 import 'package:flutter_start/page/RoomLandscape.dart';
+import 'package:flutter_start/page/RoomLandscapeManyPage.dart';
 import 'package:flutter_start/page/RoomReplayPage.dart';
 import 'package:flutter_start/page/StudentAppPage.dart';
 import 'package:flutter_start/page/UserInfoPage.dart';
@@ -338,7 +339,8 @@ class NavigatorUtil {
     if (isReplay) {
       return NavigatorRouter(context, RoomReplayPage(roomData: data, token: userToken));
     }
-    return NavigatorRouter(context, RoomLandscapePage(roomData: data, token: userToken));
+    // return NavigatorRouter(context, RoomLandscapePage(roomData: data, token: userToken));
+    return NavigatorRouter(context, RoomLandscapeManyPage(roomData: data, token: userToken));
   }
 
   static NavigatorRouter(BuildContext context, Widget widget) {

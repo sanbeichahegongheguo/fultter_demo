@@ -7,7 +7,7 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 2.0.802+340262
+version: 2.0.808+340268
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -20,7 +20,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
 
   cupertino_icons: ^0.1.2
-  dio: ^3.0.9
+  dio: ^3.0.10
   connectivity: ^0.4.9+3
   event_bus: ^1.1.0
   package_info: ^0.4.0+6
@@ -58,7 +58,7 @@ dependencies:
     path: ./plugins/flutter_webview_plugin-0.3.11
   webview_flutter_plus:
     path: ./plugins/webview_flutter_plus-0.1.1+9
-  image_cropper: ^1.2.3
+  image_cropper: ^1.3.1
   oktoast: ^2.2.0
   fluwx_no_pay: ^2.3.2
 #  fluwx: ^2.2.0

@@ -2,6 +2,7 @@ package com.leo.flutterstart.camera;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,12 +16,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +56,7 @@ import com.otaliastudios.cameraview.frame.FrameProcessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,6 +72,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private CameraView camera;
     private ViewGroup controlPanel;
     private ImageView light_button;
+
+    private ImageView capturePictureSnapshot;
+    private ImageView close_button;
+    private ImageView album_button;
+    private FrameLayout camera_content_text_layout;
+
     /**
      * 整页拍
      */
@@ -83,8 +95,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
     private ImageView demon_button;
     //视频背景框
     private View videoPlayBoxView;
+
     /*记录是否打开了拍照示范*/
     private int videoOpen = 0; //默认没有打开拍照示范
+
+    private OrientationEventListener orientationEventListener;
+    private int phoneOrientation = 0;
 
     private static final String VIDEO_FILE = "flutter_assets/assets/demon.mp4";
 
@@ -125,6 +141,39 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
         camera.setLifecycleOwner(this);
         camera.addCameraListener(new Listener());
+
+        orientationEventListener =  new OrientationEventListener(this) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) {
+                    return;  //手机平放时，检测不到有效的角度
+                }
+                //只检测是否有四个角度的改变
+                if ((orientation > 350 || orientation < 10 ) &&  phoneOrientation == 0||
+                        (orientation > 80 && orientation < 100) && phoneOrientation == 90 ||
+                        (orientation > 170 && orientation < 190)  && phoneOrientation == 180 ||
+                        (orientation > 260 && orientation < 280) &&   phoneOrientation == 270){
+                }else{
+                    Integer po = null;
+                    if (orientation > 350 || orientation < 10) { //0度
+                        po = 0;
+                    } else if (orientation > 80 && orientation < 100) { //90度
+                        po = 90;
+                    } else if (orientation > 170 && orientation < 190) { //180度
+                        po = 180;
+                    } else if (orientation > 260 && orientation < 280) { //270度
+                        po = 270;
+                    }
+                    if (po !=null ){
+                        phoneOrientation = po;
+                        rotationImage(po);
+                        LOG.i("phoneOrientation " + phoneOrientation);
+                    }
+                }
+            }
+        };
+        orientationEventListener.enable();
+
         if (USE_FRAME_PROCESSOR) {
             camera.addFrameProcessor(new FrameProcessor() {
                 private long lastTime = System.currentTimeMillis();
@@ -161,12 +210,16 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             findViewById(R.id.take_all_linear).setOnClickListener(this);
             findViewById(R.id.take_single_linear).setOnClickListener(this);
         }
-
+        camera_content_text_layout = findViewById(R.id.camera_content_text_layout);
         demon_button = findViewById(R.id.demon_button);
         demon_button.setOnClickListener(this);
-        findViewById(R.id.capturePictureSnapshot).setOnClickListener(this);
-        findViewById(R.id.close_button).setOnClickListener(this);
-        findViewById(R.id.album_button).setOnClickListener(this);
+        capturePictureSnapshot = findViewById(R.id.capturePictureSnapshot);
+        capturePictureSnapshot.setOnClickListener(this);
+
+        close_button = findViewById(R.id.close_button);
+        close_button.setOnClickListener(this);
+        album_button = findViewById(R.id.album_button);
+        album_button.setOnClickListener(this);
         light_button = findViewById(R.id.light_button);
         light_button.setOnClickListener(this);
 //        findViewById(R.id.captureVideoSnapshot).setOnClickListener(this);
@@ -613,6 +666,13 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         result.toFile(outputFile, new FileCallback() {
             @Override
             public void onFileReady(@Nullable File file) {
+                if ( phoneOrientation > 0 ){
+                    Bitmap bitmap =  BitmapFactory.decodeFile(file.getAbsolutePath());
+                    // 修复图片被旋转的角度
+                    bitmap = FileUtils.rotaingImageView(phoneOrientation, bitmap);
+                    String filePath = FileUtils.savePhotoToSD(bitmap, file.getAbsolutePath());
+                    message("savePhotoToSD:"+filePath,false);
+                }
                 message("onFileReady:"+file.getAbsolutePath(),false);
                 Intent data = new Intent();
                 data.putExtra("data", file.getAbsolutePath());
@@ -622,6 +682,30 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
+
+
+
+    private  void rotationImage(int rotation){
+        LOG.i("rotationImage " + rotation);
+        int r = 0 ;
+        if(rotation == 270){
+            r = 90;
+        } if(rotation == 90){
+            r = -90;
+        } if(rotation == 180){
+            r = 180;
+        } if(rotation == 0){
+            r = 0;
+        }
+        capturePictureSnapshot.animate().rotation(r);
+        album_button.animate().rotation(r);
+        light_button.animate().rotation(r);
+        demon_button.animate().rotation(r);
+        close_button.animate().rotation(r);
+        camera_content_text_layout.animate().rotation(r);
+    }
+
+
 
     private String getRealPathFromURI(Uri contentURI) {
         String result;
@@ -636,4 +720,12 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
         }
         return result;
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        orientationEventListener.disable();
+    }
+
+
 }

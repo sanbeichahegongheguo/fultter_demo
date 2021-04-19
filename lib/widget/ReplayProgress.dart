@@ -410,7 +410,7 @@ class _ReplayProgressState extends State<ReplayProgress> with SingleTickerProvid
       gameDotList = [];
       if (_courseProvider.roomData.courseRecordData.coursewareOp != null) {
         List<ReplayItem> replayItemlist = _courseProvider.roomData.courseRecordData.coursewareOp.list;
-        print("replayItemlist==============$replayItemlist");
+        // print("replayItemlist==============$replayItemlist");
         replayItemlist.forEach((ReplayItem element) {
           if (element.ty == "SEL" || element.ty == "HTM" || element.ty == "MP4") {
             gameDotList.add(element.playTime.toDouble());

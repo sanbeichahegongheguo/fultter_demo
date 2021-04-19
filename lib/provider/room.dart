@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_start/common/dao/RoomDao.dart';
 import 'package:flutter_start/models/ChatMessage.dart';
 import 'package:flutter_start/models/Courseware.dart';
 import 'package:flutter_start/models/Room.dart';
 import 'package:flutter_start/models/RoomUser.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:yondor_whiteboard/whiteboard.dart';
 
 class RoomTabProvider with ChangeNotifier {
@@ -193,9 +195,39 @@ class ProgressProvider with ChangeNotifier {
   double _percentage = 0;
   double get percentage => _percentage;
 
+  bool _isError = false;
+  bool get isError => _isError;
+  Function loadCoursePack;
+  double _t = 0;
+  int _second = 0;
+
   setProgress(double percentage) {
     _percentage = percentage;
     notifyListeners();
+  }
+
+  setIsError(bool isError) {
+    _isError = isError;
+    notifyListeners();
+  }
+
+  reLoad() {
+    _second = 0;
+    _isError = false;
+    _t = 0;
+    notifyListeners();
+  }
+
+  timer() {
+    if (percentage == _t) {
+      _second++;
+    } else {
+      _second = 0;
+    }
+    _t = _percentage;
+    if (!_isError && _second >= 60) {
+      setIsError(true);
+    }
   }
 }
 
@@ -208,6 +240,9 @@ class BoardProvider with ChangeNotifier {
   int get grantBoard => _grantBoard;
   Appliance _appliance = Appliance.pencil;
   Appliance get appliance => _appliance;
+
+  Color _pencilColor;
+  Color get pencilColor => _pencilColor;
 
   setEnableBoard(int enableBoard) {
     _enableBoard = enableBoard;
@@ -226,8 +261,12 @@ class BoardProvider with ChangeNotifier {
     }
   }
 
-  setAppliance(Appliance appliance) {
+  setAppliance(Appliance appliance, {Color color}) {
     _appliance = appliance;
+    if (color != null) {
+      print("set _pencilColor");
+      _pencilColor = color;
+    }
     notifyListeners();
   }
 }
@@ -292,6 +331,22 @@ class StarWidgetProvider with ChangeNotifier {
   increment() {
     this._star++;
     notifyListeners();
+  }
+
+  getUserStar(int liveCourseallotId, String roomUuid) async {
+    var param = {"liveCourseallotId": liveCourseallotId, "roomId": roomUuid};
+    print("getuserstar param $param");
+    RoomDao.getUserStar(param).then((res) {
+      if (res.result != null && res.data != null && res.data["code"] == 200) {
+        print(res.data["code"]);
+        final star = res.data["data"]["star"];
+        if (star != null) {
+          setStar(star);
+        }
+      } else {
+        showToast("获取星星失败!!!");
+      }
+    });
   }
 }
 
@@ -367,8 +422,7 @@ class NetworkQualityProvider with ChangeNotifier {
   }
 }
 
-class RoomToolbarProvider with ChangeNotifier{
-
+class RoomToolbarProvider with ChangeNotifier {
   ///当前选择
   /// 0 未选择
   /// 1 画笔
@@ -377,45 +431,30 @@ class RoomToolbarProvider with ChangeNotifier{
   /// 4 聊天
   int _selectState = 0;
 
-  get selectState  => _selectState;
+  get selectState => _selectState;
 
-  setSelectState(int num){
-    if(_selectState != num){
+  int _toolIndex = 2;
+
+  get toolIndex => _toolIndex;
+
+  setSelectState(int num) {
+    if (_selectState != num) {
       _selectState = num;
-    }else{
+    } else {
       _selectState = 0;
     }
     notifyListeners();
   }
 
-  var _toolColors = [
-    0xFFFC2700,
-    0xFFFED501,
-    0xFF1523E5,
-    0xFF95CD38
-  ];
-  List<int> get toolColors  => _toolColors;
+  setToolIndex(int i) {
+    _toolIndex = i;
+    notifyListeners();
+  }
+}
 
-  var toolbarDatas = [
-    {
-      "image": 'images/live/toolbar/paint.png',
-      "imageSelect": 'images/live/toolbar/paint_select.png',
-      "type": 1
-    },
-    {
-      "image": 'images/live/toolbar/handle.png',
-      "imageSelect": 'images/live/toolbar/handle_select.png',
-      "type": 2
-    },
-    {
-      "image": 'images/live/toolbar/ranking.png',
-      "imageSelect": 'images/live/toolbar/ranking_select.png',
-      "type": 3
-    },
-    {
-      "image": 'images/live/toolbar/chat.png',
-      "imageSelect": 'images/live/toolbar/chat_select.png',
-      "type": 4
-    }
-  ];
+class Toolbar {
+  String image;
+  String imageSelect;
+  int type;
+  Toolbar({this.image, this.imageSelect, this.type});
 }

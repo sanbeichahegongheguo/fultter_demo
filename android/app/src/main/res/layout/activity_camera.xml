@@ -10,17 +10,7 @@
     <!-- Camera -->
 
 
-    <!--    <ImageView-->
-<!--        android:id="@+id/light_button"-->
-<!--        android:layout_width="65dp"-->
-<!--        android:layout_height="65dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:layout_marginEnd="18dp"-->
-<!--        android:layout_marginRight="18dp"-->
-<!--        android:clickable="true"-->
-<!--        android:padding="15dp"-->
-<!--        android:paddingBottom="3dp"-->
-<!--        android:src="@drawable/bd_ocr_light_off" />-->
+
 
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/camera"
@@ -47,7 +37,22 @@
         app:cameraUseDeviceOrientation="false"
         >
 
+        <FrameLayout
+            android:layout_gravity="center"
+            android:id="@+id/camera_content_text_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
+            <TextView
+                android:id="@+id/tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="支持横屏竖屏拍照\n请保持题目与参考线平行"
+                android:textColor="@color/colorWhite"
+                android:textSize='14dp' />
+        </FrameLayout>
     </com.otaliastudios.cameraview.CameraView>
 
 

@@ -33,7 +33,6 @@ import 'package:flutter_start/provider/provider.dart';
 import 'package:flutter_start/widget/DIYKeyboard.dart';
 import 'package:flutter_start/widget/GamePayleWidget.dart';
 import 'package:flutter_start/widget/InputButtomWidget.dart';
-import 'package:flutter_start/widget/LiveQuesDialog.dart';
 import 'package:flutter_start/widget/LiveRankWidget.dart';
 import 'package:flutter_start/widget/LiveTimerWidget.dart';
 import 'package:flutter_start/widget/LiveTopDialog.dart';
@@ -45,10 +44,13 @@ import 'package:flutter_start/widget/StarGif.dart';
 import 'package:flutter_start/widget/UserStarWidget.dart';
 import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
+import 'package:flutter_start/widget/room/BezierPainter.dart';
 import 'package:flutter_start/widget/room/DeviceInputsMenu.dart';
 import 'package:flutter_start/widget/room/EyerestWidget.dart';
+import 'package:flutter_start/widget/room/LivesQuesManyWidget.dart';
 import 'package:flutter_start/widget/room/Mp3PlayerWidget.dart';
 import 'package:flutter_start/widget/room/RoomEduSocket.dart';
+import 'package:flutter_start/widget/room/UserStarManyWidget.dart';
 import 'package:flutter_start/widget/starsWiget.dart';
 import 'package:fradio/fradio.dart';
 import 'package:home_indicator/home_indicator.dart';
@@ -63,19 +65,19 @@ import 'package:yondor_whiteboard/whiteboard.dart';
 import 'package:flutter_start/widget/room/RoomToolbar.dart';
 import 'package:flutter_start/widget/room/LiveRankWidgetV2.dart';
 
-class RoomLandscapePage extends StatefulWidget {
-  static final String sName = "RoomLandscape";
+class RoomLandscapeManyPage extends StatefulWidget {
+  static final String sName = "RoomLandscapeManyPage";
 
   final RoomData roomData;
   final String token;
-  const RoomLandscapePage({Key key, this.roomData, this.token}) : super(key: key);
+  const RoomLandscapeManyPage({Key key, this.roomData, this.token}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return RoomLandscapePageState(roomData);
+    return RoomLandscapeManyPageState(roomData);
   }
 }
 
-class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerProviderStateMixin, LogBase, WidgetsBindingObserver {
+class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with SingleTickerProviderStateMixin, LogBase, WidgetsBindingObserver {
   static const String mp4 = LiveRoomConst.mp4;
   static const String ppt = LiveRoomConst.ppt;
   static const String h5 = LiveRoomConst.h5;
@@ -92,7 +94,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   static const String EVENT_JOIN_SUCCESS = LiveRoomConst.EVENT_JOIN_SUCCESS; //加入房间返回成功事件
   static const String EVENT_CURRENT = LiveRoomConst.EVENT_CURRENT; //加入房间成功返回当前事件
 
-  RoomLandscapePageState(RoomData roomData) {
+  RoomLandscapeManyPageState(RoomData roomData) {
     _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
     _chatProvider.setMuteAllChat(roomData.room.muteAllChat == 1);
   }
@@ -183,6 +185,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       print("is ios13  $_isIos13");
     }
     getMsgList();
+    _starWidgetProvider.getUserStar(widget.roomData.liveCourseallotId, widget.roomData.room.roomUuid);
   }
 
   _initWhiteBoard() async {
@@ -195,11 +198,17 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _whiteboardController.onRoomPhaseChanged = (result) {
       _whiteboardProvider.setRoomPhase(result);
     };
-    _whiteboardController.onApplianceChanged = (result) {
+    _whiteboardController.onApplianceChanged = (result, rgbColor) {
       final appliance = Appliance.values.firstWhere((Appliance element) {
         return element.toString() == "$Appliance.$result";
       });
-      _boardProvider.setAppliance(appliance);
+
+      Color color;
+      if (rgbColor != null) {
+        print("rgbColor111 $rgbColor");
+        color = Color.fromRGBO(rgbColor[0], rgbColor[1], rgbColor[2], 1);
+      }
+      _boardProvider.setAppliance(appliance, color: color);
     };
   }
 
@@ -252,10 +261,19 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     });
   }
 
+  _buildBody(child) {
+    return GestureDetector(
+      child: child,
+      onTap: () => _roomShowTopProvider.setIsShow(true),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var coursewareWidth = (ScreenUtil.getInstance().screenWidth * 0.8) - MediaQuery.of(context).padding.left;
-    var maxWidth = coursewareWidth > ScreenUtil.getInstance().screenHeight * 1.5 ? ScreenUtil.getInstance().screenHeight * 1.5 : coursewareWidth;
+    var maxWidth = coursewareWidth > (ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().screenHeight * 0.175) * 1.62
+        ? (ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().screenHeight * 0.175) * 1.62
+        : coursewareWidth;
     print(
         "top ${MediaQuery.of(context).padding.top} bottom ${MediaQuery.of(context).padding.bottom} left ${MediaQuery.of(context).padding.left} right ${MediaQuery.of(context).padding.right}");
     _courseProvider.setCoursewareWidth(coursewareWidth, maxWidth);
@@ -323,59 +341,73 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           },
           child: AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.dark,
-            child: Scaffold(
-                resizeToAvoidBottomPadding: false,
-                appBar: PreferredSize(
-                    child: Offstage(
-                      offstage: true,
-                      child: AppBar(
-                        elevation: 0,
-                        centerTitle: true,
-                        title: Text(
-                          widget.roomData.courseware.name,
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        backgroundColor: Color(0xFFffffff),
-                        leading: IconButton(
-                          icon: Icon(Icons.arrow_back_ios),
-                          color: Color(0xFF333333), //自定义图标
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
+            child: _buildBody(
+              Scaffold(
+                  resizeToAvoidBottomPadding: false,
+                  appBar: PreferredSize(
+                      child: Offstage(
+                        offstage: true,
+                        child: AppBar(
+                          elevation: 0,
+                          centerTitle: true,
+                          title: Text(
+                            widget.roomData.courseware.name,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          backgroundColor: Color(0xFFffffff),
+                          leading: IconButton(
+                            icon: Icon(Icons.arrow_back_ios),
+                            color: Color(0xFF333333), //自定义图标
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.07)),
-                body: SafeArea(
-                    left: false,
-                    right: Platform.isAndroid,
-                    bottom: Platform.isAndroid,
-                    child: Padding(
-                        padding: EdgeInsets.only(top: ScreenUtil.getInstance().statusBarHeight, left: MediaQuery.of(context).padding.left),
-                        child: Stack(
-                          children: <Widget>[
-                            _buildCourseware(),
-                            Row(children: <Widget>[
-                              //课件窗口
-                              //右边栏
-                              Expanded(
-                                child: Column(
-                                  children: <Widget>[
-                                    //视频窗口
-                                    _buildVideo(),
-                                  ],
-                                ),
-                              )
-                            ]),
-                            // 右下角工具栏 水铭看这里水铭看这里水铭看这里水铭看这里水铭看这里水铭看这里水铭看这里
-                            Positioned(
-                                bottom: 0,
-                                right:0,
-                                child:
-                                Consumer<RoomToolbarProvider>(builder: (context, model, child) {
-                                  return RoomToolbar(
-                                      model:_roomToolbarProvider,
-                                      textComposer:Flex(
+                      preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.07)),
+                  body: SafeArea(
+                      left: false,
+                      right: Platform.isAndroid,
+                      bottom: Platform.isAndroid,
+                      child: Padding(
+                          padding: EdgeInsets.only(top: ScreenUtil.getInstance().statusBarHeight, left: MediaQuery.of(context).padding.left),
+                          child: Stack(
+                            children: <Widget>[
+                              Column(
+                                children: [
+                                  Container(
+                                    height: ScreenUtil.getInstance().screenHeight * 0.175,
+                                    color: Color(0xff090723),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        _buildTeacherVideo(),
+                                        SizedBox(width: 5),
+                                        _buildStudentVideo(),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      color: Color(0xff2E2D47),
+                                      child: Center(
+                                        child: _buildCourseware(),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              // 右下角工具栏
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Consumer2<RoomToolbarProvider, BoardProvider>(builder: (context, model, boardProvider, child) {
+                                    return RoomToolbar(
+                                      userGrantBoard: _local?.grantBoard ?? 0,
+                                      whiteboardController: _whiteboardController,
+                                      model: _roomToolbarProvider,
+                                      boardProvider: _boardProvider,
+                                      textComposer: Flex(
                                         direction: Axis.vertical,
                                         children: [
                                           Expanded(
@@ -385,55 +417,60 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                                           _buildTextComposerV2(),
                                         ],
                                       ),
-                                      liveRank:LiveRankWidgetV2(liveCourseallotId: widget.roomData.liveCourseallotId, roomId: widget.roomData.room.roomUuid)
-                                  );
-                                })
-                            ),
-                            Consumer2<CourseProvider, ScreenProvider>(builder: (context, courseModel, screenModel, child) {
-                              return courseModel.status == 1 && screenModel.screenId > 0
-                                  ? GestureDetector(
-                                child: Container(width: courseModel.coursewareWidth, child: AgoraRenderWidget(screenModel.screenId)),
-                                onTap: () => _roomShowTopProvider.setIsShow(true),
-                              )
-                                  : Container();
-                            }),
-                            Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1 ? UserStarWidget() : Container();
-                            }),
-                            Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1 ? _getLiveTimerWidget() : Container();
-                            }),
-                            //排行榜
-                            // Consumer<CourseProvider>(builder: (context, model, child) {
-                            //   return model.status == 1 ? _buildRank() : Container();
-                            // }),
-                            Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1
-                                  ? Positioned(
-                                bottom: 0,
-                                left: 0,
-                                child: _buildSel(),
-                              )
-                                  : Container();
-                            }),
-                            Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1
-                                  ? Consumer<Mp3PlayerProvider>(builder: (context, model, child) {
-                                return Mp3PlayerWidget();
-                              })
-                                  : Container();
-                            }),
-                            Consumer<CourseProvider>(builder: (context, model, child) {
-                              return model.status == 1
-                                  ? Consumer<EyerestProvider>(builder: (context, model, child) {
-                                return model.isShow ? EyerestWidget(flickManager: model.flickManager) : Container();
-                              })
-                                  : Container();
-                            }),
-                            _buildNetBad(),
-                            _buildTop(),
-                          ],
-                        )))),
+                                      liveRank: LiveRankWidgetV2(liveCourseallotId: widget.roomData.liveCourseallotId, roomId: widget.roomData.room.roomUuid),
+                                      handCall: _hand,
+                                    );
+                                  })),
+                              Consumer2<CourseProvider, ScreenProvider>(builder: (context, courseModel, screenModel, child) {
+                                return courseModel.status == 1 && screenModel.screenId > 0
+                                    ? GestureDetector(
+                                        child: Container(width: courseModel.coursewareWidth, child: AgoraRenderWidget(screenModel.screenId)),
+                                        onTap: () => _roomShowTopProvider.setIsShow(true),
+                                      )
+                                    : Container();
+                              }),
+                              Consumer<CourseProvider>(builder: (context, model, child) {
+                                return model.status == 1
+                                    ? Consumer<StarWidgetProvider>(builder: (context, starModel, child) {
+                                        return Positioned(
+                                            top: ScreenUtil.getInstance().screenHeight * 0.175 + 3,
+                                            left: 5,
+                                            child: UserStarManyWidget(
+                                              star: starModel.star,
+                                            ));
+                                      })
+                                    : Container();
+                              }),
+                              Consumer<CourseProvider>(builder: (context, model, child) {
+                                return model.status == 1 ? _getLiveTimerWidget() : Container();
+                              }),
+                              Consumer<CourseProvider>(builder: (context, model, child) {
+                                return model.status == 1
+                                    ? Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: _buildSel(),
+                                      )
+                                    : Container();
+                              }),
+                              Consumer<CourseProvider>(builder: (context, model, child) {
+                                return model.status == 1
+                                    ? Consumer<Mp3PlayerProvider>(builder: (context, model, child) {
+                                        return Mp3PlayerWidget();
+                                      })
+                                    : Container();
+                              }),
+                              Consumer<CourseProvider>(builder: (context, model, child) {
+                                return model.status == 1
+                                    ? Consumer<EyerestProvider>(builder: (context, model, child) {
+                                        return model.isShow ? EyerestWidget(flickManager: model.flickManager) : Container();
+                                      })
+                                    : Container();
+                              }),
+                              _buildNetBad(),
+                              _buildTop(),
+                            ],
+                          )))),
+            ),
           ),
         ));
   }
@@ -442,29 +479,29 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     return Consumer2<NetworkQualityProvider, CourseProvider>(builder: (context, model, courseModel, child) {
       return model.isBad() && courseModel.status == 1
           ? Container(
-        width: _courseProvider.coursewareWidth,
-        color: Colors.red.withOpacity(0.8),
-        height: ScreenUtil.getInstance().getHeight(50),
-        child: Row(
-          children: [
-            Expanded(
+              width: ScreenUtil.getInstance().screenWidth,
+              color: Colors.red.withOpacity(0.8),
+              height: ScreenUtil.getInstance().getHeight(50),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ImageIcon(
-                    AssetImage(model.images),
-                    color: Colors.white,
-                  ),
-                  Text(
-                    "网络信号差，请检查网络～",
-                    style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(13 / 2)),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ImageIcon(
+                          AssetImage(model.images),
+                          color: Colors.white,
+                        ),
+                        Text(
+                          "网络信号差，请检查网络～",
+                          style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(13 / 2)),
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),
             )
-          ],
-        ),
-      )
           : Container();
     });
   }
@@ -475,15 +512,15 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       print("model.time ${model.time}");
       return model.isShow
           ? Positioned(
-        right: ScreenUtil.getInstance().screenWidth * 0.2,
-        top: 0,
-        child: LiveTimerWidget(
-          time: model.time,
-          callback: () {
-            model.show(false, 0);
-          },
-        ),
-      )
+              right: ScreenUtil.getInstance().screenWidth * 0.2,
+              top: 0,
+              child: LiveTimerWidget(
+                time: model.time,
+                callback: () {
+                  model.show(false, 0);
+                },
+              ),
+            )
           : Container();
     });
   }
@@ -501,13 +538,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   ///构建选择题
   Widget _buildSel() {
-    return LiveQuesWidget();
+    return LivesQuesManyWidget();
   }
 
   Widget _buildCourseware() {
     return Consumer2<CourseProvider, ResProvider>(builder: (context, courseStatusModel, resModel, child) {
       Widget result;
       print("left with:${courseStatusModel.coursewareWidth} height:${ScreenUtil.getInstance().screenHeight}");
+      double height = ScreenUtil.getInstance().screenHeight - (ScreenUtil.getInstance().screenHeight * 0.175);
       if (courseStatusModel.status == 0) {
         result = Container(
           child: Stack(
@@ -561,8 +599,8 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
       if (!(resModel.res != null && resModel.res.screenId != null && resModel.res.screenId > 0)) {
         result = Container(
-          color: (resModel.res == null && courseStatusModel.status != 0) ? Colors.white : Colors.black,
-          width: courseStatusModel.coursewareWidth,
+          color: (resModel.res == null && courseStatusModel.status != 0) ? Colors.white : Color(0xff2E2D47),
+          width: courseStatusModel.maxWidth,
           child: Center(
             child: Container(
               width: courseStatusModel.maxWidth,
@@ -571,157 +609,56 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                 children: <Widget>[
                   _isIos13
                       ? AnimatedSwitcher(
-                    duration: Duration(milliseconds: 800),
-                    child: result != null
-                        ? Container(
-                      key: ValueKey("${resModel?.res?.qid ?? 0}"),
-                      child: result,
-                    )
-                        : Container(),
-                  )
+                          duration: Duration(milliseconds: 800),
+                          child: result != null
+                              ? Container(
+                                  key: ValueKey("${resModel?.res?.qid ?? 0}"),
+                                  child: result,
+                                )
+                              : Container(
+                                  child: CustomPaint(
+                                    size: Size.infinite,
+                                    painter: BezierPainter(),
+                                  ),
+                                ),
+                        )
                       : result != null
-                      ? Container(
-                    key: ValueKey("${resModel?.res?.qid ?? 0}"),
-                    child: result,
-                  )
-                      : Container(),
-                  Consumer<BoardProvider>(builder: (context, model, child) {
-                    print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
-                    print(
-                        " 等待老师开始游戏 ${(resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) && (resModel.isShow == null || !resModel.isShow)}");
-                    var show = true;
-                    if (courseStatusModel.isInitBoardView) {
-                      show = (courseStatusModel.status == 1 && model.enableBoard == 1);
-                      if (show) {
-                        if (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5 && model.testBoard == 0) {
-                          show = false;
-                        } else if (resModel != null &&
-                            resModel.res != null &&
-                            resModel.res.type != null &&
-                            resModel.res.type == h5 &&
-                            resModel.isShow != null &&
-                            resModel.isShow) {
-                          show = false;
-                        }
-                      }
-                    }
-                    return Offstage(
-                        offstage: !(show),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Stack(
-                              children: [
-                                _buildWhiteboard(),
-                                Consumer<WhiteboardProvider>(builder: (context, model, child) {
-                                  print("model.roomPhase  ${model.roomPhase} ");
-                                  return model.roomPhase != "connected"
-                                      ? Positioned.fill(
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            SpinKitRing(
-                                              size: ScreenUtil.getInstance().getSp(28),
-                                              color: Color(0xFF195FA4),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              "${LiveRoomConst.ROOM_PHASE_NAME[model.roomPhase]}···",
-                                              style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(8)),
-                                            )
-                                          ],
-                                        ),
-                                      ))
-                                      : Container(height: 0, width: 0);
-                                }),
-                              ],
-                            ),
-                            _local?.grantBoard == 1 && model.grantBoard == 1
-                                ? Container(height: 0, width: 0)
-                                : GestureDetector(
-                              onTap: () {
-                                _roomShowTopProvider.setIsShow(true);
-                              },
-                              child: Container(
-                                color: Colors.transparent,
-                                width: courseStatusModel.maxWidth,
-                                height: ScreenUtil.getInstance().screenHeight,
+                          ? Container(
+                              key: ValueKey("${resModel?.res?.qid ?? 0}"),
+                              child: result,
+                            )
+                          : Container(
+                              child: CustomPaint(
+                                size: Size.infinite,
+                                painter: BezierPainter(),
                               ),
                             ),
-                            _local?.grantBoard == 1 && model.grantBoard == 1
-                                ? Positioned(
-                                right: 2,
-                                bottom: 2,
-                                child: DeviceInputsMenu(
-                                  whiteboardController: _whiteboardController,
-                                  appliance: model.appliance,
-                                ))
-                                : Container(height: 0, width: 0)
-                          ],
-                        ));
-                  }),
+                  //白板
+                  _buildWhite(courseStatusModel, resModel, height),
                   (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
-                      (resModel.isShow == null || !resModel.isShow)
+                          (resModel.isShow == null || !resModel.isShow)
                       ? Container(
-                    color: Colors.transparent,
-                    width: courseStatusModel.maxWidth,
-                    height: ScreenUtil.getInstance().screenHeight,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (isShowTip) {
-                          isShowTip = false;
-                          showToast("等待老师开始游戏");
-                          if (isShowTipTimer == null || !isShowTipTimer.isActive) {
-                            isShowTipTimer = Timer(Duration(milliseconds: 3000), () {
-                              isShowTip = true;
-                            });
-                          }
-                        }
-                      },
-                    ),
-                  )
-                      : Container(
-                    height: 0,
-                    width: 0,
-                  ),
-                  //举手按钮
-                  Consumer<HandProvider>(builder: (context, model, child) {
-                    if (courseStatusModel.status == 1 && !model.enableHand && _handTypeProvider.type != 1) {
-                      Future.microtask(() => _handTypeProvider.switchType(1));
-                    }
-                    if (courseStatusModel.status == 0 && model.enableHand) {
-                      Future.microtask(() => model.setEnableHand(false));
-                    }
-                    return Offstage(
-                      offstage: !(courseStatusModel.status == 1 && model.enableHand),
-                      child: Align(
-                        alignment: AlignmentDirectional(0.9, 0.9),
-                        child: Consumer<HandTypeProvider>(builder: (context, model, child) {
-                          return GestureDetector(
-                            child: Container(
-                              child: Image.asset(
-                                model.type == 1 ? 'images/ic_hand_up.png' : 'images/ic_hand_down.png',
-                                width: ScreenUtil.getInstance().getHeightPx(225),
-                              ),
-                            ),
+                          color: Colors.transparent,
+                          width: courseStatusModel.maxWidth,
+                          height: height,
+                          child: GestureDetector(
                             onTap: () {
-                              _hand();
+                              if (isShowTip) {
+                                isShowTip = false;
+                                showToast("等待老师开始游戏");
+                                if (isShowTipTimer == null || !isShowTipTimer.isActive) {
+                                  isShowTipTimer = Timer(Duration(milliseconds: 3000), () {
+                                    isShowTip = true;
+                                  });
+                                }
+                              }
                             },
-                          );
-                        }),
-                      ),
-                    );
-                  }), //学生视频
-                  Offstage(
-                    offstage: !(courseStatusModel.status == 1),
-                    child: Align(
-                      alignment: AlignmentDirectional(0.98, -0.98),
-                      child: _buildStudentVideo(),
-                    ),
-                  )
+                          ),
+                        )
+                      : Container(
+                          height: 0,
+                          width: 0,
+                        ),
                 ],
               ),
             ),
@@ -748,9 +685,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     return GestureDetector(
       child: Container(
           child: Image.file(
-            File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
-            fit: BoxFit.contain,
-          )),
+        File(widget.roomData.courseware.localPath + "/" + resModel.res.data.ps.pic),
+        fit: BoxFit.contain,
+      )),
       onTap: () => _roomShowTopProvider.setIsShow(true),
     );
   }
@@ -778,7 +715,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               name: 'Courseware',
               onMessageReceived: (JavascriptMessage message) async {
                 var msg = jsonDecode(message.message);
-                Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapePage.sName);
+                Log.f("@收到Courseware 回调 $msg", tag: RoomLandscapeManyPage.sName);
                 Store<GSYState> store = StoreProvider.of(context);
                 BetterSocket.sendMsg(jsonEncode({
                   "Event": {
@@ -815,11 +752,102 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         },
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
           new Factory<OneSequenceGestureRecognizer>(
-                () => new EagerGestureRecognizer(),
+            () => new EagerGestureRecognizer(),
           ),
         ].toSet(),
       ),
     );
+  }
+
+  _buildWhite(CourseProvider courseStatusModel, ResProvider resModel, double height) {
+    return Consumer<BoardProvider>(builder: (context, model, child) {
+      print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
+      print(
+          " 等待老师开始游戏 ${(resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) && (resModel.isShow == null || !resModel.isShow)}");
+      var show = true;
+      if (courseStatusModel.isInitBoardView) {
+        show = (courseStatusModel.status == 1 && model.enableBoard == 1);
+        if (show) {
+          if (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5 && model.testBoard == 0) {
+            show = false;
+          } else if (resModel != null &&
+              resModel.res != null &&
+              resModel.res.type != null &&
+              resModel.res.type == h5 &&
+              resModel.isShow != null &&
+              resModel.isShow) {
+            show = false;
+          }
+        }
+      }
+      return Offstage(
+          offstage: !(show),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Stack(
+                children: [
+                  Container(
+                    child: _buildWhiteboard(),
+                  ),
+                  Consumer<WhiteboardProvider>(builder: (context, model, child) {
+                    print("model.roomPhase  ${model.roomPhase} ");
+                    return model.roomPhase != "connected"
+                        ? Positioned.fill(
+                            child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SpinKitRing(
+                                  size: ScreenUtil.getInstance().getSp(28),
+                                  color: Color(0xFF4E6EF2),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                    constraints: BoxConstraints(
+                                      minWidth: ScreenUtil.getInstance().getWidthPx(240),
+                                      minHeight: ScreenUtil.getInstance().getHeightPx(165),
+                                    ),
+                                    child: Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "${LiveRoomConst.ROOM_PHASE_NAME[model.roomPhase]}",
+                                            style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(8), color: Colors.white),
+                                            // textAlign: TextAlign.center,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: new BorderRadius.all(Radius.circular((11))),
+                                      color: Color(0xff000000).withOpacity(0.4),
+                                    ))
+                              ],
+                            ),
+                          ))
+                        : Container(height: 0, width: 0);
+                  }),
+                ],
+              ),
+              _local?.grantBoard == 1 && model.grantBoard == 1
+                  ? Container(height: 0, width: 0)
+                  : GestureDetector(
+                      onTap: () {
+                        _roomShowTopProvider.setIsShow(true);
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        width: courseStatusModel.maxWidth,
+                        height: height,
+                      ),
+                    ),
+            ],
+          ));
+    });
   }
 
   gameStart() async {
@@ -874,7 +902,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         "roomId": widget.roomData.room.roomUuid
       };
       RoomDao.rewardStar(param).then((res) {
-        Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
+        Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapeManyPage.sName);
         if (res.result != null && res.data != null && res.data["code"] == 200) {
           if (res.data["data"]["status"] == 1) {
             showStarDialog(star);
@@ -901,65 +929,67 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             duration: new Duration(seconds: 1),
             child: model.isShow
                 ? Container(
-                color: Colors.black38,
-                height: ScreenUtil.getInstance().screenHeight * 0.13,
-                width: ScreenUtil.getInstance().screenWidth,
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                        icon: new Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.white,
-                          size: ScreenUtil.getInstance().getSp(10),
+                    color: Colors.black38,
+                    height: ScreenUtil.getInstance().screenHeight * 0.13,
+                    width: ScreenUtil.getInstance().screenWidth,
+                    child: Row(
+                      children: <Widget>[
+                        IconButton(
+                            icon: new Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.white,
+                              size: ScreenUtil.getInstance().getSp(10),
+                            ),
+                            onPressed: () {
+                              _back();
+                            }),
+                        SizedBox(
+                          width: ScreenUtil.getInstance().getWidthPx(12),
                         ),
-                        onPressed: () {
-                          _back();
-                        }),
-                    SizedBox(
-                      width: ScreenUtil.getInstance().getWidthPx(12),
-                    ),
-                    Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(10)))
-                  ],
-                ))
+                        Text(widget.roomData.courseware.name, style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(10)))
+                      ],
+                    ))
                 : Container(),
           ));
     });
   }
 
   ///视频区域
-  Widget _buildVideo() {
+  Widget _buildTeacherVideo() {
     return Consumer2<TeacherProvider, CourseProvider>(builder: (context, teacherModel, courseStatusModel, child) {
       final flag = courseStatusModel.status == 1 && teacherModel.user != null && teacherModel.user.coVideo == 1 && teacherModel.user.enableVideo == 1;
-      double width = ScreenUtil.getInstance().screenWidth * 0.2;
-      double height  =  width * 188/247;//ScreenUtil.getInstance().getHeightPx(550)
-      return Container(
-//              alignment:Alignment.center,
-//              color: Colors.red,
-          width: width,
-          height: height,
-          child: flag
-              ? Stack(
-            alignment: AlignmentDirectional.bottomStart,
-            children: [
-              AgoraRenderWidget(teacherModel.user.uid),
-              Consumer<NetworkQualityProvider>(builder: (context, model, child) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 1, left: 1),
-                  child: Image.asset(
-                    model.images,
-                    fit: BoxFit.contain,
-                    width: ScreenUtil.getInstance().getWidth(11),
-                  ),
-                );
-              })
-            ],
-          )
-              : Container(
-            color: Colors.white,
-            child: Image.asset('images/ic_teacher.png', fit: BoxFit.fill, width: ScreenUtil.getInstance().screenWidth * 0.2
-//                    height: ScreenUtil.getInstance().getWidthPx(200),
-            ),
-          ));
+      return AspectRatio(
+        aspectRatio: 247.0 / 188.0,
+        child: Container(
+            color: Color(0xff797883),
+            child: flag
+                ? Stack(
+                    alignment: AlignmentDirectional.bottomStart,
+                    children: [
+                      AgoraRenderWidget(teacherModel.user.uid),
+                      Consumer<NetworkQualityProvider>(builder: (context, model, child) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 1, left: 1),
+                          child: Image.asset(
+                            model.images,
+                            fit: BoxFit.contain,
+                            width: ScreenUtil.getInstance().getWidth(11),
+                          ),
+                        );
+                      })
+                    ],
+                  )
+                : Center(
+                    child: Container(
+                      constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
+                      color: Color(0xff797883),
+                      child: AspectRatio(
+                        aspectRatio: 1 / 1,
+                        child: Image.asset('images/ic_teacher.png', fit: BoxFit.contain),
+                      ),
+                    ),
+                  )),
+      );
     });
   }
 
@@ -970,62 +1000,74 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       Widget my = Container();
       if (model.user != null) {
         if (model.user.coVideo == 1) {
-          my = Container(
-              padding: EdgeInsets.only(right: 5),
-              // color: Colors.white,
-              width: ScreenUtil.getInstance().screenWidth * 0.15,
-              height: ScreenUtil.getInstance().getHeightPx(350),
-              child: model.user.coVideo == 1 && model.user.enableVideo == 1
-                  ? AgoraRenderWidget(model.user.uid, local: true)
-                  : Container(
-                  color: Colors.white,
-                  child: Image.asset(
-                    'images/ic_student.png',
-                  )));
+          my = AspectRatio(
+              aspectRatio: 247.0 / 188.0,
+              child: Container(
+                  color: Color(0xff797883),
+                  child: model.user.coVideo == 1 && model.user.enableVideo == 1
+                      ? AgoraRenderWidget(model.user.uid, local: true)
+                      : Center(
+                          child: Container(
+                            constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
+                            color: Color(0xff797883),
+                            child: AspectRatio(
+                              aspectRatio: 1 / 1,
+                              child: Image.asset('images/live/student-ico.png', fit: BoxFit.contain),
+                            ),
+                          ),
+                        )));
         }
       }
       if (_others != null && _others.length > 0) {
-        other = ListView.builder(
-          // padding: EdgeInsets.only(right: 5),
-            reverse: true,
+        int l = _others.length > 5 ? 5 : _others.length;
+        other = AspectRatio(
+          aspectRatio: 267.0 * l / 188.0,
+          child: ListView.separated(
+            padding: EdgeInsets.only(left: 5),
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemCount: _others.length,
             itemBuilder: (BuildContext context, int i) {
-              return Container(
-                  color: Colors.white,
-                  width: ScreenUtil.getInstance().screenWidth * 0.15,
-                  height: ScreenUtil.getInstance().getHeightPx(350),
-                  child: _others[i].coVideo == 1 && _others[i].enableVideo == 1
-                      ? AgoraRenderWidget(_others[i].uid)
-                      : Container(
-                      color: Colors.white,
-                      child: Image.asset(
-                        'images/ic_student.png',
-                        width: ScreenUtil.getInstance().screenWidth,
-                        height: ScreenUtil.getInstance().getWidthPx(550),
-                      )));
-            });
+              return AspectRatio(
+                  aspectRatio: 247.0 / 188.0,
+                  child: Container(
+                      color: Color(0xff797883),
+                      child: _others[i].coVideo == 1 && _others[i].enableVideo == 1
+                          ? AgoraRenderWidget(_others[i].uid)
+                          : Center(
+                              child: Container(
+                                constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
+                                color: Color(0xff797883),
+                                child: AspectRatio(
+                                  aspectRatio: 1 / 1,
+                                  child: Image.asset('images/live/student-ico.png', fit: BoxFit.contain),
+                                ),
+                              ),
+                            )));
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return SizedBox(width: 5);
+            },
+          ),
+        );
       }
+
       widget = Container(
-        // color: Colors.pink,
-        height: ScreenUtil.getInstance().getHeightPx(350),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: other,
-            ),
-            my
+            my,
+            other,
           ],
         ),
       );
       return widget;
     });
   }
-  Widget _buildTextComposerV2(){
+
+  Widget _buildTextComposerV2() {
     return Stack(children: <Widget>[
       GestureDetector(
           onTap: () {
@@ -1051,72 +1093,68 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 //                          ),
                           InkWell(
                             onTap: () => {_showKeyboard(model)},
-                            child:Padding(
+                            child: Padding(
                                 padding: EdgeInsets.only(right: 15),
-                                child:
-                                Container(
+                                child: Container(
                                   width: ScreenUtil.getInstance().getSp(6),
                                   child: Icon(
                                     Icons.sentiment_satisfied,
                                     color: Color(0xFFF8B100),
                                   ),
-                                )
-                            ),
+                                )),
                           ),
                           Flexible(
                               child: InkWell(
-                                child: TextField(
-                                  readOnly: model.muteAllChat,
-                                  style:TextStyle(color:Colors.white,fontSize: ScreenUtil.getInstance().getSp(6)),
-                                  controller: _textController,
-                                  focusNode: _textFocusNode,
-                                  onChanged: (String text) {
-                                    model.setIsComposing(_textController.text.length > 0);
-                                  },
-                                  onTap: model.muteAllChat
-                                      ? () {
-                                    _textFocusNode.unfocus();
-                                  }
-                                      : () {
-//                                _showKeyboard(model);
-                                    Navigator.push(
-                                        context,
-                                        PopRoute(
-                                            child: ChangeNotifierProvider<ChatProvider>.value(
-                                                value: _chatProvider,
-                                                child: InputButtomWidget(
-                                                  onChanged: (String text) {
-                                                    _chatProvider.setIsComposing(text.length > 0);
-                                                  },
-                                                  controller: _textController,
-                                                  onSubmitted: _handleSubmitted,
-                                                )))).then((_) {
-                                      FocusScope.of(context).requestFocus(_textFocusNode);
+                            child: TextField(
+                              readOnly: model.muteAllChat,
+                              style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(6)),
+                              controller: _textController,
+                              focusNode: _textFocusNode,
+                              onChanged: (String text) {
+                                model.setIsComposing(_textController.text.length > 0);
+                              },
+                              onTap: model.muteAllChat
+                                  ? () {
                                       _textFocusNode.unfocus();
-                                      print("122");
-                                    });
-                                    print("#1 123123");
-                                  },
-                                  onSubmitted: _handleSubmitted,
-                                  decoration: InputDecoration.collapsed(
-                                      hintText: model.muteAllChat ? "禁言中" : '发送消息',
-                                      hintStyle: TextStyle(color:Color(0xFFAEAEAE))
-                                  ),
-                                ),
-                              )),
+                                    }
+                                  : () {
+//                                _showKeyboard(model);
+                                      Navigator.push(
+                                          context,
+                                          PopRoute(
+                                              child: ChangeNotifierProvider<ChatProvider>.value(
+                                                  value: _chatProvider,
+                                                  child: InputButtomWidget(
+                                                    onChanged: (String text) {
+                                                      _chatProvider.setIsComposing(text.length > 0);
+                                                    },
+                                                    controller: _textController,
+                                                    onSubmitted: _handleSubmitted,
+                                                  )))).then((_) {
+                                        FocusScope.of(context).requestFocus(_textFocusNode);
+                                        _textFocusNode.unfocus();
+                                        print("122");
+                                      });
+                                      print("#1 123123");
+                                    },
+                              onSubmitted: _handleSubmitted,
+                              decoration:
+                                  InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息', hintStyle: TextStyle(color: Color(0xFFAEAEAE))),
+                            ),
+                          )),
                           !model.muteAllChat
                               ? InkWell(
-                            onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
-                              child: Container(
-                                child: Icon(
-                                  Icons.send,
-                                  color: model.isComposing ? Colors.blueAccent : Color(0xFFAEAEAE),
-                                ),
-                              ),
-                            ),
-                          )
+                                  onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
+                                    child: Container(
+                                      child: Icon(
+                                        Icons.send,
+                                        color: model.isComposing ? Colors.blueAccent : Color(0xFFAEAEAE),
+                                      ),
+                                    ),
+                                  ),
+                                )
 //                          Container(
 //                                  margin: EdgeInsets.symmetric(horizontal: 0),
 //                                  child: IconButton(icon: Icon(Icons.send), onPressed: model.isComposing ? () => _handleSubmitted(_textController.text) : null),
@@ -1165,52 +1203,52 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                           ),
                           Flexible(
                               child: InkWell(
-                                child: TextField(
-                                  readOnly: model.muteAllChat,
-                                  controller: _textController,
-                                  focusNode: _textFocusNode,
-                                  onChanged: (String text) {
-                                    model.setIsComposing(_textController.text.length > 0);
-                                  },
-                                  onTap: model.muteAllChat
-                                      ? () {
-                                    _textFocusNode.unfocus();
-                                  }
-                                      : () {
-//                                _showKeyboard(model);
-                                    Navigator.push(
-                                        context,
-                                        PopRoute(
-                                            child: ChangeNotifierProvider<ChatProvider>.value(
-                                                value: _chatProvider,
-                                                child: InputButtomWidget(
-                                                  onChanged: (String text) {
-                                                    _chatProvider.setIsComposing(text.length > 0);
-                                                  },
-                                                  controller: _textController,
-                                                  onSubmitted: _handleSubmitted,
-                                                )))).then((_) {
-                                      FocusScope.of(context).requestFocus(_textFocusNode);
+                            child: TextField(
+                              readOnly: model.muteAllChat,
+                              controller: _textController,
+                              focusNode: _textFocusNode,
+                              onChanged: (String text) {
+                                model.setIsComposing(_textController.text.length > 0);
+                              },
+                              onTap: model.muteAllChat
+                                  ? () {
                                       _textFocusNode.unfocus();
-                                      print("122");
-                                    });
-                                    print("#1 123123");
-                                  },
-                                  onSubmitted: _handleSubmitted,
-                                  decoration: InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息'),
-                                ),
-                              )),
+                                    }
+                                  : () {
+//                                _showKeyboard(model);
+                                      Navigator.push(
+                                          context,
+                                          PopRoute(
+                                              child: ChangeNotifierProvider<ChatProvider>.value(
+                                                  value: _chatProvider,
+                                                  child: InputButtomWidget(
+                                                    onChanged: (String text) {
+                                                      _chatProvider.setIsComposing(text.length > 0);
+                                                    },
+                                                    controller: _textController,
+                                                    onSubmitted: _handleSubmitted,
+                                                  )))).then((_) {
+                                        FocusScope.of(context).requestFocus(_textFocusNode);
+                                        _textFocusNode.unfocus();
+                                        print("122");
+                                      });
+                                      print("#1 123123");
+                                    },
+                              onSubmitted: _handleSubmitted,
+                              decoration: InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息'),
+                            ),
+                          )),
                           !model.muteAllChat
                               ? InkWell(
-                            onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
-                              child: Icon(
-                                Icons.send,
-                                color: model.isComposing ? Colors.blueAccent : Colors.grey,
-                              ),
-                            ),
-                          )
+                                  onTap: model.isComposing ? () => _handleSubmitted(_textController.text) : null,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
+                                    child: Icon(
+                                      Icons.send,
+                                      color: model.isComposing ? Colors.blueAccent : Colors.grey,
+                                    ),
+                                  ),
+                                )
 //                          Container(
 //                                  margin: EdgeInsets.symmetric(horizontal: 0),
 //                                  child: IconButton(icon: Icon(Icons.send), onPressed: model.isComposing ? () => _handleSubmitted(_textController.text) : null),
@@ -1275,7 +1313,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _rtmChannel = await _createChannel(widget.roomData.room.channelName);
     await _rtmChannel.join();
     Store<GSYState> store = StoreProvider.of(context);
-    Log.d("Store<GSYState> ${store.state.userInfo.toJson()}", tag: RoomLandscapePage.sName);
+    Log.d("Store<GSYState> ${store.state.userInfo.toJson()}", tag: RoomLandscapeManyPage.sName);
     try {
       List<Map<String, String>> attributes = List();
       Map<String, String> attribute = Map();
@@ -1300,14 +1338,14 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _log("Peer msg: " + peerId + ", msg: " + message.text);
     var msgJson = jsonDecode(message.text);
     switch (msgJson["cmd"]) {
-    //co-video operation msg
+      //co-video operation msg
       case 1:
         if (msgJson["data"]["type"] == (CoVideoType.REJECT.index + 1)) {
           showToast("老师拒绝了你的连麦申请！");
         } else if (msgJson["data"]["type"] == (CoVideoType.ACCEPT.index + 1)) {
           Future.microtask(() => _handTypeProvider.switchType(0));
           Future.microtask(() => _handProvider.setEnableHand(false));
-          showToast("老师接受了你的连麦申请！");
+          showToast("正在连麦！");
         } else if (msgJson["data"]["type"] == (CoVideoType.ABORT.index + 1)) {
           Future.microtask(() => _handTypeProvider.switchType(1));
           showToast("连麦结束！");
@@ -1365,9 +1403,9 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         });
         break;
       case 3: //room attributes updated msg
-      // if (_courseProvider.isInitBoardView) {
-      //   _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
-      // }
+        // if (_courseProvider.isInitBoardView) {
+        //   _whiteboardController.updateRoom(isBoardLock: msgJson["data"]["lockBoard"]);
+        // }
         _chatProvider.setMuteAllChat(msgJson["data"]["muteAllChat"] == 1);
         if (msgJson["data"]["courseState"] != _courseProvider.status) {
           _courseProvider.setStatus(msgJson["data"]["courseState"]);
@@ -1453,10 +1491,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     };
 
     AgoraRtcEngine.onJoinChannelSuccess = (
-        String channel,
-        int uid,
-        int elapsed,
-        ) {
+      String channel,
+      int uid,
+      int elapsed,
+    ) {
       final info = 'onJoinChannel: $channel, uid: $uid';
       print("onJoinChannelSuccess: $info");
     };
@@ -1601,7 +1639,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
               Consumer<ChatProvider>(builder: (context, model, child) {
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
-                        (c, i) {
+                    (c, i) {
                       return Container(
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.only(right: 5.0, left: 3, top: 5, bottom: 5),
@@ -1690,34 +1728,34 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     String key = await httpManager.getAuthorization();
     //设置监听
     BetterSocket.addListener(onOpen: (httpStatus, httpStatusMessage) {
-      Log.i("onOpen---httpStatus:$httpStatus  httpStatusMessage:$httpStatusMessage", tag: RoomLandscapePage.sName);
+      Log.i("onOpen---httpStatus:$httpStatus  httpStatusMessage:$httpStatusMessage", tag: RoomLandscapeManyPage.sName);
       _socketPingTimer?.cancel();
       _socketPingTimer = null;
       _socketPingTimer = Timer.periodic(_socketPingDuration, (timer) {
-        Log.i('sendMsg : ping', tag: RoomLandscapePage.sName);
+        Log.i('sendMsg : ping', tag: RoomLandscapeManyPage.sName);
         BetterSocket.sendMsg('{"Ping":{}}');
       });
       _socketLossTimer?.cancel();
       _socketLossTimer = null;
       _socketLossTimer = Timer.periodic(_socketLossDuration, (timer) {
-        Log.i('sendMsg : GetCurrent', tag: RoomLandscapePage.sName);
+        Log.i('sendMsg : GetCurrent', tag: RoomLandscapeManyPage.sName);
         BetterSocket.sendMsg('{"GetCurrent":{}}');
       });
     }, onMessage: (message) {
-      Log.i('newMsg : $message', tag: RoomLandscapePage.sName);
+      Log.i('newMsg : $message', tag: RoomLandscapeManyPage.sName);
       try {
         SocketMsg socketMsg = SocketMsg.fromJson(jsonDecode(message.toString()));
         Future(() => _handleSocketMsg(socketMsg));
       } catch (e) {
-        Log.e("_handleSocketMsg ${e.toString()} ", tag: RoomLandscapePage.sName);
+        Log.e("_handleSocketMsg ${e.toString()} ", tag: RoomLandscapeManyPage.sName);
       }
     }, onClose: (code, reason, remote) {
-      Log.i("onClose---code:$code  reason:$reason  remote:$remote", tag: RoomLandscapePage.sName);
+      Log.i("onClose---code:$code  reason:$reason  remote:$remote", tag: RoomLandscapeManyPage.sName);
       Future.delayed(Duration(milliseconds: 500), () async {
         BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
       });
     }, onError: (message) {
-      Log.w("IOWebSocketChannel onError $message ", tag: RoomLandscapePage.sName);
+      Log.w("IOWebSocketChannel onError $message ", tag: RoomLandscapeManyPage.sName);
       if (Platform.isIOS) {
         Future.delayed(Duration(milliseconds: 500), () async {
           BetterSocket.connentSocket(AddressUtil.getInstance().socketUrl(key, widget.roomData.room.roomUuid));
@@ -1918,7 +1956,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _isPlay = msg["isPlay"];
       _time = msg["time"];
     }
-    Log.d("1111111111111 ${msg["time"]}", tag: RoomLandscapePage.sName);
+    Log.d("1111111111111 ${msg["time"]}", tag: RoomLandscapeManyPage.sName);
 
     if (_currentRes != null && _currentRes.qid == ques.qid) {
       if (_currentRes.type == mp4) {
@@ -1928,7 +1966,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         if (flickManager.state == FijkState.asyncPreparing || flickManager.state == FijkState.initialized || flickManager.isPlayable()) {
           if (isPlay == 1) {
             if (time != null && time > 0) {
-              Log.d("暂停  flickManager?.seekTo $time ", tag: RoomLandscapePage.sName);
+              Log.d("暂停  flickManager?.seekTo $time ", tag: RoomLandscapeManyPage.sName);
               await flickManager?.seekTo(Duration(seconds: time).inMilliseconds + 500);
             }
             if (flickManager.state == FijkState.completed) {
@@ -1939,10 +1977,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             }
           } else {
             if (time != null && time > 0) {
-              Log.d("暂停  flickManager?.seekTo $time ", tag: RoomLandscapePage.sName);
+              Log.d("暂停  flickManager?.seekTo $time ", tag: RoomLandscapeManyPage.sName);
               await flickManager?.seekTo(Duration(seconds: time).inMilliseconds);
             }
-            Log.d("暂停  flickManager?.pause()", tag: RoomLandscapePage.sName);
+            Log.d("暂停  flickManager?.pause()", tag: RoomLandscapeManyPage.sName);
             await flickManager?.start();
             Future.delayed(Duration(milliseconds: 300), () {
               flickManager?.pause();
@@ -2104,7 +2142,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           "roomId": widget.roomData.room.roomUuid
         };
         RoomDao.rewardStar(param).then((res) {
-          Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
+          Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapeManyPage.sName);
           if (res.result != null && res.data != null && res.data["code"] == 200) {
             if (res.data["data"]["status"] == 1) {
               showStarDialog(value);
@@ -2157,7 +2195,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
             "roomId": widget.roomData.room.roomUuid
           };
           RoomDao.rewardStar(param).then((res) {
-            Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
+            Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapeManyPage.sName);
             if (res.result != null && res.data != null && res.data["code"] == 200) {
               if (res.data["data"]["status"] == 1) {
                 showStarDialog(value);
@@ -2231,17 +2269,17 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       if (isShow == 0) {
         //获取排行榜前三用户
         var param = {"liveCourseallotId": widget.roomData.liveCourseallotId, "liveEventId": 1, "quesId": ques.qid, "roomId": widget.roomData.room.roomUuid};
-        Log.f("RoomDao.quesTop param $param", tag: RoomLandscapePage.sName);
+        Log.f("RoomDao.quesTop param $param", tag: RoomLandscapeManyPage.sName);
         final res = await RoomDao.quesTop(param);
         if (res.result != null && res.data != null && res.data["code"] == 200) {
-          Log.f(res.data, tag: RoomLandscapePage.sName);
+          Log.f(res.data, tag: RoomLandscapeManyPage.sName);
           if (res.data["data"] != null && res.data["data"].length > 0) {
             showLiveTopDialog(res.data["data"]);
           } else {
-            Log.i("该题目无人上榜 ${res.data}", tag: RoomLandscapePage.sName);
+            Log.i("该题目无人上榜 ${res.data}", tag: RoomLandscapeManyPage.sName);
           }
         } else {
-          Log.e("查询题目前三排行榜失败！！", tag: RoomLandscapePage.sName);
+          Log.e("查询题目前三排行榜失败！！", tag: RoomLandscapeManyPage.sName);
           showToast("网络错误!!!");
         }
       }
@@ -2255,9 +2293,13 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         builder: (context) {
           return MediaQuery(
 
-            ///不受系统字体缩放影响
+              ///不受系统字体缩放影响
               data: MediaQueryData.fromWindow(WidgetsBinding.instance.window).copyWith(textScaleFactor: 1),
-              child: ChangeNotifierProvider<CourseProvider>.value(value: _courseProvider, child: LiveTopDialog(data: data)));
+              child: ChangeNotifierProvider<CourseProvider>.value(
+                  value: _courseProvider,
+                  child: Center(
+                    child: LiveTopDialog(data: data),
+                  )));
         });
   }
 
@@ -2300,7 +2342,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
         "roomId": widget.roomData.room.roomUuid
       };
       RoomDao.rewardStar(param).then((res) {
-        Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapePage.sName);
+        Log.f("rewardStar  ${res.toString()}", tag: RoomLandscapeManyPage.sName);
         if (res.result != null && res.data != null && res.data["code"] == 200) {
           if (res.data["data"]["status"] == 1) {
             _starWidgetProvider.addStar(s);
@@ -2310,7 +2352,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
                 builder: (context) {
                   return MediaQuery(
 
-                    ///不受系统字体缩放影响
+                      ///不受系统字体缩放影响
                       data: MediaQueryData.fromWindow(WidgetsBinding.instance.window).copyWith(textScaleFactor: 1),
                       child: StarGif(
                         starNum: s,
@@ -2422,17 +2464,17 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("RoomLandscapePageState 切换" + state.toString());
+    print("RoomLandscapeManyPageState 切换" + state.toString());
     switch (state) {
       case AppLifecycleState.resumed:
-        print('RoomLandscapePageState 处于前台展示');
+        print('RoomLandscapeManyPageState 处于前台展示');
         if (_courseProvider.status == 1) {
           AgoraRtcEngine?.muteAllRemoteVideoStreams(false);
           AgoraRtcEngine?.muteAllRemoteAudioStreams(false);
         }
         break;
       case AppLifecycleState.inactive:
-        print('RoomLandscapePageState 处于非活动状态，并且未接收用户输入');
+        print('RoomLandscapeManyPageState 处于非活动状态，并且未接收用户输入');
         break;
       case AppLifecycleState.paused:
         AgoraRtcEngine?.muteAllRemoteVideoStreams(true);
@@ -2466,7 +2508,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
 
   @override
   String tagName() {
-    return RoomLandscapePage.sName;
+    return RoomLandscapeManyPage.sName;
   }
 
   void print(msg, {int level = Log.fine}) {

@@ -22,7 +22,7 @@ class DeviceInputsMenu extends StatelessWidget {
   getDeviceInputs({Appliance appliance, bool isActive = false}) {
     String image = appliance.toString().replaceAll("Appliance.", "");
     return GestureDetector(
-      onTap: isActive ? null : () => whiteboardController.setAppliance(appliance),
+      onTap: isActive ? () => whiteboardController.undo() : () => whiteboardController.setAppliance(appliance),
       child: Container(
         height: ScreenUtil.getInstance().getWidth(20),
         width: ScreenUtil.getInstance().getWidth(20),

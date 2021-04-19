@@ -1029,13 +1029,22 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
   ///白板区域
   Widget _buildWhiteboard() {
     if (_whiteboard == null) {
+      Store<GSYState> store = StoreProvider.of(context);
+      Map userPayload = {
+        "ydID": store.state.userInfo.userId.toString(),
+        "userId": widget.roomData.user.uid,
+        "identity": widget.roomData.user.role == 1 ? "host" : "guest",
+        "userName": store.state.userInfo.realName,
+        "userIcon": store.state.userInfo.headUrl,
+      };
       _whiteboard = Container(
           child: Whiteboard(
               appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg",
               uuid: widget.roomData.boardId,
               roomToken: widget.roomData.boardToken,
               controller: _whiteboardController,
-              isReplay: 1));
+              isReplay: 1,
+              userPayload: userPayload));
     }
     return _whiteboard;
   }

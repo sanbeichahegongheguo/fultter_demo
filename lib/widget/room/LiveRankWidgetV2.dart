@@ -18,8 +18,7 @@ class LiveRankWidgetV2 extends StatefulWidget {
   final String roomId;
   final int liveCourseallotId;
 
-  const LiveRankWidgetV2({Key key, this.roomId, this.liveCourseallotId})
-      : super(key: key);
+  const LiveRankWidgetV2({Key key, this.roomId, this.liveCourseallotId}) : super(key: key);
 
   @override
   _LiveRankWidgeV2tState createState() => _LiveRankWidgeV2tState();
@@ -58,9 +57,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   Widget build(BuildContext context) {
     store = StoreProvider.of(context);
     final screenSize = MediaQuery.of(context).size;
-    xPosition = ScreenUtil.getInstance().screenWidth -
-        MediaQuery.of(context).padding.right -
-        ScreenUtil.getInstance().getWidthPx(55);
+    xPosition = ScreenUtil.getInstance().screenWidth - MediaQuery.of(context).padding.right - ScreenUtil.getInstance().getWidthPx(55);
     yPosition = ScreenUtil.getInstance().screenHeight * 0.5;
     _xyProvider.setPosition(x: xPosition, y: yPosition);
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
@@ -85,34 +82,6 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
-                    // Expanded(
-                    //     child: FlatButton(
-                    //         textColor: model.type == 0 ? Colors.white : Color(0xFFb2b1b9),
-                    //         child: Text("星星榜"),
-                    //         highlightColor: Colors.transparent,
-                    //         color: model.type == 0 ? Color(0xffb2b1b9) : Colors.transparent,
-                    //         onPressed: () {
-                    //           model.switchType(0);
-                    //         },
-                    //         shape: RoundedRectangleBorder(
-                    //             side: BorderSide(color: Colors.grey, width: 0.5),
-                    //             borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10))))),
-                    // Expanded(
-                    //   child: FlatButton(
-                    //       textColor: model.type == 1 ? Colors.white : Color(0xFFb2b1b9),
-                    //       child: Text(
-                    //         "答题榜",
-                    //       ),
-                    //       highlightColor: Colors.transparent,
-                    //       color: model.type == 1 ? Color(0xffb2b1b9) : Colors.transparent,
-                    //       onPressed: () {
-                    //         model.switchType(1);
-                    //         print("switchType");
-                    //       },
-                    //       shape: RoundedRectangleBorder(
-                    //           side: BorderSide(color: Colors.grey, width: 0.5),
-                    //           borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
-                    // )
                     Expanded(
                       child: InkWell(
                         child: Column(
@@ -120,10 +89,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             Center(
                               child: Text(
                                 "星星榜",
-                                style: TextStyle(
-                                    color: model.type == 1
-                                        ? Colors.white
-                                        : Color(0xffAEAEAE)),
+                                style: TextStyle(color: model.type == 1 ? Colors.white : Color(0xffAEAEAE)),
                               ),
                             ),
                             SizedBox(
@@ -131,10 +97,8 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             ),
                             model.type == 1
                                 ? Container(
-                                    width: ScreenUtil.getInstance()
-                                        .getWidthPx(125),
-                                    height:
-                                        ScreenUtil.getInstance().getHeightPx(8),
+                                    width: ScreenUtil.getInstance().getWidthPx(125),
+                                    height: ScreenUtil.getInstance().getHeightPx(8),
                                     color: Color(0xFFAEAEAE),
                                   )
                                 : Container(),
@@ -152,10 +116,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             Center(
                               child: Text(
                                 "答题榜",
-                                style: TextStyle(
-                                    color: model.type == 0
-                                        ? Colors.white
-                                        : Color(0xffAEAEAE)),
+                                style: TextStyle(color: model.type == 0 ? Colors.white : Color(0xffAEAEAE)),
                               ),
                             ),
                             SizedBox(
@@ -163,10 +124,8 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             ),
                             model.type == 0
                                 ? Container(
-                                    width: ScreenUtil.getInstance()
-                                        .getWidthPx(125),
-                                    height:
-                                        ScreenUtil.getInstance().getHeightPx(8),
+                                    width: ScreenUtil.getInstance().getWidthPx(125),
+                                    height: ScreenUtil.getInstance().getHeightPx(8),
                                     color: Color(0xFFAEAEAE),
                                   )
                                 : Container(),
@@ -180,9 +139,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                   ],
                 ),
                 Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(color: Colors.grey, width: 0.2))),
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey, width: 0.2))),
                 ),
                 SizedBox(
                   height: ScreenUtil.getInstance().getHeightPx(15),
@@ -193,14 +150,11 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.asset("images/live/rank/noneQueIcon.png",
-                                width: ScreenUtil.getInstance().getWidthPx(150),
-                                height:
-                                    ScreenUtil.getInstance().getWidthPx(150)),
+                                width: ScreenUtil.getInstance().getWidthPx(150), height: ScreenUtil.getInstance().getWidthPx(150)),
                             SizedBox(
                               height: ScreenUtil.getInstance().getWidthPx(10),
                             ),
-                            Text("  暂无${model.type == 0 ? "星星" : "答题"}榜数据！",
-                                style: TextStyle(color: Color(0xFFb2b1b9))),
+                            Text("  暂无${model.type == 0 ? "星星" : "答题"}榜数据！", style: TextStyle(color: Color(0xFFb2b1b9))),
                           ],
                         )
                       : FRefresh(
@@ -226,15 +180,8 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (_, i) {
-                              return _buildLine(
-                                  _getIcon(i),
-                                  dataList[i]["headerImg"],
-                                  dataList[i]["realName"],
-                                  model.type == 0
-                                      ? dataList[i]["star"]
-                                      : dataList[i]["answerCount"],
-                                  model.type,
-                                  (i + 1).toString());
+                              return _buildLine(_getIcon(i), dataList[i]["headerImg"], dataList[i]["realName"],
+                                  model.type == 0 ? dataList[i]["star"] : dataList[i]["answerCount"], model.type, (i + 1).toString());
                             },
                           ),
                           onRefresh: () async {
@@ -251,17 +198,9 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                         ),
                 ),
                 Container(
-                  child: _buildLine(
-                      _getIcon(maData["rank"] != null && maData["rank"] > 0
-                          ? maData["rank"] - 1
-                          : -1),
-                      store.state.userInfo.headUrl,
-                      "${store.state.userInfo.realName}",
-                      model.type == 0 ? maData["star"] : maData["answerCount"],
-                      model.type,
-                      maData["rank"],
-                      height: ScreenUtil.getInstance().getHeightPx(200),
-                      color: Color(0xFFECB22B)),
+                  child: _buildLine(_getIcon(maData["rank"] != null && maData["rank"] > 0 ? maData["rank"] - 1 : -1), store.state.userInfo.headUrl,
+                      "${store.state.userInfo.realName}", model.type == 0 ? maData["star"] : maData["answerCount"], model.type, maData["rank"],
+                      height: ScreenUtil.getInstance().getHeightPx(200), color: Color(0xFFECB22B)),
                   decoration: BoxDecoration(
                     color: Color(0xff6666661),
                     borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -276,26 +215,26 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
     );
   }
 
-   _getIcon(i) {
+  _getIcon(i) {
     if (i == null) {
       return "";
     }
     return i == 0
-        ? getRankContainer(i+1,Color(0xffEC672B))
+        ? getRankContainer(i + 1, Color(0xffEC672B))
         : i == 1
-            ? getRankContainer(i+1,Color(0xffEC922B))
+            ? getRankContainer(i + 1, Color(0xffEC922B))
             : i == 2
-                ? getRankContainer(i+1,Color(0xffECB22B))
+                ? getRankContainer(i + 1, Color(0xffECB22B))
                 : "";
   }
 
-  Widget getRankContainer(int i,color){
+  Widget getRankContainer(int i, color) {
     return Container(
       alignment: Alignment.center,
       width: ScreenUtil.getInstance().getWidthPx(40),
       height: ScreenUtil.getInstance().getWidthPx(40),
       decoration: BoxDecoration(
-        color:color ,
+        color: color,
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
       child: Text(
@@ -352,9 +291,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                 width: ScreenUtil.getInstance().getWidthPx(15 / 2),
               ),
               Image.asset(
-                type == 0
-                    ? "images/live/toolbar/icon_right.png"
-                    : "images/live/toolbar/icon_star.png",
+                type == 0 ? "images/live/toolbar/icon_right.png" : "images/live/toolbar/icon_star.png",
                 width: ScreenUtil.getInstance().getWidthPx(28),
                 height: ScreenUtil.getInstance().getWidthPx(28),
               ),
@@ -370,14 +307,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
 
   _testDataList() {
     quesDataList = List.generate(30, (index) {
-      return {
-        "userId": 1,
-        "star": 5,
-        "answerCount": 1,
-        "rank": 1,
-        "realName": "陈祥佳",
-        "HeaderImg": ""
-      };
+      return {"userId": 1, "star": 5, "answerCount": 1, "rank": 1, "realName": "陈祥佳", "HeaderImg": ""};
     });
   }
 
@@ -420,23 +350,14 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
     if (yPosition < 45) {
       yPosition = 45;
       //最大限制
-    } else if (yPosition >
-        ScreenUtil.getInstance().screenHeight -
-            ScreenUtil.getInstance().getWidthPx(55)) {
-      yPosition = ScreenUtil.getInstance().screenHeight -
-          ScreenUtil.getInstance().getWidthPx(55);
+    } else if (yPosition > ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().getWidthPx(55)) {
+      yPosition = ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().getWidthPx(55);
     }
     _xyProvider.setPosition(y: yPosition);
   }
 
   getData() async {
-    var params = {
-      "catalogId": widget.liveCourseallotId,
-      "moLiveMapId": 1,
-      "pageNo": 1,
-      "pageSize": 20,
-      "batchNo": widget.roomId
-    };
+    var params = {"catalogId": widget.liveCourseallotId, "moLiveMapId": 1, "pageNo": 1, "pageSize": 20, "batchNo": widget.roomId};
     var res = await RoomDao.roomRankList(params);
     Log.f("roomRankList  ${res.toString()}", tag: tag);
     if (res.result != null && res.data != null && res.data["code"] == 200) {
@@ -448,13 +369,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   }
 
   getUserData() async {
-    var params = {
-      "catalogId": widget.liveCourseallotId,
-      "moLiveMapId": 1,
-      "pageNo": 1,
-      "pageSize": 20,
-      "batchNo": widget.roomId
-    };
+    var params = {"catalogId": widget.liveCourseallotId, "moLiveMapId": 1, "pageNo": 1, "pageSize": 20, "batchNo": widget.roomId};
     var res = await RoomDao.roomRankUser(params);
     Log.f("roomRankList  ${res.toString()}", tag: tag);
     if (res.result != null && res.data != null && res.data["code"] == 200) {
@@ -466,12 +381,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   }
 
   getStarData() async {
-    var params = {
-      "liveCourseallotId": widget.liveCourseallotId,
-      "pageNo": 1,
-      "pageSize": 20,
-      "roomId": widget.roomId
-    };
+    var params = {"liveCourseallotId": widget.liveCourseallotId, "pageNo": 1, "pageSize": 20, "roomId": widget.roomId};
     var res = await RoomDao.roomStarRankList(params);
     Log.f("roomRankList  ${res.toString()}", tag: tag);
     if (res.result != null && res.data != null && res.data["code"] == 200) {
@@ -483,10 +393,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   }
 
   getUserStarData() async {
-    var params = {
-      "liveCourseallotId": widget.liveCourseallotId,
-      "roomId": widget.roomId
-    };
+    var params = {"liveCourseallotId": widget.liveCourseallotId, "roomId": widget.roomId};
     var res = await RoomDao.roomStarRankUser(params);
     Log.f("roomRankList  ${res.toString()}", tag: tag);
     if (res.result != null && res.data != null && res.data["code"] == 200) {

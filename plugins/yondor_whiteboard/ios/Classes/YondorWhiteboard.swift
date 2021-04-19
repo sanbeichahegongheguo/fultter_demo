@@ -133,6 +133,19 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
             self.setAppliance(appliance: appliance);
             result(nil);
             break;
+        case "setStrokeColor":
+            let dict = call.arguments as! NSDictionary
+            let strokeColor = dict["strokeColor"] as! String
+            let strokeColorArray  = strokeColor.split(separator:",")
+            var colors = [NSNumber]()
+            for (_,item) in strokeColorArray.enumerated() {
+                if let myInteger = Int(item) {
+                    colors.append( NSNumber(value:myInteger))
+                }
+            }
+            self.setStrokeColor(strokeColor: colors);
+            result(nil);
+            break;
         case "undo":
             self.undo();
             result(nil);
@@ -204,8 +217,12 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         if (memberState !== nil){
             var result = [String : Any]()
             result["data"] = memberState?.currentApplianceName.rawValue
+            print("onApplianceChanged data")
+            result["color"] = memberState?.strokeColor
+            print("onApplianceChanged color")
             postMsg(method: "onApplianceChanged",data: result);
         }
+        
     }
     func fireCanUndoStepsUpdate(_ canUndoSteps: Int) {
         print("fireCanUndoStepsUpdate canUndoSteps ",canUndoSteps)
@@ -214,11 +231,20 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         if (self.room != nil) {
             let memberState =  WhiteMemberState.init()
             memberState.currentApplianceName = WhiteApplianceNameKey.init(rawValue: appliance)
-            self.room.setMemberState(memberState)
            
+            self.room.setMemberState(memberState)
+    
         }
     }
     
+    public func setStrokeColor(strokeColor:[NSNumber]){
+        print("setStrokeColor")
+        if (self.room != nil) {
+            let memberState =  WhiteMemberState.init()
+            memberState.strokeColor = strokeColor
+            self.room.setMemberState(memberState)
+        }
+    }
     public func undo() {
         if (self.room != nil) {
 //            if(canUndoSteps>0){

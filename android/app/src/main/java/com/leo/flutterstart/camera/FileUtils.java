@@ -23,6 +23,9 @@ import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -184,4 +187,83 @@ class FileUtils {
     private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
+
+    /**
+     * 保存Bitmap图片在SD卡中
+     * 如果没有SD卡则存在手机中
+     *
+     * @param mbitmap       需要保存的Bitmap图片
+     * @param originpath    文件的原路径
+     * @return 保存成功时返回图片的路径，失败时返回null
+     */
+    public static String savePhotoToSD(Bitmap mbitmap, String originpath) {
+        FileOutputStream outStream = null;
+        String fileName = "";
+        if (mbitmap == null) return originpath;
+        if (TextUtils.isEmpty(originpath)) return originpath;
+        fileName = originpath;
+        try {
+            outStream = new FileOutputStream(fileName);
+            // 把数据写入文件，100表示不压缩
+            mbitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            return fileName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (outStream != null) {
+                    // 记得要关闭流！
+                    outStream.close();
+                }
+                if (mbitmap != null) {
+                    mbitmap.recycle();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 旋转图片
+     * @param angle 被旋转角度
+     * @param bitmap 图片对象
+     * @return 旋转后的图片
+     */
+    public static Bitmap rotaingImageView(int angle, Bitmap bitmap) {
+        Bitmap returnBm = null;
+        // 根据旋转角度，生成旋转矩阵
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        try {
+            // 将原始图片按照旋转矩阵进行旋转，并得到新的图片
+            returnBm = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } catch (OutOfMemoryError e) {
+        }
+        if (returnBm == null) {
+            returnBm = bitmap;
+        }
+        if (bitmap != returnBm) {
+            bitmap.recycle();
+        }
+        return returnBm;
+    }
+
+
+    /**
+     * 把原图按1/10的比例压缩
+     *
+     * @param path 原图的路径
+     * @return 压缩后的图片
+     */
+    public static Bitmap getCompressPhoto(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = 10;  // 图片的大小设置为原来的十分之一
+        Bitmap bmp = BitmapFactory.decodeFile(path, options);
+        options = null;
+        return bmp;
+    }
+
 }

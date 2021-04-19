@@ -192,7 +192,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
     _whiteboardController.onRoomPhaseChanged = (result) {
       _whiteboardProvider.setRoomPhase(result);
     };
-    _whiteboardController.onApplianceChanged = (result) {
+    _whiteboardController.onApplianceChanged = (result, rgbColor) {
       final appliance = Appliance.values.firstWhere((Appliance element) {
         return element.toString() == "$Appliance.$result";
       });

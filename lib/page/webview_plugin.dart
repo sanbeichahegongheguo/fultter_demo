@@ -533,7 +533,7 @@ class _WebViewPlugin extends State<WebViewPlugin> with WidgetsBindingObserver, L
       image = await ImageCropper.cropImage(
         sourcePath: image?.path ?? result["path"],
 //      toolbarTitle: "选择图片",
-        androidUiSettings: AndroidUiSettings(toolbarTitle: "选择图片", lockAspectRatio: false, initAspectRatio: CropAspectRatioPreset.original),
+        androidUiSettings: AndroidUiSettings(toolbarTitle: "选择图片", lockAspectRatio: false, initAspectRatio: CropAspectRatioPreset.original, showCropGrid: true),
       );
     } else {
       image = new File(image?.path ?? result["path"]);

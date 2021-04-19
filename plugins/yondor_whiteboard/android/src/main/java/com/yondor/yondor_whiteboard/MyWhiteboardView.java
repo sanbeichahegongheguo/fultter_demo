@@ -30,7 +30,9 @@ import com.yondor.yondor_whiteboard.listener.BoardEventListener;
 import com.yondor.yondor_whiteboard.manager.BoardManager;
 import com.yondor.yondor_whiteboard.manager.LogManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -165,6 +167,7 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         log.i("onMemberStateChanged %s",state.getCurrentApplianceName());
         Map<String, Object> map = new HashMap<>();
         map.put("data", state.getCurrentApplianceName());
+        map.put("color",state.getStrokeColor());
         postMsg("onApplianceChanged",map);
     }
 
@@ -245,6 +248,17 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
                 Map<String, Object> applianceRequest = (Map<String, Object>) call.arguments;
                 String appliance = (String) applianceRequest.get("data");
                 boardManager.setAppliance(appliance);
+                result.success(null);
+                break;
+            case "setStrokeColor":
+                int[] colors = new int[3];
+                Map<String, Object> colorRequest = (Map<String, Object>) call.arguments;
+                String strokeColor = (String) colorRequest.get("strokeColor");
+                String[] strokeColorArray = strokeColor.split(",");
+                for (int i = 0; i < strokeColorArray.length; i++) {
+                    colors[i] = Integer.parseInt(strokeColorArray[i]);
+                }
+                boardManager.setStrokeColor(colors);
                 result.success(null);
                 break;
             case "undo":
