@@ -7,7 +7,6 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:better_socket/better_socket.dart';
 import 'package:fijkplayer/fijkplayer.dart';
-import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -20,7 +19,6 @@ import 'package:flutter_start/models/replayData.dart';
 import 'package:flutter_start/widget/ReplayProgress.dart';
 import 'package:flutter_start/widget/room/EyerestWidget.dart';
 import 'package:flutter_start/widget/room/Mp3PlayerWidget.dart';
-import 'package:flutter_start/widget/seekbar/flutter_seekbar.dart';
 import 'package:flutter_start/common/config/config.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
 import 'package:flutter_start/common/net/address_util.dart';
@@ -44,17 +42,13 @@ import 'package:flutter_start/widget/LivesQuesWidget.dart';
 import 'package:flutter_start/widget/RedPacket.dart';
 import 'package:flutter_start/widget/RedRain.dart';
 import 'package:flutter_start/widget/StarGif.dart';
-import 'package:flutter_start/widget/UserStarWidget.dart';
-import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
-import 'package:flutter_start/widget/seekbar/seekbar.dart';
 import 'package:flutter_start/widget/starsWiget.dart';
 import 'package:home_indicator/home_indicator.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
-import 'package:video_player/video_player.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:yondor_whiteboard/whiteboard.dart';
 
@@ -208,7 +202,7 @@ class RoomReplayPageState extends State<RoomReplayPage> with SingleTickerProvide
           child: AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.dark,
             child: Scaffold(
-                resizeToAvoidBottomPadding: false,
+                resizeToAvoidBottomInset: false,
                 appBar: PreferredSize(
                     child: Offstage(
                       offstage: true,

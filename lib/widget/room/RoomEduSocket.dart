@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:agora_rtm/agora_rtm.dart';
@@ -21,12 +22,16 @@ class RoomEduSocket {
       "path": "/app_live/socket.io",
       'transports': ['websocket'],
     });
-    socket.on("connect", (data) {
+    socket.on("connect", (data) async {
+      print("RoomEduSocket connect");
+      check();
       if (isLogin) {
-        join(this.key, this.roomId);
+        await Future.delayed(Duration(milliseconds: 500));
+        if (socket != null) {
+          join(this.key, this.roomId);
+        }
       }
     });
-
     socket.on("messageReceived", messageReceived);
     socket.on("messageReceived/$userId", messageReceivedUser);
     socket.on("memberLeft", memberLeft);
@@ -45,6 +50,7 @@ class RoomEduSocket {
     socket.emitWithAck("join", {"key": key, "roomId": roomId}, ack: (data) {
       print("join : $data");
       if (data["code"] != null && data["code"] == 200) {
+        print("isLogin  : true");
         isLogin = true;
       }
     });
@@ -119,5 +125,9 @@ class RoomEduSocket {
   close() {
     socket?.dispose();
     socket = null;
+  }
+
+  check() {
+    socket?.emit("check", {"roomId": roomId});
   }
 }

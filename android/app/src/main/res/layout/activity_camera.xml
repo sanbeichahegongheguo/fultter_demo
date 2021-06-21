@@ -21,7 +21,7 @@
         android:keepScreenOn="true"
         app:cameraAudio="off"
         app:cameraAutoFocusMarker="@string/cameraview_default_autofocus_marker"
-        app:cameraEngine="camera2"
+        app:cameraEngine="camera1"
         app:cameraExperimental="true"
         app:cameraFacing="back"
         app:cameraFlash="off"

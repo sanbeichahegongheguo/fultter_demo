@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class PageRouteBuilderHelper<T> extends PageRoute<T>{
+class PageRouteBuilderHelper<T> extends PageRoute<T> {
   /// Creates a route that delegates to builder callbacks.
   ///
   /// The [pageBuilder], [transitionsBuilder], [opaque], [barrierDismissible],
@@ -14,10 +14,9 @@ class PageRouteBuilderHelper<T> extends PageRoute<T>{
     RouteSettings settings,
     this.maintainState = true,
     bool fullscreenDialog = false,
-  }) : assert(builder != null),
+  })  : assert(builder != null),
         assert(maintainState != null),
         assert(fullscreenDialog != null),
-        assert(opaque),
         super(settings: settings, fullscreenDialog: fullscreenDialog);
 
   /// Builds the primary contents of the route.
@@ -37,29 +36,29 @@ class PageRouteBuilderHelper<T> extends PageRoute<T>{
 
   @override
   bool canTransitionFrom(TransitionRoute<dynamic> previousRoute) {
-    return previousRoute is MaterialPageRoute || previousRoute is PageRouteBuilderHelper;
+    return previousRoute is MaterialPageRoute ||
+        previousRoute is PageRouteBuilderHelper;
   }
 
   @override
   bool canTransitionTo(TransitionRoute<dynamic> nextRoute) {
     // Don't perform outgoing animation if the next route is a fullscreen dialog.
-    return (nextRoute is MaterialPageRoute && !nextRoute.fullscreenDialog)
-        || (nextRoute is PageRouteBuilderHelper && !nextRoute.fullscreenDialog);
+    return (nextRoute is MaterialPageRoute && !nextRoute.fullscreenDialog) ||
+        (nextRoute is PageRouteBuilderHelper && !nextRoute.fullscreenDialog);
   }
 
   @override
   Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
     final Widget result = builder(context);
     assert(() {
       if (result == null) {
         throw FlutterError(
             'The builder for route "${settings.name}" returned null.\n'
-                'Route builders must never return null.'
-        );
+            'Route builders must never return null.');
       }
       return true;
     }());
@@ -71,9 +70,11 @@ class PageRouteBuilderHelper<T> extends PageRoute<T>{
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
     final PageTransitionsTheme theme = Theme.of(context).pageTransitionsTheme;
-    return theme.buildTransitions<T>(this, context, animation, secondaryAnimation, child);
+    return theme.buildTransitions<T>(
+        this, context, animation, secondaryAnimation, child);
   }
 
   @override

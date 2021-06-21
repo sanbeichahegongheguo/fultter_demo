@@ -94,16 +94,21 @@ class _RoomToolbarState extends State<RoomToolbar> {
 
   Widget getToolBarButton({Toolbar toolbar, bool isSelect = false, Function onTap}) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: ScreenUtil.getInstance().getHeightPx(24),
-        horizontal: ScreenUtil.getInstance().getWidthPx(28),
+      padding: EdgeInsets.only(
+        top: ScreenUtil.getInstance().getHeightPx(24),
+        bottom: ScreenUtil.getInstance().getHeightPx(24),
+        right: ScreenUtil.getInstance().getWidthPx(28),
+        left: ScreenUtil.getInstance().getWidthPx(12),
       ),
       child: InkResponse(
         highlightColor: Colors.transparent,
-        child: Image.asset(
-          isSelect ? toolbar.imageSelect : toolbar.image,
-          width: ScreenUtil.getInstance().getHeightPx(225),
-          height: ScreenUtil.getInstance().getHeightPx(225),
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 70, maxHeight: 70),
+          child: Image.asset(
+            isSelect ? toolbar.imageSelect : toolbar.image,
+            width: ScreenUtil.getInstance().getHeightPx(225),
+            height: ScreenUtil.getInstance().getHeightPx(225),
+          ),
         ),
         onTap: () {
           onTap?.call();

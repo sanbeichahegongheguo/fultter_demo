@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -32,6 +33,14 @@ class WhiteboardController {
   Function(String data, List rgbColor) onApplianceChanged; //房间连接状态变化
   Function(int time) onScheduleTimeChanged;
   MethodChannel _channel;
+  Completer initCompleter = Completer();
+
+  reInit() {
+    // if (onRoomPhaseChanged != null) {
+    //   onRoomPhaseChanged("connecting");
+    // }
+    initCompleter = Completer();
+  }
 
   setChannel(MethodChannel c) {
     _channel = c;
@@ -97,6 +106,7 @@ class WhiteboardController {
   Future<bool> _onMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'onCreated':
+        initCompleter.complete(true);
         if (onCreated != null) {
           print("_onMethodCall onCreated ${call.arguments}");
           onCreated(call.arguments["created"]);
@@ -104,18 +114,27 @@ class WhiteboardController {
         return true;
       case 'onPhaseChanged':
         if (onPhaseChanged != null) {
+          if (!initCompleter.isCompleted) {
+            await initCompleter.future;
+          }
           print("_onMethodCall onPhaseChanged ${call.arguments}");
           onPhaseChanged(call.arguments["data"]);
         }
         return true;
       case 'onPlay':
         if (replayPlay != null) {
+          if (!initCompleter.isCompleted) {
+            await initCompleter.future;
+          }
           print("_onMethodCall replayPlay ${call.arguments}");
           replayPlay(call.arguments["data"]);
         }
         return true;
       case 'onScheduleTimeChanged':
         if (onScheduleTimeChanged != null) {
+          if (!initCompleter.isCompleted) {
+            await initCompleter.future;
+          }
           var data = call.arguments["data"];
           if (Platform.isIOS) {
             data = data.toDouble() * 1000;
@@ -126,12 +145,18 @@ class WhiteboardController {
         return true;
       case 'onRoomPhaseChanged':
         if (onRoomPhaseChanged != null) {
+          if (!initCompleter.isCompleted) {
+            await initCompleter.future;
+          }
           print("_onMethodCall onRoomPhaseChanged ${call.arguments}");
           onRoomPhaseChanged(call.arguments["data"]);
         }
         return true;
       case 'onApplianceChanged':
         if (onApplianceChanged != null) {
+          if (!initCompleter.isCompleted) {
+            await initCompleter.future;
+          }
           print("_onMethodCall onApplianceChanged ${call.arguments}");
           onApplianceChanged(call.arguments["data"], call.arguments["color"]);
         }

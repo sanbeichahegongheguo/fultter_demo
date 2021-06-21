@@ -299,8 +299,9 @@ class ApplicationDao {
       return null;
     }
     //过滤等级
-    dataList.removeWhere((element) => element.l < logConfig.level);
-    if (dataList.length == 0) {
+    List data = List.from(dataList);
+    data.removeWhere((element) => element.l < logConfig.level);
+    if (data.length == 0) {
       print("#2 logcat no level !!");
       return null;
     }
@@ -315,7 +316,7 @@ class ApplicationDao {
     } else {
       device = deviceInfo["utsname.machine:"];
     }
-    var dataJson = {"appid": 1, "uid": uid, "device": device, "platform": df, "key": key, "version": vn, "data": dataList};
+    var dataJson = {"appid": 1, "uid": uid, "device": device, "platform": df, "key": key, "version": vn, "data": data};
     Log.d("dataJson===>$dataJson", tag: "sendLogcat");
     res =
         await httpManager.netFetch(AddressUtil.getInstance().logcat(), dataJson, null, new Options(method: "post"), contentType: HttpManager.CONTENT_TYPE_JSON);

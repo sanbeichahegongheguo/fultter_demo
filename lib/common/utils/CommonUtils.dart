@@ -12,7 +12,6 @@ import 'package:flutter_start/common/utils/DeviceInfo.dart';
 import 'package:flutter_start/models/AppVersionInfo.dart';
 import 'package:flutter_start/widget/IndexNoticeWidget.dart';
 import 'package:flutter_start/widget/ProtocolDialog.dart';
-import 'package:flutter_start/widget/VideoWidget.dart';
 import 'package:flutter_start/widget/update_version.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,7 +19,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'NavigatorUtil.dart';
 
 class CommonUtils {
-  static Future<Null> showLoadingDialog(BuildContext context, {String text = "Loading···", Widget widget}) {
+  static Future<Null> showLoadingDialog(BuildContext context,
+      {String text = "Loading···", Widget widget}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
         builder: (BuildContext context) {
@@ -41,7 +41,9 @@ class CommonUtils {
                     child: new Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        new Container(child: widget ?? SpinKitRing(color: Color(0xFFFFFFFF))),
+                        new Container(
+                            child: widget ??
+                                SpinKitRing(color: Color(0xFFFFFFFF))),
                         new Container(height: 10.0),
                         new Container(
                             child: new Text(text,
@@ -57,7 +59,8 @@ class CommonUtils {
         });
   }
 
-  static Future<dynamic> showEditDialog(BuildContext context, Widget widget, {double width, double height}) {
+  static Future<dynamic> showEditDialog(BuildContext context, Widget widget,
+      {double width, double height}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
         builder: (BuildContext context) {
@@ -70,8 +73,10 @@ class CommonUtils {
                     alignment: const FractionalOffset(0.98, 0),
                     children: <Widget>[
                       new Container(
-                        width: width ?? ScreenUtil.getInstance().getWidthPx(908),
-                        height: height ?? ScreenUtil.getInstance().getHeightPx(807),
+                        width:
+                            width ?? ScreenUtil.getInstance().getWidthPx(908),
+                        height:
+                            height ?? ScreenUtil.getInstance().getHeightPx(807),
                         padding: new EdgeInsets.all(4.0),
                         decoration: new BoxDecoration(
                           color: Colors.white,
@@ -81,7 +86,8 @@ class CommonUtils {
                         child: new GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () {
-                            FocusScope.of(context).requestFocus(new FocusNode());
+                            FocusScope.of(context)
+                                .requestFocus(new FocusNode());
                           },
                           child: widget,
                         ),
@@ -104,7 +110,14 @@ class CommonUtils {
 
   ///构建按钮
   static Widget buildBtn(String text,
-      {double width, double height, GestureTapCallback onTap, Color splashColor, Color decorationColor, Color textColor, double textSize, double elevation}) {
+      {double width,
+      double height,
+      GestureTapCallback onTap,
+      Color splashColor,
+      Color decorationColor,
+      Color textColor,
+      double textSize,
+      double elevation}) {
     return Material(
       //带给我们Material的美丽风格美滋滋。你也多看看这个布局
       elevation: elevation ?? 1,
@@ -127,7 +140,9 @@ class CommonUtils {
               text,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: textColor ?? const Color(0xFFa83530), fontWeight: FontWeight.normal, fontSize: textSize ?? ScreenUtil.getInstance().getSp(18)),
+                  color: textColor ?? const Color(0xFFa83530),
+                  fontWeight: FontWeight.normal,
+                  fontSize: textSize ?? ScreenUtil.getInstance().getSp(18)),
             ),
           ),
         ),
@@ -135,7 +150,8 @@ class CommonUtils {
     );
   }
 
-  static Future<dynamic> showGuide(BuildContext context, Widget widget, {double width, double height}) {
+  static Future<dynamic> showGuide(BuildContext context, Widget widget,
+      {double width, double height}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
         builder: (BuildContext context) {
@@ -149,14 +165,17 @@ class CommonUtils {
   }
 
   ///版本更新
-  static Future<Null> showUpdateDialog(BuildContext context, AppVersionInfo versionInfo, {int mustUpdate = 0}) {
+  static Future<Null> showUpdateDialog(
+      BuildContext context, AppVersionInfo versionInfo,
+      {int mustUpdate = 0}) {
     return NavigatorUtil.showGSYDialog(
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
           return WillPopScope(
             onWillPop: () => new Future.value(mustUpdate == 1 ? false : true),
-            child: UpdateVersionDialog(data: versionInfo, mustUpdate: mustUpdate),
+            child:
+                UpdateVersionDialog(data: versionInfo, mustUpdate: mustUpdate),
           );
         });
   }
@@ -187,15 +206,6 @@ class CommonUtils {
         });
   }
 
-  ///视频播放
-  static Future<dynamic> showVideo(BuildContext context, String url) {
-    return NavigatorUtil.showGSYDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return VideoWidget(url);
-        });
-  }
-
   ///对比版本号
   static int compareVersion(String localVersion, String serverVersion) {
     if (localVersion == serverVersion) {
@@ -208,7 +218,10 @@ class CommonUtils {
     int minLen = min(version1Array.length, version2Array.length);
     int diff = 0;
     // 循环判断每位的大小
-    while (index < minLen && (diff = int.parse(version1Array[index]) - int.parse(version2Array[index])) == 0) {
+    while (index < minLen &&
+        (diff = int.parse(version1Array[index]) -
+                int.parse(version2Array[index])) ==
+            0) {
       index++;
     }
     if (diff == 0) {
@@ -245,14 +258,18 @@ class CommonUtils {
   static Future openStudentApp() async {
     print("打開 學生端");
     if (await canLaunch(Config.STUDENT_SCHEME)) {
-      await launch(Config.STUDENT_SCHEME, forceSafariVC: false, forceWebView: false);
+      await launch(Config.STUDENT_SCHEME,
+          forceSafariVC: false, forceWebView: false);
     } else {
       if (Platform.isIOS) {
-        await launch(Config.STUDENT_IOS_URL, forceSafariVC: false, forceWebView: false);
+        await launch(Config.STUDENT_IOS_URL,
+            forceSafariVC: false, forceWebView: false);
       } else if (Platform.isAndroid) {
         var deviceInfo = await DeviceInfo.instance.getDeviceInfo();
         var url = Config.STUDENT_TEN_URL;
-        if (null != deviceInfo["manufacturer"] && deviceInfo["manufacturer"] is String && "" != deviceInfo["manufacturer"]) {
+        if (null != deviceInfo["manufacturer"] &&
+            deviceInfo["manufacturer"] is String &&
+            "" != deviceInfo["manufacturer"]) {
           String s = deviceInfo["manufacturer"];
           if (s.toUpperCase().indexOf("HUAWEI") != -1) {
             url = Config.STUDENT_HUAWEI_URL;
@@ -278,14 +295,16 @@ class CommonUtils {
     var version = (await PackageInfo.fromPlatform()).version;
     var deviceId = await DeviceInfo.instance.getYondorDeviceId();
     if (null != key && "" != key) {
-      String param = "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
+      String param =
+          "t=${DateTime.now().millisecondsSinceEpoch}&key=$key&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {
         url = "$url&$param";
       } else {
         url = "$url?$param";
       }
     } else {
-      String param = "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
+      String param =
+          "t=${DateTime.now().millisecondsSinceEpoch}&from=$from&curVersion=$version&deviceId=$deviceId";
       if (url.contains("?")) {
         url = "$url&$param";
       } else {
@@ -301,7 +320,9 @@ class CommonUtils {
   static getHeaderImg(imgUrl, {width, height}) {
     if (imgUrl != null && imgUrl != "") {
       return CachedNetworkImage(
-        imageUrl: imgUrl.toString().replaceAll("fs.k12china-local.com", "192.168.6.30:30781"),
+        imageUrl: imgUrl
+            .toString()
+            .replaceAll("fs.k12china-local.com", "192.168.6.30:30781"),
         fit: BoxFit.cover,
         width: width,
         height: height,

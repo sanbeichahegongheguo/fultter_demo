@@ -13,7 +13,12 @@ class Whiteboard extends StatefulWidget {
   final WhiteboardController controller;
   final int isReplay;
   final Map userPayload;
-  const Whiteboard({Key key, this.uuid, this.roomToken, this.appIdentifier, this.controller, this.isReplay = 0, this.userPayload}) : super(key: key);
+  final Size size;
+  final bool isGroup;
+
+  const Whiteboard(
+      {Key key, this.uuid, this.roomToken, this.appIdentifier, this.controller, this.isReplay = 0, this.userPayload, this.size = const Size(0.0, 0.0), this.isGroup = false})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,13 +37,17 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
     super.build(context);
     return Platform.isAndroid
         ? AndroidView(
+            key: ValueKey("${widget.uuid}"),
             viewType: "whiteboard_view",
             creationParams: {
               "appIdentifier": widget.appIdentifier,
               "uuid": widget.uuid,
               "roomToken": widget.roomToken,
               "isReplay": widget.isReplay,
-              "userPayload": widget.userPayload
+              "userPayload": widget.userPayload,
+              "width": widget.size.width,
+              "height": widget.size.height,
+              "isGroup": widget.isGroup,
             },
             creationParamsCodec: const StandardMessageCodec(),
             onPlatformViewCreated: (id) {
@@ -46,13 +55,17 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
               widget.controller.setChannel(_channel);
             })
         : UiKitView(
+            key: ValueKey("${widget.uuid}"),
             viewType: "whiteboard_view",
             creationParams: {
               "appIdentifier": widget.appIdentifier,
               "uuid": widget.uuid,
               "roomToken": widget.roomToken,
               "isReplay": widget.isReplay,
-              "userPayload": widget.userPayload ?? Map()
+              "userPayload": widget.userPayload ?? Map(),
+              "width": widget.size.width,
+              "height": widget.size.height,
+              "isGroup": widget.isGroup,
             },
             creationParamsCodec: const StandardMessageCodec(),
             onPlatformViewCreated: (id) {
@@ -64,5 +77,5 @@ class _Whiteboard extends State<Whiteboard> with AutomaticKeepAliveClientMixin<W
 
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => Platform.isAndroid;
+  bool get wantKeepAlive => false;
 }

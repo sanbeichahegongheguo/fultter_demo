@@ -76,6 +76,7 @@ class Room {
   int isRecording;
   String recordId;
   int lockBoard;
+  int isGroup;
   String remark;
   List<RoomUser> coVideoUsers;
   int onlineUsers;
@@ -94,6 +95,7 @@ class Room {
     this.isRecording,
     this.recordId,
     this.lockBoard,
+    this.isGroup,
     this.remark,
     this.coVideoUsers,
     this.onlineUsers,
@@ -124,6 +126,7 @@ class Room {
       isRecording: jsonRes['isRecording'],
       recordId: jsonRes['recordId'],
       lockBoard: jsonRes['lockBoard'],
+      isGroup: jsonRes['isGroup'],
       remark: jsonRes['remark'],
       coVideoUsers: coVideoUsers,
       onlineUsers: jsonRes['onlineUsers'],

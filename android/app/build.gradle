@@ -24,6 +24,8 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+apply plugin: 'com.huawei.agconnect'      // HMS SDK gradle 插件
+
 android {
     compileSdkVersion 28
 
@@ -48,7 +50,12 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-
+        manifestPlaceholders = [
+                XG_ACCESS_ID : "1500019944",
+                XG_ACCESS_KEY : "AYNOFZQ80TLB",
+                VIVO_APPID: "100134876",
+                VIVO_APPKEY:"441afeca5462733f8c457a28970dfc98",
+        ]
     }
     signingConfigs {
         debug {
@@ -76,6 +83,8 @@ android {
             ndk {
                 abiFilters "armeabi-v7a"
             }
+            shrinkResources  false
+            minifyEnabled false
         }
     }
 }
@@ -98,6 +107,13 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.1'
     implementation 'com.github.GrenderG:Toasty:1.4.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    //推送 [VERSION] 为当前最新 SDK 版本号，版本号可在 SDK 下载页查看
+    // TPNS Android SDK 自 1.2.1.3 版本起正式支持华为推送 V5 版本，请使用 1.2.1.3 及以上版本的 TPNS 华为依赖以避免集成冲突问题。
+    implementation 'com.tencent.tpns:huawei:1.2.5.0-release'
+    implementation 'com.tencent.tpns:vivo:1.2.5.0-release'
+    implementation 'com.tencent.tpns:xiaomi:1.2.5.0-release'
+    // HMS Core Push 模块依赖包
+    implementation 'com.huawei.hms:push:5.0.2.300'
 }
 configurations.all {
     resolutionStrategy.force 'androidx.transition:transition:1.2.0-rc01'

@@ -26,6 +26,9 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
     let boardView:WhiteBoardView
     var room:WhiteRoom!
     var player:WhitePlayer!
+    let width:Double
+    let height:Double
+    let isGroup:Bool
     init(withFrame: CGRect, viewId: Int64, args: Any?,messenger:FlutterBinaryMessenger){
         print("YondorWhiteboard init @@" )
         self.messenger = messenger
@@ -37,6 +40,9 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
         self.appIdentifier = self.args["appIdentifier"] as! String
         self.isReplay = self.args["isReplay"] as! Int
         self.userPayload = self.args["userPayload"] as! NSDictionary
+        self.width = self.args["width"] as! Double
+        self.height = self.args["height"] as! Double
+        self.isGroup = self.args["isGroup"] as! Bool
         self.withFrame = withFrame
         self.channel = FlutterMethodChannel(name: "com.yondor.live/whiteboard_"+String(viewId), binaryMessenger: messenger)
         self.boardView = WhiteBoardView.init(frame: self.withFrame,configuration:WKWebViewConfiguration.init())
@@ -80,6 +86,14 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
                 self.disableCameraTransform(disabled:true);
                 self.disableDeviceInputs(disabled: true);
                 self.setWritable(writable: false);
+                if (self.isGroup){
+                    var scale = min(self.width/904.0,self.height/506.0)
+                    scale = Double(String(format: "%.3f",scale)) ??  1
+                    self.setScale(scale: scale)
+                }
+//                var scale = min(self.width/1079.0,self.height/606.0)
+//                scale = Double(String(format: "%.3f",scale)) ??  1
+//                self.setScale(scale: scale)
             }else{
                 self.joinRoom()
             }
@@ -166,7 +180,15 @@ class YondorWhiteboard : NSObject, FlutterPlatformView,WhiteCommonCallbackDelega
             })
         }
     }
-    
+    public func setScale(scale:Double){
+        if (self.room != nil) {
+            let whiteCameraConfig = WhiteCameraConfig.init()
+            whiteCameraConfig.centerX = 0
+            whiteCameraConfig.centerY = 0
+            whiteCameraConfig.scale = NSNumber(value: scale)
+            self.room.moveCamera(whiteCameraConfig)
+        }
+    }
     public func disableCameraTransform(disabled:Bool) {
         if (self.room != nil) {
             self.room.disableCameraTransform(disabled);

@@ -480,10 +480,7 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
                               _fontBasic('温馨提示', 0xfff46f73, textWeight: FontWeight.w700),
                               new Container(height: 10.0),
                               _fontBasic(_delayTarget ? overTimeStart : normalStart, 0xff707477,
-                                  textSize: 18.0,
-                                  textMain: _times["normal"].toString(),
-                                  textEnd: _delayTarget ? overTimeEnd : normalEnd,
-                                  textMainColor: 0xfff46f73),
+                                  textSize: 18.0, textMain: _times["normal"].toString(), textEnd: _delayTarget ? overTimeEnd : normalEnd, textMainColor: 0xfff46f73),
                               new Container(height: 15.0),
                               Container(
                                 width: ScreenUtil.getInstance().screenWidth * 0.7,
@@ -602,8 +599,7 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
     return RichText(
       text: TextSpan(style: TextStyle(color: Color(textColor), fontSize: textSize, fontWeight: textWeight), children: [
         TextSpan(text: text),
-        TextSpan(
-            text: textMain, style: textMainColor != null ? TextStyle(color: Color(textMainColor), fontWeight: mainWeight) : TextStyle(color: Color(textColor))),
+        TextSpan(text: textMain, style: textMainColor != null ? TextStyle(color: Color(textMainColor), fontWeight: mainWeight) : TextStyle(color: Color(textColor))),
         TextSpan(text: textEnd),
       ]),
     );
@@ -640,7 +636,7 @@ class _HomeEyePage extends State<HomeEyePage> with AutomaticKeepAliveClientMixin
     NavigatorUtil.goWelcome(context);
     showToast("退出成功");
     Future.delayed(Duration(milliseconds: 500)).then((_) {
-      UserDao.logout(store, context);
+      UserDao.logout(store);
     });
   }
 

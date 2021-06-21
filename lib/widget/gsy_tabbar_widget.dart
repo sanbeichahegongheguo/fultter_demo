@@ -17,6 +17,7 @@ import 'package:flutter_start/common/net/address_util.dart';
 import 'package:flutter_start/common/redux/gsy_state.dart';
 import 'package:flutter_start/common/utils/CommonUtils.dart';
 import 'package:flutter_start/common/utils/NavigatorUtil.dart';
+import 'package:flutter_start/common/utils/push_util.dart';
 import 'package:flutter_start/page/AdminPage.dart';
 import 'package:flutter_start/page/CoachPage.dart';
 import 'package:flutter_start/page/LearningEmotionPage.dart';
@@ -119,6 +120,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
       _signReward();
       _getAppVersionInfo(store.state.userInfo.userId, store);
       UserDao.getUser(isNew: true, store: store);
+      _initPushMsg();
     });
     initPageMap[pageList[_currentIndex]] = true;
   }
@@ -182,14 +184,10 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                           //TabBar导航标签，底部导航放到Scaffold的bottomNavigationBar中
                           controller: _tabController, //配置控制器
                           tabs: [
-                            _renderTab(snapshot.data == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导",
-                                snapshot.data == 0 ? true : false),
-                            _renderTab(snapshot.data == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情",
-                                snapshot.data == 1 ? true : false),
-                            _renderTab(snapshot.data == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励",
-                                snapshot.data == 2 ? true : false),
-                            _renderTab(snapshot.data == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理",
-                                snapshot.data == 3 ? true : false),
+                            _renderTab(snapshot.data == 0 ? "images/home/icon_study_select.png" : "images/home/icon_study.png", "辅导", snapshot.data == 0 ? true : false),
+                            _renderTab(snapshot.data == 1 ? "images/home/icon_challenge_select.png" : "images/home/icon_challenge.png", "学情", snapshot.data == 1 ? true : false),
+                            _renderTab(snapshot.data == 2 ? "images/home/icon_user_select.png" : "images/home/icon_user.png", "家长奖励", snapshot.data == 2 ? true : false),
+                            _renderTab(snapshot.data == 3 ? "images/home/icon_parent_select.png" : "images/home/icon_parent.png", "管理", snapshot.data == 3 ? true : false),
                           ],
                           onTap: (index) {
                             print('切换');
@@ -268,8 +266,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
           new Text(
             text,
             style: TextStyle(
-                fontSize: isSelect ? ScreenUtil.getInstance().getSp(33 / 3) : ScreenUtil.getInstance().getSp(32 / 3),
-                color: isSelect ? Color(0xFF5fc589) : Color(0xFF606a81)),
+                fontSize: isSelect ? ScreenUtil.getInstance().getSp(33 / 3) : ScreenUtil.getInstance().getSp(32 / 3), color: isSelect ? Color(0xFF5fc589) : Color(0xFF606a81)),
           )
         ],
       ),
@@ -277,8 +274,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
   }
 
   Widget _buildTitle() {
-    final SystemUiOverlayStyle overlayStyle =
-        Theme.of(context).primaryColorBrightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
+    final SystemUiOverlayStyle overlayStyle = Theme.of(context).primaryColorBrightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
     return Semantics(
       container: true,
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -370,8 +366,7 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
                                           child: ClipOval(
                                             child: Container(
                                               padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(10)),
-                                              child:
-                                                  Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
+                                              child: Text(_unReadNotice, style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(28 / 3), color: Colors.white)),
                                               decoration: BoxDecoration(color: const Color(0xFFff542b)),
                                             ),
                                           ),
@@ -501,5 +496,33 @@ class _GSYTabBarState extends State<GSYTabBarWidget> with SingleTickerProviderSt
         }
       }
     });
+  }
+
+  void _initPushMsg() async {
+    try {
+      Map p = Map.from(PushUtil.instance.param);
+      if (p == null || p.length <= 0) {
+        return;
+      }
+      await _handlePushMsg(p);
+    } finally {
+      PushUtil.instance.registerAction((Map param) => _handlePushMsg(param));
+    }
+  }
+
+  _handlePushMsg(Map p) async {
+    if (!mounted) {
+      print("home !mounted");
+      return;
+    }
+    String openType = p["openType"];
+    if (openType == "webview") {
+      String url = p["url"];
+      await Future.delayed(Duration(milliseconds: 500));
+      NavigatorUtil.goWebView(context, url).then((v) {
+        _getUnReadNotice();
+      });
+    }
+    PushUtil.instance.param = null;
   }
 }

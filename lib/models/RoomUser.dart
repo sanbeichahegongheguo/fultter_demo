@@ -72,8 +72,8 @@ class RoomUser {
   String toString() {
     return json.encode(this);
   }
+
   bool isTeacher() {
     return role == 1;
   }
-
 }

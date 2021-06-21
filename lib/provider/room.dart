@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_start/common/dao/RoomDao.dart';
@@ -47,8 +48,20 @@ class StudentProvider with ChangeNotifier {
 
   RoomUser get user => _user;
 
+  List<RoomUser> _others;
+  List<RoomUser> get others => _others;
+  update({RoomUser user, List<RoomUser> others}) {
+    this._user = user ?? this._user;
+    this._others = others ?? this._others;
+    notifyListeners();
+  }
+
   notifier(RoomUser user) {
     _user = user;
+    notifyListeners();
+  }
+
+  up() {
     notifyListeners();
   }
 }
@@ -353,7 +366,18 @@ class StarWidgetProvider with ChangeNotifier {
 class CourseProvider with ChangeNotifier {
   RoomData _roomData;
   int _status = 0;
+  int _isGroup = 0;
+  int get isGroup => _isGroup;
   int get status => _status;
+
+  bool _isTeacherInGroup = false;
+  bool _isStudentInGroup = false;
+  bool get isTeacherInGroup => _isTeacherInGroup;
+  bool get isStudentInGroup => _isStudentInGroup;
+  Map _boardInfo = HashMap();
+  Map get boardInfo => _boardInfo;
+  Map _groupUser = HashMap();
+  Map get groupUser => _groupUser;
   RoomData get roomData => _roomData;
   Function _closeDialog;
   Function get closeDialog => _closeDialog;
@@ -367,14 +391,28 @@ class CourseProvider with ChangeNotifier {
   bool get isInitBoardView => _isInitBoardView;
   bool _showReplayProgress = false;
   bool get showReplayProgress => _showReplayProgress;
-  CourseProvider(int status, {RoomData roomData, Function closeDialog, Function showStarDialog}) {
+  CourseProvider(int status, {RoomData roomData, Function closeDialog, Function showStarDialog, int isGroup}) {
     _status = status;
     this._roomData = roomData;
     this._closeDialog = closeDialog;
     this._showStarDialog = showStarDialog;
+    this._isGroup = isGroup;
   }
   setStatus(int status) {
     _status = status;
+    notifyListeners();
+  }
+
+  setInGroup({bool isTeacherInGroup, bool isStudentInGroup, Map groupUser, Map boardInfo}) {
+    _isTeacherInGroup = isTeacherInGroup;
+    _isStudentInGroup = isStudentInGroup;
+    _groupUser = groupUser;
+    _boardInfo = boardInfo;
+    notifyListeners();
+  }
+
+  setGroup(int isGroup) {
+    _isGroup = isGroup;
     notifyListeners();
   }
 
@@ -395,11 +433,12 @@ class CourseProvider with ChangeNotifier {
 }
 
 class NetworkQualityProvider with ChangeNotifier {
-  List networkLevel = ['unknown', 'excellent', 'good', 'poor', 'bad', 'very bad', 'down'];
+  List networkLevel = ['unknown', 'excellent', 'good', 'poor', 'bad', 'very bad', 'down', '', 'detecting'];
   Map networkQualityIcon = {
     'excellent': 'images/live/signal-good@2x.png',
     'good': 'images/live/signal-good@2x.png',
     'poor': 'images/live/signal-normal@2x.png',
+    'detecting': 'images/live/signal-normal@2x.png',
     'bad': 'images/live/signal-normal@2x.png',
     'very bad': 'images/live/signal-bad@2x.png',
     'down': 'images/live/signal-bad@2x.png',

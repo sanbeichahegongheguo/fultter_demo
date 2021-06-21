@@ -27,7 +27,7 @@ class LoginPage extends StatefulWidget {
   }
 }
 
-class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,LogBase{
+class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin, LogBase {
   TextEditingController userNameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   bool loginBtn = false;
@@ -102,7 +102,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
   Widget build(BuildContext context) {
     return StoreBuilder<GSYState>(builder: (context, store) {
       return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xFFf1f2f6),
         appBar: AppBar(
             brightness: Brightness.light,
@@ -143,26 +143,27 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
                       ),
                       Container(
                           child: ConstrainedBox(
-                            constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
-                            child: _getTextField("请输入您的手机号", userNameController, key: _globalKey,obscureText:false),
-                          )),
+                        constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                        child: _getTextField("请输入您的手机号", userNameController, key: _globalKey, obscureText: false),
+                      )),
 //                      Container(
 //                        padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(50), right: ScreenUtil.getInstance().getWidthPx(50)),
 //                        child: _getTextField("您的手机号", userNameController, key: _globalKey,obscureText: false),
 //                      ),
                       Container(
-                        padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(60)),
-                        child: Container(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
-                              child: _getTextField("您的密码", passwordController, obscureText: true),
-                            ))
-                      ),
+                          padding: EdgeInsets.only(top: ScreenUtil.getInstance().getHeightPx(60)),
+                          child: Container(
+                              child: ConstrainedBox(
+                            constraints:
+                                BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                            child: _getTextField("您的密码", passwordController, obscureText: true),
+                          ))),
                       SizedBox(
                         height: ScreenUtil.getInstance().getHeightPx(170),
                       ),
                       Container(
-                        child: CommonUtils.buildBtn("登录", width: ScreenUtil.getInstance().getWidthPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
+                        child: CommonUtils.buildBtn("登录", width: ScreenUtil.getInstance().getWidthPx(846), height: ScreenUtil.getInstance().getHeightPx(135),
+                            onTap: () {
                           _login();
                         },
                             splashColor: loginBtn ? Colors.amber : Color(0xFFdfdfeb),
@@ -219,7 +220,10 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[Text("Copyright © Yondor.All Rights Reserved.", style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))],
+                                children: <Widget>[
+                                  Text("Copyright © Yondor.All Rights Reserved.",
+                                      style: TextStyle(color: Color(0xFF666666), fontSize: ScreenUtil.getInstance().getSp(11)))
+                                ],
                               )
                             ])),
                         flex: 2,
@@ -229,7 +233,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
                 ),
                 Offstage(
                   child: Material(
-                      color:Colors.transparent,
+                    color: Colors.transparent,
                     child: _buildListView(),
                   ),
                   offstage: !_expand,
@@ -246,11 +250,11 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
   TextField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
     return TextField(
       key: key,
-      keyboardType: !obscureText?TextInputType.number:TextInputType.text,
+      keyboardType: !obscureText ? TextInputType.number : TextInputType.text,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
-      inputFormatters: !obscureText?[WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)]:[],
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black, textBaseline: TextBaseline.alphabetic),
+      inputFormatters: !obscureText ? [WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)] : [],
       cursorColor: Color(0xFF333333),
       onTap: () {
         setState(() {
@@ -266,13 +270,13 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
               _users.clear();
               _users.addAll(await LocalStorage.getUsers());
               setState(() {
-                if (input==null || input==""){
+                if (input == null || input == "") {
                   _users.clear();
-                }else{
+                } else {
                   _users.retainWhere((item) => item.username.startsWith(input));
-                  if (_users.length==0){
+                  if (_users.length == 0) {
                     _expand = false;
-                  }else{
+                  } else {
                     _expand = true;
                   }
                 }
@@ -280,18 +284,21 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
             }
           : (input) {},
       decoration: new InputDecoration(
-        suffixIcon: !obscureText? _hasdeleteIcon
-            ? IconButton(
-          onPressed: () {
-            setState(() {
-              userNameController.text = "";
-            });
-          },
-          icon: Icon(
-            Icons.cancel,
-            color: Color(0xFFcccccc),
-          ),
-        ) : Text(""):null,
+        suffixIcon: !obscureText
+            ? _hasdeleteIcon
+                ? IconButton(
+                    onPressed: () {
+                      setState(() {
+                        userNameController.text = "";
+                      });
+                    },
+                    icon: Icon(
+                      Icons.cancel,
+                      color: Color(0xFFcccccc),
+                    ),
+                  )
+                : Text("")
+            : null,
         contentPadding: EdgeInsets.all(13),
         hintText: hintText,
         hintStyle: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16)),
@@ -346,7 +353,9 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border(
-                bottom: BorderSide(color: Colors.lightBlueAccent, width: 1), left: BorderSide(color: Colors.lightBlueAccent, width: 1), right: BorderSide(color: Colors.lightBlueAccent, width: 1)),
+                bottom: BorderSide(color: Colors.lightBlueAccent, width: 1),
+                left: BorderSide(color: Colors.lightBlueAccent, width: 1),
+                right: BorderSide(color: Colors.lightBlueAccent, width: 1)),
           ),
           child: ListView(
             itemExtent: itemHeight,
@@ -355,7 +364,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
           ),
           width: currentW,
           height: (children.length * itemHeight + (children.length - 1) * dividerHeight),
-          margin: EdgeInsets.fromLTRB(margin,  currentH + currentH, margin, 0),
+          margin: EdgeInsets.fromLTRB(margin, currentH + currentH, margin, 0),
         );
       }
     }
@@ -376,9 +385,8 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
   }
 
   void _login() async {
-
     if (loginBtn) {
-      print("用户登录==>_login",level: Log.info);
+      print("用户登录==>_login", level: Log.info);
       CommonUtils.showLoadingDialog(context, text: "登陆中···");
       Store<GSYState> store = StoreProvider.of(context);
       DataResult data = await UserDao.login(userNameController.text, passwordController.text, store);
@@ -411,7 +419,7 @@ class LoginState extends State<LoginPage> with SingleTickerProviderStateMixin ,L
     return LoginPage.sName;
   }
 
-  void print(msg ,{int level= Log.fine}){
-    super.print(msg,level: level);
+  void print(msg, {int level = Log.fine}) {
+    super.print(msg, level: level);
   }
 }

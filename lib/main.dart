@@ -10,17 +10,20 @@ import 'package:flutter_start/page/SplashPage.dart';
 import 'package:flutter_start/common/utils/Log.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:redux/redux.dart';
-import 'package:screen/screen.dart';
+import 'package:wakelock/wakelock.dart';
 
 import 'common/config/config.dart';
 import 'common/utils/CommonUtils.dart';
+import 'common/utils/push_util.dart';
 import 'models/Application.dart';
 import 'models/user.dart';
 
 main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
-    runZoned(() async {
+    runZonedGuarded(() async {
+      PushUtil().initPlatformState();
+      PushUtil().initPlatformStateForStringUniLinks();
       runApp(MyApp());
       await Log.init(isDebug: Config.DEBUG);
       if (Platform.isAndroid) {
@@ -33,8 +36,8 @@ main() {
           PaintingBinding.instance.imageCache.maximumSizeBytes = 20 << 20;
         }
       }
-      Screen.keepOn(true);
-    }, onError: (Object obj, StackTrace stack) {
+      Wakelock.enable();
+    }, (Object obj, StackTrace stack) {
       Log.e(obj, tag: "main");
       Log.e(stack, tag: "main");
     });

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -42,7 +43,6 @@ import 'package:flutter_start/widget/RedRain.dart';
 import 'package:flutter_start/widget/StarDialog.dart';
 import 'package:flutter_start/widget/StarGif.dart';
 import 'package:flutter_start/widget/UserStarWidget.dart';
-import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
 import 'package:flutter_start/widget/room/BezierPainter.dart';
 import 'package:flutter_start/widget/room/DeviceInputsMenu.dart';
@@ -58,7 +58,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
-import 'package:screen/screen.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:yondor_whiteboard/whiteboard.dart';
@@ -95,7 +94,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   static const String EVENT_CURRENT = LiveRoomConst.EVENT_CURRENT; //加入房间成功返回当前事件
 
   RoomLandscapeManyPageState(RoomData roomData) {
-    _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog);
+    _courseProvider = CourseProvider(roomData.room.courseState, roomData: roomData, closeDialog: closeDialog, showStarDialog: showStarDialog, isGroup: roomData.room.isGroup);
     _chatProvider.setMuteAllChat(roomData.room.muteAllChat == 1);
   }
 
@@ -107,7 +106,6 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   var socket;
   RoomUser _local;
   RoomUser _teacher;
-  List<RoomUser> _others = new List();
   Widget _whiteboard;
   Res _currentRes;
   TeacherProvider _teacherProvider = TeacherProvider();
@@ -133,6 +131,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   final TextEditingController _textController = new TextEditingController();
   final ScrollController listScrollController = new ScrollController();
   final _infoStrings = <String>[];
+  List<RoomUser> _others = new List();
   static final _users = <int>[];
   WhiteboardController _whiteboardController = WhiteboardController();
   Timer _hiddenTopTimer;
@@ -149,6 +148,10 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   Timer _connectivityNoneTimer;
   List<SocketMsg> msgList = List();
   bool _isIos13 = true;
+  Timer _studentContainerTimer;
+  Map muteUser = HashMap();
+  Completer initRtcCompleter = Completer();
+  var groupData;
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -168,6 +171,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
     }
     initializeRtc().then((value) {
       this._updateUsers(widget.roomData.room.coVideoUsers);
+      initRtcCompleter.complete(true);
     });
     if (Platform.isIOS) {
       HomeIndicator.deferScreenEdges([ScreenEdge.bottom, ScreenEdge.top]);
@@ -194,8 +198,10 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _courseProvider.setInitBoardView(true);
       });
+      _whiteboardController?.setWritable(_local?.grantBoard == 1);
     };
     _whiteboardController.onRoomPhaseChanged = (result) {
+      print("_whiteboardController.onRoomPhaseChanged  $result");
       _whiteboardProvider.setRoomPhase(result);
     };
     _whiteboardController.onApplianceChanged = (result, rgbColor) {
@@ -270,10 +276,12 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
 
   @override
   Widget build(BuildContext context) {
-    var coursewareWidth = (ScreenUtil.getInstance().screenWidth * 0.8) - MediaQuery.of(context).padding.left;
-    var maxWidth = coursewareWidth > (ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().screenHeight * 0.175) * 1.62
-        ? (ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().screenHeight * 0.175) * 1.62
+    print("width ${ScreenUtil.getInstance().screenWidth}   height ${ScreenUtil.getInstance().screenHeight}");
+    var coursewareWidth = (ScreenUtil.getInstance().screenWidth) - MediaQuery.of(context).padding.left;
+    var maxWidth = coursewareWidth > (ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().screenHeight * 0.175) * (16.0 / 9.0)
+        ? (ScreenUtil.getInstance().screenHeight - ScreenUtil.getInstance().screenHeight * 0.175) * (16.0 / 9.0)
         : coursewareWidth;
+    if (ScreenUtil.getInstance().screenWidth == 1024 && ScreenUtil.getInstance().screenHeight == 768) {}
     print(
         "top ${MediaQuery.of(context).padding.top} bottom ${MediaQuery.of(context).padding.bottom} left ${MediaQuery.of(context).padding.left} right ${MediaQuery.of(context).padding.right}");
     _courseProvider.setCoursewareWidth(coursewareWidth, maxWidth);
@@ -343,7 +351,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
             value: SystemUiOverlayStyle.dark,
             child: _buildBody(
               Scaffold(
-                  resizeToAvoidBottomPadding: false,
+                  resizeToAvoidBottomInset: false,
                   appBar: PreferredSize(
                       child: Offstage(
                         offstage: true,
@@ -377,7 +385,6 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
                                 children: [
                                   Container(
                                     height: ScreenUtil.getInstance().screenHeight * 0.175,
-                                    color: Color(0xff090723),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
@@ -386,6 +393,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
                                         _buildStudentVideo(),
                                       ],
                                     ),
+                                    decoration: BoxDecoration(color: Color(0xff090723)),
                                   ),
                                   Expanded(
                                     child: Container(
@@ -526,8 +534,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   }
 
   _buildRank() {
-    return Align(
-        alignment: Alignment.topLeft, child: LiveRankWidget(liveCourseallotId: widget.roomData.liveCourseallotId, roomId: widget.roomData.room.roomUuid));
+    return Align(alignment: Alignment.topLeft, child: LiveRankWidget(liveCourseallotId: widget.roomData.liveCourseallotId, roomId: widget.roomData.room.roomUuid));
   }
 
   closeDialog() {
@@ -635,8 +642,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
                             ),
                   //白板
                   _buildWhite(courseStatusModel, resModel, height),
-                  (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) &&
-                          (resModel.isShow == null || !resModel.isShow)
+                  (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) && (resModel.isShow == null || !resModel.isShow)
                       ? Container(
                           color: Colors.transparent,
                           width: courseStatusModel.maxWidth,
@@ -708,8 +714,15 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
     return Container(
       color: Colors.black,
       child: WebViewPlus(
+        debuggingEnabled: true,
         initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
         javascriptMode: JavascriptMode.unrestricted,
+        onWebResourceError: (WebResourceError error) {
+          if (error.errorType != null && error.errorType == WebResourceErrorType.webContentProcessTerminated) {
+            Log.i("_webViewPlusController?.reload()");
+            _webViewPlusController?.reload();
+          }
+        },
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Courseware',
@@ -728,8 +741,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
         onWebViewCreated: (controller) async {
           _webViewPlusController = controller;
           if (resModel.res.type == LiveRoomConst.P2H) {
-            controller.loadUrl(
-                widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.pptHtml) + "&step=${resModel.res.page}");
+            controller.loadUrl(widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.pptHtml) + "&step=${resModel.res.page}");
           } else {
             if (ObjectUtil.isEmptyString(resModel.res.data.ps.password)) {
               print("loadurl ${widget.roomData.courseware.localPath + "/" + await CommonUtils.urlJoinUser(resModel.res.data.ps.h5url)}");
@@ -762,20 +774,14 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   _buildWhite(CourseProvider courseStatusModel, ResProvider resModel, double height) {
     return Consumer<BoardProvider>(builder: (context, model, child) {
       print("courseStatusModel.isInitBoardView ${courseStatusModel.isInitBoardView}");
-      print(
-          " 等待老师开始游戏 ${(resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) && (resModel.isShow == null || !resModel.isShow)}");
+      print(" 等待老师开始游戏 ${(resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5) && (resModel.isShow == null || !resModel.isShow)}");
       var show = true;
       if (courseStatusModel.isInitBoardView) {
         show = (courseStatusModel.status == 1 && model.enableBoard == 1);
         if (show) {
           if (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5 && model.testBoard == 0) {
             show = false;
-          } else if (resModel != null &&
-              resModel.res != null &&
-              resModel.res.type != null &&
-              resModel.res.type == h5 &&
-              resModel.isShow != null &&
-              resModel.isShow) {
+          } else if (resModel != null && resModel.res != null && resModel.res.type != null && resModel.res.type == h5 && resModel.isShow != null && resModel.isShow) {
             show = false;
           }
         }
@@ -788,7 +794,8 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
               Stack(
                 children: [
                   Container(
-                    child: _buildWhiteboard(),
+                    child: _buildWhiteboard(Size(courseStatusModel.maxWidth,
+                        ScreenUtil.getInstance().screenHeight - (ScreenUtil.getInstance().screenHeight * 0.175) - ScreenUtil.getInstance().statusBarHeight)),
                   ),
                   Consumer<WhiteboardProvider>(builder: (context, model, child) {
                     print("model.roomPhase  ${model.roomPhase} ");
@@ -957,11 +964,14 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   ///视频区域
   Widget _buildTeacherVideo() {
     return Consumer2<TeacherProvider, CourseProvider>(builder: (context, teacherModel, courseStatusModel, child) {
+      if (courseStatusModel.status == 1 && courseStatusModel.isGroup == 1 && !courseStatusModel.isTeacherInGroup && courseStatusModel.isStudentInGroup) {
+        return Container();
+      }
       final flag = courseStatusModel.status == 1 && teacherModel.user != null && teacherModel.user.coVideo == 1 && teacherModel.user.enableVideo == 1;
       return AspectRatio(
         aspectRatio: 247.0 / 188.0,
         child: Container(
-            color: Color(0xff797883),
+            color: (flag && teacherModel.user.enableVideo == 0) ? Color(0xff797883) : Colors.transparent,
             child: flag
                 ? Stack(
                     alignment: AlignmentDirectional.bottomStart,
@@ -979,13 +989,16 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
                       })
                     ],
                   )
-                : Center(
-                    child: Container(
-                      constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
-                      color: Color(0xff797883),
-                      child: AspectRatio(
-                        aspectRatio: 1 / 1,
-                        child: Image.asset('images/ic_teacher.png', fit: BoxFit.contain),
+                : Container(
+                    color: Color(0xff797883),
+                    child: Center(
+                      child: Container(
+                        constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
+                        color: Color(0xff797883),
+                        child: AspectRatio(
+                          aspectRatio: 1 / 1,
+                          child: Image.asset('images/ic_teacher.png', fit: BoxFit.contain),
+                        ),
                       ),
                     ),
                   )),
@@ -998,12 +1011,13 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
       Widget widget = Container();
       Widget other = Container();
       Widget my = Container();
+      print("model.user ${model.user}");
       if (model.user != null) {
         if (model.user.coVideo == 1) {
           my = AspectRatio(
               aspectRatio: 247.0 / 188.0,
               child: Container(
-                  color: Color(0xff797883),
+                  color: (model.user.enableVideo == 0) ? Color(0xff797883) : Colors.transparent,
                   child: model.user.coVideo == 1 && model.user.enableVideo == 1
                       ? AgoraRenderWidget(model.user.uid, local: true)
                       : Center(
@@ -1018,29 +1032,33 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
                         )));
         }
       }
-      if (_others != null && _others.length > 0) {
-        int l = _others.length > 5 ? 5 : _others.length;
+      if (model.others != null && model.others.length > 0) {
+        int l = model.others.length > 5 ? 5 : model.others.length;
         other = AspectRatio(
           aspectRatio: 267.0 * l / 188.0,
           child: ListView.separated(
             padding: EdgeInsets.only(left: 5),
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
-            itemCount: _others.length,
+            itemCount: model.others.length,
             itemBuilder: (BuildContext context, int i) {
+              bool f = _courseProvider.isGroup == 1 && _courseProvider.groupUser.containsKey(model.others[i].uid) && _courseProvider.groupUser[model.others[i].uid] == 0;
               return AspectRatio(
                   aspectRatio: 247.0 / 188.0,
                   child: Container(
-                      color: Color(0xff797883),
-                      child: _others[i].coVideo == 1 && _others[i].enableVideo == 1
-                          ? AgoraRenderWidget(_others[i].uid)
-                          : Center(
-                              child: Container(
-                                constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
-                                color: Color(0xff797883),
-                                child: AspectRatio(
-                                  aspectRatio: 1 / 1,
-                                  child: Image.asset('images/live/student-ico.png', fit: BoxFit.contain),
+                      color: (model.others[i] == null || model.others[i].enableVideo == 0) ? Color(0xff797883) : Colors.transparent,
+                      child: (!f && (model.others[i] != null && model.others[i].coVideo == 1 && model.others[i].enableVideo == 1))
+                          ? AgoraRenderWidget(model.others[i].uid)
+                          : Container(
+                              color: Color(0xff797883),
+                              child: Center(
+                                child: Container(
+                                  constraints: BoxConstraints(maxWidth: ScreenUtil.getInstance().getHeightPx(270)),
+                                  color: Color(0xff797883),
+                                  child: AspectRatio(
+                                    aspectRatio: 1 / 1,
+                                    child: Image.asset(f ? "images/live/camOff.png" : 'images/live/student-ico.png', fit: BoxFit.contain),
+                                  ),
                                 ),
                               ),
                             )));
@@ -1138,8 +1156,8 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
                                       print("#1 123123");
                                     },
                               onSubmitted: _handleSubmitted,
-                              decoration:
-                                  InputDecoration.collapsed(hintText: model.muteAllChat ? "禁言中" : '发送消息', hintStyle: TextStyle(color: Color(0xFFAEAEAE))),
+                              decoration: InputDecoration.collapsed(
+                                  hintText: model.muteAllChat ? "禁言中" : '发送消息', hintStyle: TextStyle(color: Color(0xFFAEAEAE), fontSize: ScreenUtil.getInstance().getSp(6))),
                             ),
                           )),
                           !model.muteAllChat
@@ -1286,8 +1304,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
     _textController.clear();
     _chatProvider.setIsComposing(false);
     FocusScope.of(context).requestFocus(new FocusNode());
-    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid, liveCourseallotId: widget.roomData.liveCourseallotId)
-        .then((res) {
+    RoomDao.roomChat(widget.roomData.room.roomId, widget.token, text, widget.roomData.room.roomUuid, liveCourseallotId: widget.roomData.liveCourseallotId).then((res) {
       if (res != null && !res.result) {
         showToast(res.data);
       }
@@ -1357,10 +1374,10 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   Future<AgoraRtmChannel> _createChannel(String name) async {
     AgoraRtmChannel channel = await _rtmClient.createChannel(name);
     channel.onMemberJoined = (AgoraRtmMember member) {
-      _log("Member joined: " + member.userId + ', channel: ' + member.channelId);
+      print("Member joined: " + member.userId + ', channel: ' + member.channelId, level: Log.info);
     };
     channel.onMemberLeft = (AgoraRtmMember member) {
-      _log("Member left: " + member.userId + ', channel: ' + member.channelId);
+      print("Member left: " + member.userId + ', channel: ' + member.channelId, level: Log.info);
     };
     channel.onMessageReceived = (AgoraRtmMessage message, AgoraRtmMember member) {
       _handleMsg(message, member);
@@ -1369,12 +1386,15 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
       _log("Channel onMemberCountUpdated:  count:$count ");
     };
     channel.onError = (err) {
-      _log("Channel err:  err:$err ");
+      print("Channel err:  err:$err ", level: Log.error);
     };
     return channel;
   }
 
   _handleMsg(AgoraRtmMessage message, AgoraRtmMember member) async {
+    if (!initRtcCompleter.isCompleted) {
+      await initRtcCompleter.future;
+    }
     _log("Channel msg: " + member.userId + ", msg: " + message.text);
     var msgJson = jsonDecode(message.text);
     switch (msgJson["cmd"]) {
@@ -1391,6 +1411,10 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
         msgJson["data"]["list"].forEach((item) {
           if (item["userId"] == _local.userId) {
             if (item["coVideo"] == 0) {
+              if (_courseProvider.isGroup == 1 && _courseProvider.isStudentInGroup) {
+                print("_updateUsers 正在分组状态");
+                return;
+              }
               _local?.role = item["role"];
               _local?.coVideo = 0;
               _local?.enableVideo = 0;
@@ -1417,15 +1441,99 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
             await AgoraRtcEngine?.muteAllRemoteAudioStreams(true);
           }
         }
+        if (msgJson["data"]["isGroup"] != _courseProvider.isGroup) {
+          _courseProvider.setGroup(msgJson["data"]["isGroup"]);
+          if (_courseProvider.isGroup == 0) {
+            AgoraRtcEngine.muteRemoteAudioStream(_teacher.uid, false);
+            AgoraRtcEngine.muteRemoteVideoStream(_teacher.uid, false);
+            if (muteUser.length > 0) {
+              muteUser.keys.forEach((element) {
+                AgoraRtcEngine.muteRemoteAudioStream(element, false);
+                AgoraRtcEngine.muteRemoteVideoStream(element, false);
+              });
+              muteUser.clear();
+            }
+          } else {
+            startGroup(groupData, _courseProvider.isGroup);
+          }
+        }
         break;
       case 4: //user attributes updated msg
-        List<RoomUser> coVideoUsers = new List();
+        List<RoomUser> coVideoUsers = [];
         msgJson["data"].forEach((item) {
           coVideoUsers.add(RoomUser.fromJson(item));
         });
-        _updateUsers(coVideoUsers);
+        if (_courseProvider.isGroup == 0) {
+          _updateUsers(coVideoUsers);
+        }
         break;
       case 5: //replay msg
+        groupData = msgJson["data"];
+        int isGroup = msgJson["data"]["isGroup"] ?? 0;
+        startGroup(groupData, isGroup);
+        break;
+    }
+  }
+
+  startGroup(var data, int isGroup) async {
+    if (isGroup == 0 || data == null || data["data"] == null || data["data"].length == 0) {
+      _courseProvider.setInGroup(isTeacherInGroup: false, isStudentInGroup: false, groupUser: Map(), boardInfo: Map());
+      return;
+    }
+    List<RoomUser> groupUsers = [];
+    List<int> noGroupUserIds = [];
+    bool teacherInGroup = false;
+    bool studentInGroup = false;
+    Map boardInfo = HashMap();
+    for (var i = 0; i < data["data"].length; i++) {
+      var item = data["data"][i];
+      var users = item["users"];
+
+      bool isInGroup = false;
+      for (var j = 0; j < users.length; j++) {
+        if (users[j]["userId"] == _local.userId) {
+          isInGroup = true;
+          studentInGroup = true;
+          break;
+        }
+      }
+      if (!isInGroup) {
+        users.forEach((data) {
+          noGroupUserIds.add(data["uid"]);
+        });
+      }
+      if (isInGroup) {
+        //在此分组
+        boardInfo = item["boardInfo"];
+        users.forEach((data) {
+          RoomUser roomUser = RoomUser.fromJson(data);
+          groupUsers.add(roomUser);
+          if (roomUser.isTeacher()) {
+            teacherInGroup = true;
+          }
+        });
+      }
+    }
+    print("groupUsers $groupUsers");
+    Map groupUserMap = HashMap();
+    groupUsers.forEach((element) {
+      groupUserMap[element.uid] = 10;
+    });
+    _courseProvider.setInGroup(isTeacherInGroup: teacherInGroup, isStudentInGroup: studentInGroup, groupUser: groupUserMap, boardInfo: boardInfo);
+    _updateGroupUsers(groupUsers);
+    noGroupUserIds.forEach((element) {
+      if (!muteUser.containsKey(element)) {
+        AgoraRtcEngine.muteRemoteAudioStream(element, true);
+        AgoraRtcEngine.muteRemoteVideoStream(element, true);
+        muteUser[element] = true;
+      }
+    });
+    if (teacherInGroup) {
+      AgoraRtcEngine.muteRemoteAudioStream(_teacher.uid, false);
+      AgoraRtcEngine.muteRemoteVideoStream(_teacher.uid, false);
+    } else {
+      AgoraRtcEngine.muteRemoteAudioStream(_teacher.uid, true);
+      AgoraRtcEngine.muteRemoteVideoStream(_teacher.uid, true);
     }
   }
 
@@ -1458,7 +1566,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   _startVideo(RoomUser user) async {
     print("_startVideo ::_local $_local");
     AgoraRtcEngine.setClientRole(user.coVideo == 1 ? ClientRole.Broadcaster : ClientRole.Audience);
-    if (_teacher != null && _teacher.coVideo == 1 && user.coVideo == 1) {
+    if ((_courseProvider.isGroup == 1 || (_teacher != null && _teacher.coVideo == 1)) && user.coVideo == 1) {
       if (!_enableLocalVideo) {
         _enableLocalVideo = true;
         AgoraRtcEngine.enableLocalVideo(true);
@@ -1530,11 +1638,22 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
     };
 
     AgoraRtcEngine.onNetworkQuality = (int uid, int txQuality, int rxQuality) {
-//      print("onNetworkQuality : uid :$uid  txQuality:$txQuality  rxQuality:$rxQuality  ", level: Log.debug);
+      // print("onNetworkQuality : uid :$uid  txQuality:$txQuality  rxQuality:$rxQuality  ");
 
       if (uid == 0 && _courseProvider.status != 0) {
         int val = max<int>(txQuality, rxQuality);
         _networkQualityProvider.setNetworkQuality(val);
+      }
+    };
+
+    AgoraRtcEngine.onRemoteAudioStats = (RemoteAudioStats stats) {
+      // print("onRemoteAudioStats : uid :${stats.uid}  txQuality:${stats.toJson()}  ");
+      if (_courseProvider.groupUser.containsKey(stats.uid)) {
+        int before = _courseProvider.groupUser[stats.uid];
+        _courseProvider.groupUser[stats.uid] = stats.jitterBufferDelay;
+        if ((before == 0 && stats.jitterBufferDelay > 0) || (before > 0 && stats.jitterBufferDelay == 0)) {
+          _studentProvider.up();
+        }
       }
     };
   }
@@ -1545,9 +1664,17 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   }
 
   void _updateUsers(List<RoomUser> coVideoUsers) {
+    if (_courseProvider.isGroup == 1 && _courseProvider.isStudentInGroup) {
+      print("_updateUsers 正在分组状态");
+      return;
+    }
     RoomUser local;
     RoomUser teacher;
-    List<RoomUser> others = new List();
+    List<RoomUser> others = [];
+    int coVideo = 0;
+    if (ObjectUtil.isNotEmpty(_local)) {
+      coVideo = _local.coVideo;
+    }
     coVideoUsers?.forEach((u) {
       if (u.isTeacher()) {
         teacher = u;
@@ -1573,32 +1700,123 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
       _local?.enableAudio = 0;
       _local?.grantBoard = 0;
     }
-    _startVideo(_local);
+    int beforeLen = _others.length;
+    beforeLen = beforeLen + coVideo;
     _others.clear();
     _others.addAll(others);
-    _studentProvider.notifier(_local);
+    int nowLen = others.length;
+    if (ObjectUtil.isNotEmpty(local)) {
+      nowLen = nowLen + local.coVideo;
+    }
+    print("nowLen $nowLen   beforeLen $beforeLen");
+    if (nowLen == 0 && beforeLen > 0) {
+      for (var i = 0; i < beforeLen; i++) {
+        others.add(null);
+      }
+      _studentContainerTimer = Timer(Duration(seconds: 2), () {
+        _studentProvider.update(others: []);
+      });
+    } else {
+      _studentContainerTimer?.cancel();
+    }
+    _startVideo(_local);
+    _studentProvider.update(user: _local, others: others);
   }
 
-  ///白板区域
-  Widget _buildWhiteboard() {
-    if (_whiteboard == null) {
-      print("widget.roomData.boardId ${widget.roomData.boardId}");
-      Store<GSYState> store = StoreProvider.of(context);
-      Map userPayload = {
-        "ydID": store.state.userInfo.userId.toString(),
-        "userId": widget.roomData.user.uid,
-        "identity": widget.roomData.user.role == 1 ? "host" : "guest",
-        "userName": store.state.userInfo.realName,
-        "userIcon": store.state.userInfo.headUrl,
-      };
-      // String userPayload = jsonEncode(userPayloadMap);
-      _whiteboard = Whiteboard(
-          appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg",
-          uuid: widget.roomData.boardId,
-          roomToken: widget.roomData.boardToken,
-          controller: _whiteboardController,
-          userPayload: userPayload);
+  void _updateGroupUsers(List<RoomUser> coVideoUsers) async {
+    RoomUser local;
+    RoomUser teacher;
+    List<RoomUser> others = [];
+    int coVideo = 0;
+    if (ObjectUtil.isNotEmpty(_local)) {
+      coVideo = _local.coVideo;
     }
+    coVideoUsers?.forEach((u) {
+      if (u.isTeacher()) {
+        teacher = u;
+      } else if (u.userId == _local.userId) {
+        local = u;
+      } else {
+        others.add(u);
+      }
+    });
+
+    // if (ObjectUtil.isNotEmpty(teacher)) {
+    //   _teacher = teacher;
+    // } else {
+    //   _teacher?.coVideo = 0;
+    // }
+    // _teacherProvider.notifier(_teacher);
+
+    if (ObjectUtil.isNotEmpty(local)) {
+      _local = local;
+    } else {
+      _local?.coVideo = 0;
+      _local?.enableVideo = 0;
+      _local?.enableAudio = 0;
+      _local?.grantBoard = 0;
+    }
+    int beforeLen = _others.length;
+    beforeLen = beforeLen + coVideo;
+    _others.clear();
+    _others.addAll(others);
+    int nowLen = others.length;
+    if (ObjectUtil.isNotEmpty(local)) {
+      nowLen = nowLen + local.coVideo;
+    }
+    print("nowLen $nowLen   beforeLen $beforeLen");
+    if (nowLen == 0 && beforeLen > 0) {
+      for (var i = 0; i < beforeLen; i++) {
+        others.add(null);
+      }
+      _studentContainerTimer = Timer(Duration(seconds: 2), () {
+        _studentProvider.update(others: []);
+      });
+    } else {
+      _studentContainerTimer?.cancel();
+    }
+    _startVideo(_local);
+    _studentProvider.update(user: _local, others: others);
+  }
+
+  String _boardId = "";
+
+  ///白板区域
+  Widget _buildWhiteboard(Size size) {
+    if (_whiteboard != null && _courseProvider.isGroup == 0 && widget.roomData.boardId == _boardId) {
+      return _whiteboard;
+    }
+    var boardId = widget.roomData.boardId;
+    var boardToken = widget.roomData.boardToken;
+    if (_courseProvider.boardInfo != null && _courseProvider.boardInfo.length > 0 && _courseProvider.isGroup == 1) {
+      boardId = _courseProvider.boardInfo["boardId"];
+      boardToken = _courseProvider.boardInfo["boardToken"];
+    }
+    if (_boardId == boardId) {
+      print("_boardId == boardId");
+      return _whiteboard;
+    }
+    _boardId = boardId;
+    _whiteboardController.reInit();
+    print("widget.roomData.boardId $boardId");
+    Store<GSYState> store = StoreProvider.of(context);
+    Map userPayload = {
+      "ydID": store.state.userInfo.userId.toString(),
+      "userId": widget.roomData.user.uid,
+      "identity": widget.roomData.user.role == 1 ? "host" : "guest",
+      "userName": store.state.userInfo.realName,
+      "userIcon": store.state.userInfo.headUrl,
+    };
+    // String userPayload = jsonEncode(userPayloadMap);
+    _whiteboard = Whiteboard(
+      appIdentifier: "w0MeEJFIEeqZsrtGYadcXg/CnI3nUtyIcYaNg",
+      uuid: boardId,
+      roomToken: boardToken,
+      controller: _whiteboardController,
+      userPayload: userPayload,
+      size: size,
+      isGroup: _courseProvider.isGroup == 1 && _courseProvider.isStudentInGroup,
+    );
     return _whiteboard;
   }
 
@@ -2318,12 +2536,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
   Future rewardFirstStar() async {
     //检查是否已经领奖
     var flag = false;
-    var param = {
-      "catalogId": widget.roomData.courseware.id,
-      "liveCourseallotId": widget.roomData.liveCourseallotId,
-      "liveEventId": 2,
-      "roomId": widget.roomData.room.roomUuid
-    };
+    var param = {"catalogId": widget.roomData.courseware.id, "liveCourseallotId": widget.roomData.liveCourseallotId, "liveEventId": 2, "roomId": widget.roomData.room.roomUuid};
     final res = await RoomDao.isRewardStar(param);
     if (res.result != null && res.data != null && res.data["code"] == 200) {
       if (!res.data["data"]["is"]) {
@@ -2433,6 +2646,7 @@ class RoomLandscapeManyPageState extends State<RoomLandscapeManyPage> with Singl
     _textController?.dispose();
     PaintingBinding.instance.imageCache.clear();
     _roomEduSocket?.close();
+    _studentContainerTimer?.cancel();
     super.dispose();
   }
 

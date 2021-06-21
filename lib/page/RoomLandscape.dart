@@ -43,7 +43,6 @@ import 'package:flutter_start/widget/RedRain.dart';
 import 'package:flutter_start/widget/StarDialog.dart';
 import 'package:flutter_start/widget/StarGif.dart';
 import 'package:flutter_start/widget/UserStarWidget.dart';
-import 'package:flutter_start/widget/courseware_video.dart';
 import 'package:flutter_start/widget/expanded_viewport.dart';
 import 'package:flutter_start/widget/room/DeviceInputsMenu.dart';
 import 'package:flutter_start/widget/room/EyerestWidget.dart';
@@ -56,7 +55,6 @@ import 'package:oktoast/oktoast.dart';
 import 'package:orientation/orientation.dart';
 import 'package:provider/provider.dart';
 import 'package:redux/redux.dart';
-import 'package:screen/screen.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 import 'package:yondor_whiteboard/whiteboard.dart';
@@ -318,7 +316,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
           child: AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.dark,
             child: Scaffold(
-                resizeToAvoidBottomPadding: false,
+                resizeToAvoidBottomInset: false,
                 appBar: PreferredSize(
                     child: Offstage(
                       offstage: true,
@@ -755,6 +753,11 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       child: WebViewPlus(
         initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
         javascriptMode: JavascriptMode.unrestricted,
+        onWebResourceError: (WebResourceError error) {
+          if (error.errorType != null && error.errorType == WebResourceErrorType.webContentProcessTerminated) {
+            _webViewPlusController?.reload();
+          }
+        },
         javascriptChannels: <JavascriptChannel>[
           JavascriptChannel(
               name: 'Courseware',
@@ -1197,10 +1200,10 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
   Future<AgoraRtmChannel> _createChannel(String name) async {
     AgoraRtmChannel channel = await _rtmClient.createChannel(name);
     channel.onMemberJoined = (AgoraRtmMember member) {
-      _log("Member joined: " + member.userId + ', channel: ' + member.channelId);
+      print("Member joined: " + member.userId + ', channel: ' + member.channelId, level: Log.info);
     };
     channel.onMemberLeft = (AgoraRtmMember member) {
-      _log("Member left: " + member.userId + ', channel: ' + member.channelId);
+      print("Member left: " + member.userId + ', channel: ' + member.channelId, level: Log.info);
     };
     channel.onMessageReceived = (AgoraRtmMessage message, AgoraRtmMember member) {
       _handleMsg(message, member);
@@ -1209,7 +1212,7 @@ class RoomLandscapePageState extends State<RoomLandscapePage> with SingleTickerP
       _log("Channel onMemberCountUpdated:  count:$count ");
     };
     channel.onError = (err) {
-      _log("Channel err:  err:$err ");
+      print("Channel err:  err:$err ", level: Log.error);
     };
     return channel;
   }

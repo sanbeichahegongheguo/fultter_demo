@@ -26,11 +26,11 @@ class LiveRankWidgetV2 extends StatefulWidget {
 
 class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   String tag = "LiveRankWidget";
-  List quesDataList = List();
+  List quesDataList = [];
   Map quesMyData = Map();
-  List starDataList = List();
+  List starDataList = [];
   Map starMyData = Map();
-  Color textColor = Color(0xFF666666);
+  Color textColor = Color.fromRGBO(174, 174, 174, 1);
 
   /// 创建控制器
   FRefreshController controller = FRefreshController();
@@ -45,6 +45,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
 
   @override
   void initState() {
+    super.initState();
     getData();
     getUserData();
     getStarData();
@@ -74,8 +75,8 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
       child: ChangeNotifierProvider.value(
           value: _typeProvider,
           child: Consumer<_TypeProvider>(builder: (context, model, child) {
-            var dataList = model.type == 0 ? starDataList : quesDataList;
-            var maData = model.type == 0 ? starMyData : quesMyData;
+            var dataList = model.type == 0 ? quesDataList : starDataList;
+            var maData = model.type == 0 ? quesMyData : starMyData;
             return Column(
               children: <Widget>[
                 Row(
@@ -89,7 +90,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             Center(
                               child: Text(
                                 "星星榜",
-                                style: TextStyle(color: model.type == 1 ? Colors.white : Color(0xffAEAEAE)),
+                                style: TextStyle(color: model.type == 1 ? Colors.white : Color(0xffAEAEAE), fontSize: ScreenUtil.getInstance().getSp(6)),
                               ),
                             ),
                             SizedBox(
@@ -116,7 +117,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             Center(
                               child: Text(
                                 "答题榜",
-                                style: TextStyle(color: model.type == 0 ? Colors.white : Color(0xffAEAEAE)),
+                                style: TextStyle(color: model.type == 0 ? Colors.white : Color(0xffAEAEAE), fontSize: ScreenUtil.getInstance().getSp(6)),
                               ),
                             ),
                             SizedBox(
@@ -154,7 +155,8 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             SizedBox(
                               height: ScreenUtil.getInstance().getWidthPx(10),
                             ),
-                            Text("  暂无${model.type == 0 ? "星星" : "答题"}榜数据！", style: TextStyle(color: Color(0xFFb2b1b9))),
+                            Text("  暂无${model.type == 1 ? "星星" : "答题"}榜数据！",
+                                style: TextStyle(color: Color(0xFFb2b1b9), fontSize: ScreenUtil.getInstance().getSp(6))),
                           ],
                         )
                       : FRefresh(
@@ -181,12 +183,12 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                             shrinkWrap: true,
                             itemBuilder: (_, i) {
                               return _buildLine(_getIcon(i), dataList[i]["headerImg"], dataList[i]["realName"],
-                                  model.type == 0 ? dataList[i]["star"] : dataList[i]["answerCount"], model.type, (i + 1).toString());
+                                  model.type == 1 ? dataList[i]["star"] : dataList[i]["answerCount"], model.type, (i + 1).toString());
                             },
                           ),
                           onRefresh: () async {
                             /// 通过 controller 结束刷新
-                            if (model.type == 0) {
+                            if (model.type == 1) {
                               await getStarData();
                               await getUserStarData();
                             } else {
@@ -199,15 +201,15 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                 ),
                 Container(
                   child: _buildLine(_getIcon(maData["rank"] != null && maData["rank"] > 0 ? maData["rank"] - 1 : -1), store.state.userInfo.headUrl,
-                      "${store.state.userInfo.realName}", model.type == 0 ? maData["star"] : maData["answerCount"], model.type, maData["rank"],
-                      height: ScreenUtil.getInstance().getHeightPx(200), color: Color(0xFFECB22B)),
+                      "${store.state.userInfo.realName}", model.type == 1 ? maData["star"] : maData["answerCount"], model.type, maData["rank"],
+                      height: ScreenUtil.getInstance().getHeightPx(120), color: Color(0xFFECB22B)),
                   decoration: BoxDecoration(
                     color: Color(0xff6666661),
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                   ),
                 ),
                 SizedBox(
-                  height: ScreenUtil.getInstance().getHeightPx(40),
+                  height: ScreenUtil.getInstance().getHeightPx(20),
                 )
               ],
             );
@@ -231,15 +233,15 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   Widget getRankContainer(int i, color) {
     return Container(
       alignment: Alignment.center,
-      width: ScreenUtil.getInstance().getWidthPx(40),
-      height: ScreenUtil.getInstance().getWidthPx(40),
+      width: ScreenUtil.getInstance().getWidthPx(24),
+      height: ScreenUtil.getInstance().getWidthPx(24),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
       child: Text(
         "${i}",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white, fontSize: ScreenUtil.getInstance().getSp(5)),
       ),
     );
   }
@@ -247,7 +249,7 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
   _buildLine(topIcon, headerImg, realName, star, type, rank, {height, color}) {
     return Container(
       alignment: Alignment.centerLeft,
-      height: height ?? ScreenUtil.getInstance().getHeightPx(180),
+      height: height ?? ScreenUtil.getInstance().getHeightPx(110),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -260,40 +262,38 @@ class _LiveRankWidgeV2tState extends State<LiveRankWidgetV2> {
                   ? topIcon
                   : Container(
                       alignment: Alignment.center,
-                      width: ScreenUtil.getInstance().getWidthPx(40),
-                      height: ScreenUtil.getInstance().getWidthPx(40),
+                      width: ScreenUtil.getInstance().getWidthPx(24),
+                      height: ScreenUtil.getInstance().getWidthPx(24),
                       child: Text(
                         "${rank == null || rank == -1 ? "暂未上榜" : rank}",
-                        style: TextStyle(color: color ?? textColor),
+                        style: TextStyle(color: color ?? textColor, fontSize: ScreenUtil.getInstance().getSp(5)),
                       ),
                     ),
               SizedBox(
-                width: ScreenUtil.getInstance().getWidthPx(15),
+                width: ScreenUtil.getInstance().getWidthPx(50),
               ),
-              // ClipOval(
-              //   child: CommonUtils.getHeaderImg("$headerImg",
-              //       width: ScreenUtil.getInstance().getWidthPx(55),
-              //       height: ScreenUtil.getInstance().getWidthPx(55)),
-              // ),
               Text(
                 "$realName",
-                style: TextStyle(color: color ?? textColor),
+                style: TextStyle(color: color ?? textColor, fontSize: ScreenUtil.getInstance().getSp(6)),
               ),
             ],
           ),
           Row(
             children: <Widget>[
               Text(
-                "$star ${type == 0 ? "" : "题"}",
-                style: TextStyle(color: color ?? textColor),
+                "${star ?? ""} ${type == 1 ? "" : "题"}",
+                style: TextStyle(color: color ?? textColor, fontSize: ScreenUtil.getInstance().getSp(6)),
               ),
               SizedBox(
                 width: ScreenUtil.getInstance().getWidthPx(15 / 2),
               ),
-              Image.asset(
-                type == 0 ? "images/live/toolbar/icon_right.png" : "images/live/toolbar/icon_star.png",
-                width: ScreenUtil.getInstance().getWidthPx(28),
-                height: ScreenUtil.getInstance().getWidthPx(28),
+              Container(
+                alignment: Alignment.center,
+                width: ScreenUtil.getInstance().getWidthPx(18),
+                height: ScreenUtil.getInstance().getWidthPx(18),
+                child: Image.asset(
+                  type == 0 ? "images/live/toolbar/icon_right.png" : "images/live/toolbar/icon_star.png",
+                ),
               ),
               SizedBox(
                 width: ScreenUtil.getInstance().getWidthPx(15 / 2),

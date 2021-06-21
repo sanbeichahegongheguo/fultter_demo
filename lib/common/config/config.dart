@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 class Config {
-  static const PAGE_SIZE = 20;
-  static const DEBUG = true;
-  static const USE_NATIVE_WEBVIEW = true;
+  static const DEBUG = false;
 
   /// //////////////////////////////////////常量////////////////////////////////////// ///
   static const TOKEN_KEY = "token";

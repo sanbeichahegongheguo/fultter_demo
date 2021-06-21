@@ -8,6 +8,7 @@ import com.herewhite.sdk.RoomCallbacks;
 import com.herewhite.sdk.RoomParams;
 import com.herewhite.sdk.WhiteSdk;
 import com.herewhite.sdk.domain.BroadcastState;
+import com.herewhite.sdk.domain.CameraConfig;
 import com.herewhite.sdk.domain.MemberState;
 import com.herewhite.sdk.domain.Promise;
 import com.herewhite.sdk.domain.RoomPhase;
@@ -32,6 +33,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
     private Boolean writable;
     private ViewMode viewMode;
     private long canUndoSteps = 0;
+    private Double scale;
     private Handler handler = new Handler(Looper.getMainLooper());
     private BoardEventListener listener;
 
@@ -40,6 +42,7 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
     }
 
     public void init(WhiteSdk sdk, RoomParams params) {
+
         log.d("init");
         sdk.joinRoom(params, this, promise);
     }
@@ -133,6 +136,19 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
         if (t != null) {
             t.refreshViewSize();
         }
+    }
+
+    public void setScale(double scale) {
+        log.i("setScale : %f",scale);
+        if (t != null) {
+            CameraConfig cameraConfig =  new CameraConfig();
+            cameraConfig.setCenterX(0d);
+            cameraConfig.setCenterY(0d);
+            cameraConfig.setScale(scale);
+            t.moveCamera(cameraConfig);
+            t.refreshViewSize();
+        }
+        this.scale = scale;
     }
 
     public void disableDeviceInputs(boolean disabled) {
@@ -272,7 +288,11 @@ public class BoardManager extends NetlessManager<Room> implements RoomCallbacks 
         if (viewMode !=null ){
             setViewMode(viewMode);
         }
+        if (scale !=null ){
+            setScale(scale);
+        }
         setDisableSerialization(false);
+
     }
 
     /**

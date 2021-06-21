@@ -60,6 +60,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
     private Map<String, Object> userPayload;
     private Player player;
     private Handler handler;
+    private boolean isGroup = false;
+    private double width;
+    private double height;
     MyWhiteboardView(Context context, BinaryMessenger messenger, long uid, Map<String, Object> params) {
         handler = new Handler(Looper.getMainLooper());
         methodChannel = new MethodChannel(messenger, "com.yondor.live/whiteboard_" + uid);
@@ -80,6 +83,15 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         }
         if(params.containsKey("userPayload")){
             userPayload =  (Map<String, Object>) params.get("userPayload");
+        }
+        if(params.containsKey("width")){
+            width = (double)params.get("width");
+        }
+        if(params.containsKey("height")){
+            height = (double)params.get("height");
+        }
+        if(params.containsKey("isGroup")){
+            isGroup = (boolean)params.get("isGroup");
         }
         this.context = context;
         whiteboardView = new WhiteboardView(context);
@@ -103,6 +115,8 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
 
     @Override
     public void dispose() {
+        methodChannel.setMethodCallHandler(null);
+        whiteboardView.destroy();
         releaseBoard();
     }
     private void init(){
@@ -121,6 +135,15 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
         disableDeviceInputs(true);
         setWritable(false);
         disableCameraTransform(true);
+        double scale;
+        if (isGroup){
+            scale = Math.min(width/904,height/506);
+        }else{
+            scale = Math.min(width/1079,height/606);
+        }
+        log.i("width:%f  height:%f  scale:%f",width,height,scale);
+        scale = Double.valueOf(String.format("%.3f", scale ));
+        setScale(scale);
     }
 
     public void initBoardWithRoomToken(String uuid, String roomToken) {
@@ -132,6 +155,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
                     Map<String, Object> map = new HashMap<>();
                     map.put("created", true);
                     methodChannel.invokeMethod("onCreated",map);
+                    Map<String, Object> cmap = new HashMap<>();
+                    cmap.put("data", "connecting");
+                    postMsg("onRoomPhaseChanged",cmap);
                     RoomParams params = new RoomParams(uuid, roomToken);
                     params.setTimeout(2,TimeUnit.HOURS);
                     if (null!=userPayload){
@@ -181,6 +207,9 @@ class MyWhiteboardView implements PlatformView, BoardEventListener, MethodCallHa
 
     public void setWritable(boolean writable) {
         boardManager.setWritable(writable);
+    }
+    public void setScale(double scale) {
+        boardManager.setScale(scale);
     }
     public void releaseBoard() {
          log.i("releaseBoard ");

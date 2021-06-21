@@ -71,7 +71,7 @@ class _StartState extends State<Start> with TickerProviderStateMixin {
           },
         ));
         Future.delayed(Duration(milliseconds: _widgetList.length > 5 ? 100 * i : 200 * i), () {
-          controlerList[i].forward();
+          controlerList[i]?.forward();
           setState(() {
             _num += 1;
           });

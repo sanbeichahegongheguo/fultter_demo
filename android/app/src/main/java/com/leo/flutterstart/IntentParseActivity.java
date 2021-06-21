@@ -12,7 +12,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.TaskStackBuilder;
 
-import java.util.List;
+   import java.util.List;
 
 public class IntentParseActivity extends Activity {
 
@@ -23,7 +23,7 @@ public class IntentParseActivity extends Activity {
         try{
             Log.i("IntentParseActivity", "url: " + data.toString());
             Intent intent = new Intent(this,MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP |  Intent.FLAG_ACTIVITY_CLEAR_TOP);
             if(isLaunchedActivity(this,MainActivity.class)){
                 startActivity(intent);
             }else{

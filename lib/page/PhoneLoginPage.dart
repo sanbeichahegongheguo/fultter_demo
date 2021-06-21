@@ -87,7 +87,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   /// 不退出
   Future<bool> _dialogExitApp(BuildContext context) async {
     if ((DateTime.now().millisecondsSinceEpoch - _exitTime) > 2000) {
-      showToast('${Config.TITLE}：再按一次退出',position:ToastPosition.bottom);
+      showToast('${Config.TITLE}：再按一次退出', position: ToastPosition.bottom);
       _exitTime = DateTime.now().millisecondsSinceEpoch;
       return Future.value(false);
     } else {
@@ -106,7 +106,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
           return _dialogExitApp(context);
         },
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomInset: false,
           body: GestureDetector(
             onTap: () {
               setState(() {
@@ -118,177 +118,184 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
             },
             child: Container(
               child: Center(
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Flex(direction: Axis.vertical, children: <Widget>[
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(136),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Flex(direction: Axis.vertical, children: <Widget>[
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(136),
+                    ),
+                    Stack(
+                      overflow: Overflow.visible,
+                      children: <Widget>[
+                        Container(
+                          child: Image.asset(
+                            "images/phone_login/logo.png",
+                            width: ScreenUtil.getInstance().getWidthPx(555),
+                            height: ScreenUtil.getInstance().getHeightPx(136),
+                          ),
                         ),
-                        Stack(
-                          overflow :Overflow.visible,
-                          children: <Widget>[
-                            Container(
-                              child: Image.asset(
-                                "images/phone_login/logo.png",
-                                width: ScreenUtil.getInstance().getWidthPx(555),
-                                height: ScreenUtil.getInstance().getHeightPx(136),
-                              ),
-                            ),
                         Positioned(
                           top: -37,
-                          right:-50,
+                          right: -50,
                           child: Image.asset(
                             "images/phone_login/parent.png",
                             width: ScreenUtil.getInstance().getWidthPx(224),
                           ),
                         )
-
-                          ],
-                        ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(70),
-                        ),
-                        Container(
-                          child: Image.asset(
-                            "images/phone_login/center.png",
+                      ],
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(70),
+                    ),
+                    Container(
+                      child: Image.asset(
+                        "images/phone_login/center.png",
 //                            width: ScreenUtil.getInstance().getWidthPx(552),
-                            height: ScreenUtil.getInstance().getHeightPx(447),
-                          ),
-                        ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(100),
-                        ),
-                        Container(
-                            child: ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
-                          child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
-                        )),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
-                          child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
-                        ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(107),
-                        ),
-                        Container(
-                          child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135), onTap: () {
-                            _login();
-                          }, splashColor: loginBtn ? Colors.amber : Colors.grey, decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey, textColor: Colors.white, textSize: 20.0, elevation: 5),
-                        ),
-                        SizedBox(
-                          height: ScreenUtil.getInstance().getHeightPx(70),
-                        ),
-                        InkWell(
+                        height: ScreenUtil.getInstance().getHeightPx(447),
+                      ),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(100),
+                    ),
+                    Container(
+                        child: ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: ScreenUtil.getInstance().getHeightPx(500), maxWidth: ScreenUtil.getInstance().getWidthPx(1000)),
+                      child: _getTextField("请输入您的手机号", userNameController, key: _globalKey),
+                    )),
+                    Container(
+                      padding: EdgeInsets.only(left: ScreenUtil.getInstance().getWidthPx(166), top: ScreenUtil.getInstance().getHeightPx(25)),
+                      child: Text("若该手机号未注册，我们会自动为您注册", style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(12), color: Color(0xFFff6464))),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(107),
+                    ),
+                    Container(
+                      child: CommonUtils.buildBtn("下一步", width: ScreenUtil.getInstance().getHeightPx(846), height: ScreenUtil.getInstance().getHeightPx(135),
                           onTap: () {
-                            NavigatorUtil.goLogin(context);
-                          },
-                          child: Text(
-                            "使用手机密码登录",
-                            style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                              padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
-                              alignment: AlignmentDirectional.bottomCenter,
-                              // ignore: static_access_to_instance_member
-                              child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    InkWell(
-                                      onTap: () {
-                                        linkTo('commitment');
-                                      },
-                                      child: Text(
-                                        "备案内容公开承诺书",
-                                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(14), decoration: TextDecoration.underline),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Image.asset(
-                                      "images/phone_login/bottom.png",
-                                      fit: BoxFit.scaleDown,
-                                      height: ScreenUtil.getInstance().getHeightPx(77),
-                                      width: ScreenUtil.getInstance().getWidthPx(77),
-                                    ),
-                                    Text("  ${Config.TITLE}", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: ScreenUtil.getInstance().getHeightPx(20),
-                                ),
-                                Container(
-                                  child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      GestureDetector(
-                                        child: _AgreementCheck ? new Icon(
-                                          Icons.check_circle,
-                                          color: Color(0xFF5fc589),
-                                          size:16.0,
-                                        ):new Icon(
-                                          Icons.radio_button_unchecked,
-                                          color: Color(0xFF5fc589),
-                                          size:16.0,
-                                        ),
-                                        onTap: () {
-                                          setState(() {
-                                            _AgreementCheck = !_AgreementCheck;
-                                          });
-                                        },
-                                      ),
-                                      Text.rich(TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: "已阅读并同意",
-                                              style: TextStyle(
-                                                color: Color(0xFF666666),
-                                                fontSize: ScreenUtil.getInstance().getSp(11),
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: "《远大教育用户服务协议》",
-                                              style: TextStyle(
-                                                color: Color(0xFF5fc589),
-                                                fontSize: ScreenUtil.getInstance().getSp(11),
-                                              ),
-                                              recognizer: TapGestureRecognizer()..onTap = () {
-                                                linkTo('education');
-                                              },
-                                            ),
-                                            TextSpan(
-                                              text: "与",
-                                              style: TextStyle(
-                                                color: Color(0xFF666666),
-                                                fontSize: ScreenUtil.getInstance().getSp(11),
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: "《远大教育隐私协议》",
-                                              style: TextStyle(
-                                                color: Color(0xFF5fc589),
-                                                fontSize: ScreenUtil.getInstance().getSp(11),
-                                              ),
-                                              recognizer: TapGestureRecognizer()..onTap = () {
-                                                linkTo('privacy');
-                                              },
-                                            ),
-                                          ]
-                                      )),
-                                    ],
+                        _login();
+                      },
+                          splashColor: loginBtn ? Colors.amber : Colors.grey,
+                          decorationColor: loginBtn ? Color(0xFFfbd951) : Colors.grey,
+                          textColor: Colors.white,
+                          textSize: 20.0,
+                          elevation: 5),
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().getHeightPx(70),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        NavigatorUtil.goLogin(context);
+                      },
+                      child: Text(
+                        "使用手机密码登录",
+                        style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(16), decoration: TextDecoration.underline),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                          padding: EdgeInsets.only(bottom: ScreenUtil.getInstance().getHeightPx(55)),
+                          alignment: AlignmentDirectional.bottomCenter,
+                          // ignore: static_access_to_instance_member
+                          child: Flex(direction: Axis.vertical, mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: () {
+                                    linkTo('commitment');
+                                  },
+                                  child: Text(
+                                    "备案内容公开承诺书",
+                                    style: TextStyle(fontSize: ScreenUtil.getInstance().getSp(14), decoration: TextDecoration.underline),
                                   ),
                                 )
-                              ])),
-                          flex: 2,
-                        ),
-                      ]),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image.asset(
+                                  "images/phone_login/bottom.png",
+                                  fit: BoxFit.scaleDown,
+                                  height: ScreenUtil.getInstance().getHeightPx(77),
+                                  width: ScreenUtil.getInstance().getWidthPx(77),
+                                ),
+                                Text("  ${Config.TITLE}", style: TextStyle(color: Colors.black, fontSize: ScreenUtil.getInstance().getSp(14)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: ScreenUtil.getInstance().getHeightPx(20),
+                            ),
+                            Container(
+                              child: new Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    child: _AgreementCheck
+                                        ? new Icon(
+                                            Icons.check_circle,
+                                            color: Color(0xFF5fc589),
+                                            size: 16.0,
+                                          )
+                                        : new Icon(
+                                            Icons.radio_button_unchecked,
+                                            color: Color(0xFF5fc589),
+                                            size: 16.0,
+                                          ),
+                                    onTap: () {
+                                      setState(() {
+                                        _AgreementCheck = !_AgreementCheck;
+                                      });
+                                    },
+                                  ),
+                                  Text.rich(TextSpan(children: [
+                                    TextSpan(
+                                      text: "已阅读并同意",
+                                      style: TextStyle(
+                                        color: Color(0xFF666666),
+                                        fontSize: ScreenUtil.getInstance().getSp(11),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: "《远大教育用户服务协议》",
+                                      style: TextStyle(
+                                        color: Color(0xFF5fc589),
+                                        fontSize: ScreenUtil.getInstance().getSp(11),
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          linkTo('education');
+                                        },
+                                    ),
+                                    TextSpan(
+                                      text: "与",
+                                      style: TextStyle(
+                                        color: Color(0xFF666666),
+                                        fontSize: ScreenUtil.getInstance().getSp(11),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: "《远大教育隐私协议》",
+                                      style: TextStyle(
+                                        color: Color(0xFF5fc589),
+                                        fontSize: ScreenUtil.getInstance().getSp(11),
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          linkTo('privacy');
+                                        },
+                                    ),
+                                  ])),
+                                ],
+                              ),
+                            )
+                          ])),
+                      flex: 2,
                     ),
-                  ),
+                  ]),
+                ),
+              ),
               decoration: BoxDecoration(
                 gradient: new LinearGradient(
                   begin: const FractionalOffset(0.5, 0.0),
@@ -302,18 +309,20 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       );
     });
   }
+
   //跳转
-  void linkTo(where){
-    if(where == 'education'){
+  void linkTo(where) {
+    if (where == 'education') {
       NavigatorUtil.goWebView(context, AddressUtil.getInstance().getEducation());
-    }else if(where == 'privacy'){
+    } else if (where == 'privacy') {
       NavigatorUtil.goWebView(context, AddressUtil.getInstance().getPrivacy());
-    }else if(where == 'wxServer'){
+    } else if (where == 'wxServer') {
       NavigatorUtil.goWebView(context, AddressUtil.getInstance().getWxServer());
-    }else if(where == 'commitment'){
+    } else if (where == 'commitment') {
       NavigatorUtil.goWebView(context, AddressUtil.getInstance().getCommitment());
     }
   }
+
   ///getTextField 构建输入框
   TextFormField _getTextField(String hintText, TextEditingController controller, {bool obscureText, GlobalKey key}) {
     return TextFormField(
@@ -321,7 +330,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
       keyboardType: TextInputType.phone,
       obscureText: obscureText ?? false,
       controller: controller,
-      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black,textBaseline:TextBaseline.alphabetic),
+      style: new TextStyle(fontSize: ScreenUtil.getInstance().getSp(20), color: Colors.black, textBaseline: TextBaseline.alphabetic),
       inputFormatters: [WhitelistingTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(11)],
       decoration: new InputDecoration(
         suffixIcon: _hasdeleteIcon
@@ -349,7 +358,7 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
   }
 
   void _login() async {
-    if(!_AgreementCheck){
+    if (!_AgreementCheck) {
       showToast("请先同意协议！");
       return;
     }
@@ -366,44 +375,47 @@ class PhoneLoginState extends State<PhoneLoginPage> with SingleTickerProviderSta
     String name = '';
     String head = '';
     int userId;
-    if(data.result){
+    if (data.result) {
       print('登录状态');
       print(data.data["message"]);
+
       ///0：存在家长账号，2：已经有135的学生，没有135的家长
-      if(data.data["error"]=="0"||data.data["error"]=="2"){
+      if (data.data["error"] == "0" || data.data["error"] == "2") {
         isLogin = true;
         print('0：存在家长账号，2：已经有135的学生，没有135的家长');
+
         ///这个手机号没有注册过
-      }else if(data.data["error"]=="1"){
+      } else if (data.data["error"] == "1") {
         registerState = 1;
         print('这个手机号没有注册过');
+
         ///已经有135的学生，这个135的学生有136的家长了
-      }else if(data.data["error"]=="3"){
+      } else if (data.data["error"] == "3") {
         registerState = 3;
         print('已经有135的学生，这个135的学生有136的家长了');
         userId = data.data["ext1"];
         name = data.data["ext2"];
         head = data.data["ext3"];
+
         ///注册失败
-      }else if(data.data["error"]=="4"){
+      } else if (data.data["error"] == "4") {
         showToast(data.data["message"]);
       }
-      if(data.data["error"]=="0"||data.data["error"]=="2"||data.data["error"]=="1"){
+      if (data.data["error"] == "0" || data.data["error"] == "2" || data.data["error"] == "1") {
         var isSend = await CommonUtils.showEditDialog(
           context,
           CodeWidget(phone: userNameController.text),
         );
         if (null != isSend && isSend) {
-          NavigatorUtil.goRegester(context,isLogin:isLogin,index: 1,userPhone:userNameController.text,registerState:registerState);
+          NavigatorUtil.goRegester(context, isLogin: isLogin, index: 1, userPhone: userNameController.text, registerState: registerState);
         }
-      }else{
-        NavigatorUtil.goBuildArchives(context,registerState:registerState,index: 2,userPhone:userNameController.text,head:head,name:name,userId:userId);
+      } else {
+        NavigatorUtil.goBuildArchives(context,
+            registerState: registerState, index: 2, userPhone: userNameController.text, head: head, name: name, userId: userId);
       }
-    }else{
-      showToast("网络异常请稍后重试！",position: ToastPosition.bottom);
+    } else {
+      showToast("网络异常请稍后重试！", position: ToastPosition.bottom);
     }
-
-
 
 //    if (loginBtn) {
 //      CommonUtils.showLoadingDialog(context, text: "登陆中");

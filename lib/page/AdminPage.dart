@@ -67,9 +67,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                         Container(
                           width: widthSrcreen,
                           padding: EdgeInsets.only(
-                              left: ScreenUtil.getInstance().getWidthPx(81),
-                              top: ScreenUtil.getInstance().getHeightPx(45),
-                              bottom: ScreenUtil.getInstance().getHeightPx(45)),
+                              left: ScreenUtil.getInstance().getWidthPx(81), top: ScreenUtil.getInstance().getHeightPx(45), bottom: ScreenUtil.getInstance().getHeightPx(45)),
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
@@ -91,8 +89,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                             height: ScreenUtil.getInstance().getHeightPx(50),
                                             child: Align(
                                               child: Text("更换头像",
-                                                  style: TextStyle(color: Color(0xFFffffff), fontSize: ScreenUtil.getInstance().getSp(24 / 3)),
-                                                  textAlign: TextAlign.center),
+                                                  style: TextStyle(color: Color(0xFFffffff), fontSize: ScreenUtil.getInstance().getSp(24 / 3)), textAlign: TextAlign.center),
                                               alignment: Alignment.center,
                                             ),
                                           )),
@@ -145,8 +142,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
                                       Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
+                                        padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
                                           borderRadius: new BorderRadius.all(Radius.circular((10.0))),
@@ -160,8 +156,7 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
                                       ),
                                       Container(
                                         margin: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(25)),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
+                                        padding: EdgeInsets.symmetric(horizontal: ScreenUtil.getInstance().getWidthPx(31), vertical: ScreenUtil.getInstance().getHeightPx(14)),
 //                                        width: ScreenUtil.getInstance().getWidthPx(400),
                                         decoration: BoxDecoration(
                                           color: Color(0xFFf7f9fb),
@@ -391,13 +386,12 @@ class _Admin extends State<Admin> with AutomaticKeepAliveClientMixin<Admin>, Sin
         )
       ],
     );
-    var isOut =
-        await CommonUtils.showEditDialog(context, outMsg, height: ScreenUtil.getInstance().getHeightPx(400), width: ScreenUtil.getInstance().getWidthPx(906));
+    var isOut = await CommonUtils.showEditDialog(context, outMsg, height: ScreenUtil.getInstance().getHeightPx(400), width: ScreenUtil.getInstance().getWidthPx(906));
     if (isOut != null && isOut) {
       NavigatorUtil.goWelcome(context);
       showToast("退出成功");
       Future.delayed(Duration(milliseconds: 500)).then((_) {
-        UserDao.logout(store, context);
+        UserDao.logout(store);
       });
     }
   }

@@ -7,10 +7,10 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 2.0.808+340268
+version: 2.0.830+340278
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -19,7 +19,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
 
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.2
   dio: ^3.0.10
   connectivity: ^0.4.9+3
   event_bus: ^1.1.0
@@ -33,17 +33,18 @@ dependencies:
   cached_network_image: ^2.2.0+1
   flutter_des: ^1.1.0
   #  image_cropper: ^1.1.0
-  flutter_redux: ^0.6.0
+  flutter_redux: ^0.8.2
   rxdart: ^0.24.1
   uuid: 2.2.0
   path_provider: ^1.2.0
   flutter_swiper: ^1.1.6
-  flutter_easyrefresh: ^1.2.7
+  flutter_easyrefresh: ^2.2.1
   tflite: ^1.0.4
   url_launcher: ^5.2.5
-  chewie: ^0.9.10
-  video_player: ^0.10.12+2
-  flutter_audio_recorder: ^0.5.5
+#  chewie: ^1.0.0
+  video_player: ^2.1.1
+  flutter_audio_recorder:
+    path: ./plugins/flutter_audio_recorder-0.5.5
   image_gallery_saver: ^1.5.0
   imei_plugin: ^1.1.0
   #  flutter_video_compress: ^0.3.7+8
@@ -60,11 +61,8 @@ dependencies:
     path: ./plugins/webview_flutter_plus-0.1.1+9
   image_cropper: ^1.3.1
   oktoast: ^2.2.0
-  fluwx_no_pay: ^2.3.2
-#  fluwx: ^2.2.0
-#  fluwx:
-#    path: ./plugins/fluwx
-  flick_video_player: ^0.1.1
+  fluwx_no_pay: ^3.4.2
+#  flick_video_player: ^0.3.0
   liquid_progress_indicator: ^0.3.2
   # websocket_manager: ^0.2.2
   better_socket:
@@ -85,8 +83,8 @@ dependencies:
   #直播
   yondor_whiteboard:
     path: ./plugins/yondor_whiteboard
-  agora_rtm: ^0.9.12
-  provider: ^4.1.3
+  agora_rtm: ^0.9.14
+  provider: ^5.0.0
 #  agora_rtc_engine: ^3.2.1
   agora_rtc_engine:
     path: ./plugins/agora_rtc_engine-1.0.15
@@ -95,10 +93,15 @@ dependencies:
   simple_animations: ^2.2.1
   sa_multi_tween: ^1.1.1
   just_audio: ^0.3.3
-  screen: ^0.0.5
+  wakelock: ^0.5.1
   fijkplayer: ^0.8.7
-  process: ^3.0.13
+  process: ^4.2.1
   socket_io_client: ^0.9.11
+  uni_links: 0.4.0
+  tpns_flutter_plugin:
+    git:
+      url: https://github.com/TencentCloud/TPNS-Flutter-Plugin
+      ref: V1.1.1
 #  flutter_vlc_player: ^3.0.7
 #  flutter_tencentplayer: ^0.10.0
   flutter_localizations:

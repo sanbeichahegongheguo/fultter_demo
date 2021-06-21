@@ -36,7 +36,7 @@
         android:hardwareAccelerated="true">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:windowSoftInputMode="stateHidden|adjustResize">
@@ -56,24 +56,31 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".IntentParseActivity"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:theme="@style/DisablePreviewTheme">
-            <intent-filter><!--URL Scheme启动-->
-                <!--必有项-->
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <!--表示该页面可以被隐式调用，必须加上该项-->
-                <category android:name="android.intent.category.DEFAULT" />
-                <!--如果希望该应用可以通过浏览器的连接启动，则添加该项-->
+                <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <!--协议部分-->
-                <data android:scheme="yondorstudent"/>
+                <data
+                    android:scheme="yondorstudent"/>
             </intent-filter>
         </activity>
+
+<!--        <activity-->
+<!--            android:name=".IntentParseActivity"-->
+<!--            android:launchMode="singleTop"-->
+<!--            android:theme="@style/DisablePreviewTheme">-->
+<!--            <intent-filter>&lt;!&ndash;URL Scheme启动&ndash;&gt;-->
+<!--                &lt;!&ndash;必有项&ndash;&gt;-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                &lt;!&ndash;表示该页面可以被隐式调用，必须加上该项&ndash;&gt;-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                &lt;!&ndash;如果希望该应用可以通过浏览器的连接启动，则添加该项&ndash;&gt;-->
+<!--                <category android:name="android.intent.category.BROWSABLE"/>-->
+<!--                &lt;!&ndash;协议部分&ndash;&gt;-->
+<!--                <data android:scheme="yondorstudent"/>-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+
         <activity
             android:name="com.tencent.smtt.sdk.VideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
