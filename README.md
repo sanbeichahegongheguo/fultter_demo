@@ -6,7 +6,7 @@ Release-正式版打包:
 cmd执行
 flutter build apk --no-shrink
 
-
+```
 目录结构:
 ├── android    //安卓目录
 ├── assets     //静态资源
@@ -45,3 +45,4 @@ flutter build apk --no-shrink
 ├── pubspec.lock                                //flutter版本管理
 ├── pubspec.yaml                                //flutter版本管理
 └── test
+```
